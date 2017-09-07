@@ -93,7 +93,7 @@ void CStatusLogFileWriter::OnWriteMessage(WPARAM wParam, LPARAM lParam){
 }
 
 
-void CStatusLogFileWriter::OnTimer(UINT nIDEvent, LPARAM lp){
+void CStatusLogFileWriter::OnTimer(WPARAM nIDEvent, LPARAM lp){
 	CString logFile;
 
 	if(m_nTimerCalls == 0){

@@ -18,7 +18,7 @@ public:
 	afx_msg void OnWriteMessage(WPARAM wParam, LPARAM lParam);
 
 	/** */
-	afx_msg void OnTimer(UINT nIDEvent, LPARAM lp);
+	afx_msg void OnTimer(WPARAM nIDEvent, LPARAM lp);
 
 	/** Called when the thread is to be stopped */
 	afx_msg void OnQuit(WPARAM wp, LPARAM lp);
