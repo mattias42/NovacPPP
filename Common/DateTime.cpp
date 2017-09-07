@@ -34,7 +34,7 @@ CDateTime::~CDateTime(void)
 {
 }
 
-CDateTime::operator <(const CDateTime &t2) const{
+int CDateTime::operator <(const CDateTime &t2) const{
 	if(this->year < t2.year)
 		return 1;
 	if(this->year > t2.year)
@@ -64,7 +64,7 @@ CDateTime::operator <(const CDateTime &t2) const{
 	return 0;
 }
 
-CDateTime::operator <=(const CDateTime &t2) const{
+int CDateTime::operator <=(const CDateTime &t2) const{
 	if(*this < t2)
 		return true;
 	if(*this == t2)
@@ -73,7 +73,7 @@ CDateTime::operator <=(const CDateTime &t2) const{
 	return false;
 }
 
-CDateTime::operator >(const CDateTime &t2) const{
+int CDateTime::operator >(const CDateTime &t2) const{
 	if(*this < t2)
 		return false;
 	if(*this == t2)
@@ -82,7 +82,7 @@ CDateTime::operator >(const CDateTime &t2) const{
 	return true;
 }
 
-CDateTime::operator >=(const CDateTime &t2) const{
+int CDateTime::operator >=(const CDateTime &t2) const{
 	if(*this < t2)
 		return false;
 

@@ -224,7 +224,7 @@ BOOL CNovacPPPDlg::OnInitDialog()
 	
 	// Check if there is a configuration file for every spectrometer serial number
 	bool failed = false;
-	for(k = 0; k < g_setup.m_instrumentNum; ++k){
+	for(int k = 0; k < g_setup.m_instrumentNum; ++k){
 		evalConfPath.Format("%s\\configuration\\%s.exml", common.m_exePath, g_setup.m_instrument[k].m_serial);
 
 		if(IsExistingFile(evalConfPath))

@@ -954,7 +954,7 @@ double Common::CalculateFlux_ConeFormula(const double *scanAngle, const double *
 	}
 
 	// Now make the actual flux-calculation
-	for(i = 0; i < nDataPoints - 2; ++i){
+	for(int i = 0; i < nDataPoints - 2; ++i){
 		if(fabs(fabs(alpha[i]) - HALF_PI) < 1e-2 || fabs(fabs(alpha[i+1]) - HALF_PI) < 1e-2)
 			continue;// This algorithm does not work very well for scanangles around +-90 degrees
 
@@ -1040,7 +1040,7 @@ double Common::CalculateFlux_HeidelbergFormula(const double *scanAngle1, const d
 
 	// Now make the actual flux-calculation
 /*TODO: flux calculations for Heidelberg instrument differ from Gothenborg instrument because local and global coordinate system do not differ!!!! Define another loop for Heidelberg?*/
-	for(i = 0; i < nDataPoints - 2; ++i){
+	for(int i = 0; i < nDataPoints - 2; ++i){
 		if(fabs(fabs(elev[i]) - HALF_PI) < 1e-2 || fabs(fabs(elev[i+1]) - HALF_PI) < 1e-2)
 			continue;// This algorithm does not work very well for scanangles around +-90 degrees
 		
@@ -1160,7 +1160,7 @@ bool Common::FindPlume(const double *scanAngles, const double *phi, const double
 	}
 
 	// Add the smallest column-value to all other columns, this to make an approximate offset
-	for(k = 0; k < nCol; ++k){
+	for(int k = 0; k < nCol; ++k){
 		col[k] -= minColumn;
 	}
 
@@ -1214,7 +1214,7 @@ bool Common::FindPlume(const double *scanAngles, const double *phi, const double
 		double maxCol_90	= Max(col, nCol) * 0.90;
 		
 		// Search for the lower edge of the plume ...
-		for(k = 0; k < nCol - 2; ++k){
+		for(int k = 0; k < nCol - 2; ++k){
 			if(angle[k] > plumeProperties.m_plumeCentre[0]){
 				break;
 			}else if(Average(col + k, 2) < maxCol_div_e){
@@ -1226,7 +1226,7 @@ bool Common::FindPlume(const double *scanAngles, const double *phi, const double
 		}
 		
 		// .. and then the upper edge
-		for(k = nCol - 1; k >= 1; --k){
+		for(int k = nCol - 1; k >= 1; --k){
 			if(angle[k] <= plumeProperties.m_plumeCentre[0]){
 				break;
 			}else if(Average(col + k - 1, 2) < maxCol_div_e){
@@ -1291,7 +1291,7 @@ bool Common::CalculatePlumeCompleteness(const double *scanAngles, const double *
 	// Calculate the average of the 'nDataPointsToAverage' right-most values
 	double avgRight = 0.0;
 	nAverage = 0;
-	for(k = numPoints-1; k > 0; --k){
+	for(int k = numPoints-1; k > 0; --k){
 		if(!badEvaluation[k]){
 			avgRight += columns[k] - offset;
 			++nAverage;
@@ -1308,7 +1308,7 @@ bool Common::CalculatePlumeCompleteness(const double *scanAngles, const double *
 
 	// Find the maximum column value
 	double maxColumn = 0.0;
-	for(k = 0; k < numPoints; ++k){
+	for(int k = 0; k < numPoints; ++k){
 		if(!badEvaluation[k]){
 			maxColumn = max(maxColumn, columns[k] - offset);
 		}

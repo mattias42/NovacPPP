@@ -131,7 +131,7 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
 		CMeasurementDay measurementDay;
 		scanResult.GetSkyStartTime(measurementDay.day);
 		
-		for(k = 0; k < scanResult.GetEvaluatedNum(); ++k){
+		for(int k = 0; k < scanResult.GetEvaluatedNum(); ++k){
 			// make sure that we only insert zenith measurements
 			if(fabs(scanResult.GetScanAngle(k)) > 1.0)
 				continue;

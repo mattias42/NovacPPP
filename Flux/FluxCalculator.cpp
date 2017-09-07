@@ -196,7 +196,7 @@ int CFluxCalculator::GetLocation(const CString &serial, const CDateTime &startTi
 	// Next find the instrument location that is valid for this date
 	Configuration::CLocationConfiguration &locationconf = instrumentConf->m_location;
 	bool foundValidLocation = false;
-	for(k = 0; k < locationconf.GetLocationNum(); ++k){
+	for(int k = 0; k < locationconf.GetLocationNum(); ++k){
 		locationconf.GetLocation(k, singleLocation);
 
 		if(singleLocation.m_validFrom  < startTime && (startTime < singleLocation.m_validTo || startTime == singleLocation.m_validTo)){

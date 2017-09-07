@@ -172,7 +172,7 @@ int CCrossSectionData::HighPassFilter(){
 	mathObject.Log(data, m_length);
 	mathObject.Div(data, m_length, 2.5e15);
 	
-	for(k = 0; k < m_length; ++k){
+	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	
@@ -193,7 +193,7 @@ int CCrossSectionData::HighPassFilter_Ring(){
 	mathObject.HighPassBinomial(data, m_length, 500);
 	mathObject.Log(data, m_length);
 	
-	for(k = 0; k < m_length; ++k){
+	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	
@@ -215,7 +215,7 @@ int CCrossSectionData::Multiply(double scalar){
 
 	mathObject.Mul(data, m_length, scalar);
 	
-	for(k = 0; k < m_length; ++k){
+	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	
@@ -235,7 +235,7 @@ int CCrossSectionData::Log(){
 
 	mathObject.Log(data, m_length);
 	
-	for(k = 0; k < m_length; ++k){
+	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	

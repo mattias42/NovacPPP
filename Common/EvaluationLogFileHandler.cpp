@@ -1,11 +1,11 @@
-#include "StdAfx.h"
-#include "evaluationlogfilehandler.h"
+#include "stdafx.h"
+#include "EvaluationLogFileHandler.h"
 #include "../Common/SpectrometerModel.h"
 #include "../Common/Version.h"
-
+ 
 // Include synchronization classes
 #include <afxmt.h>
-
+ 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 

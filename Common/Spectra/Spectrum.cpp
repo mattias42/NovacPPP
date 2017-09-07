@@ -305,7 +305,7 @@ RETURN_CODE CSpectrum::InterpolateSpectrum(){
 	// Interpolate the data we don't have
 	if(start == 1)
 		data[0] = data[1];
-	for(k = start + 1; k < (newLength - 1); k += step){
+	for(int k = start + 1; k < (newLength - 1); k += step){
 		data[k] = (data[k-1] + data[k+1]) * 0.5;
 	}
 	if(start == 0)
@@ -353,7 +353,7 @@ RETURN_CODE CSpectrum::InterpolateSpectrum(CSpectrum &spec) const{
 	// Interpolate the data we don't have
 	if(start == 1)
 		data[0] = data[1];
-	for(k = start + 1; k < (newLength - 1); k += step){
+	for(int k = start + 1; k < (newLength - 1); k += step){
 		data[k] = (data[k-1] + data[k+1]) * 0.5;
 	}
 	if(start == 0)

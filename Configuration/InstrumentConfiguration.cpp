@@ -1,12 +1,13 @@
-#include "StdAfx.h"
-#include "instrumentconfiguration.h"
+#include "stdafx.h"
+#include "InstrumentConfiguration.h"
 
-using namespace Configuration;
-
-CInstrumentConfiguration::CInstrumentConfiguration(void)
+namespace Configuration
 {
-}
+	CInstrumentConfiguration::CInstrumentConfiguration(void)
+	{
+	}
 
-CInstrumentConfiguration::~CInstrumentConfiguration(void)
-{
+	CInstrumentConfiguration::~CInstrumentConfiguration(void)
+	{
+	}
 }

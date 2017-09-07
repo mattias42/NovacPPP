@@ -7,12 +7,12 @@
 #define COMMON_H
 
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
-#include <math.h>
-
-#include <afxtempl.h>
+// #include <stdlib.h>
+// #include <crtdbg.h>
+// 
+// #include <math.h>
+// 
+// #include <afxtempl.h>
 
 #include "DateTime.h"
 
@@ -155,7 +155,8 @@ enum SKY_OPTION {
 // ----------------------------------------------------------------
 // ------------ SIMPLE MATHEMATICAL FUNCTIONS  --------------------
 // ----------------------------------------------------------------
-#define round(x) (x < 0 ? ceil((x)-0.5) : floor((x)+0.5))
+// Commented out since this conflicts with the definition in cmath.h
+// #define round(x) (x < 0 ? ceil((x)-0.5) : floor((x)+0.5))
 
 
 // -----------------------------------------------------------------

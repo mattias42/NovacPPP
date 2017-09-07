@@ -632,7 +632,8 @@ CEvaluation &CEvaluation::operator = (const CEvaluation &e2){
 int CEvaluation::CreateReferenceSpectrum(){
 	CVector yValues;
 
-	for(int i = 0; i < m_window.nRef; i++)
+	int i = 0;
+	for(i = 0; i < m_window.nRef; i++)
 	{
 		// reset all reference's parameters
 		ref[i]->ResetLinearParameter();
