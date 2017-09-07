@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
+
+<NovacPostProcessing>
+	<outputdirectory>D:\NovacPostProcessingProgram\Test\</outputdirectory>
+	<tempdirectory>D:\NovacPostProcessingProgram\Test\Temp\</tempdirectory>
+	
+	<Volcano>1401-09=</Volcano>
+	<mode>Flux</mode>
+	<FitWindows>
+		<item>SO2</item>
+		<main>SO2</main>
+	</FitWindows>
+	<LocalDirectory>D:\NovacBackup_20071127\popocatepetl</LocalDirectory>
+	<WindFieldFile>D:\NovacPostProcessingProgram\comparisons_Popo\ImportedWindfield.wxml</WindFieldFile>
+</NovacPostProcessing>

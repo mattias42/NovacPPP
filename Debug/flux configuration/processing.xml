@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
+
+<NovacPostProcessing>
+	<outputdirectory>D:\NovacPostProcessingProgram\Test\</outputdirectory>
+	<tempdirectory>D:\NovacPostProcessingProgram\Test\Temp\</tempdirectory>
+	
+	<Volcano>1401-09=</Volcano>
+	<mode>Flux</mode>
+	<FitWindows>
+		<item>SO2</item>
+		<item>SO2_high</item>
+		<item>SO2_high_poly</item>
+		<main>SO2</main>
+	</FitWindows>
+	<GeometryCalc>
+		<validTime>600</validTime>
+		<minInstrumentDistance>200</minInstrumentDistance>
+		<maxInstrumentDistance>10000</maxInstrumentDistance>
+	</GeometryCalc>
+	<Discarding>
+		<completenessLimit>0.9</completenessLimit>
+		<minimumSaturationInFitRegion>0.02</minimumSaturationInFitRegion>
+	</Discarding>
+	<LocalDirectory>D:\NovacBackup_20071127\popocatepetl\2007.07.11</LocalDirectory>
+	<WindFieldFile>D:\NovacPostProcessingProgram\comparisons_Popo\ImportedWindfield.wxml</WindFieldFile>
+</NovacPostProcessing>

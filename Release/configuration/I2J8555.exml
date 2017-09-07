@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the configuration file for the evaluation of spectra in the NOVAC Post Processing Program -->
+
+<EvaluationConfiguration>
+	<serial>I2J8555</serial>
+	
+	<!-- Master channel -->
+
+		
+	<fitWindow>
+		<channel>0</channel>
+		<name>SO2</name>
+		<validFrom>2009.01.01</validFrom>
+		<validTo>TODAY()</validTo>
+		<specLength>2048</specLength>
+		<interlaceStep>0</interlaceStep>
+		<polyOrder>5</polyOrder>
+		<fitType>0</fitType>
+		<fitLow>385</fitLow>
+		<fitHigh>511</fitHigh>
+		<Reference>
+			<name>SO2</name>
+			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_SO2_294K.xs</path>
+			<shiftOption>1</shiftOption>
+			<shiftValue>0.000000</shiftValue>
+			<squeezeOption>1</squeezeOption>
+			<squeezeValue>1.000000</squeezeValue>
+			<columnOption>0</columnOption>
+		</Reference>
+		<Reference>
+			<name>O3</name>
+			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_O3_221K.xs</path>
+			<shiftOption>1</shiftOption>
+			<shiftValue>0.000000</shiftValue>
+			<squeezeOption>1</squeezeOption>
+			<squeezeValue>1.000000</squeezeValue>
+			<columnOption>0</columnOption>
+		</Reference>
+		<Reference>
+			<name>RING</name>
+			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_Ring_HR.xs</path>
+			<shiftOption>1</shiftOption>
+			<shiftValue>0.000000</shiftValue>
+			<squeezeOption>1</squeezeOption>
+			<squeezeValue>1.000000</squeezeValue>
+			<columnOption>0</columnOption>
+		</Reference>
+		<wavelengthCalibration>
+			<fraunhoferSpec>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_SolarSpec.xs</fraunhoferSpec>
+		</wavelengthCalibration>
+		</DarkCorrection>
+			<dark>SCAN</dark>
+		</DarkCorrection>
+	</fitWindow>
+</EvaluationConfiguration>

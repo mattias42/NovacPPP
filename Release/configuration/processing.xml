@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
+<NovacPostProcessing>
+	<outputdirectory>D:\NovacPostProcessingProgram\Cotopaxi Test\Output Cotopaxi\</outputdirectory>
+	<tempdirectory>D:\NovacPostProcessingProgram\Cotopaxi Test\Temp\</tempdirectory>
+	<LocalDirectory></LocalDirectory>
+
+	<FTPDirectory>ftp://129.16.35.206/cotopaxi/</FTPDirectory>
+	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
+	<FTPUsername>novacUser</FTPUsername>
+	<FTPPassword>iht-1inks.</FTPPassword>
+	<mode>Flux</mode>
+	<molecule>SO2</molecule>
+	<Volcano>1502-05=</Volcano>
+	<FromDate>2009.01.01</FromDate>
+	<ToDate>2009.11.20</ToDate>
+	<WindFieldFile>ftp://129.16.35.206/ecmwf/Wind/cotopaxi/analysis/</WindFieldFile>
+	<WindFileOption>1</WindFileOption>
+	<FitWindows>
+		<item>SO2</item>
+		<main>SO2</main>
+	</FitWindows>
+	<SkySpectrum>
+		<option>SCAN</option>
+	</SkySpectrum>
+	<GeometryCalc>
+		<completenessLimit>0.60</completenessLimit>
+		<validTime>3600</validTime>
+	</GeometryCalc>
+	<Discarding>
+		<completenessLimit>0.80</completenessLimit>
+		<minimumSaturationInFitRegion>0.02</minimumSaturationInFitRegion>
+		<MaxExpTime_Got>1000</MaxExpTime_Got>
+	</Discarding>
+</NovacPostProcessing>
+

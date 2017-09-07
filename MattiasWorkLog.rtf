@@ -1,0 +1,432 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fprq1\fcharset0 Courier New;}{\f2\fmodern\fprq1\fcharset0 Courier New;}{\f3\fmodern\fprq6\fcharset0 SimSun;}{\f4\fswiss\fprq2\fcharset0 Arial;}{\f5\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;\red0\green128\blue0;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\lang1053\f0\fs20 2009-01-12\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Removed the following classes (they were not necessary here);\lang1033\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi416\li720\f1 CCompositionMeasurement\f0\par
+\f1{\pntext\f5\'B7\tab}CCombinerThread\f0\par
+\f1{\pntext\f5\'B7\tab}CCommunicationDataStorage\f0\par
+\f1{\pntext\f5\'B7\tab}CEvaluatedDataStorage\f0\par
+\f1{\pntext\f5\'B7\tab}CNodeControlInfo\f0\par
+\f1{\pntext\f5\'B7\tab}CScannerFileInfo\f0\par
+\f1{\pntext\f5\'B7\tab}CScannerFolderInfo\f0\par
+\f1{\pntext\f5\'B7\tab}CStatusFileReader\f0\par
+\f1{\pntext\f5\'B7\tab}CWindFileController\f0\par
+\f1{\pntext\f5\'B7\tab}CReportWriter\f0\par
+\f1{\pntext\f5\'B7\tab}CLogFileWriter\f0\par
+\f1{\pntext\f5\'B7\tab}CCommunicationController\f0\par
+\f1{\pntext\f5\'B7\tab}CSerialControllerWithTx\f0\par
+\f1{\pntext\f5\'B7\tab}CSerialCOM\f0\par
+\f1{\pntext\f5\'B7\tab}CRealTimeWind\f0\par
+\f1{\pntext\f5\'B7\tab}CFitWindowListBox\f0\par
+\f1{\pntext\f5\'B7\tab}CPakFileListBox\f0\par
+\f1{\pntext\f5\'B7\tab}CReEvalSettingsFileHandler\f0\par
+\f1{\pntext\f5\'B7\tab}CReEvaluator\f0\par
+\f1{\pntext\f5\'B7\tab}CRealTimeSetupChanger\f0\par
+\f1{\pntext\f5\'B7\tab}CConfigurationTreeCtrl\f0\par
+\f1{\pntext\f5\'B7\tab}CConfigurationFileHandler\f0\par
+\f1{\pntext\f5\'B7\tab}CConfigurationSetting (however the sub-class CDarkSettings is useful. I copied it into a separate class called CDarkSettings)\f0\par
+\f1{\pntext\f5\'B7\tab}CWindEvaluator (this however has some functions that will be useful later on..., keep the file)\f0\par
+\f1{\pntext\f5\'B7\tab}CGeometryEvaluator (this however has some functions that will be useful later on..., keep the file) \i - ReInserted 2009-03-23\i0\f0\par
+\f1{\pntext\f5\'B7\tab}CFTPServerContacter\f0\par
+\f1{\pntext\f5\'B7\tab}CSpectrometer\f0\par
+\f1{\pntext\f5\'B7\tab}CSpectrometerHistory\f0\par
+\f1{\pntext\f5\'B7\tab}CFTPController\f0\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Replaced the inclusion of "NovacMasterProgram.h" with "#include "NovacPPP.h" in all files\par
+{\pntext\f5\'B7\tab}Removed the parameters m_pause and m_sleeping from CScanEvaluation, since this clas should not be sleeping\par
+{\pntext\f5\'B7\tab}Also removed the function CShowResult from CScanEvaluation and the member variables pView and m_spec, this does not need to show the spectra on the screen - and it's faster if we don't\par
+{\pntext\f5\'B7\tab}Removed the input-parameter fRun to CScanEvaluation::EvaluateScan, this since we don't want to be able to cancel the evaluation while it's runnign\par
+{\pntext\f5\'B7\tab}Added the class \f1 CInstrumentLocation\f0  to make the implementation of CLocationConfiguration a bit easier, and to make it easier to extract the location from the configuration... Implemented an assignment operator to make the handling of these things easier\par
+\pard\par
+2009-03-13\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the member variables \f1 m_compass, m_coneangle, m_tilt,\f0  \f1 m_instrumentType and m_spectrometerModel\f0   to the class \f1 CInstrumentLocation\f0  since this information is also necessary to remember...\par
+{\pntext\f5\'B7\tab}Changed the class \f1 CLocationConfiguration\f0  so that is manages arrays of \f1 CInstrumentLocation\f0  instead of having multiple arrays for the lat, long etc... this to make the code easier to read and to manage\par
+{\pntext\f5\'B7\tab}Implemented the function \f1 WriteSetupFile\f0  in CSetupFileReader.  \par
+{\pntext\f5\'B7\tab}Also removed the class CFTPHandler\par
+{\pntext\f5\'B7\tab}\par
+\pard\par
+2009-03-18\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the class CStatusDlg, this is used to show the output messages from the processing...\par
+{\pntext\f5\'B7\tab}Made so that the CSetupFileReader can read and write the output and temp directories of the program.\par
+{\pntext\f5\'B7\tab}updated CScanEvaluation so that the files are stored in the output directory. The .txt files are now stored in OUTPUTDIRECTORY\\\\DATE\\\\SERIALNUMBER\\\\\par
+{\pntext\f5\'B7\tab}Removed writing to the big eval-log file from CPostEvaluationController::WriteEvaluationResult, Only the data from one scan is now written to each .txt file generated\par
+{\pntext\f5\'B7\tab}Updated CPostProcessing::PrepareEvaluation so that if the fit-type is FIT_HP_DIV or FIT_HP_SUB then the read in references are scaled to ppmm high-pass filtered and log:ed and then scaled back to molec/cm2. THE OUTPUT OF THESE EVALUATIONS WILL THEREFORE ALWAYS BE IN MOLECULES/CM2. IT IS ASSUMED THAT THE CROSS-SECTIONS ARE IN MOLEC/CM2 AND ARE NOT FILTERED BEFORE-HAND.\par
+\pard\par
+2009-03-23\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Removed the class \f2 CFileInfo\f0 , this is not used...\par
+{\pntext\f5\'B7\tab}removed the structure 'timeStruct' from Common.h, and the functions 'GetSleepTime', '\f1 IsCompatibleWithTXZM\f0 ' \par
+{\pntext\f5\'B7\tab}Copied the function '\f1 GetInfoFromFileName\f0 ' into CEvaluationLogfileHandler, this function was previously found in CGeometryEvaluator in the NovacProgram\par
+{\pntext\f5\'B7\tab}Added code to DoPostProcessing so that it loops throught the list of evaluation log files generated and looks for possible combinations of evaluation log files. If two eval-logs are generated by different spectrometers and at a (relatively) small time-difference, then they are combined into a geometry calculation...\par
+{\pntext\f5\'B7\tab}simplified the class CGeometryResult to store the time as a CDateTime\par
+{\pntext\f5\'B7\tab}The function '\f1 CalculateGeometry\f0 ' now returns the result as an instance of CGeometryResult, to make the syntax simpler.\par
+{\pntext\f5\'B7\tab}Changed the name 'm_plumeheight' in CGeometryResult to 'm_plumeAltitude' to more reflect that it is the total altitude of the plume, in meters above sea level...\par
+{\pntext\f5\'B7\tab}Removed the function 'WriteFluxResult' from CPostEvaluationcontroller\par
+{\pntext\f5\'B7\tab}Introduced a new class 'CFluxCalculator' which is very similar to CPostEvaluationController but takes care of calculating the flux from an already evaluated scan. this also introduces a new namespace 'Flux', used to contain the classes that are useful when it comes to calculating fluxes.\par
+{\pntext\f5\'B7\tab}Removed the member-variables '\f1 m_fluxSpecie\f0 ' and '\f2 m_common\f0 ' from CPostEvaluationController since it's not useful\par
+{\pntext\f5\'B7\tab}Moved the class CFluxResult from the directory (and namespace) Evaluation to the direcotry (and namespace) Flux\par
+{\pntext\f5\'B7\tab}Removed the class CFluxLogFileHandler, since it's not useful anymore\par
+{\pntext\f5\'B7\tab}Moved the evaluation of the scans from CPostProcessing::DoPostProcessing to a new function CPostProcessing::EvaluateScans, this is then called from within CPostProcessing::DoPostProcessing\par
+\pard\par
+2009-03-24\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720\lang1053 Removed the following classes (they were not necessary here);\lang1033\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi416\li720\f1 CCompositionMeasurement\f0\par
+\f1{\pntext\f5\'B7\tab}CCfgTxtFileHandler\f0\par
+\f1{\pntext\f5\'B7\tab}CFitWindowFileHandler\f0\par
+\f1{\pntext\f5\'B7\tab}CPostFluxCalculator\f0\par
+{\pntext\f5\'B7\tab}\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Changed the class CWindField so that it does not include the plume height\par
+{\pntext\f5\'B7\tab}Included MET_MODEL_WRF into the list of possible sources for wind\par
+{\pntext\f5\'B7\tab}MADE MAJOR CHANGES TO THE CLASS CWINDFIELD, this makes it not compatible with the one in the NovacProgram...\par
+{\pntext\f5\'B7\tab}Removed the class CWindFileReader since we want to be able to handle more complicated wind-field files in this program...\par
+{\pntext\f5\'B7\tab}Created the namespace Meteorology, to hold the classes regarding wind and wind-information\par
+{\pntext\f5\'B7\tab}Removed the class '\f1 CMeteorologicalData\f0 ' since it doesn't match that very well with what we want to use in this program... I'll make a new class later...\par
+{\pntext\f5\'B7\tab}Implemented the new class CWindDataBase which can be used to store all the wind-information that we want to have\par
+{\pntext\f5\'B7\tab}Implemented the new class '\f1 CXMLWindFileReader\f0 ' to read and write the new wind-information files\par
+\pard\par
+2009-03-25\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Improved the class CXMLFileReader so that it can manage attributes in a simpler way than before\par
+{\pntext\f5\'B7\tab}Implemented a new function '\f1 CPostProcessing::ReadWindField\f0 ' that reads in the wind field of the volcano that we are about to process. This is now done just after the call to 'PrepareEvaluation' so that everything is ready when we start evaluating\par
+{\pntext\f5\'B7\tab}The function '\f1 CFluxCalculator::CalculateFlux\f0 ' now takes a second parameter which is a wind-database.\par
+{\pntext\f5\'B7\tab}Created a new class '\f1 CPlumeHeight\f0 ' which can be used to keep track of the plume height, it's uncertainty and the source of plume-height informaiton\par
+{\pntext\f5\'B7\tab}Added a new parameter, an instance of '\f1 CPlumeHeight\f0 ', as input parameter to '\f1 CScanResult::CalculateFlux\f0 ', '\f1 CFluxCalculator::CalculateFlux\f0 ', '\f1 Common::CalculateFlux\f0 ', '\f1 CalculateFlux_ConeFormula\f0 ', '\f1 Common::CalculateFlux_FlatFormula\f0 ', '\f1 Common::CalculateFlux_HeidelbergFormula\f0 '\par
+{\pntext\f5\'B7\tab}Added the option for how to interpolate the wind-field when retrieving a value from CWindDataBase, possible forms of interpolation is EXACT (no interpolation), BILINEAR, and NEAREST_NEIGHBOUR\par
+{\pntext\f5\'B7\tab}Implemented the functions to extract a windfield by taking either 1) the nearest, 2) the exact correspondence or 3) bi-linear inerpolation\par
+\pard\par
+2009-03-26\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the parameters m_validFrom and m_validTo to the class CPlumeHeight\par
+{\pntext\f5\'B7\tab}Implemented the class CPlumeDataBase, this works in very much the same way as the CWindDataBase but instead contains information about the altitude of the plume. The same class can later be used to store information on other plume properties, such as dispersion, rise...\par
+{\pntext\f5\'B7\tab}The CPostProcessing - class how has a member-variable which is an instance of CPlumeDataBase, this is used to keep track of the plume heights calculated or the default plume height or (potentially) read-in values\par
+{\pntext\f5\'B7\tab}Implemented the function '\f1 CPostProcessing::PreparePlumeHeights\f0 ' which takes care of initializing the plume-hegiht database with a default plume height equal to the altitude of the volcano we're processing.\par
+{\pntext\f5\'B7\tab}The function '\f1 CPostProcessing::CalculateFluxes\f0 ' no longer takes a set of calculated geometries as input parameter, the plume height is instead taken from 'm_plumeDataBase' and it is assumed that the calculated geometries are inserted into this database\par
+{\pntext\f5\'B7\tab}Added another parameter to the function '\f1 CPostEvaluationController::GetArchivingfileName\f0 ', \f1 MEASUREMENT_MODE mode.\f0   this since we need to differentiate between the diferent kinds of measurement modes already in the file name of the evaluation log file\par
+{\pntext\f5\'B7\tab}Implemented a function '\f1 GetMeasurementMode\f0 ' in CScanResult which is 'const' i.e. it does to change the state of the CScanResult object.\par
+{\pntext\f5\'B7\tab}Changed the format of the evaluation-log files that are generated. They now contain a 4 character combination describing the mode of the measurement. This is implemented to make things a bit easier when just studying the file-names\par
+{\pntext\f5\'B7\tab}Removed the function '\f1 CPostEvaluationController::GetEvaluator\f0 ', it's no longer useful\par
+{\pntext\f5\'B7\tab}The function '\f1 CEvaluationLogFileHandler::GetInfoFromFileName\f0 ' now returns a third parameter '\f1 MEASUREMENT_MODE &mode\f0 ' whis is the measurement mode of the measurement found in the eval-log file. This is judged from the new four-character combination in the file name\par
+{\pntext\f5\'B7\tab}Implemented so that the function '\f1 CPostProcessing::CalculateGeometries\f0 ' only uses a measurement to calculate a geometry if the measurement is a flux-measurement.\par
+{\pntext\f5\'B7\tab}Changed the class CFluxResult so that it contains copies of the CWindField and the CPlumeHeight that were used to calculate the fluxes\par
+{\pntext\f5\'B7\tab}The class CFluxResult now also contains the serial-number of the instrument that collected the measurement\par
+{\pntext\f5\'B7\tab}Implemented a class CMolecule which can be used to keep  track of the different trace gases we have and to know their mass...\par
+{\pntext\f5\'B7\tab}Removed the concept of 'GasFactor' from the flux calculation algorithm in the class '\f2 Common\f0 '. The columns now have to be corrected outside of this function to an appropriate unit\par
+{\pntext\f5\'B7\tab}Implemented two more functions in CDateTime; '\f1 CDateTime::Decrement\f0 ' and '\f1 CDateTime::DecrementOneDay\f0 ' these should be tested!!!\par
+{\pntext\f5\'B7\tab}Discovered on bug in CDateTime::Increment, changed the implementation to better manage larger changes...\par
+\pard\par
+2009-04-01\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented the function CNovacPPPConfiguration::GetInstrumentLocation, this makes it possible to query the 'g_setup' object directly for the location of an instrument if the serial-number and date and time are known... This will make things a little bit easier...\par
+{\pntext\f5\'B7\tab}Copied the two functions '\f1 CalculateCorrelation\f0 ' and '\f1 CalculateCorrelation_Heidelberg\f0 ' from the class CWindEvaluator in NovacProgram to the class CWindSpeedCalculator in this program. Also changed the class 'CWindSpeedCalculator' so that only the two functions to calculate the correlation are public and the rest of the variables are private\par
+{\pntext\f5\'B7\tab}Implemented the function '\f1 CWindSpeedCalculator::CalculateWindSpeed\f0 ' which takes care of estimating the wind speed from dual-beam measurements. THIS FUNCTION MUST BE TESTED ALOT MORE...\par
+{\pntext\f5\'B7\tab}Modified the function '\f1 CPostProcessing::CheckForSpectraInDir\f0 ' so that it rejects .pak-files which are collected before the allowed time-interval or later than the allowed time-interval.\par
+{\pntext\f5\'B7\tab}Fixed so that '\f1 CPostProcessing::CalculateFluxes\f0 ' only appends the flux to the list of flux-results if the result is ok...\par
+{\pntext\f5\'B7\tab}Also added so that the flux-results are sorted by time before they are written to file. this to make the later analysis somewhat easier\par
+{\pntext\f5\'B7\tab}Changed '\f1 CPostProcessing::CheckForSpectraInDir\f0 ' so that it can also include sub-directories in the search\par
+\pard\par
+2009-04-08\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Changed so that the evaluation-logs are sorted, in order of increasing time, just after the evaluations have been done. This to make the search for matching log-files in the geometry-calculation faster. This also removes the need to sort the flux-results...\par
+{\pntext\f5\'B7\tab}Moved the classes that belongs to the configuration of the instrument, the evaluation and the setup to the namespace Configuration, this to make it more obvious what they are used for\par
+{\pntext\f5\'B7\tab}Implemented a check in CPostEvaluationController, if the sky-spectrum is dark then the scan will not be evaluated since the result will anyway be crap\par
+{\pntext\f5\'B7\tab}changed the type of the input-parameter of 'CScanResult::CalculateOffset' and '\f1 CalculatePlumeCentre\f0 ' from CString to '\cf1\f1 const\cf0  CMolecule &specie\f0 '\par
+{\pntext\f5\'B7\tab}Added one more check inside CPostEvaluationController::EvaluateScan, after the scan has been evaluated, the mode of the measurement is checked. Now; if the mode is a flux measurement then it's checked if the measuremetn sees the plume. If not then the scan is skipped and not written to file.\par
+{\pntext\f5\'B7\tab}Changed the status-message dialog, when the dialog is resized then the list-box of messages is also resized\par
+{\pntext\f5\'B7\tab}Removed the classes 'CFitParameter', 'CScanArray' which are not used for anything\par
+{\pntext\f5\'B7\tab}Changed in '\f1 CPostProcessing::EvaluateScans\f0 ' if the evaluation fails for some reason then the eval-log file is not added to the list of log-files\par
+{\pntext\f5\'B7\tab}Made it possible to specify the name of the fit-window to be used in the evaluation when calling '\f1 CPostEvaluationController::EvaluateScan\f0 '. There can be several fit-windows valid at the same time, but only the one with the given name of the fit-window will be used.\par
+{\pntext\f5\'B7\tab}Implemented the class '\f1 CExtendedScanResult\f0 ' in the namespace Evaluation. This is now used instead of the list of evaluation-log files in the post-processing. This to make it possible to evaluate each scan in several fit-windows with different settings\par
+{\pntext\f5\'B7\tab}added the member variables '\f1 m_fitWindowsToUse\f0 ', '\f1 m_nFitWindowsToUse\f0 ', and '\f1 m_mainFitWindow\f0 ' to 'g_setup'. This makes it possible for the user to specify a number of fit-windows that should be looped through for each scan-file\par
+{\pntext\f5\'B7\tab}Changed '\f1 CPostProcessing::EvaluateScans\f0 ' so that it can loop through the different fit-windows defined in g_setup\par
+{\pntext\f5\'B7\tab}Started the implementation of 'processing.xml' which can be used to store the properties of the processing, such as the different fit-windows to evaluate in and the fit-window to use to calculate the flux\par
+{\pntext\f5\'B7\tab}Implemented the class CProcessingFileReader, which parses the files 'processing.xml' for options on how to do the processing\par
+{\pntext\f5\'B7\tab}\par
+\pard\par
+2009-04-17\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Changed the icon of the program to the Novac logo\par
+{\pntext\f5\'B7\tab}Added a dialog to the interface that can be used to view the configuration. This to make life a little bit easier for the user of the software...\par
+{\pntext\f5\'B7\tab}Fixed one bug in CXMLFileReader that was introduced when making the reader a bit faster some weeks ago...\par
+\pard\par
+2009-04-28\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Created the class CUserConfiguration, this is used to store the settings of the user which are taken both from the interface and from the file processing.xml\par
+{\pntext\f5\'B7\tab}Added the codes from the Smithsonian to the class CVolcanoInfo and to the drop-down list in the main window.\par
+{\pntext\f5\'B7\tab}The post-processing now also tries to read in the wind-field from a file with the current volcano's code-number\par
+{\pntext\f5\'B7\tab}It is now possible for the user to specify the wind-field file to use directly in the interface\par
+{\pntext\f5\'B7\tab}Fixed one bug, the program could not find the fit-window for a spectrum collected interlaced.\par
+\pard\par
+2009-04-29\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added a parameter '\f1 m_completenessLimit\f0 ' to CUserSettings, all flux measurements with a completeness lower than this limiting value will be rejected.\par
+{\pntext\f5\'B7\tab}Added some quality checking of the evaluated scans into CPostProcessing::EvaluateScans, if the measurement is a flux measurement but does not see the plume, or sees too little of the plume then the measurement will be rejected and never inserted into the list of eval-logs\par
+{\pntext\f5\'B7\tab}Changed the default interpolation method for the wind-field (when calculating the flux) to nearest-neighbour\par
+{\pntext\f5\'B7\tab}Added the function '\f1 CheckQualityOfFluxMeasurement\f0 ' to CPostEvaluationController - this takes care of the quality checking of evaluated scans. If the scan is judged to be too bad then the eval-log is not inserted into the list of eval-logs...\par
+{\pntext\f5\'B7\tab}Added more quality checks of the sky-spectrum to the beginning of '\f1 CPostEvaluationController::EvaluateScan\f0 '. If the sky-spectrum is judged to be bad then the entire scan is rejected\par
+\pard\par
+2009-05-04\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Fixed one bug in '\f1 CXMLWindFileReader::Parse_WindField\f0 ', the longitude was not parsed properly...\par
+{\pntext\f5\'B7\tab}Fixed the writing of the wind-field files in '\f1 CWindDataBase::WriteToFile\f0 ', this was not fully implemented\par
+{\pntext\f5\'B7\tab}Appended one function '\f1 CWindDataBase::GetDataBaseSize\f0 ' which can be used to retrieve the number of wind-data points in a the wind-database\par
+{\pntext\f5\'B7\tab}Implemented a constructor of CWindField which also takes the error of the wind speed and wind direction as input parameters\par
+{\pntext\f5\'B7\tab}Fixed one bug in '\f1 CXMLWindFileReader::Parse_WindField\f0 ', the error in wind speed and wind direction were not stored!!!\par
+{\pntext\f5\'B7\tab}Fixed one bug in the assignment operator of '\f1 CWindField\f0 ', the wind speed errros were not copied properly\par
+{\pntext\f5\'B7\tab}Added more informative error messages when performing the evaluation of scans...\par
+{\pntext\f5\'B7\tab}Added the possibility to create a small statistics file at the end of the processing\par
+{\pntext\f5\'B7\tab}Resolved one bug in '\f1 CWindDataBase::GetWindField_Nearest\f0 ', no wind field would ever be returned from this function...\par
+{\pntext\f5\'B7\tab}Added some timing of the evaluation procedure to the statistics file\par
+{\pntext\f5\'B7\tab}Copied the CScanFileHandler from the latest version of the NovacProgram, this is more optimized class, making the reading in of the spectra faster\par
+{\pntext\f5\'B7\tab}Commented out the member variables '\cf2\f1 m_residual\cf0\f0 ' and '\cf2\f1 m_fitResult\cf0\f0 ' from CEvaluation, this since these are not used and therefore copying data into them would only take up more processing time than necessary...\par
+\pard\par
+2009-05-06\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Fixed one bug in \lang1053\f3 '\f1 CWindDataBase::GetWindField\f3 '\f4  the wind field was inclusive on both 'valid from' and 'valid to'. Changed so that the wind field is valid from the 'validFrom' and to one second before 'validTo'\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Resolved one bug in '\f1 CPostProcessingStatistics::InsertRejection\f4 ', the first inserted item would always be wrong\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Added code to insert rejections for no_plume and completeness_low into the processing statistics\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Appended the serials of the two instruments that generated a geometry result to the geometry log\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Removed the local variable 'success' from '\f1 CScanEvaluation::EvaluateScan\f4 ' since it was never used\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Moved the checking of the quality of a scan from '\f1 CPostEvaluationController::EvaluateScan\f4 ' to '\f1 CPostEvaluationController::IsGoodEnoughToEvaluate\f4 '\lang1033\par
+\lang1053{\pntext\f5\'B7\tab}Removed the copy constructor from CEvaluation, this is no longer necessary\lang1033\par
+\pard\par
+2009-05-07\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Removed '\f1 m_referenceNum\f4 ' and '\f1 m_numberOfReferencesToUse\f4 ' from CEvaluation. Also removed the default constructor, 'IncludeAsReference' and the overloads of Evaluate which takes a sky-spectrum as input parameter The way to do the evaluation now, is to create a CEvaluation object with a given fit-window, set the sky-spectrum to use and then call Evaluate for each spectrum to evaluate\par
+{\pntext\f5\'B7\tab}Re-arranged the evaluation of a scan in CScanEvaluation::EvaluateScan, the actual evaluation is now done in '\f1 CScanEvaluation::EvaluateOpenedScan\f4 ' and all the preparatory work is done in '\f1 CScanEvaluation::EvaluateScan\f4 '. This makes the program much easier to read!\par
+{\pntext\f5\'B7\tab}Changed so that the CScanEvaluation by default ignores to evaluate completely dark spectra.\par
+\pard\par
+2009-05-08\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 fixed one small bug in CscanResult::calculateFlux, the time that was given as the start-time of the scan was the start-time of the first spectrum in the scan, not as the start-time of the sky-spectrum (which is usually before the first spectrum). changed this so that the earliest of the sky and the first-spectrum is taken as the start-time\par
+{\pntext\f5\'B7\tab}Added the valid-duration of a geometry calculation to the g_userSettings datastructure.\par
+\pard\par
+2009-05-11\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Resolved one bug in '\f1 CSetupFileReader::Parse_SpectrometerModel\f4 ', the model was never returned!\par
+{\pntext\f5\'B7\tab}fixed the interface so that the CViewLocationPage does show the spectrometer model and \par
+{\pntext\f5\'B7\tab}Added the scan-Offset, the plume centre, plume completenesss and instrument type to the flux-logs, mostly for testing purposes...\par
+{\pntext\f5\'B7\tab}Fixed one bug in CWindField. '\f1 CWindField::GetWindDirectionSource\f4 ' would return the source of the wind speed information\par
+{\pntext\f5\'B7\tab}Added NOAA_FNL and NOAA_GDAS as possible sources for wind\par
+\pard\par
+2009-05-12\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Resolved one bug in '\f1 Common::FindPlume\f4 ', the variable 'col' was deleted before it was last used in the function!!!\par
+{\pntext\f5\'B7\tab}Fixed one bug in '\f1 CScanResult::CalculatePlumeCentre\f4 ', the offset has to be added to the columns before the plume centre can be calculated otherwise the plume centre can be very wrong!\par
+{\pntext\f5\'B7\tab}Added a member-variable 'm_molecule' to g_userSettings. This is the molecule that will be used to calculate the fluxes and should be possible to specify through processing.xml\par
+{\pntext\f5\'B7\tab}Deleted Common::GetGasFactor, this is not necessary!\par
+{\pntext\f5\'B7\tab}Added a member variable '\f1 m_minimumSaturationInFitRegion\f4 ' to g_userSettings, any spectrum with a maximum saturation-level (in the fit region) below this limit value will not be evaluated\par
+{\pntext\f5\'B7\tab}Changed the way the function CScanEvaluation::Ignore works, the limits for the intensity is now taken from the g_userSettings.\par
+{\pntext\f5\'B7\tab}The settings for when to discard spectra are now written to processing.xml\par
+{\pntext\f5\'B7\tab}The program now reads the processing-mode, and the molecule of main interest from processing.xml\par
+{\pntext\f5\'B7\tab}Implemented '\f1 CProcessingFileReader::WriteProcessingFile\f4 ' This is now called when the processing is started, this writes a copy of the settings used to the output-directory\par
+{\pntext\f5\'B7\tab}Changed name of CPostProcessing::DoPostProcessing to DoPostProcessing_Flux, since there might be another function used to do post-processing for compositon\par
+{\pntext\f5\'B7\tab}Changed the location of the generated .txt files, there is now one directory generated for each fit-window that is used. In this directory are all txt files put\par
+{\pntext\f5\'B7\tab}Removed the enums; '\f1 COLUMN_UNIT\f4 ', '\f1 FLUX_UNIT\f4 ', '\f1 ELECTRONICS_BOX\f4 ' as they are not needed in this program\par
+{\pntext\f5\'B7\tab}Removed the defined constants '\f1 NUM_SPECTRA_TO_IGNORE\f4 ', '\f1 MAX_SPEC_PER_SCAN\f4 ', '\f1 MAX_SPECTROMETERS_PER_SCANNER\f4 ', '\f1 GASFACTOR_SO2\f4 ', '\f1 GASFACTOR_O3\f4 ', '\f1 GASFACTOR_NO2\f4 ', '\f1 HTTP_CONNECTION\f4 ', '\f1 FTP_CONNECTION\f4 ', '\f1 SERIAL_CONNECTION\f4 ', '\f1 MEDIUM_CABLE\f4 ', '\f1 MEDIUM_FREEWAVE_SERIAL_MODEM\f4 ', '\f1 MEDIUM_SATTELINE_SERIAL_MODEM\f4 ' and '\f1 MAXBUFFER\f4 ' as they are not relevant in this program\par
+{\pntext\f5\'B7\tab}Removed the functions '\f1 Common::FillBuffer\f4 ', '\f1 Common::WriteAFile\f4 ', '\f1 Common::GetMonitoredVolcano\f4 '\par
+{\pntext\f5\'B7\tab}Removed all the unused signals that were defined in Common.h\par
+{\pntext\f5\'B7\tab}Moved the parameters 'm_outputdirectory' and 'm_tempDirectory' from g_setup to g_userSettings, this is more logical setup!\par
+{\pntext\f5\'B7\tab}Implemented a new class '\f1 CDarkCorrectionConfiguration\f4 ' which is used by '\f1 CInstrumentConfiguration\f4 ' to store the possible ways of correcting for the dark-current for each spectrometer\par
+{\pntext\f5\'B7\tab}Implemented a function '\f1 CPostEvaluationController::GetDarkCurrentSettings\f4 ' to retrieve the dark-current settings from the global settings.\par
+{\pntext\f5\'B7\tab}Implemented '\f1 CNovacPPPConfiguration::GetFitWindow\f4 ' which makes the code in '\f1 CPostEvaluationController::GetLocationAndFitWindow\f4 ' much easier\par
+\pard\par
+2009-05-14\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 copied the latest version of CSpectrometerModel from the NovacProgram, this include support for the USB200+ and HR2000+  spectrometers\par
+{\pntext\f5\'B7\tab}Updated CEvaluationLogFileHandler and CScanFileHandler with the latest handling of the spectrometer-models, as copied from NovacProgram\par
+{\pntext\f5\'B7\tab}Added milliseconds to CDateTime\par
+{\pntext\f5\'B7\tab}Removed the member-variable m_date from CSpectrumInfo\par
+{\pntext\f5\'B7\tab}Changed the type of m_startTime and m_stopTime in CSpectrumInfo from CspectrumTime to CDateTime\par
+{\pntext\f5\'B7\tab}Removed the class CSpectrumTime altogether\par
+{\pntext\f5\'B7\tab}Implemented the reading-in of the FraunhoferReference-file that can be used to calibrate the wavelength of the spectra\par
+{\pntext\f5\'B7\tab}Fixed some bugs to make sure that the determination of shift from the FraunhoferReference spectrum now works\par
+\pard\par
+2009-05-18\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the class Flux::CFluxStatistics, this takes care of calculating statistics on the calculated fluxes and writes them to file..\par
+{\pntext\f5\'B7\tab}Created a evaluation-summary file which also writes the shift applied\par
+{\pntext\f5\'B7\tab}Added the parameters '\f1 m_maxExposureTime_got\f4 ' and '\f1 m_maxExposureTime_hei\f4 ' to g_userSettings and to the reading from/writing to the processing.xml - file\par
+\pard\par
+2009-05-19\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 moved the member-variables of CScanEvaluation '\f1 m_skyOption\f4 ', '\f1 m_skyIndex\f4 ', and '\f1 m_skySpectrumFromUser\f4 ' to CUserConfiguration, and made it possible to specify them through the processing.xml file\par
+{\pntext\f5\'B7\tab}Renamed the constant SKY_FIRST to SKY_SCAN since this describes better what the option is actually doing\par
+{\pntext\f5\'B7\tab}Removed the function '\f1 CScanEvaluation::SetOption_Sky\f4 ' as it's no longer useful\par
+{\pntext\f5\'B7\tab}Fixed one bug in CPostProcessing::PrepareEvaluation, the fraunhofer-spectrum should be log:ed if the fit it FIT_POLY\par
+{\pntext\f5\'B7\tab}Fixed one bug in '\f1 CEvaluation::EvaluateShift\f4 ', the measured spectrum should be multiplied with -1 to get the signs correctly in the evaluation\par
+{\pntext\f5\'B7\tab}The CStatusDlg now parses the messages it receives to find the progress message of the evaluation. This percentage is now shown in the title bar of the status dialog\par
+{\pntext\f5\'B7\tab}Implemented the class '\f1 CStratosphereCalculator\f4 ' which can derive information on the stratoshperic constitutents\par
+\pard\par
+2009-05-20\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 moved CDarkSettings to the namespace Configuration\par
+{\pntext\f5\'B7\tab}Implemented the two functions '\f1 CDarkCorrectionConfiguration::GetDarkSettings\f4 ' and '\f1 CDarkCorrectionConfiguration::GetSettingsNum\f4 ' to make CDarkCorrectionconfiguration more similar to CEvaluationConfiguration. This to make it possible to store the two things in the same file!\par
+{\pntext\f5\'B7\tab}Implemented the function '\f1 CEvaluationConfigurationParser::Parse_DarkCorrection\f4 ' and enabled the writing of the dark-settings to the .exml files\par
+\pard\par
+2009-05-25\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the class  CFTPServerDataDownload, this is intended to make it possible to download the data from the FTP-server in an easy way. This is called from CPostProcessing when trying to find how many .pak-files we have to evaluate. The downloaded files are put in the temporary directory of the program.\par
+\pard\par
+\par
+2009-05-26\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 updated CFTPCom to the version used in NovacViewer.\par
+{\pntext\f5\'B7\tab}made all the member-variables of CFTPCom private\par
+{\pntext\f5\'B7\tab}Included the class CFileInfo from the NovacProgram. Added the member-variable 'm_isdirectory'\par
+{\pntext\f5\'B7\tab}Added an overload of '\f1 CFTPCom::GetFileList\f4 ' which fills in a list of CFileInfo's, this to also get the size and type of the file\par
+{\pntext\f5\'B7\tab}Implemented the operators <=, >= and > for CDateTime, this to make the writing of the rest of the program easier.\par
+{\pntext\f5\'B7\tab}Implemented '\f1 CFTPServerDataDownload::DownloadDataFromDir\f4 ' and '\f1 CFTPServerDataDownload::DownloadDataFromFTP\f4 '. These are run in a multi-threaded way so that there are always two threads trying to download data at each instance, this to try to keep up the speed of the data link\par
+{\pntext\f5\'B7\tab}Changed the name of the variable 'CUserConfiguration::m_completenesLimit' to '\f1 m_completenessLimitFlux\f4 ', this is now only used to reject flux-measurements in the final stage of the flux calculation. If the scan has a completeness lower than this value then no flux will be calculate, however the results will still be written to file as long as the measurement sees the plume.\par
+{\pntext\f5\'B7\tab}Introduced a new configuration variable '\f1 m_calcGeometry_CompletenessLimit\f4 ' to CUserConfiguration, only scans with completeness higher than this value will be used to calculate a plume height\par
+{\pntext\f5\'B7\tab}Resolved a whole set of bugs in the dual-beam wind-speed calculator\par
+\pard\par
+2009-05-27\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Improved on the error messages when failing to evaluate a spectrum\par
+{\pntext\f5\'B7\tab}included a check in '\f1 CEvaluationLogFileHandler::FormatEvaluationResult\f4 ' that the number of species that are supposed to be in the evaluation result actually matches with the number of results... This since the program would otherwise crash...\par
+{\pntext\f5\'B7\tab}Changed in '\f1 CPostProcessing::CheckForSpectraInDir\f4 ' so that, when including sub-dirs in the search, the pak-file-list is built at the same time\par
+{\pntext\f5\'B7\tab}Improved on the error messages generated by '\f1 CNovacPPPConfiguration::GetFitWindow\f4 ' and '\f1 CNovacPPPConfiguration::GetInstrumentLocation\f4 ' to also include the date\par
+{\pntext\f5\'B7\tab}Made it possible to specify that a reference-file is filtered already on disk and thus does not need any further filtering. This should only be used in exceptional cases...\par
+{\pntext\f5\'B7\tab}Changed '\f1 CScanEvaluation::EvaluateScan\f4 ' to, instead of taking the name of the .pak-file as input parameter, taking the scan-file handler as input. This makes the processing of spectra a bit faster since the file does not have to be opened and checked twise.\par
+{\pntext\f5\'B7\tab}Implemented a first flux-error calculation into '\f1 CScanResult::CalculateFlux\f4 ' the error in flux due to the uncertainty in wind-speed, wind-direction and plume-height is calculated. These results are also written to the flux-log file\par
+\pard\par
+2009-05-28\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Resolved one problem in '\f1 CWindSpeedCalculator::CalculateCorrelation\f4 ' if the two time series for some reason were not the same length then the program would crash.\par
+{\pntext\f5\'B7\tab}Added an error checking to '\f1 CScanResult::CalculatePlumeCentre\f4 ' if the calculated plume centre position is larger than +-180 degrees then the function returns failure and outputs an error message.\par
+{\pntext\f5\'B7\tab}Added the writing of plume centre parameters to the eval-log file. Like in the latest versions of the NovacProgram\par
+{\pntext\f5\'B7\tab}Implemented that when the post-processing is begun, all the files that are used for the setup are copied from the 'configuration' directory to a new directory '\f1 copiedConfiguration\f4 ' in the output-directory.\par
+{\pntext\f5\'B7\tab}Added the parameters '\f1 m_plumeCentre\f4 ' and '\f1 m_plumeCentreError1\f4 ' to the class CGeometryResult, this is to store information about the scans that were combined. These are now also written tot he GeometryLog-file\par
+{\pntext\f5\'B7\tab}Implemented '\f1 CUserConfiguration::\cf1 operator\cf0 ==\f4 ' to compare two sets of user-settings\par
+{\pntext\f5\'B7\tab}implemented '\f1 Common::AreIdenticalFiles\f4 ' that compares two files to see if their contets is the same.\par
+{\pntext\f5\'B7\tab}Added code so that in the beginning of '\f1 CalculateAllFluxes\f4 ' are the output directory checked for existing configuration files. If these exists then the user will be queried if this is a continuation of the old run. If so, then the pak-files which are found to have been evaluated already are not evaluated again. This sets the flag '\f1 g_userSettings.m_fIsContinuation\f4 ' to true.\par
+{\pntext\f5\'B7\tab}Fixed '\f1 CProcessingFileReader::ReadProcessingFile\f4 ' so the the volcano can be written as the code or as a volcano-name and '\f1 CProcessingFileReader::WriteProcessingFile\f4 ' so that it wries the volcano with it's code not with the name\par
+{\pntext\f5\'B7\tab}Fixed '\f1 CProcessingFileReader::ReadProcessingFile\f4 '  so that it reads the FTP-directory, username and password from file\par
+{\pntext\f5\'B7\tab}Discovered and resolved a number of bugs in reading and writing the processing.xml file\par
+{\pntext\f5\'B7\tab}Changed default plumeCentreError in '\f1 CGeometryCalculator::CalculateGeometry\f4 ' from 3.6 degrees to 7.2\par
+\pard\par
+2009-05-29\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Updated '\f1 CGeometryCalculator::CalculateGeometry\f4 ' so that if the plumeCentrePosition plus (or minus) the plumeCentreError lies below the horizon then the measurement is given a huge error in plume height and will thus be rejected\par
+{\pntext\f5\'B7\tab}Added the variable '\f1 g_userSettings.m_calcGeometry_MaxPlumeAltError\f4 ' which sets the maximum tolerable error in calculated plume height\par
+{\pntext\f5\'B7\tab}Introduced the parameter '\f1 m_calcGeometry_MaxTimeDifference\f4 ' into g_userSettins, this replaces the MAX_TIME_DIFFERENCE declared in '\f1 CPostProcessing::CalculateGeometries\f4 '\par
+{\pntext\f5\'B7\tab}Included the error in the plume altitude when calculating the error in wind-direction in '\f1 CGeometryCalculator::CalculateGeometry\f4 '\par
+{\pntext\f5\'B7\tab}Introduced a scaling of the calculated plume altitude error with the time difference between the start-time of the two scans. the estimated error doubles with every 30 minutes time-difference between the two scans\par
+{\pntext\f5\'B7\tab}Added the processing modes '\f1 PROCESSING_MODE_GEOMETRY\f4 ' and '\f1 PROCESSING_MODE_DUALBEAM\f4 ' which are intended to calculate geometries and to calculate wind speeds. These assume that the evaluations have already been done by a call using PROCESSING_MODE_FLUX. These are mainly intended for testing....\par
+{\pntext\f5\'B7\tab}Improved on the continuation of processing scans so that no scans will be re-evaluated, irrespectively of what measurement mode they're collected in\par
+{\pntext\f5\'B7\tab}Added the functions '\f1 CVolcanoInfo::GetSimpleVolcanoName\f4 ', '\f1 CVolcanoInfo::GetVolcanoCode\f4 ' and '\f1 CVolcanoInfo::GetVolcanoName\f4 ' which eventually should replace all calls to g_volcanoes.\par
+{\pntext\f5\'B7\tab}Moved the checking of the calculated plume-heights from a separate loop to just after the calculation has been made. If the result is not good enough then it's not inserted into the list of results - instead of adding it and then removing it again if it wasn't good enough\par
+{\pntext\f5\'B7\tab}Added the showing of a message when a plume height has been calculated, to get some indication that the program is still running if processing a lot of data...\par
+{\pntext\f5\'B7\tab}Implemented the reading and writing of '\f1 g_userSettings.m_calcGeometry_MaxTimeDifference\f4 ' to/from file\par
+{\pntext\f5\'B7\tab}Changed the order of the comparisons of serial, measurement mode and start-time in '\f1 CPostProcessing::CalculateGeometries\f4 ' to optimize the performance\par
+{\pntext\f5\'B7\tab}Fixed one problem in '\f1 CPostProcessing::CalculateGeometries\f4 ' looping through all eval-logs could take an extremely long time (hours) if a large amount of .pak-files was processed. Loop now uses the fact that the list of eval-logs is sorted by ascending time, and breaks the inner loop once the time-difference between the two evaluation logs is too large for the two measurements to be combined. This reduces the complexity of the function from O(n^2) to O(n) !!!\par
+\pard\par
+2009-06-01\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the writing of the difference in start-time between the two measurements to the GeometryLog\par
+{\pntext\f5\'B7\tab}Added synchronization to the class '\f1 CPostProcessingStatistics\f4 ', this if we want to use multi-threading when evaluating the scans\par
+{\pntext\f5\'B7\tab}introduced the variable '\f1 g_userSettings.m_maxThreadNum\f4 ' which determines the maximum number of threads that we can assign to a specific task (such as evaluating the scans found or downloading data from the server)\par
+{\pntext\f5\'B7\tab}Implemented the class '\f1 CContinuationOfProcessing\f4 ' which is used to store all information on what has already been done when continuing an old post-processing. This removed all such code from '\f1 CPostEvaluationController\f4 ' where it was originally located\par
+\pard\par
+2009-06-02\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added the class '\f1 CStatusLogFileWriter\f4 ' which takes care of wiritng the messages to the status-log file. This to separate the writing of the file from the interface, which would otherwise freeze if too many messages were handled\par
+{\pntext\f5\'B7\tab}Split up the process of evaluating the scans into several threads by implementation of the functions (in PostProcessing.cpp): '\f1 EvaluateOneScan\f4 ', '\f1 AddResultToList\f4 ' and '\f1 GetNextPakFileToProcess\f4 ' and moving several data variables to become static variables in the .cpp file. This optimizes the performance of the program when running on a multi-core processor. By using the flag  '\f1 g_userSettings.m_maxThreadNum\f4 '  can the performance of the program be fine-tuned further.\par
+{\pntext\f5\'B7\tab}Made it possible to read/write the parameter '\f1 g_userSettings.m_maxThreadNum\f4 ' to processing.xml\par
+{\pntext\f5\'B7\tab}removed the member variable '\f1 m_fluxOk\f4 ' in CFluxResult and replaced it with '\f1 FLUX_QUALITY_FLAG m_fluxQualityFlag\f4 '. This gives a more detailed view on the quality of the measurement\par
+{\pntext\f5\'B7\tab}Implemented a simple scheme to estimate the error of the flux measurement in '\f1 CFluxCalculator::CalculateFlux\f4 ' separated into green, yellow and red color, based on the sources of the wind speed field, the plume height and the completeness of the scan.\par
+\pard\par
+2009-06-05\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 The function '\f1 CGeometryCalculator::CalculateGeometry\f4 ' now also takes an array of CInstrumentLocations as input, this gives the position of the instruments. This is much better than, as before, read the locations from the eval-log!\par
+\pard\par
+2009-07-21\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented '\cf1\f1 int\cf0  CVolcanoInfo::GetVolcanoIndex(\cf1 const\cf0  CString &name)\f4 ' which looks up a volcano index given a volcano name. \par
+{\pntext\f5\'B7\tab}Geometrycalculator::CalculateGeometry now calls VolcanoInfo::GetVolcanoIndex to find the volcano-index for the monitored volcano, not by just searching for the nearest volcano as was done before (this might be wrong...)\par
+\pard\par
+2009-07-22\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Fixed one bug in GometryCalculator::GetWindDirection, the returned value was the direction of the plume not the direction of the wind as it should be...\par
+{\pntext\f5\'B7\tab}Added the parameter '\f1 CString m_pakFile\f4 ' to '\f1 CExtendedScanResult\f4 ' this is the path and filename of the pak-file containing the spectra\par
+{\pntext\f5\'B7\tab}Removed the parameter 'm_windDirection' from CScanResult as this is no longer relevant. Also removed the functions '\f1 CalculateWindDirection\f4 ' and '\f1 GetCalculatedWindDirection\f4 '\par
+{\pntext\f5\'B7\tab}removed the function '\f1 GetNearestVolcano\f4 ' from GeometryCalculator\par
+\pard\par
+2009-07-23\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 changed the function '\f1 Common::GPSBearing\f4 ' to be a static member of Common\par
+{\pntext\f5\'B7\tab}Implemented the calculation of plume height from a measurement by a single instrument. This can be used when no plume height can be calculated by triangulation from two instruments.\par
+\pard\par
+2009-07-24\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Changed when the function '\f1 CPostEvaluationController::CheckQualityOfFluxMeasurement\f4 ' is called, this is now only done for the main fit window defined in the user configuration.\par
+{\pntext\f5\'B7\tab}Fixed one bug in the calculation of the wind direction in a geometry calculation. The absolute plume height would be used for this instead of the plume altitude above the instrument as it should have been.\par
+{\pntext\f5\'B7\tab}Resolved one bug in '\f1 CWindDataBase\f4 ', the error in wind-speed and wind-direction were not copied when a wind-field was retrieved from the database.\par
+\pard\par
+2009-07-28\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented an equality operator in CGPSData\par
+{\pntext\f5\'B7\tab}Updated the wind-database to also have a list of locations, the location of each item in the database is now stored as an index into the array of locations\par
+{\pntext\f5\'B7\tab}Made a more stringent implementation of the wind-database. This can now pick out the best source of wind-speed and wind-direction that is available in the database\par
+\pard\par
+2009-07-29\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Resolved one bug in the flux-calculation. Scans with a completeness lower than '\f1 g_userSettings.m_completenessLimitFlux\f4 ' would be discarded already after the evaluation, i.e. they would never be used to calculate the geometries - even though they could add quite a lot of information... Now only scans which does not see any plume at all are discarded.\par
+{\pntext\f5\'B7\tab}Implemented the wind-database so that if there are several items in the database witht he same quality then the wind-field returned will be an average of the best items valid at the given time and location.\par
+{\pntext\f5\'B7\tab}Changed so that the error in calculated plume height, when estimating the plume height based on a measurement with only one instrument, is based on the error in wind-direction and the error in plume centre position\par
+{\pntext\f5\'B7\tab}Resolved one bug in '\f1 CGeometryCalculator::CalculateGeometry\f4 ', the compass-direction, coneangle and tilt were taken from the eval-logs and not from the configuration!!!\par
+{\pntext\f5\'B7\tab}Updated the error calculation in the plume height calculation to use the average deviation from the calculated plume height for all four possible perturbations to the two viewing directions as the error in plume height\par
+\pard\par
+2009-07-30\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Updated CPostProcessing::CalculateGeometries so that,  if the combination of two scans fails then the scan is used to attempt to calculate the wind direction (and \b not \b0 a plume height as before). The plume height used in the calculation is taken from the plume-database \b or\b0  the list of calculated geometries, whichever gives the smallest error\par
+\pard\par
+2009-07-31\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 '\f1 CGeometryCalculator::GetPlumeHeight_Fuzzy\f4 ' now also returns the calculated wind-direction, since this is anyway calculated...\par
+{\pntext\f5\'B7\tab}The error in wind-direction is now calculated at the same time as the error in plume height in '\f1 CGeometryCalculator::CalculateGeometry\f4 '\par
+{\pntext\f5\'B7\tab}Converted the classes '\f1 CPlumeDataBase\f4 ', '\f1 CWindDataBase\f4 ', '\f1 CPostProcessingStatistics\f4 ', '\f1 CColumnCorrection\f4 ', '\f1 CStratosphereCalculator\f4 ' and '\f1 CCrossSectionData\f4 ' from using CList (MFC) to std::list (STD) and from CArray (MFC) to std::vector (STD) this to make things a little bit less dependent om Microsoft specifics\par
+\pard\par
+2009-08-04\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 copied the class '\f1 PlumeInScanProperty\f4 ' from the NovacProgram, this is now used in the same way as in the NovacProgram. This replaced all the variables for the plume that were used in CGeometryCalculator\par
+{\pntext\f5\'B7\tab}Copied the updated calculation of plume centre, plume centre error and plume width from the NovacProgram\par
+{\pntext\f5\'B7\tab}Introduced the constant '\f1 NOT_A_NUMBER\f4 ' which is used to indicate that something has gone wrong or that a value has not been initialized. This replaces the usage of -999.0 to indicate not initialized values for e.g. wind-directions or wind-speeds and the usage of 'MET_NO_VALUE'\par
+{\pntext\f5\'B7\tab}The error in the plume centre position is now always taken from the estimated parameters for each scan and not defined to 7.2 as before\par
+{\pntext\f5\'B7\tab}The validity time of a wind-speed measurement is now calculated in '\f1 CWindSpeedCalculator::CalculateWindSpeed\f4 ' where both the start-time and stop-time of the measurement is known.\par
+{\pntext\f5\'B7\tab}Updated the writing and reading of the processing.xml file\par
+{\pntext\f5\'B7\tab}Removed the class CWindSpeedResult - it's never used!\par
+\pard\par
+2009-08-05\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Resolved one bug in the averaging of wind speeds and wind-directions when returning a wind-field from the wind-database\par
+{\pntext\f5\'B7\tab}Made the StatusLogFileWriter more efficient by implementing a buffer that only writes the data to file occasionally. This reduces our latency due to writing to disk...\par
+{\pntext\f5\'B7\tab}Made '\f1 CFluxCalculator::CalculateFlux\f4 ' more efficient by first trying to extract the wind-field from the wind-database _then_ trying to read the scan from disk. It otherwise often happened that the scan was read in, then it was realized that it was not possible to retrieve the wind-field at the time of the measurement...\par
+{\pntext\f5\'B7\tab}The function '\f1 CPostEvaluationController::EvaluateScan\f4 ' can now return a '\f1 CPlumeInScanProperty\f4 ' that describes the properties of the scan\par
+{\pntext\f5\'B7\tab}The class '\f1 CExtendedScanResult\f4 ' now has a member '\f1 CPlumeInScanProperty m_scanProperties\f4 ' which stores the properties of the scan in the main-fit region. This to make this easier by not having to read in the scan at all times...\par
+{\pntext\f5\'B7\tab}The loops in '\f1 CPostProcessing::CalculateGeometries\f4 ' can now see the completeness of the scan already at the first point in the loop, they don't even need to read in the scan to see if the scan has a high enough completeness!!\par
+{\pntext\f5\'B7\tab}The function '\f1 CPostProcessing::CalculateFluxes\f4 ' can now check that the completeness of the scan is high enough to calculate a flux from before reading in the scan!\par
+\pard\par
+2009-08-06\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented a version of '\f1 CGeometryCalculator::CalculateGeometry\f4 ' that only takes two '\f1 CPlumeInScanProperty\f4 ' objects and two '\f1 CDateTime\f4 ':s to calculate the geometry. The old version of '\f1 CGeometryCalculator::CalculateGeometry\f4 ' (that reads in the eval-logs) now calls this version to calculate the geometry\par
+{\pntext\f5\'B7\tab}'\f1 CPostProcessing::CalculateGeometries\f4 ' now calls the version of '\f1 CGeometryCalculator::CalculateGeometry\f4 ' that only takes two '\f1 CPlumeInScanProperty\f4 ' objects \par
+\pard\par
+2009-08-31\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented the strings 'str_...' in CUserConfiguration. These strings are used to define the tags that are necessary in the processing.xml file. They are also used to make sure that exactly the same string is used in reading/writing the processing.xml file and that are passed as parameters to the program at startup\par
+{\pntext\f5\'B7\tab}Implemented '\f1 CNovacPPPDlg::ParseCommandLineOptions\f4 ' which checks the parameters passed to the software at startup. It is now possible to specify the options to the program in a number of different ways, they are (in order of increasing priority). 1) Through the processing.xml file 2) through the parameters passed to the software through the command prompt and 3) through the interface \par
+{\pntext\f5\'B7\tab}Implemetned the option '\f1 m_startNow\f4 ' in CUserConfiguration. If this is non-zero then the software will start the post-processing automatically, without waiting for the user to press the button 'Calculate Fluxes'\par
+\pard\par
+2009-09-01\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Renamed '\f1 CFTPServerDataDownload\f4 ' to '\f1 CFTPServerDataConnection\f4 '\par
+{\pntext\f5\'B7\tab}Implemented the possibility to upload the calculated results to the FTP-server upon completion of the processing. This to make the results available for the entire network.\par
+\pard\par
+2009-09-03\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented the class '\f1 CStringTokenizer\f4 ' which is used to tokenize the input parameters given at the command-line, this differs from the standard tokenizer by not splitting up strings that are enclosed within quotation marks. This makes it possible to specify output-directories like "D:\\hej och h\'e5"\par
+{\pntext\f5\'B7\tab}It is now possible to store a functional expression in the --FromDate or --ToDate parameter when passing parameters to the software. The functional expression that works so far is TODAY(n) where n is an integer. TODAY(-1) will give yesterdays date and TODAY(-14) will give the date 14 days ago.\par
+\pard\par
+2009-09-04\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented downloading of the wind-field file from the FTP-server and fixed one memory bug with the '\f1 CStringTokenizer\f4 ' class\par
+\pard\par
+2009-09-11\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Fixed the function '\f1 CPostProcessing::PrepareEvaluation\f4 ' so that it will not return until it has tried all the cross-section files, this makes the error logs much easier to handle, they now write down all the cross-section files that cannot be found - not just the first file that was not found...\par
+{\pntext\f5\'B7\tab}Fixed so that whenever the program is started with the StartNow option then no checks are done if this is a continuation of an old run, this to avoid MessageBoxes that halt the program\par
+{\pntext\f5\'B7\tab}Made one special arrangement for the option StartNow, just passing the argument --StartNow without any trailing number sets m_startNow to one\par
+{\pntext\f5\'B7\tab}Moved the call to '\f1 CPostEvaluationController::AppendToEvaluationSummaryFile\f4 ' from being inside '\f1 CPostEvaluationController::WriteEvaluationResult\f4 ' to being inside '\f1 CPostEvaluationController::EvaluateScan\f4 ' this since its interesting to see the statistics also for scans that don't see the plume\par
+{\pntext\f5\'B7\tab}Resolved one bug when downloading files from FTP, if the file already existed locally then it would not be inserted into the list of .pak-files to evaluate...\par
+\pard\par
+2009-09-14\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented the checks of the fit-windows and locations in '\f1 CLocationConfiguration::CheckSettings\f4 ', and '\f1 CEvaluationConfiguration::CheckSettings\f4 '. These are called from '\f1 CPostProcessing::CheckSettings\f4 '\par
+{\pntext\f5\'B7\tab}changed so that reference-files which are pre-filtered are divided by 2.5e15 to convert them from ppmm to molec/cm2 as all other cross sections are...\par
+\pard\par
+2009-09-18\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Divided up the writing of the EvaluationSummary file into several smaller files, one which is a evaluation-summary file for a specific spectrometer, contains information on the evaluation and is stored in the sub-folder with name of the fit-window and one file which is a pak-file-summary file with information inside the pak-files and is stored in the output-directory\par
+{\pntext\f5\'B7\tab}The function '\f1 CSpectrometerModel::GetModel\f4 ' now interprets the string SD2000 as an S2000 - spectrometer, not as 'unknown' as before\par
+{\pntext\f5\'B7\tab}Changed the default plume-height-error to be half of the difference between the altitude of the volcano and the highest instrument monitoring this volcano\par
+{\pntext\f5\'B7\tab}Changed the behaviour of the program when re-starting with the same given output-directory, any existing files (such as statusLog.txt ,or FluxLog.txt) are renamed to FILENAME_CREATIONDATE_CREATIONTIME.FILEENDING\par
+\pard\par
+2009-11-04\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Added a member-variable '\f1 m_filename\f4 ' in CXMLFileReader, this can be used for debugging - to give out which file there's a problem in (if any)\par
+{\pntext\f5\'B7\tab}Added more checks when reading in a wind-field from a wind-field file (.wxml) the ranges of the wind-speed and wind-direction are now checked for reasonability and the latitude and longitudes are converted to be within the range -180 to +180 and -90 to +90 respectively\par
+{\pntext\f5\'B7\tab}Added alternative spelling of 'longitude' in .wxml-files, this can now be either 'lon' or 'long'\par
+\pard\par
+2009-11-16\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Implemented '\f1 m_windFieldFileOption\f4 ' in the options this makes it possible to choose wether the wind-field file should be interpreted as a file or as a directory (or later as something else...)\par
+{\pntext\f5\'B7\tab}Implemented the reading of wind-field files from an entire directory on the FTP-server or on the local computer in '\f1 CXMLWindFileReader::ReadWindDirectory\f4 '\par
+{\pntext\f5\'B7\tab}Updated the volcanoList and CDateTime from the NovacProgram\par
+{\pntext\f5\'B7\tab}Removed the classes CGraphCtrl, COscopeCtrl and CSpectrumGraph since they are not necessary here!\par
+{\pntext\f5\'B7\tab}Changed the type of the input parameter nCharacters to Equals from being unsigned int to being size_t\par
+\pard\par
+2009-11-26\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 Removed the classes ComConfig and ComconfigFileReader since they are not used\par
+\pard\par
+2009-12-01\par
+\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720 copied the new CVolcanoInfo from the NovacProgram. This makes it possible to handle all the volcanoes in the world... Also updated all calls to g_volcanoes to be functions instead of direct indexing into the arrays...\par
+{\pntext\f5\'B7\tab}Added ECMWF_POSTANALYSIS to the possible source-strings to parse, this is interpreted as ECMWF_ANALYSIS\par
+{\pntext\f5\'B7\tab}Improved '\f1 CXMLWindFileReader::ReadWindDirectory\f4 ' to only download wind-field files which are defined within the time-range that we want to evaluate data for.\par
+{\pntext\f5\'B7\tab}The functions '\f1 CWindDataBase::GetWindField_Exact\f4 ' and '\f1 CWindDataBase::GetWindField_Nearest\f4 ' now set the location that the wind-field is valid for in the returned wind field\par
+{\pntext\f5\'B7\tab}\par
+}
+ 

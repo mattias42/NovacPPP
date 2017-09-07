@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the global configuration file for the evaluation of spectra in the NOVAC Post Processing Program -->
+
+<NovacPPPConfiguration>
+	<outputdirectory>D:\NovacPostProcessingProgram\Cotopaxi Test\Output Cotopaxi\</outputdirectory>
+	<tempdirectory>D:\NovacPostProcessingProgram\Cotopaxi Test\Temp\</tempdirectory>
+
+	<!-- The following instruments are for Cotopaxi -->
+	<instrument>
+		<serial>I2J8555</serial>
+		<location>
+			<name>Cotopaxi</name>
+			<time_from>2007.10.01</time_from>
+			<time_to>TODAY()</time_to>
+			<latitude>-0.677</latitude>
+			<longitude>-78.436</longitude>
+			<altitude>3962</altitude>
+			<volcano>Cotopaxi</volcano>
+			<compass>102.0</compass>
+			<coneangle>60.0</coneangle>
+			<type>0</type>
+			<spec>S2000</spec>
+		</location>
+	</instrument>
+</NovacPPPConfiguration>

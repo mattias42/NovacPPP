@@ -1,0 +1,34 @@
+Instrument: D2J2142
+	#Accepted scans: 0
+	#Rejected scans:
+		1 due to too long exposure time
+		0 due to saturated sky spectrum
+		0 due to too dark sky spectrum
+		0 due to no plume seen
+		0 due to too low completeness
+Instrument: D2J2143
+	#Accepted scans: 0
+	#Rejected scans:
+		12 due to too long exposure time
+		0 due to saturated sky spectrum
+		2 due to too dark sky spectrum
+		0 due to no plume seen
+		0 due to too low completeness
+Instrument: D2J2144
+	#Accepted scans: 0
+	#Rejected scans:
+		7 due to too long exposure time
+		0 due to saturated sky spectrum
+		0 due to too dark sky spectrum
+		0 due to no plume seen
+		0 due to too low completeness
+Instrument: I2J5897
+	#Accepted scans: 0
+	#Rejected scans:
+		7 due to too long exposure time
+		0 due to saturated sky spectrum
+		1 due to too dark sky spectrum
+		0 due to no plume seen
+		0 due to too low completeness
+Total Number of Spectra evaluated: 6637
+Total Time spent on evaluating spectra: 30.57 [s] ( 4.61 mseconds / spectrum)
