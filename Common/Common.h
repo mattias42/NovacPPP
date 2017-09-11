@@ -6,6 +6,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <PPPLib/CString.h>
+#include <PPPLib/CList.h>
+
 #define _CRTDBG_MAP_ALLOC
 // #include <stdlib.h>
 // #include <crtdbg.h>
@@ -30,40 +33,40 @@ typedef double SpecData;
 
 /**Get system temperory folder
 	*@param folderPath temperory system folder path*/
-void GetSysTempFolder(CString& folderPath);
+void GetSysTempFolder(novac::CString& folderPath);
 
 /** A simple function to find out wheather a given file exists or not.
     @param - The filename (including path) to the file.
     @return 0 if the file does not exist.
     @return 1 if the file exist. */
-int IsExistingFile(const CString &fileName);
+int IsExistingFile(const novac::CString &fileName);
 
 /** Creates a directory structure according to the given path.
 		@return 0 on success. */
-int CreateDirectoryStructure(const CString &path);
+int CreateDirectoryStructure(const novac::CString &path);
 
 /** Checks if the supplied string is a valid serial-number of a spectrometer. 
     @param serialNumber - the string that should be checked.
     @return 1 if the string is a valid serial number.
     @return 0 if the string is <b>not</b> a valid serial number. */
-int IsSerialNumber(const CString &serialNumber);
+int IsSerialNumber(const novac::CString &serialNumber);
 
 /** Compares two strings without regard to case.
     @return 1 if the strings are equal. @return 0 if the strings are not equal. */
-int Equals(const CString &str1, const CString &str2);
+int Equals(const novac::CString &str1, const novac::CString &str2);
 
 /** Compares at most 'nCharacters' of two strings without regard to case.
     @param nCharacters - The number of characters to compare
     @return 1 if the strings are equal. @return 0 if the strings are not equal. */
-int Equals(const CString &str1, const CString &str2, size_t nCharacters);
+int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters);
 
 /** Shows a message in the message box list in the main window */
-void ShowMessage(const CString &message);
+void ShowMessage(const novac::CString &message);
 void ShowMessage(const TCHAR message[]);
-void ShowMessage(const CString &message,CString connectionID);
+void ShowMessage(const novac::CString &message,novac::CString connectionID);
 
 /** Update the top line of list box */
-void UpdateMessage(const CString &message);
+void UpdateMessage(const novac::CString &message);
 
 // ---------------------------------------------------------------
 // ---------------- DEFINED CONSTANTS ----------------------------
@@ -205,20 +208,20 @@ public:
 		@param - The file name (including path)
 		@return - The file size (in bytes)
 	*/
-	static long RetrieveFileSize(CString& fileName);	
+	static long RetrieveFileSize(novac::CString& fileName);	
 
 	/** Compares two files to see if their contents are the same */
-	static bool AreIdenticalFiles(const CString &fileName1, const CString &fileName2);
+	static bool AreIdenticalFiles(const novac::CString &fileName1, const novac::CString &fileName2);
 
 	/** If there's a file with the given input name, then it will be renamed to
 		PATH\\FILENAME_creationDate_creationTime.FILEENDING */
-	static bool ArchiveFile(const CString &fileName);
+	static bool ArchiveFile(const novac::CString &fileName);
 
 	// --------------------------------------------------------------------
 	// ------------------------ SYSTEM FUNCTIONS  -------------------------
 	// --------------------------------------------------------------------
 
-	static bool FormatErrorCode(DWORD error, CString &string);
+	static bool FormatErrorCode(DWORD error, novac::CString &string);
 
 	// --------------------------------------------------------------------
 	// ------------------------- PATH -------------------------------------
@@ -226,18 +229,18 @@ public:
 	
 	/** Take out the file name from a long path 
 			@param fileName path of the file	*/
-	static void GetFileName(CString& fileName);
+	static void GetFileName(novac::CString& fileName);
 
 	/** Take out the directory from a long path name.
 	    @param fileName - the complete path of the file */
-	static void GetDirectory(CString &fileName);
+	static void GetDirectory(novac::CString &fileName);
 
 	/** Check if a process is running.
 	    @param exeName - the name of the executable (e.g. "txzm.exe") 
 	    @param pid - the function will search for processes with a 
 	      process ID higher than 'pid' 
 	    @return - processID of the found process, -1 if no process is found */
-	static int CheckProcessExistance(CString& exeName, int pid = -1);
+	static int CheckProcessExistance(novac::CString& exeName, int pid = -1);
 
 	/** Get all Process-ID's running with a given executable-name
 	    @param exeName - the name of the executable (e.g. "txzm.exe") 
@@ -246,7 +249,7 @@ public:
 	    @param pIDs[1024] - will on successful return be filled with
 	      all pID's found (first empty item will be -1)
 	    @return - number of processID found */
-	static int GetAllProcessIDs(CString& exeName, int pIDs[1024], int startPid = -1);
+	static int GetAllProcessIDs(novac::CString& exeName, int pIDs[1024], int startPid = -1);
 	
 		/** Kill a process with the supplied processID.
 	    @return TRUE if the process was killed.*/
@@ -261,21 +264,21 @@ public:
 	void GetExePath();
 
 	/** m_exePath will be set to the current path after a call to 'GetExePath()' */
-	CString   m_exePath;
+	novac::CString   m_exePath;
 
 	/** m_exeFileName will be set to the filename of the program after a call to 'GetExeFileName()' */
-	CString   m_exeFileName;
+	novac::CString   m_exeFileName;
 
 	/** Opens a dialog window and lets the user browse for a file */
-	bool BrowseForFile(TCHAR *filter, CString &fileName);
+	bool BrowseForFile(TCHAR *filter, novac::CString &fileName);
 
 	/** Opens a dialog window and lets the user browse for a filename to save to */
-	bool BrowseForFile_SaveAs(TCHAR *filter, CString &fileName);
+	bool BrowseForFile_SaveAs(TCHAR *filter, novac::CString &fileName);
 
 	/** Opens a dialog window and lets the user browse for a directory.
 			@return true if all is ok,
 			@return false otherwise */
-	bool BrowseForDirectory(CString &folderName);
+	bool BrowseForDirectory(novac::CString &folderName);
 
 	// --------------------------------------------------------------------
 	// ---------------------- DATE & TIME ---------------------------------
@@ -302,16 +305,16 @@ public:
 	static void		ConvertToHMS(const int time, int &hours, int &minutes, int &seconds);
 
 	/** pretty prints the current date into the string 'txt' */
-	static void GetDateText(CString &txt);
+	static void GetDateText(novac::CString &txt);
 
 	/** pretty prints the current time into the string 'txt' */
-	static void GetTimeText(CString &txt);
+	static void GetTimeText(novac::CString &txt);
 
 	/** pretty prints the current time into the string 'txt' with the seperator*/
-	static void GetTimeText(CString &txt, char* seperator);
+	static void GetTimeText(novac::CString &txt, char* seperator);
 
 	/** pretty prints the current date and time into the string 'txt' */
-	static void GetDateTimeText(CString &txt);
+	static void GetDateTimeText(novac::CString &txt);
 
 	/** Converts the given time to local time using the information in the CGPSData.
 			The date is stored as in the CSpectrumInfo-class with date[0] as 4-digit year,
@@ -402,32 +405,32 @@ public:
 	// --------------------------------------------------------------------
 
 	/** This reformats an UINT from the string table into a CString in a convenient way */
-	const CString &GetString(const UINT uID);
+	const novac::CString &GetString(const UINT uID);
 
 	/** This function takes a string and simplifies it so that it is more easily readable 
 			by a machine. changes made are: 
 			1 - Spaces are replaced with '_' (underscore)
 			2 - All characters are converted to lower-case
 			3 - accents are removed ('ó' -> 'o') */
-	CString &SimplifyString(const CString &in);
+	novac::CString &SimplifyString(const novac::CString &in);
 
 	/** This function takes a string and removes any 'special' (ASCII code < 32) 
 			characters in it */
-	static void CleanString(const CString &in, CString &out);
-	static void CleanString(const char *in, CString &out);
+	static void CleanString(const novac::CString &in, novac::CString &out);
+	static void CleanString(const char *in, novac::CString &out);
 
 	/** Sorts a list of strings in either ascending or descending order.
 			The algorithm is based on MergeSort (~O(NlogN)). */
-	static void Sort(CList <CString, CString&> &strings, bool files, bool ascending = true);
+	static void Sort(novac::CList <novac::CString, novac::CString&> &strings, bool files, bool ascending = true);
 private:
-	CString m_string[3];
+	novac::CString m_string[3];
 	
 	// This is the string which is returned after a call to SimplifyString
-	CString m_simpleString;
+	novac::CString m_simpleString;
 
 	/** Merges the two lists 'list1' and 'list2' in a sorted way and stores
 			the result in the output-list 'result' */
-	static void MergeLists(const CList <CString, CString&> &list1, const CList <CString, CString&> &list2, CList <CString, CString&> &result, bool files, bool ascending = true);
+	static void MergeLists(const novac::CList <novac::CString, novac::CString&> &list1, const novac::CList <novac::CString, novac::CString&> &list2, novac::CList <novac::CString, novac::CString&> &result, bool files, bool ascending = true);
 public:
 
 	// --------------------------------------------------------------------
@@ -496,7 +499,7 @@ public:
 	// ---------------------------- MISC ----------------------------------
 
 	/** Guesses the name of the specie from the name of the reference file. */
-	static void GuessSpecieName(const CString &string, CString &specie);
+	static void GuessSpecieName(const novac::CString &string, novac::CString &specie);
 
 	/** Retrieves the interlace step and the spectrometer channel (if a single) 
 			that the spectrum originates from. 

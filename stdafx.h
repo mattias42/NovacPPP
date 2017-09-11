@@ -31,12 +31,35 @@
 // turns off MFC's hiding of some common and often safely ignored warning messages
 #define _AFX_ALL_WARNINGS
 
-#include <afxwin.h>         // MFC core and standard components
-#include <afxext.h>         // MFC extensions
-#include <afxdisp.h>        // MFC Automation classes
+// Disable the extra security warnings on windows
+#define _CRT_SECURE_NO_WARNINGS
 
-#include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>			// MFC support for Windows Common Controls
-#endif // _AFX_NO_AFXCMN_SUPPORT
-#include <afxdlgs.h>
+// MFC Replacements, copy-paste from https://msdn.microsoft.com/en-us/library/aa383751(VS.85).aspx
+#define CONST const
+typedef unsigned int UINT; 
+typedef unsigned long DWORD;
+typedef DWORD LCID;
+typedef int BOOL;
+typedef char TCHAR;
+typedef char CHAR;
+typedef CONST CHAR *LPCSTR;
+typedef LPCSTR LPCTSTR;
+typedef void* PVOID;
+typedef PVOID HANDLE;
+typedef unsigned int UINT;
+#define MAX_PATH 512
+
+#define IN 
+#define WINAPI __stdcall
+
+
+// MFC headers, commented out to remove MFC dependency
+// #include <afxwin.h>         // MFC core and standard components
+// #include <afxext.h>         // MFC extensions
+// #include <afxdisp.h>        // MFC Automation classes
+// 
+// #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
+// #ifndef _AFX_NO_AFXCMN_SUPPORT
+// #include <afxcmn.h>			// MFC support for Windows Common Controls
+// #endif // _AFX_NO_AFXCMN_SUPPORT
+// #include <afxdlgs.h>

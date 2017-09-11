@@ -5,7 +5,7 @@
 using namespace Meteorology;
 
 // global function that converts a MET_SOURCE item to string
-void Meteorology::MetSourceToString(const MET_SOURCE src, CString &str){
+void Meteorology::MetSourceToString(const MET_SOURCE src, novac::CString &str){
 	if(MET_USER == src)
 		str.Format("user");
 	else if(MET_DEFAULT == src)
@@ -32,9 +32,8 @@ void Meteorology::MetSourceToString(const MET_SOURCE src, CString &str){
 		str.Format("unknown");
 }
 
-// global function that converts a CString into a MET_SOURCE
-MET_SOURCE Meteorology::StringToMetSource(const CString &str){
-	CString trimmedStr(str);
+MET_SOURCE Meteorology::StringToMetSource(const novac::CString &str){
+    novac::CString trimmedStr(str);
 	trimmedStr.Trim(); // remove blanks in the beginning and in the end
 
 	if(Equals(trimmedStr, "user")){
@@ -204,7 +203,7 @@ MET_SOURCE CWindField::GetWindSpeedSource() const{
 }
 
 /** Gets the source of the wind-speed */
-void CWindField::GetWindSpeedSource(CString &str) const{
+void CWindField::GetWindSpeedSource(novac::CString &str) const{
 	return Meteorology::MetSourceToString(m_windSpeedSource, str);
 }
 
@@ -230,7 +229,7 @@ MET_SOURCE CWindField::GetWindDirectionSource() const{
 }
 
 /** Gets the source of the wind-direction */
-void CWindField::GetWindDirectionSource(CString &str) const{
+void CWindField::GetWindDirectionSource(novac::CString &str) const{
 	return Meteorology::MetSourceToString(m_windDirectionSource, str);
 }
 

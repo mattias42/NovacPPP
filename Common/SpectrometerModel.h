@@ -26,20 +26,20 @@ public:
 	~CSpectrometerModel(void);
 
 	/** Retrieves the maximum intensity for the supplied spectrometer model */
-	static double	GetMaxIntensity(const CString modelNumber);
+	static double	GetMaxIntensity(const novac::CString modelNumber);
 	static double	GetMaxIntensity(const SPECTROMETER_MODEL modelNumber);
 
 	/** Converts a SPECTROMETER_MODEL to a string item */
-	static RETURN_CODE		ToString(SPECTROMETER_MODEL model, CString &str);
+	static RETURN_CODE		ToString(SPECTROMETER_MODEL model, novac::CString &str);
 
 	/** Converts a string item to a SPECTROMETER_MODEL */
-	static SPECTROMETER_MODEL GetModel(const CString &str);
+	static SPECTROMETER_MODEL GetModel(const novac::CString &str);
 
 	/** Gets the number of configured spectrometer models */
 	static int	GetNumSpectrometerModels();
 	
 	/** Checks the format of the serial number and from this guesses the spectrometer
 		model. */
-	static SPECTROMETER_MODEL GuessSpectrometerModelFromSerial(const CString &serial);
+	static SPECTROMETER_MODEL GuessSpectrometerModelFromSerial(const novac::CString &serial);
 
 };

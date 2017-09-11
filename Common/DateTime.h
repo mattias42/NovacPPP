@@ -3,6 +3,8 @@
 #ifndef DATETIME_H
 #define DATETIME_H
 
+#include <PPPLib/CString.h>
+
 class CDateTime
 {
 public:
@@ -73,7 +75,7 @@ public:
 		NOTE only the date is parsed not the time!!!!
 		@return true on success else false.
 	*/
-	static bool ParseDate(const CString &dateStr, CDateTime &t);
+	static bool ParseDate(const novac::CString &dateStr, CDateTime &t);
 
 private:
 

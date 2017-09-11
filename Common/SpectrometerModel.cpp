@@ -11,7 +11,7 @@ CSpectrometerModel::~CSpectrometerModel(void)
 }
 
 /** Retrieves the maximum intensity for the supplied spectrometer model */
-double	CSpectrometerModel::GetMaxIntensity(const CString modelNumber){
+double	CSpectrometerModel::GetMaxIntensity(const novac::CString modelNumber){
 	return GetMaxIntensity(GetModel(modelNumber));
 }
 double  CSpectrometerModel::GetMaxIntensity(const SPECTROMETER_MODEL modelNumber){
@@ -29,7 +29,7 @@ double  CSpectrometerModel::GetMaxIntensity(const SPECTROMETER_MODEL modelNumber
 }
 
 /** Converts a SPECTROMETER_MODEL to a string item */
-RETURN_CODE CSpectrometerModel::ToString(SPECTROMETER_MODEL model, CString &str){
+RETURN_CODE CSpectrometerModel::ToString(SPECTROMETER_MODEL model, novac::CString &str){
 	if(S2000 == model){
 		str.Format("S2000");
 		return SUCCESS;
@@ -68,7 +68,7 @@ RETURN_CODE CSpectrometerModel::ToString(SPECTROMETER_MODEL model, CString &str)
 }
 
 /** Converts a string item to a SPECTROMETER_MODEL */
-SPECTROMETER_MODEL CSpectrometerModel::GetModel(const CString &str){
+SPECTROMETER_MODEL CSpectrometerModel::GetModel(const novac::CString &str){
 	if(Equals(str, "S2000") || Equals(str, "SD2000"))
 		return S2000;
 	if(Equals(str, "USB2000"))
@@ -96,7 +96,7 @@ int	CSpectrometerModel::GetNumSpectrometerModels(){
 
 /** Checks the format of the serial number and from this guesses the spectrometer
 	model. */
-SPECTROMETER_MODEL CSpectrometerModel::GuessSpectrometerModelFromSerial(const CString &serial){
+SPECTROMETER_MODEL CSpectrometerModel::GuessSpectrometerModelFromSerial(const novac::CString &serial){
 	if(Equals(serial.Left(3), "D2J")){
 		return S2000;
 	}else if(Equals(serial.Left(3), "I2J")){

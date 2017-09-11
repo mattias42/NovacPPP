@@ -1,4 +1,7 @@
-#pragma once
+#ifndef NOVAC_PPP_MOLECULE_H
+#define NOVAC_PPP_MOLECULE_H
+
+#include <PPPLib/CString.h>
 
 /** The class <b>CMolecule</b> is used to store information on a single
 	trace gas species, such as it's molecular weight.
@@ -39,7 +42,7 @@ public:
 	// ----------------------------------------------------------------------
 	
 	/** The trivial name of this gas molecule */
-	CString m_name;
+	novac::CString m_name;
 	
 	/** The molecular weight of the molecule 
 		In grams per mol (g/mol) or (u/molecule) */
@@ -53,3 +56,5 @@ public:
 	double Convert_MolecCm2_to_kgM2(double molec_cm2) const;
 
 };
+
+#endif  // NOVAC_PPP_MOLECULE_H

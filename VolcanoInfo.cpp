@@ -1,9 +1,11 @@
 #include "StdAfx.h"
 #include "volcanoinfo.h"
 #include "Common/Common.h"
+#include <PPPLib/CSingleLock.h>
+#include <PPPLib/CCriticalSection.h>
 
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
 
 using namespace std;
 
@@ -12,7 +14,7 @@ CVolcanoInfo g_volcanoes;
 
 /** This critical section tries to make sure that only one
       thread at a time tries to retrieve the volcano-name */
-CCriticalSection g_volcanoLogCritSect;
+novac::CCriticalSection g_volcanoLogCritSect;
 
 CVolcanoInfo::CVolcanoInfo(void)
 {
@@ -443,7 +445,7 @@ CVolcanoInfo::CVolcano::CVolcano(){
 	m_observatory = 0;
 }
 
-CVolcanoInfo::CVolcano::CVolcano(const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
+CVolcanoInfo::CVolcano::CVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
 	Common common;
 
 	m_name.Format(name);
@@ -460,7 +462,7 @@ CVolcanoInfo::CVolcano::CVolcano(const CString &name, const CString &number, con
 	m_observatory = observatory;
 }
 
-CVolcanoInfo::CVolcano::CVolcano(const CString &name, const CString &simpleName, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
+CVolcanoInfo::CVolcano::CVolcano(const novac::CString &name, const novac::CString &simpleName, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
 	Common common;
 
 	m_name.Format(name);
@@ -498,13 +500,13 @@ CVolcanoInfo::CVolcano::~CVolcano(){
 }
 
 /** Adds a new volcano to the list */
-void CVolcanoInfo::AddVolcano(const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
+void CVolcanoInfo::AddVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
 	Common common;
 	m_volcanoes.push_back(CVolcano(name, common.SimplifyString(name), number, country, latitude, longitude, altitude, hoursToGMT, observatory));
 	++m_volcanoNum;
 }
 
-void CVolcanoInfo::UpdateVolcano(unsigned int index, const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
+void CVolcanoInfo::UpdateVolcano(unsigned int index, const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory){
 	Common common;
 	if(index >= this->m_volcanoNum){
 		AddVolcano(name, number, country, latitude, longitude, altitude, hoursToGMT, observatory);
@@ -522,7 +524,7 @@ void CVolcanoInfo::UpdateVolcano(unsigned int index, const CString &name, const 
 	}
 }
 
-int CVolcanoInfo::GetVolcanoIndex(const CString &name){
+int CVolcanoInfo::GetVolcanoIndex(const novac::CString &name){
 	static unsigned int lastIndex = 0;
 	
 	// first try with the same volcano as the last time
@@ -544,7 +546,7 @@ int CVolcanoInfo::GetVolcanoIndex(const CString &name){
 	return -1; // no volcano found
 }
 
-void CVolcanoInfo::GetVolcanoName(unsigned int index, CString &name){
+void CVolcanoInfo::GetVolcanoName(unsigned int index, novac::CString &name){
 	if(index >= m_volcanoNum){
 		name.Format("");
 	}else{
@@ -552,11 +554,11 @@ void CVolcanoInfo::GetVolcanoName(unsigned int index, CString &name){
 		name.Format(vol.m_name);
 	}
 }
-const CString &CVolcanoInfo::GetVolcanoName(unsigned int index){
-	static CString name[10];
+const novac::CString &CVolcanoInfo::GetVolcanoName(unsigned int index){
+	static novac::CString name[10];
 	static int lastIndex = 0;
 
-	CSingleLock singleLock(&g_volcanoLogCritSect);
+	novac::CSingleLock singleLock(&g_volcanoLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){ // this is to be thread safe, make sure that no two threads updates 'lastIndex' at the same time
 		int k = lastIndex;
@@ -570,11 +572,11 @@ const CString &CVolcanoInfo::GetVolcanoName(unsigned int index){
 	}
 }
 
-const CString &CVolcanoInfo::GetSimpleVolcanoName(unsigned int index){
-	static CString name[10];
+const novac::CString &CVolcanoInfo::GetSimpleVolcanoName(unsigned int index){
+	static novac::CString name[10];
 	static int lastIndex = 0;
 
-	CSingleLock singleLock(&g_volcanoLogCritSect);
+	novac::CSingleLock singleLock(&g_volcanoLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){ // this is to be thread safe, make sure that no two threads updates 'lastIndex' at the same time
 		int k = lastIndex;
@@ -589,7 +591,7 @@ const CString &CVolcanoInfo::GetSimpleVolcanoName(unsigned int index){
 }
 
 /** Retrieves the location of the volcano */
-void CVolcanoInfo::GetVolcanoLocation(unsigned int index, CString &location){
+void CVolcanoInfo::GetVolcanoLocation(unsigned int index, novac::CString &location){
 	if(index >= m_volcanoNum){
 		location.Format("");
 	}else{
@@ -597,11 +599,11 @@ void CVolcanoInfo::GetVolcanoLocation(unsigned int index, CString &location){
 		location.Format(vol.m_country);
 	}
 }
-const CString &CVolcanoInfo::GetVolcanoLocation(unsigned int index){
-	static CString location[10];
+const novac::CString &CVolcanoInfo::GetVolcanoLocation(unsigned int index){
+	static novac::CString location[10];
 	static int lastIndex = 0;
 
-	CSingleLock singleLock(&g_volcanoLogCritSect);
+	novac::CSingleLock singleLock(&g_volcanoLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){ // this is to be thread safe, make sure that no two threads updates 'lastIndex' at the same time
 		int k = lastIndex;
@@ -615,7 +617,7 @@ const CString &CVolcanoInfo::GetVolcanoLocation(unsigned int index){
 	}
 }
 
-void CVolcanoInfo::GetVolcanoCode(unsigned int index, CString &code){
+void CVolcanoInfo::GetVolcanoCode(unsigned int index, novac::CString &code){
 	if(index >= m_volcanoNum){
 		code.Format("");
 	}else{
@@ -624,11 +626,11 @@ void CVolcanoInfo::GetVolcanoCode(unsigned int index, CString &code){
 	}
 }
 
-const CString &CVolcanoInfo::GetVolcanoCode(unsigned int index){
-	static CString name[10];
+const novac::CString &CVolcanoInfo::GetVolcanoCode(unsigned int index){
+	static novac::CString name[10];
 	static int lastIndex = 0;
 
-	CSingleLock singleLock(&g_volcanoLogCritSect);
+	novac::CSingleLock singleLock(&g_volcanoLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){ // this is to be thread safe, make sure that no two threads updates 'lastIndex' at the same time
 		int k = lastIndex;
@@ -641,7 +643,7 @@ const CString &CVolcanoInfo::GetVolcanoCode(unsigned int index){
 		return name[0]; // this should not happen
 	}
 }
-void CVolcanoInfo::GetSimpleVolcanoName(unsigned int index, CString &name){
+void CVolcanoInfo::GetSimpleVolcanoName(unsigned int index, novac::CString &name){
 	if(index >= m_volcanoNum){
 		name.Format("");
 	}else{

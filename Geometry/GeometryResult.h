@@ -32,7 +32,7 @@ namespace Geometry{
 
 		/** The two instruments that were used to derive this 
 			geometry result. */
-		CString m_instr1, m_instr2;
+		novac::CString m_instr1, m_instr2;
 
 		/** The plume centre-angles for the two scans 
 			that were combined */

@@ -1,4 +1,7 @@
 #pragma once
+
+#include <PPPLib/CString.h>
+
 #include "../Common/DateTime.h"
 #include "../Common/GPSData.h"
 #include "../MeteorologySource.h"
@@ -11,7 +14,7 @@ namespace Meteorology{
 	/** global function that converts a MET_SOURCE item to string.
 		This is used e.g. to write the source to file.
 	 */
-	void MetSourceToString(const MET_SOURCE src, CString &str);
+	void MetSourceToString(const MET_SOURCE src, novac::CString &str);
 	
 	/** Global function that converts a string to a MET_SOURCE.
 		This is basically the inverse function of 'MetSourceToString'.
@@ -19,7 +22,7 @@ namespace Meteorology{
 		MET_NONE is returned. 
 		This function is used e.g. to parse a log-file.		
 	*/
-	MET_SOURCE StringToMetSource(const CString &str);
+	MET_SOURCE StringToMetSource(const novac::CString &str);
 
 	/** Global function that retrieves the judged quality of a given source.
 		Not all sources are equally good. A source with a higher 'quality'
@@ -76,7 +79,7 @@ namespace Meteorology{
 		MET_SOURCE GetWindSpeedSource() const;
 
 		/** Gets the source of the wind-speed */
-		void GetWindSpeedSource(CString &str) const;
+		void GetWindSpeedSource(novac::CString &str) const;
 
 		/** Gets the wind-direction */
 		double GetWindDirection() const;
@@ -85,7 +88,7 @@ namespace Meteorology{
 		MET_SOURCE GetWindDirectionSource() const;
 
 		/** Gets the source of the wind-direction */
-		void GetWindDirectionSource(CString &str) const;
+		void GetWindDirectionSource(novac::CString &str) const;
 
 		/** Gets the estimate for the total error in the wind-direction */
 		double	GetWindDirectionError() const;

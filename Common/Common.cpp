@@ -5,22 +5,23 @@
 // include the global settings
 #include "../VolcanoInfo.h"
 
-#include "PSAPI.H"
-#include <tlhelp32.h>
-#pragma comment( lib, "PSAPI.LIB" )
+// #include "PSAPI.H"
+// #include <tlhelp32.h>
+// #pragma comment( lib, "PSAPI.LIB" )
 
-extern CDialog *pView;
+// TODO: Re-enable the pView at some later time
+// extern CDialog *pView;
 extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
 
-void GetSysTempFolder(CString& folderPath)
+void GetSysTempFolder(novac::CString& folderPath)
 {
 	TCHAR buffer[MAX_PATH];
 	GetTempPath(MAX_PATH, buffer);
 	folderPath.Format("%s", buffer);
 }
 
-int IsExistingFile(const CString &fileName){
+int IsExistingFile(const novac::CString &fileName){
 	WIN32_FIND_DATA FindFileData;
 	char fileToFind[MAX_PATH];
 
@@ -37,7 +38,7 @@ int IsExistingFile(const CString &fileName){
 	return 1; // file found
 }
 
-int CreateDirectoryStructure(const CString &path)
+int CreateDirectoryStructure(const novac::CString &path)
 {
 	char buffer [1024]; // buffer is a local copy of 'path'
 	memset(buffer, 0, 1024*sizeof(char));
@@ -65,7 +66,7 @@ int CreateDirectoryStructure(const CString &path)
 			if(!ret){
 				int error = GetLastError();
 				if(error != ERROR_FILE_EXISTS && error != ERROR_ALREADY_EXISTS){
-					CString message;
+					novac::CString message;
 					message.Format("Debug: Could not create output directory: %s", buffer);
 					ShowMessage(message); // tell the user about our problems...
 					return 1;
@@ -82,43 +83,48 @@ int CreateDirectoryStructure(const CString &path)
 	return 0;
 }
 
-int Equals(const CString &str1, const CString &str2){
+int Equals(const novac::CString &str1, const novac::CString &str2){
 	return (0 ==_tcsnicmp(str1, str2, max(strlen(str1), strlen(str2))));
 }
 
-int Equals(const CString &str1, const CString &str2, size_t nCharacters){
+int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters){
 	return (0 ==_tcsnicmp(str1, str2, min(nCharacters, max(strlen(str1), strlen(str2)))));
 }
 
-void UpdateMessage(const CString &message){
-	CString *msg = new CString();
+void UpdateMessage(const novac::CString &message){
+	novac::CString *msg = new novac::CString();
 
 	msg->Format("%s", message);
-	if(pView != NULL)
-		pView->PostMessage(WM_UPDATE_MESSAGE, (WPARAM)msg, NULL);
+    // TODO:
+//	if(pView != NULL)
+//		pView->PostMessage(WM_UPDATE_MESSAGE, (WPARAM)msg, NULL);
 }
 
-void ShowMessage(const CString &message){
-	CString *msg = new CString();
-	CString timeTxt;
+void ShowMessage(const novac::CString &message){
+	novac::CString *msg = new novac::CString();
+	novac::CString timeTxt;
 	Common commonObj;
 	commonObj.GetDateTimeText(timeTxt);
 	msg->Format("%s -- %s", message , timeTxt);
-	if(pView != NULL)
-		pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
+
+    // TODO:
+//	if(pView != NULL)
+//		pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
 }
-void ShowMessage(const CString &message,CString connectionID){
-	CString *msg = new CString();
-	CString timeTxt;
+void ShowMessage(const novac::CString &message,novac::CString connectionID){
+	novac::CString *msg = new novac::CString();
+	novac::CString timeTxt;
 	Common commonObj;
 	commonObj.GetDateTimeText(timeTxt);
 	msg->Format("<%s> : %s   -- %s", connectionID,message,timeTxt);
-	if(pView != NULL)
-		pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
+
+    // TODO:
+    // if(pView != NULL)
+	// 	pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
 }
 
 void ShowMessage(const TCHAR message[]){
-	CString msg;
+	novac::CString msg;
 	msg.Format("%s", message);
 	ShowMessage(msg);
 }
@@ -126,10 +132,10 @@ void ShowMessage(const TCHAR message[]){
 void Common::GetExePath(){
 	TCHAR exeFullPath[MAX_PATH]; 
 	GetModuleFileName(NULL, exeFullPath, MAX_PATH); 
-	m_exePath     = (CString)exeFullPath;
-	m_exeFileName = (CString)exeFullPath; 
+	m_exePath     = (novac::CString)exeFullPath;
+	m_exeFileName = (novac::CString)exeFullPath; 
 	int position  = m_exePath.ReverseFind('\\'); 
-	int length    = CString::StringLength(m_exePath);
+	int length    = novac::CString::StringLength(m_exePath);
 	m_exePath     = m_exePath.Left(position+1);
 	m_exeFileName = m_exeFileName.Right(length - position - 1);
 }
@@ -213,12 +219,12 @@ void Common::CalculateDestination(double lat1, double lon1, double dist, double 
 	lon2	= lon2 * RADTODEGREE;
 }
 
-int IsSerialNumber(const CString &serialNumber){
+int IsSerialNumber(const novac::CString &serialNumber){
 	return (strlen(serialNumber) > 0);
 }
 
 // open a browser window and let the user search for a file
-bool Common::BrowseForFile(TCHAR *filter, CString &fileName){
+bool Common::BrowseForFile(TCHAR *filter, novac::CString &fileName){
 	TCHAR szFile[4096];
 	sprintf(szFile, "%s", fileName);
 
@@ -246,7 +252,7 @@ bool Common::BrowseForFile(TCHAR *filter, CString &fileName){
 }
 
 // open a browser window and let the user search for a file
-bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
+bool Common::BrowseForFile_SaveAs(TCHAR *filter, novac::CString &fileName){
 	TCHAR szFile[4096];
 	sprintf(szFile, "%s", fileName);
 
@@ -273,7 +279,7 @@ bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	return false;
 }
 
-bool Common::BrowseForDirectory(CString &folderName){
+bool Common::BrowseForDirectory(novac::CString &folderName){
 	BROWSEINFO bi;
 	char tmp_FolderName[MAX_PATH ];       // temporary buffer for folder name
 	char title[] = "Select Directory";
@@ -310,7 +316,7 @@ bool Common::BrowseForDirectory(CString &folderName){
 }
 
 /* pretty prints the current date into the string 'txt' */
-void Common::GetDateText(CString &txt)
+void Common::GetDateText(novac::CString &txt)
 {
 	struct tm *tim;
 	time_t t;
@@ -352,7 +358,7 @@ void Common::ConvertToHMS(const int time, int &hours, int &minutes, int &seconds
 }
 
 /* pretty prints the current time into the string 'txt' */
-void Common::GetTimeText(CString &txt)
+void Common::GetTimeText(novac::CString &txt)
 {
 	struct tm *tim;
 	time_t t;
@@ -361,7 +367,7 @@ void Common::GetTimeText(CString &txt)
 	txt.Format("%02d:%02d:%02d",tim->tm_hour,tim->tm_min,tim->tm_sec);
 }
 /* pretty prints the current time into the string 'txt' */
-void Common::GetTimeText(CString &txt,char* seperator)
+void Common::GetTimeText(novac::CString &txt,char* seperator)
 {
 	struct tm *tim;
 	time_t t;
@@ -370,7 +376,7 @@ void Common::GetTimeText(CString &txt,char* seperator)
 	txt.Format("%02d%s%02d%s%02d",tim->tm_hour,seperator,tim->tm_min,seperator,tim->tm_sec);
 }
 /* pretty prints the current date and time into the string 'txt' */
-void Common::GetDateTimeText(CString &txt)
+void Common::GetDateTimeText(novac::CString &txt)
 {
 	struct tm *tim;
 	time_t t;
@@ -663,7 +669,7 @@ RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double 
 	return SUCCESS;
 }
 
-const CString &Common::GetString(const UINT uID){
+const novac::CString &Common::GetString(const UINT uID){
 	static int index = 0;
 
 	index += 1;
@@ -673,8 +679,8 @@ const CString &Common::GetString(const UINT uID){
 	return m_string[index];
 }
 
-CString &Common::SimplifyString(const CString &in){
-	static CString str;
+novac::CString &Common::SimplifyString(const novac::CString &in){
+	static novac::CString str;
 
 	// Clean the string for non-printable characters
 	CleanString(in, str);
@@ -728,14 +734,14 @@ CString &Common::SimplifyString(const CString &in){
 			buffer[i] = 'n';
 	}
 
-	// copy the buffer to a CString
+	// copy the buffer to a novac::CString
 	str.Format("%s", buffer);
 
 	delete [] buffer;
 	return str;
 }
 
-void Common::CleanString(const CString &in, CString &out){
+void Common::CleanString(const novac::CString &in, novac::CString &out){
 	char *buffer = new char[strlen(in) + 2];
 	sprintf(buffer, "%s", in); // make a local copy of the input string
 
@@ -743,7 +749,7 @@ void Common::CleanString(const CString &in, CString &out){
 	delete [] buffer; // clean up after us
 }
 
-void Common::CleanString(const char *in, CString &out){
+void Common::CleanString(const char *in, novac::CString &out){
 	out.Format("");
 	for(unsigned int it = 0; it < strlen(in); ++it){
 		if((unsigned char)in[it] >= 32)
@@ -752,15 +758,15 @@ void Common::CleanString(const char *in, CString &out){
 }
 
 /** Sorts a list of strings in either ascending or descending order */
-void Common::Sort(CList <CString, CString&> &strings, bool files, bool ascending){
+void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool files, bool ascending){
 	unsigned long nStrings = (unsigned long)strings.GetCount(); // number of elements
 	unsigned long it = 0; // <-- iterator
 
 	if(nStrings <= 1){
 		return; // <-- We're actually already done
 	}else{
-		CList <CString, CString&> left;
-		CList <CString, CString&> right;
+		novac::CList <novac::CString, novac::CString&> left;
+		novac::CList <novac::CString, novac::CString&> right;
 
 		// Make two copies of the list, one of the first half and one of the second half
 		POSITION pos = strings.GetHeadPosition();
@@ -783,8 +789,8 @@ void Common::Sort(CList <CString, CString&> &strings, bool files, bool ascending
 
 /** Merges the two lists 'list1' and 'list2' in a sorted way and stores
 		the result in the output-list 'result' */
-void Common::MergeLists(const CList <CString, CString&> &list1, const CList <CString, CString&> &list2, CList <CString, CString&> &result, bool files, bool ascending){
-	CString	name1, name2, fullName1, fullName2;
+void Common::MergeLists(const novac::CList <novac::CString, novac::CString&> &list1, const novac::CList <novac::CString, novac::CString&> &list2, novac::CList <novac::CString, novac::CString&> &result, bool files, bool ascending){
+	novac::CString	name1, name2, fullName1, fullName2;
 	int comparison;
 
 	POSITION pos_1 = list1.GetHeadPosition();
@@ -1322,16 +1328,16 @@ bool Common::CalculatePlumeCompleteness(const double *scanAngles, const double *
 	return true;
 }
 
-void Common::GuessSpecieName(const CString &fileName, CString &specie){
+void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &specie){
 	specie.Format("");
-	CString spc[] = {"SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde", "HONO", "NO3"};
+	novac::CString spc[] = {"SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde", "HONO", "NO3"};
 	int nSpecies = 12;
 
 	int index = fileName.ReverseFind('\\');
 	if(index == 0)
 		return;
 
-	CString fil;
+	novac::CString fil;
 	fil.Format("%s", fileName.Right((int)strlen(fileName) - index - 1));
 	fil.MakeUpper();
 
@@ -1347,10 +1353,10 @@ void Common::GuessSpecieName(const CString &fileName, CString &specie){
 }
 
 
-int Common::CheckProcessExistance(CString& exeName,int pid)
+int Common::CheckProcessExistance(novac::CString& exeName,int pid)
 {
 	int ret;
-	CString processPath;
+	novac::CString processPath;
 	DWORD processid[1024],needed,processcount,i;
 	HANDLE hProcess;
 	HMODULE hModule;
@@ -1402,9 +1408,9 @@ int Common::CheckProcessExistance(CString& exeName,int pid)
 	@param pIDs[1024] - will on successful return be filled with
 	    all pID's found (first empty item will be -1)
 	@return - number of processID found , -1 if no process is found */
-int Common::GetAllProcessIDs(CString& exeName, int pIDs[1024], int startPid){
+int Common::GetAllProcessIDs(novac::CString& exeName, int pIDs[1024], int startPid){
 	int nPIDsFound = 0;
-	CString processPath;
+	novac::CString processPath;
 	DWORD processid[1024],needed,processcount,i;
 	HANDLE hProcess;
 	HMODULE hModule;
@@ -1555,23 +1561,23 @@ void Common::SetThreadName(DWORD dwThreadID, LPCTSTR szThreadName){
 
 /** Take out the exe name from a long path 
 	  @param fileName path of the exe file	*/
-void Common::GetFileName(CString& fileName)
+void Common::GetFileName(novac::CString& fileName)
 {
 	// look for slashes in the path
 	int position	= max(fileName.ReverseFind('\\'), fileName.ReverseFind('/'));
-	int length		= CString::StringLength(fileName);
+	int length		= novac::CString::StringLength(fileName);
 	fileName		= fileName.Right(length - position - 1);
 }
 
 /** Take out the directory from a long path name.
     @param fileName - the complete path of the file */
-void Common::GetDirectory(CString &fileName){
+void Common::GetDirectory(novac::CString &fileName){
 	int position  = fileName.ReverseFind('\\');
 	if(position >= 0)
 		fileName = fileName.Left(position + 1);
 }
 
-long Common::RetrieveFileSize(CString& fileName)
+long Common::RetrieveFileSize(novac::CString& fileName)
 {
 	TRY
 	{
@@ -1589,7 +1595,7 @@ long Common::RetrieveFileSize(CString& fileName)
 
 
 /** Compares two files to see if their contents are the same */
-bool Common::AreIdenticalFiles(const CString &fileName1, const CString &fileName2){
+bool Common::AreIdenticalFiles(const novac::CString &fileName1, const novac::CString &fileName2){
 	if(Equals(fileName1, fileName2))
 		return true; // a file is always identical to itself
 	
@@ -1627,12 +1633,12 @@ bool Common::AreIdenticalFiles(const CString &fileName1, const CString &fileName
 
 /** If there's a file with the given input name, then it will be renamed to
 	PATH\\FILENAME_creationDate_creationTime.FILEENDING */
-bool Common::ArchiveFile(const CString &fileName){
+bool Common::ArchiveFile(const novac::CString &fileName){
 	WIN32_FIND_DATA FindFileData;
 	char fileToFind[MAX_PATH];
     FILETIME ftLocal;
     SYSTEMTIME stCreate;
-    CString newFileName, errorMsg;
+    novac::CString newFileName, errorMsg;
 
 	sprintf(fileToFind, "%s", fileName);
 
@@ -1666,7 +1672,7 @@ bool Common::ArchiveFile(const CString &fileName){
 	return true;
 }
 
-bool Common::FormatErrorCode(DWORD error, CString &string){
+bool Common::FormatErrorCode(DWORD error, novac::CString &string){
 	/* from System Error Codes */
 	switch(error){
 		case ERROR_FILE_NOT_FOUND:

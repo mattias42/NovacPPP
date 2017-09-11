@@ -1,11 +1,13 @@
 #include "StdAfx.h"
 #include "PostProcessingStatistics.h"
 #include "Common/Common.h"
+#include <PPPLib/CCriticalSection.h>
+#include <PPPLib/CSingleLock.h>
 
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
 
-CCriticalSection									g_processingStatCritSect; // synchronization access to the processing statistics
+novac::CCriticalSection									g_processingStatCritSect; // synchronization access to the processing statistics
 
 CPostProcessingStatistics::CInstrumentStats::CInstrumentStats(){
 	// the serial of this instrument
@@ -40,9 +42,9 @@ CPostProcessingStatistics::~CPostProcessingStatistics(void)
 
 /** Inserts information on a rejected scan from a certain instrument 
 	into the database. */
-void CPostProcessingStatistics::InsertRejection(const CString &serial, const REASON_FOR_REJECTION &reason){
+void CPostProcessingStatistics::InsertRejection(const novac::CString &serial, const REASON_FOR_REJECTION &reason){
 
-	CSingleLock singleLock(&g_processingStatCritSect);
+	novac::CSingleLock singleLock(&g_processingStatCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 
@@ -80,9 +82,9 @@ void CPostProcessingStatistics::InsertRejection(const CString &serial, const REA
 }
 
 /** Inserts information on a accepted scan from a certain instrument into the database. */
-void CPostProcessingStatistics::InsertAcception(const CString &serial){
+void CPostProcessingStatistics::InsertAcception(const novac::CString &serial){
 
-	CSingleLock singleLock(&g_processingStatCritSect);
+    novac::CSingleLock singleLock(&g_processingStatCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 
@@ -110,7 +112,7 @@ void CPostProcessingStatistics::InsertAcception(const CString &serial){
 }
 
 /** Retrieves the number of rejected full scans due to the specified reason */
-unsigned long CPostProcessingStatistics::GetRejectionNum(const CString &serial, const REASON_FOR_REJECTION &reason){
+unsigned long CPostProcessingStatistics::GetRejectionNum(const novac::CString &serial, const REASON_FOR_REJECTION &reason){
 
 	// look for the correct instrument
 	std::list<CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
@@ -134,7 +136,7 @@ unsigned long CPostProcessingStatistics::GetRejectionNum(const CString &serial, 
 }
 
 /** Retrieves the number of accepted full scans */
-unsigned long CPostProcessingStatistics::GetAcceptionNum(const CString &serial){
+unsigned long CPostProcessingStatistics::GetAcceptionNum(const novac::CString &serial){
 
 	// look for the correct instrument
 	std::list<CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
@@ -161,8 +163,8 @@ void CPostProcessingStatistics::InsertEvaluatedSpectrum(double timeUsed){
 }
 
 /** Creates a small output file containing the statistical results */	
-void CPostProcessingStatistics::WriteStatToFile(const CString &file){
-	CSingleLock singleLock(&g_processingStatCritSect);
+void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file){
+    novac::CSingleLock singleLock(&g_processingStatCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 

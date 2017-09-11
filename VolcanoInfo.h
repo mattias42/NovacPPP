@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <PPPLib/CString.h>
 
 /** The <b>CVolcanoInfo</b>-class is a class that stores known information
 		about a set of volcanoes. This information can then later be used in the program
@@ -32,65 +33,65 @@ public:
 	// -------------------------------------------------------------
 
 	/** Adds a new volcano to the list */
-	void AddVolcano(const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
-	void UpdateVolcano(unsigned int index, const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
+	void AddVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
+	void UpdateVolcano(unsigned int index, const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
 
 	/** Retrieves the name of the volcano with the given index */
-	void GetVolcanoName(unsigned int index, CString &name);
-	const CString &GetVolcanoName(unsigned int index);
+	void GetVolcanoName(unsigned int index, novac::CString &name);
+	const novac::CString &GetVolcanoName(unsigned int index);
 
 	/** Retrieves the code of the volcano with the given index */
-	void GetVolcanoCode(unsigned int index, CString &code);
-	const CString &GetVolcanoCode(unsigned int index);
+	void GetVolcanoCode(unsigned int index, novac::CString &code);
+	const novac::CString &GetVolcanoCode(unsigned int index);
 
 	/** Retrieves the location of the volcano */
-	void GetVolcanoLocation(unsigned int index, CString &location);
-	const CString &GetVolcanoLocation(unsigned int index);
+	void GetVolcanoLocation(unsigned int index, novac::CString &location);
+	const novac::CString &GetVolcanoLocation(unsigned int index);
 
 	/** Retrieves the simplified name of the volcano with the given index */
-	void GetSimpleVolcanoName(unsigned int index, CString &name);
-	const CString &GetSimpleVolcanoName(unsigned int index);
+	void GetSimpleVolcanoName(unsigned int index, novac::CString &name);
+	const novac::CString &GetSimpleVolcanoName(unsigned int index);
 
 	/** Retrieves the volcano index from a given name (or code) */
-	int GetVolcanoIndex(const CString &name);
+	int GetVolcanoIndex(const novac::CString &name);
 	
 	/** Retrieves the volcano position from the given index */
 	double GetPeakLatitude(unsigned int index);
-	double GetPeakLatitude(const CString &name){ return GetPeakLatitude(GetVolcanoIndex(name)); }
+	double GetPeakLatitude(const novac::CString &name){ return GetPeakLatitude(GetVolcanoIndex(name)); }
 	double GetPeakLongitude(unsigned int index);
-	double GetPeakLongitude(const CString &name){ return GetPeakLongitude(GetVolcanoIndex(name)); }
+	double GetPeakLongitude(const novac::CString &name){ return GetPeakLongitude(GetVolcanoIndex(name)); }
 	double GetPeakAltitude(unsigned int index);
-	double GetPeakAltitude(const CString &name){ return GetPeakAltitude(GetVolcanoIndex(name)); }
+	double GetPeakAltitude(const novac::CString &name){ return GetPeakAltitude(GetVolcanoIndex(name)); }
 	
 	/** Retrieves the time-zone this volcano is in */
 	double GetHoursToGMT(unsigned int index);
-	double GetHoursToGMT(const CString &name){ return GetHoursToGMT(GetVolcanoIndex(name)); }
+	double GetHoursToGMT(const novac::CString &name){ return GetHoursToGMT(GetVolcanoIndex(name)); }
 	
 	/** Retrieves the observatory that monitors this volcano */
 	int GetObservatoryIndex(unsigned int index);
-	int GetObservatoryIndex(const CString &name){ return GetObservatoryIndex(GetVolcanoIndex(name)); }
+	int GetObservatoryIndex(const novac::CString &name){ return GetObservatoryIndex(GetVolcanoIndex(name)); }
 
 private:
 	class CVolcano{
 	public:
 		CVolcano();
-		CVolcano(const CString &name, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
-		CVolcano(const CString &name, const CString &simpleName, const CString &number, const CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
+		CVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
+		CVolcano(const novac::CString &name, const novac::CString &simpleName, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT = 0.0, int observatory = 1);
 		~CVolcano();
 
 		/** The name of the volcano */
-		CString	m_name;
+		novac::CString	m_name;
 
 		/** The simplified name of the volcano */
-		CString	m_simpleName;
+		novac::CString	m_simpleName;
 
 		/** The number of the volcano. This is from the 
 			Smithsonian's inventory of the worlds volcanoes 
 			http://www.volcano.si.edu */
-		CString	m_number;
+		novac::CString	m_number;
 		
 		/** The country where this volcano is located */
-		CString m_country;
+		novac::CString m_country;
 
 		/** The latitude of the peak(s) */
 		double m_peakLatitude;
