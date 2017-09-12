@@ -3,6 +3,7 @@
 #include "PlumeHeight.h"
 #include "GeometryResult.h"
 #include "../Common/DateTime.h"
+#include <PPPLib/CString.h>
 
 // include the list-template from the C++ standard library
 #include <list>
@@ -28,7 +29,7 @@ namespace Geometry{
 		// ----------------------------------------------------------------------
 
 		/** The name of the volcano for which the database is valid. */
-		CString m_volcano;
+		novac::CString m_volcano;
 
 		// ----------------------------------------------------------------------
 		// --------------------- PUBLIC METHODS ---------------------------------
@@ -50,7 +51,7 @@ namespace Geometry{
 
 		/** Writes the contents of this database to file. 
 			@return 0 on success. */
-		int WriteToFile(const CString &fileName) const;
+		int WriteToFile(const novac::CString &fileName) const;
 		
 	private:
 	

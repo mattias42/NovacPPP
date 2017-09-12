@@ -2,6 +2,7 @@
 
 #include "Spectrum.h"
 #include "../SpectrumFormat/MKPack.h"
+#include <PPPLib/CString.h>
 
 namespace SpectrumIO
 {
@@ -30,7 +31,7 @@ namespace SpectrumIO
 			@param spectrumNumber - The spectrum number in the file. 
 			@param spec - Will on successful return contain the desired spectrum.
 			@return SUCCESS if all is ok. */
-		RETURN_CODE ReadSpectrum(const CString &fileName, const int spectrumNumber, CSpectrum &spec, char *headerBuffer = NULL, int headerBufferSize = 0, int *headerSize = NULL);
+		RETURN_CODE ReadSpectrum(const novac::CString &fileName, const int spectrumNumber, CSpectrum &spec, char *headerBuffer = NULL, int headerBufferSize = 0, int *headerSize = NULL);
 
 		/** Reads the next spectrum in the provided spectrum file.
 				The spectrum file (which must be in the .pak format) must be opened for reading
@@ -67,12 +68,12 @@ namespace SpectrumIO
 				program can handle. Copying the header directly ensures that no data is lost.
 			@param headersize - The size of the headerBuffer. only useful if headerBuffer is not null.
 			*/
-		int AddSpectrumToFile(const CString &fileName, const CSpectrum &spec, const char *headerBuffer = NULL, int headerSize = 0);
+		int AddSpectrumToFile(const novac::CString &fileName, const CSpectrum &spec, const char *headerBuffer = NULL, int headerSize = 0);
 
 		/** Opens The spectrum file and counts how many spectra there are in the file. 
 				@param fileName - the name and path of the .pak-file to open
 				@return - The number of spectra in the spectrum file. */
-		int CountSpectra(const CString &fileName);
+		int CountSpectra(const novac::CString &fileName);
 
 		/** Opens the spectrum file and searches for the occurence of certain spectra inside.
 			The function can e.g. try to localize the spectrum with the name 'zenith' inside the 
@@ -91,7 +92,7 @@ namespace SpectrumIO
 				'indices' will on return the (zero-based) index 
 
 			@return - The number of spectra in the spectrum file */
-		int ScanSpectrumFile(const CString &fileName, const CString *specNamesToLookFor, int numSpecNames, int *indices);
+		int ScanSpectrumFile(const novac::CString &fileName, const novac::CString *specNamesToLookFor, int numSpecNames, int *indices);
 
 		/** If any error occurs in the reading of the file, this int is set to
 			any of the errors defined above. */

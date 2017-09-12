@@ -23,7 +23,6 @@ using namespace FileHandler;
 
 extern Configuration::CNovacPPPConfiguration		g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-extern CDialog										*pView;        // <-- The screen
 extern CPostProcessingStatistics					g_processingStats;	// <-- The statistics of the processing itself
 extern CContinuationOfProcessing					g_continuation;		// <-- Information on what has already been done when continuing an old processing round
 
@@ -38,9 +37,9 @@ CPostEvaluationController::~CPostEvaluationController(void)
 
 
 /** This function takes care of the evaluation of one scan.	*/
-int CPostEvaluationController::EvaluateScan(const CString& pakFileName, const CString &fitWindowName, CString *txtFileName, CPlumeInScanProperty *plumeProperties){
+int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, const novac::CString &fitWindowName, novac::CString *txtFileName, CPlumeInScanProperty *plumeProperties){
 	clock_t cStart, cFinish;
-	CString errorMessage, message, serialNumber;
+	novac::CString errorMessage, message, serialNumber;
 	Meteorology::CWindField windField;
 	CDateTime startTime;
 	SpectrumIO::CSpectrumIO reader;
@@ -93,7 +92,7 @@ int CPostEvaluationController::EvaluateScan(const CString& pakFileName, const CS
 			delete scan;
 			return 0;
 		}else{
-			CString archivePakFileName, archiveTxtFileName;
+			novac::CString archivePakFileName, archiveTxtFileName;
 			
 			// loop through all possible measurement modes and see if the evaluation log file already exists
 			MEASUREMENT_MODE modes[] = {MODE_FLUX, MODE_WINDSPEED, MODE_STRATOSPHERE, MODE_DIRECT_SUN, 
@@ -179,11 +178,11 @@ int CPostEvaluationController::EvaluateScan(const CString& pakFileName, const CS
 	return 0;
 }
 
-RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, CString *txtFileName){
-	CString string, string1, string2, string3, string4;
+RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName){
+	novac::CString string, string1, string2, string3, string4;
 	long itSpectrum, itSpecie; // iterators
-	CString pakFile, txtFile, specModel, evalSummaryLog;
-	CString wsSrc, wdSrc, phSrc;
+	novac::CString pakFile, txtFile, specModel, evalSummaryLog;
+	novac::CString wsSrc, wdSrc, phSrc;
 	CDateTime dateTime;
 
 	// get the file-name that we want to have	
@@ -402,7 +401,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 }
 
 RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField){
-	CString evalSummaryLog;
+	novac::CString evalSummaryLog;
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
@@ -450,7 +449,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 }
 
 RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField){
-	CString pakSummaryLog;
+	novac::CString pakSummaryLog;
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
@@ -499,10 +498,10 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
 	return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::GetArchivingfileName(CString &pakFile, CString &txtFile, const CString &fitWindowName, const CString &temporaryScanFile, MEASUREMENT_MODE mode){
+RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakFile, novac::CString &txtFile, const novac::CString &fitWindowName, const novac::CString &temporaryScanFile, MEASUREMENT_MODE mode){
 	CSpectrumIO reader;
 	CSpectrum tmpSpec;
-	CString serialNumber, dateStr, timeStr, dateStr2, modeStr, userMessage;
+	novac::CString serialNumber, dateStr, timeStr, dateStr2, modeStr, userMessage;
 
 	// 0. Make an initial assumption of the file-names
 	int i = 0;
@@ -582,12 +581,12 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(CString &pakFile, CS
 	is also valid at the time when the scan was made. 
 	@return 0 if successful otherwise non-zero	
 */
-int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, Evaluation::CFitWindow &window){
+int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, Evaluation::CFitWindow &window){
 	CSpectrum skySpec;
 	CDateTime day, evalValidFrom, evalValidTo;
 	Configuration::CInstrumentConfiguration *instrumentConf = NULL;
 	Configuration::CInstrumentLocation singleLocation;
-	CString serialNumber, errorMessage;
+	novac::CString serialNumber, errorMessage;
 	
 	// Get the sky-spectrum. Read out serial-number and start-time from this
 	scan->GetSky(skySpec);
@@ -614,7 +613,7 @@ int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHan
 	@return 0 on successful, otherwise non-zero. */
 int CPostEvaluationController::GetDarkCurrentSettings(FileHandler::CScanFileHandler *scan, Configuration::CDarkSettings &settings){
 	CSpectrum skySpec;
-	CString serialNumber, errorMessage;
+	novac::CString serialNumber, errorMessage;
 	Configuration::CInstrumentConfiguration *instrumentConf = NULL;
 	
 	// Get the sky-spectrum. Read out serial-number and start-time from this
@@ -625,8 +624,8 @@ int CPostEvaluationController::GetDarkCurrentSettings(FileHandler::CScanFileHand
 }
 
 
-int CPostEvaluationController::CheckQualityOfFluxMeasurement(CScanResult *result, const CString &pakFileName) const{
-	CString errorMessage;
+int CPostEvaluationController::CheckQualityOfFluxMeasurement(CScanResult *result, const novac::CString &pakFileName) const{
+	novac::CString errorMessage;
 
 	// Check if this is a flux measurement at all
 	if(MODE_FLUX != result->GetMeasurementMode()){
@@ -647,7 +646,7 @@ int CPostEvaluationController::CheckQualityOfFluxMeasurement(CScanResult *result
 	@returns false if the scan is too bad and should be ignored. Else return true. */
 bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanFileHandler *scan, const Evaluation::CFitWindow &fitWindow, Configuration::CInstrumentLocation &instrLocation){
 	CSpectrum skySpectrum;
-	CString errorMessage;
+	novac::CString errorMessage;
 
 	// Check that the sky-spectrum is ok
 	scan->GetSky(skySpectrum);

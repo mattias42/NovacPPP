@@ -22,10 +22,10 @@ namespace Configuration{
 		// -----------------------------------------
 
 		/** The name of the location */
-		CString m_locationName;
+		novac::CString m_locationName;
 		
 		/** The volcano that was monitored from this location */
-		CString m_volcano;
+		novac::CString m_volcano;
 
 		/** The latitude of the location */
 		double  m_latitude;

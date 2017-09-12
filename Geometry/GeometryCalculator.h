@@ -4,6 +4,8 @@
 #include "GeometryResult.h"
 #include "../Configuration/InstrumentLocation.h"
 
+#include <PPPLib/CString.h>
+
 namespace Geometry{
 
 	/** <b>CGeometryCalculator</b> contains generic methods for performing
@@ -50,8 +52,8 @@ namespace Geometry{
 				@param result - will on successful return be filled with information on the result
 					the resulting plume height is the altitude of the plume in meters above sea level...
 				@return true on success */
-		static bool CalculateGeometry(const CString &evalLog1, const CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
-		static bool CalculateGeometry(const CString &evalLog1, int scanIndex1, const CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
+		static bool CalculateGeometry(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
+		static bool CalculateGeometry(const novac::CString &evalLog1, int scanIndex1, const novac::CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
 		static bool CalculateGeometry(const CPlumeInScanProperty &plume1, const CDateTime &startTime1, const CPlumeInScanProperty &plume2, const CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
 
 		/** Calculate the plume-height using the scan found in the given evaluation-file.
@@ -61,7 +63,7 @@ namespace Geometry{
 					the estimated error is based on the error in wind-direction and the error in estimating
 						the plume centre position.
 				@return true on success */
-		static bool CalculatePlumeHeight(const CString &evalLog, int scanIndex, Meteorology::CWindField &windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
+		static bool CalculatePlumeHeight(const novac::CString &evalLog, int scanIndex, Meteorology::CWindField &windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
 
 		/** Calculate the wind direction using the scan found in the given evaluation-file.
 				@param absolutePlumeHeight - the assumed plume height (in meters above sea level)
@@ -69,7 +71,7 @@ namespace Geometry{
 				@param result - will on successful return be filled with information on the result
 					only the wind-direction (and its error) will be filled in
 				@return true on success */
-		static bool CalculateWindDirection(const CString &evalLog, int scanIndex, Geometry::CPlumeHeight &absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
+		static bool CalculateWindDirection(const novac::CString &evalLog, int scanIndex, Geometry::CPlumeHeight &absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
 
 	protected:
 

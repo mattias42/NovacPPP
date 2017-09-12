@@ -8,7 +8,6 @@
 #include "../Common/Spectra/ScanFileHandler.h"
 #include "../Configuration/NovacPPPConfiguration.h"
 
-extern CDialog* pView;
 extern UINT primaryLanguage;
 extern UINT subLanguage;
 
@@ -51,7 +50,7 @@ namespace Evaluation
 				there can be more than one valid fit-window for each spectrometer at each
 				given time. The evaluation will only be performed for the fit-window with the
 				given name. If this is empty then the first valid fit-window will be used
-			@param txtfileName - if not NULL then this CString will on return be filled
+			@param txtfileName - if not NULL then this novac::CString will on return be filled
 				with the full path and filename of the generated txt-file containing the evaluation
 				results
 			@param plumeProperties - if not NULL then this will on return be filled
@@ -61,7 +60,7 @@ namespace Evaluation
 			@return 6 if the scan was rejected because it does not see the plume or 
 						sees a too small portion of the plume
 		  */
-		int EvaluateScan(const CString& pakFileName, const CString &fitWindowName, CString *txtFileName = NULL, CPlumeInScanProperty *plumeProperties = NULL);
+		int EvaluateScan(const novac::CString& pakFileName, const novac::CString &fitWindowName, novac::CString *txtFileName = NULL, CPlumeInScanProperty *plumeProperties = NULL);
 
 	private:
 		// ----------------------------------------------------------------------
@@ -79,7 +78,7 @@ namespace Evaluation
 			is also valid at the time when the scan was made.
 			@return 0 if successful otherwise non-zero		
 		*/
-		int GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const CString &fitWindowName, 
+		int GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName, 
 									Configuration::CInstrumentLocation &instrLocation, 
 									Evaluation::CFitWindow &window);
 
@@ -101,7 +100,7 @@ namespace Evaluation
 			@param txtFileName - if not null, this will on successful writing of the file be filled
 				with the full path and filename of the txt - file generated
 			@return SUCCESS if operation completed sucessfully. */
-		RETURN_CODE WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, CString *txtFileName = NULL);
+		RETURN_CODE WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName = NULL);
 
 		/** Appends the evaluation result to the evaluation summary log file.
 			@param result - a CScanResult holding information about the result
@@ -119,7 +118,7 @@ namespace Evaluation
 
 		/** Gets the filename under which the scan-file should be stored.
 			@return SUCCESS if a filename is found. */
-		RETURN_CODE GetArchivingfileName(CString &pakFile, CString &txtFile, const CString &fitWindowName, const CString &temporaryScanFile, MEASUREMENT_MODE mode);
+		RETURN_CODE GetArchivingfileName(novac::CString &pakFile, novac::CString &txtFile, const novac::CString &fitWindowName, const novac::CString &temporaryScanFile, MEASUREMENT_MODE mode);
 
 		/** This function takes as input parameter an eval-log containing the result of a flux - measurement
 			and checks the quality of the measurement. 
@@ -127,7 +126,7 @@ namespace Evaluation
 			@return 0 - if the measurement should be rejected.
 			@return -1 - if the measurement is not a flux measurement.
 			*/
-		int CheckQualityOfFluxMeasurement(CScanResult *result, const CString &pakFileName) const;
+		int CheckQualityOfFluxMeasurement(CScanResult *result, const novac::CString &pakFileName) const;
 		
 };
 

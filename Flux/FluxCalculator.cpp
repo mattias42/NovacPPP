@@ -29,9 +29,9 @@ CFluxCalculator::~CFluxCalculator(void)
 		the result of the evaluation.
 	@return 0 on success, else non-zero value
 	*/
-int CFluxCalculator::CalculateFlux(const CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult){
+int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult){
 	CDateTime skyStartTime;
-	CString errorMessage, shortFileName, serial;
+	novac::CString errorMessage, shortFileName, serial;
 	Geometry::CPlumeHeight relativePlumeHeight;
 	Meteorology::CWindField windField;
 	int channel;
@@ -174,11 +174,11 @@ int CFluxCalculator::CalculateFlux(const CString& evalLogFileName, const Meteoro
 	was made.
 	@return 0 if successful otherwise non-zero		
 */
-int CFluxCalculator::GetLocation(const CString &serial, const CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation){
+int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation){
 	CDateTime day, evalValidFrom, evalValidTo;
 	Configuration::CInstrumentConfiguration *instrumentConf = NULL;
 	Configuration::CInstrumentLocation singleLocation;
-	CString errorMessage;
+	novac::CString errorMessage;
 	
 	// First of all find the instrument 
 	for(unsigned int k = 0; k < g_setup.m_instrumentNum; ++k){
@@ -219,10 +219,10 @@ int CFluxCalculator::GetLocation(const CString &serial, const CDateTime &startTi
 	@param scan - the scan itself, also containing information about the evaluation and the flux.
 	@return SUCCESS if operation completed sucessfully. */
 RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult, const Evaluation::CScanResult *result){
-	CString string, dateStr, dateStr2, serialNumber;
-	CString fluxLogFile, directory;
-	CString wdSrc, wsSrc, phSrc;
-	CString errorMessage;
+	novac::CString string, dateStr, dateStr2, serialNumber;
+	novac::CString fluxLogFile, directory;
+	novac::CString wdSrc, wsSrc, phSrc;
+	novac::CString errorMessage;
 	CDateTime dateTime;
 
 	// 0. Get the sources for the wind-field

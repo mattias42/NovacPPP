@@ -2,6 +2,7 @@
 
 #include "../GPSData.h"
 #include "../SpectrometerModel.h"
+#include <PPPLib/CString.h>
 
 /** <b>CSpectrumInfo</b> is a class that contains all auxilliary information about
      a spectrum, such as exposure time, number of spectra averaged, time when the spectrum
@@ -53,18 +54,18 @@ public:
 
 	/** The spectrometer which collected the spectrum. 
 		For OceanOptics Spectrometers this is the serial number */
-	CString					m_device;
+	novac::CString					m_device;
 
 	/** The spectrometer model which was used to collect this spectrum */
 	SPECTROMETER_MODEL		m_specModel;
 
 	/** The name of the spectrum */
-	CString					m_name;
+	novac::CString					m_name;
 
 	/** Some of the settings of the setup of the scanning - instrument*/
-	CString	m_volcano;
-	CString	m_site;
-	CString	m_observatory;
+	novac::CString	m_volcano;
+	novac::CString	m_site;
+	novac::CString	m_observatory;
 
 	/** The channel with which the spectrum was collected.
       Values range from 0 (Master), 1 (1:st slave) to 7 (7:th slave).

@@ -12,6 +12,7 @@
 #include "../Meteorology/WindDataBase.h"
 #include "../Geometry/PlumeHeight.h"
 
+#include <PPPLib/CString.h>
 
 extern CDialog* pView;
 
@@ -58,7 +59,7 @@ namespace Flux{
 				the result of the calculations.
 			@return 0 on success, else non-zero value
 		  */
-		int CalculateFlux(const CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult);
+		int CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult);
 
 	private:
 		// ----------------------------------------------------------------------
@@ -75,7 +76,7 @@ namespace Flux{
 			was made.
 			@return 0 if successful otherwise non-zero		
 		*/
-		int GetLocation(const CString &serial, const CDateTime &startTime,
+		int GetLocation(const novac::CString &serial, const CDateTime &startTime,
 									Configuration::CInstrumentLocation &instrLocation);
 
 		/** Appends the evaluated flux to the appropriate log file.

@@ -41,7 +41,7 @@ namespace Meteorology{
 
 		/** The name of this database. Typically this is the name of the volcano for
 			which the database is valid. Used to identify the database */
-		CString m_dataBaseName;
+		novac::CString m_dataBaseName;
 
 		// ----------------------------------------------------------------------
 		// --------------------- PUBLIC METHODS ---------------------------------
@@ -91,7 +91,7 @@ namespace Meteorology{
 		
 		/** Writes the contents of this database to file. 
 			@return 0 on success. */
-		int WriteToFile(const CString &fileName) const;
+		int WriteToFile(const novac::CString &fileName) const;
 		
 		/** Retrieves the size of the database */
 		int GetDataBaseSize();

@@ -8,6 +8,7 @@
 #include "../../Evaluation/EvaluationResult.h"
 
 #include "../../Meteorology/WindField.h"
+#include <PPPLib/CString.h>
 
 namespace FileHandler
 {
@@ -30,7 +31,7 @@ namespace FileHandler
 
 		/** The serial number of the spectrometer which has collected the spectra 
 			in this scan */
-		CString m_device;
+		novac::CString m_device;
 
 		/** The channel of the spectrometer which was used for collecting this scan.
 			(if a SD2000 with multiple channels is used, one spectrometer should be 
@@ -55,7 +56,7 @@ namespace FileHandler
 			If any file-error occurs the parameter 'm_lastError' will be set.
 			@param fileName - the name of the file in which the spectra of the scan are saved.
 			@return SUCCESS on success. @return FAIL if any error occurs */
-		RETURN_CODE CheckScanFile(const CString *fileName);
+		RETURN_CODE CheckScanFile(const novac::CString *fileName);
 
 		/** Gets the next spectrum in the scan. 
 			If any file-error occurs the parameter 'm_lastError' will be set.
@@ -110,7 +111,7 @@ namespace FileHandler
 		double GetCompass() const;
 
 		/** Retrieves the name of the file that this object is working on */
-		const CString &GetFileName() const {return m_fileName; }
+		const novac::CString &GetFileName() const {return m_fileName; }
 
 		/** Resets the m_specReadSoFarNum to start reading from the first spectrum again */
 		void  ResetCounter();
@@ -147,7 +148,7 @@ namespace FileHandler
 		bool m_initialized;
 
 		/** The filename of the spectrum file */
-		CString m_fileName;
+		novac::CString m_fileName;
 
 		/** The total number of spectra in the current .pak-file */
 		int m_specNum;

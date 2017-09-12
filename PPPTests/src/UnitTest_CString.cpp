@@ -119,6 +119,70 @@ namespace novac
 
 			REQUIRE(sut.ToStdString() == original);
 		}
+	}
 
+	TEST_CASE("AppendFormat behaves as expected", "[CString]")
+	{
+		const std::string first = "Twinkle, twinkle little star";
+		const std::string second = "Mary had a little lamb";
+
+		SECTION("String - char array")
+		{
+			CString sut;
+			sut.Format("%s", first.data());
+			sut.AppendFormat("%s", second.data());
+
+			REQUIRE(sut.ToStdString() == first + second);
+		}
+
+		SECTION("String - CString")
+		{
+			CString cFirst { first }; // this will have the same contents as the first
+			CString cSecond { second }; // this will have the same contents as the second
+
+			CString sut;
+			sut.Format("%s", (const char*)cFirst);
+			sut.AppendFormat("%s", (const char*)cSecond);
+
+			REQUIRE(sut.ToStdString() == first + second);
+		}
+	}
+
+	TEST_CASE("Trim behaves as expected", "[CString]")
+	{
+		SECTION("Trim_1 - space")
+		{
+			CString sut{"  Mary had a little lamb  "};
+			sut.Trim();
+			REQUIRE(sut.ToStdString() == "Mary had a little lamb");
+		}
+
+		SECTION("Trim_1 - space + tabs")
+		{
+			CString sut{ " \t Mary had a little lamb\t  " };
+			sut.Trim();
+			REQUIRE(sut.ToStdString() == "Mary had a little lamb");
+		}
+
+		SECTION("Trim_2 - space")
+		{
+			CString sut{ "  Mary had a little lamb  " };
+			sut.Trim(" ");
+			REQUIRE(sut.ToStdString() == "Mary had a little lamb");
+		}
+
+		SECTION("Trim_2 - space + tabs")
+		{
+			CString sut{ " \t Mary had a little lamb\t  " };
+			sut.Trim(" \t");
+			REQUIRE(sut.ToStdString() == "Mary had a little lamb");
+		}
+
+		SECTION("Trim_2 - space - tabs")
+		{
+			CString sut{ " \t Mary had a little lamb\t  " };
+			sut.Trim(" ");
+			REQUIRE(sut.ToStdString() == "\t Mary had a little lamb\t");
+		}
 	}
 }

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "PlumeDataBase.h"
 #include <math.h>
+#include <algorithm>
 
 #include "../Common/Common.h"
 
@@ -199,7 +200,7 @@ void CPlumeDataBase::InsertPlumeHeight(const CGeometryResult &geomResult){
 
 /** Writes the contents of this database to file. 
 	@return 0 on success. */
-int CPlumeDataBase::WriteToFile(const CString &fileName) const{
+int CPlumeDataBase::WriteToFile(const novac::CString &fileName) const{
 
 	return 1;
 }
@@ -222,7 +223,7 @@ void CPlumeDataBase::CalculateAverageHeight(const std::list <CPlumeData> &plumeL
 
 	// Calculate the error
 	averageAltitude = Average(plumeAltitudes, nAltitudes);
-	altitudeError	= max(Std(plumeAltitudes, nAltitudes), Average(plumeAltitudeErrors, nAltitudes));
+	altitudeError	= std::max(Std(plumeAltitudes, nAltitudes), Average(plumeAltitudeErrors, nAltitudes));
 
 	// Clean up...
 	delete [] plumeAltitudes;

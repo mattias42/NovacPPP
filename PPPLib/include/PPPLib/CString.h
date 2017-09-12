@@ -27,7 +27,12 @@ namespace novac
 		size_t GetLength() const { return m_data.size(); }
 
 		// --------------------- Formatting -----------------------
+
+		/** Constructs the contents of this string using the common printf formatting. */
 		void Format(const char* format, ...);
+
+		/** Appends the contents of this string using the common printf formatting. */
+		CString& AppendFormat(const char* format, ...);
 
 		// ---------------------- Extracting substrings -----------------------
 
@@ -35,6 +40,9 @@ namespace novac
 		CString Left(size_t nChars) const;
 		CString Right(int nChars) const;
 		CString Right(size_t nChars) const;
+
+		void Trim();
+		void Trim(const char* characters);
 
 		// ---------------------- Conversion -----------------------
 

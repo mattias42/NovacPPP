@@ -2,7 +2,7 @@
 #include "postprocessing.h"
 
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
 
 // the PostEvaluationController takes care of the DOAS evaluations
 #include "Evaluation/PostEvaluationController.h"

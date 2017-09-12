@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "spectrumio.h"
+#include <algorithm>
 
 using namespace SpectrumIO;
 
@@ -12,8 +13,8 @@ CSpectrumIO::~CSpectrumIO(void)
 {
 }
 
-int CSpectrumIO::CountSpectra(const CString &fileName){
-	CString errorMessage; // a string used for error messages
+int CSpectrumIO::CountSpectra(const novac::CString &fileName){
+	novac::CString errorMessage; // a string used for error messages
 	unsigned long specNum = 0;
 	int headerSize;
 
@@ -39,7 +40,7 @@ int CSpectrumIO::CountSpectra(const CString &fileName){
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if(0 != fseek(f, min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+		if(0 != fseek(f, std::min(MKZY.size, unsigned short(4*MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -47,7 +48,7 @@ int CSpectrumIO::CountSpectra(const CString &fileName){
 		fread(textBuffer, 1, 4, f);
 		if(NULL == strstr(textBuffer, "MKZY")){
 			// rewind
-			if(0 != fseek(f, -min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+			if(0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}else{
 			if(0 != fseek(f, -4, SEEK_CUR))
@@ -66,9 +67,9 @@ int CSpectrumIO::CountSpectra(const CString &fileName){
 	return specNum;
 }
 
-int CSpectrumIO::ScanSpectrumFile(const CString &fileName, const CString *specNamesToLookFor, int numSpecNames, int *indices){
-	CString errorMessage; // a string used for error messages
-	CString specName;
+int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::CString *specNamesToLookFor, int numSpecNames, int *indices){
+	novac::CString errorMessage; // a string used for error messages
+	novac::CString specName;
 	Common common;
 	unsigned long specNum = 0;
 	int headerSize, nameIndex;
@@ -111,7 +112,7 @@ int CSpectrumIO::ScanSpectrumFile(const CString &fileName, const CString *specNa
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if(0 != fseek(f, min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+		if(0 != fseek(f, std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -119,7 +120,7 @@ int CSpectrumIO::ScanSpectrumFile(const CString &fileName, const CString *specNa
 		fread(textBuffer, 1, 4, f);
 		if(NULL == strstr(textBuffer, "MKZY")){
 			// rewind
-			if(0 != fseek(f, -min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+			if(0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}else{
 			if(0 != fseek(f, -4, SEEK_CUR))
@@ -138,8 +139,8 @@ int CSpectrumIO::ScanSpectrumFile(const CString &fileName, const CString *specNa
 	return specNum;
 }
 
-RETURN_CODE CSpectrumIO::ReadSpectrum(const CString &fileName, const int spectrumNumber, CSpectrum &spec, char *headerBuffer /* = NULL*/, int headerBufferSize /* = 0*/, int *headerSize /* = NULL*/){
-	CString errorMessage; // a string used for error messages
+RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int spectrumNumber, CSpectrum &spec, char *headerBuffer /* = NULL*/, int headerBufferSize /* = 0*/, int *headerSize /* = NULL*/){
+	novac::CString errorMessage; // a string used for error messages
 	MKPack mkPack;
 
 	long i,j;
@@ -176,7 +177,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const CString &fileName, const int spectru
 			char textBuffer[4];
 
 			// Seek our way into the next spectrum...
-			if(0 != fseek(f, min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+			if(0 != fseek(f, std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 
 			// Make sure we're at the right place, if not rewind again and search for the next
@@ -185,7 +186,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const CString &fileName, const int spectru
 				break;
 			if(NULL == strstr(textBuffer, "MKZY")){
 				// rewind
-				if(0 != fseek(f, -min(MKZY.size, 4*MAX_SPECTRUM_LENGTH), SEEK_CUR))
+				if(0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 					break;
 			}else{
 				if(0 != fseek(f, -4, SEEK_CUR))
@@ -283,7 +284,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const CString &fileName, const int spectru
 		Return SUCCESS if all is ok, return FAIL if the file is corrupt in some
 			way or the spectrum number 'spectrumNumber' does not exist in this file. */
 RETURN_CODE CSpectrumIO::FindSpectrumNumber(FILE *f, int spectrumNumber){
-	 CString errorMessage; // a string used for error messages
+	 novac::CString errorMessage; // a string used for error messages
 	long curSpecNum = 0;
 
 	if(f == NULL)
@@ -338,7 +339,7 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec){
     @param spec - Will on successful return contain the desired spectrum.
     @return SUCCESS if all is ok. */
 RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerSize, char *headerBuffer, int headerBufferSize){
-	CString errorMessage; // a string used for error messages
+	novac::CString errorMessage; // a string used for error messages
 	long outlen;
 	long j;
 	unsigned long chk;
@@ -378,7 +379,7 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 	// We've managed to read the spectrum header, write that information
 	//	to the supplied spectrum data-structure
 	spec.m_info.m_device.Format("%s", MKZY.instrumentname);
-	spec.m_info.m_device.Trim(_T(" "));  // remove spaces in the beginning or the end
+	spec.m_info.m_device.Trim(" ");  // remove spaces in the beginning or the end
 	spec.m_info.m_name.Format("%s", MKZY.name);
 
 	// Decompress the spectrum itself
@@ -455,7 +456,7 @@ void CSpectrumIO::WriteDate(unsigned long &d, const CDateTime &day) const{
 		d = day.day * 10000 + day.month*100 + day.year - (day.year / 100)*100;
 }
 
-int CSpectrumIO::AddSpectrumToFile(const CString &fileName, const CSpectrum &spectrum, const char *headerBuffer, int headerSize){
+int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectrum &spectrum, const char *headerBuffer, int headerSize){
 
 	long last,tmp;
 	int i;
@@ -516,12 +517,12 @@ int CSpectrumIO::AddSpectrumToFile(const CString &fileName, const CSpectrum &spe
 	MKZY.flag           = info.m_flag;
 	MKZY.hdrsize        = sizeof(struct MKZYhdr);
 	MKZY.hdrversion     = hdr_version;
-	sprintf(MKZY.instrumentname, "%.16s", spectrum.m_info.m_device);
+	sprintf(MKZY.instrumentname, "%.16s", (const char*)spectrum.m_info.m_device);
 	MKZY.lat            = spectrum.Latitude();
 	MKZY.lon            = spectrum.Longitude();
 	MKZY.measurecnt     = (char)info.m_scanSpecNum;
 	MKZY.measureidx     = (char)info.m_scanIndex;
-	sprintf(MKZY.name, "%.12s", spectrum.m_info.m_name);
+	sprintf(MKZY.name, "%.12s", (const char*)spectrum.m_info.m_name);
 	MKZY.pixels         = (unsigned short)spectrum.m_length;
 	MKZY.size           = outsiz;
 	MKZY.startc         = info.m_startChannel;
@@ -621,7 +622,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 
 		CSpectrumInfo *info = &spec->m_info;
 		// save the spectrum information in the CSpectrum data structure
-		spec->m_length           = max(min(MKZY.pixels, MAX_SPECTRUM_LENGTH), 0);
+		spec->m_length           = std::max(std::min(MKZY.pixels, unsigned short(MAX_SPECTRUM_LENGTH)), unsigned short(0));
 		info->m_startChannel     = MKZY.startc;
 		info->m_numSpec          = MKZY.scans;
 		info->m_exposureTime     = (MKZY.exptime > 0) ? MKZY.exptime : -MKZY.exptime;
@@ -652,7 +653,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 		ParseDate(MKZY.date, info->m_startTime);
 
 		info->m_device.Format("%s", MKZY.instrumentname);
-		info->m_device.Trim(_T(" ")); // remove spaces in the beginning or the end
+		info->m_device.Trim(" "); // remove spaces in the beginning or the end
 		info->m_name.Format("%s", MKZY.name);
 	}
 

@@ -27,10 +27,10 @@ CScanFileHandler::~CScanFileHandler(void)
 
 /** Checks the scan saved in the given filename
     @param fileName - the name of the file in which the spectra of the scan are saved */
-RETURN_CODE CScanFileHandler::CheckScanFile(const CString *fileName){
+RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	CSpectrumIO reader;
-	CString errMsg;
-	CString strings[] = {CString("sky"), CString("zenith"), CString("dark"), CString("offset"), CString("dark_cur"), CString("darkcur")};
+	novac::CString errMsg;
+	novac::CString strings[] = {novac::CString("sky"), novac::CString("zenith"), novac::CString("dark"), novac::CString("offset"), novac::CString("dark_cur"), novac::CString("darkcur")};
 	int indices[] = {-1, -1, -1, -1, -1, -1};
 	bool error = false;
 	CSpectrum tempSpec;

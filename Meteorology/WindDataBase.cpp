@@ -187,8 +187,8 @@ void CWindDataBase::InsertWindSpeed(const CDateTime &validFrom, const CDateTime 
 
 /** Writes the contents of this database to file. 
 	@return 0 on success. */
-int CWindDataBase::WriteToFile(const CString &fileName) const{
-	CString indent, sourceStr; 
+int CWindDataBase::WriteToFile(const novac::CString &fileName) const{
+	novac::CString indent, sourceStr; 
 	CDateTime from, to;
 
 	// open the file
@@ -197,9 +197,9 @@ int CWindDataBase::WriteToFile(const CString &fileName) const{
 		return 1;
 		
 	// write the header lines and the start of the file
-	fprintf(f, TEXT("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
-	fprintf(f, TEXT("<!-- This file defines the wind field for a given volcano. To be used\n for the calculation of fluxes in the NOVAC Post Processing Program -->\n\n"));
-	fprintf(f, TEXT("<Wind volcano=\"%s\">\n"), m_dataBaseName);
+	fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+	fprintf(f, "<!-- This file defines the wind field for a given volcano. To be used\n for the calculation of fluxes in the NOVAC Post Processing Program -->\n\n");
+	fprintf(f, "<Wind volcano=\"%s\">\n", (const char*)m_dataBaseName);
 	indent.Format("\t");
 
 
@@ -207,7 +207,7 @@ int CWindDataBase::WriteToFile(const CString &fileName) const{
 	std::list<CWindInTime>::const_iterator pos = m_dataBase.begin();
 	while(pos != m_dataBase.end()){
 		// write the start of the <windfield> section
-		fprintf(f, "%s<windfield>\n", indent);
+		fprintf(f, "%s<windfield>\n", (const char*)indent);
 	
 		// get the next element in the list
 		const CWindInTime &time = (const CWindInTime &)*(pos++);
@@ -226,25 +226,25 @@ int CWindDataBase::WriteToFile(const CString &fileName) const{
 			}
 
 			// write this one to string
-			fprintf(f, "\t%s<source>%s</source>\n",		indent, sourceStr);
-			fprintf(f, "\t%s<altitude>%.1f</altitude>\n", indent, GetLocation(data.location).m_altitude);
-			fprintf(f, "\t%s<valid_from>%04d.%02d.%02dT%02d:%02d:%02d</valid_from>\n", indent, from.year, from.month, from.day, from.hour, from.minute, from.second);
-			fprintf(f, "\t%s<valid_to>%04d.%02d.%02dT%02d:%02d:%02d</valid_to>\n", indent, to.year, to.month, to.day, to.hour, to.minute, to.second);
+			fprintf(f, "\t%s<source>%s</source>\n", (const char*)indent, (const char*)sourceStr);
+			fprintf(f, "\t%s<altitude>%.1f</altitude>\n", (const char*)indent, GetLocation(data.location).m_altitude);
+			fprintf(f, "\t%s<valid_from>%04d.%02d.%02dT%02d:%02d:%02d</valid_from>\n", (const char*)indent, from.year, from.month, from.day, from.hour, from.minute, from.second);
+			fprintf(f, "\t%s<valid_to>%04d.%02d.%02dT%02d:%02d:%02d</valid_to>\n", (const char*)indent, to.year, to.month, to.day, to.hour, to.minute, to.second);
 
 			std::list<CWindData>::const_iterator pos2 = time.windData.begin();
 			// loop through each item in the list and write it down
 			while(pos2 != time.windData.end()){
 				const CWindData &data = (const CWindData &)*(pos2++);
 				const CGPSData &dataPos = GetLocation(data.location);
-				fprintf(f, "\t%s<item lat=\"%.2f\" lon=\"%.2f\" ws=\"%.2f\" wse=\"%.2f\" wd=\"%.2f\" wde=\"%.2f\"/>\n", indent, dataPos.m_latitude, dataPos.m_longitude, data.ws, data.ws_err, data.wd, data.wd_err);
+				fprintf(f, "\t%s<item lat=\"%.2f\" lon=\"%.2f\" ws=\"%.2f\" wse=\"%.2f\" wd=\"%.2f\" wde=\"%.2f\"/>\n", (const char*)indent, dataPos.m_latitude, dataPos.m_longitude, data.ws, data.ws_err, data.wd, data.wd_err);
 			}
 		}
 
 		// write the end of the <windfield> section
-		fprintf(f, "%s</windfield>\n", indent);
+		fprintf(f, "%s</windfield>\n", (const char*)indent);
 	}
 
-	fprintf(f, TEXT("</Wind>\n"));
+	fprintf(f, "</Wind>\n");
 	
 	// remember to close the file when we're done
 	fclose(f);

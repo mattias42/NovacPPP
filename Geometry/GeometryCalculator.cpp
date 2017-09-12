@@ -366,7 +366,7 @@ void CGeometryCalculator::GetDirection(double direction[3], double scanAngle, do
 	direction[2] = 1;
 }
 
-bool CGeometryCalculator::CalculateGeometry(const CString &evalLog1, const CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
+bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
 	return CGeometryCalculator::CalculateGeometry(evalLog1, 0, evalLog2, 0, locations, result);
 }
 
@@ -374,7 +374,7 @@ bool CGeometryCalculator::CalculateGeometry(const CString &evalLog1, const CStri
 		given evaluation-files. 
 		@param result - will on successful return be filled with information on the result
 		@return true on success */
-bool CGeometryCalculator::CalculateGeometry(const CString &evalLog1, int scanIndex1, const CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
+bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, int scanIndex1, const novac::CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
 	FileHandler::CEvaluationLogFileHandler reader[2];
 	CGPSData source;
 	CPlumeInScanProperty plume[2];
@@ -591,7 +591,7 @@ double CGeometryCalculator::GetWindDirection(const CGPSData source, double plume
 		@param result - will on successful return be filled with information on the result
 			the resulting plume height is the altitude of the plume in meters above sea level...
 		@return true on success */
-bool CGeometryCalculator::CalculatePlumeHeight(const CString &evalLog, int scanIndex, Meteorology::CWindField &windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result){
+bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, int scanIndex, Meteorology::CWindField &windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result){
 	FileHandler::CEvaluationLogFileHandler reader;
 	CPlumeInScanProperty plume;
 	CGPSData source, scannerPos;
@@ -643,7 +643,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const CString &evalLog, int scanI
 	double plumeHeightErr = sqrt( pow(plumeHeight_plus_wd - plumeHeight_minus_wd, 2.0) + pow(plumeHeight_plus_pc - plumeHeight_minus_pc, 2.0) );
 	
 	#ifdef _DEBUG
-		CString fileName;
+		novac::CString fileName;
 		fileName.Format("%s\\debugGeometrySingleInstr.txt", g_userSettings.m_outputDirectory);
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
@@ -673,7 +673,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const CString &evalLog, int scanI
 		@param result - will on successful return be filled with information on the result
 			only the wind-direction (and its error) will be filled in
 		@return true on success */
-bool CGeometryCalculator::CalculateWindDirection(const CString &evalLog, int scanIndex, Geometry::CPlumeHeight &absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result){
+bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, int scanIndex, Geometry::CPlumeHeight &absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result){
 	FileHandler::CEvaluationLogFileHandler reader;
 	CPlumeInScanProperty plume;
 	CGPSData source, scannerPos;
@@ -727,7 +727,7 @@ bool CGeometryCalculator::CalculateWindDirection(const CString &evalLog, int sca
 
 	
 	#ifdef _DEBUG
-		CString fileName;
+		novac::CString fileName;
 		fileName.Format("%s\\debugGeometrySingleInstr.txt", g_userSettings.m_outputDirectory);
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){

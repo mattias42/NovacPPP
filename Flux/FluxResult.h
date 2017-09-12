@@ -3,6 +3,7 @@
 #include "../Common/Common.h"
 #include "../Common/DateTime.h"
 #include "../Meteorology/WindField.h"
+#include <PPPLib/CString.h>
 
 const enum FLUX_QUALITY_FLAG{
 	FLUX_QUALITY_GREEN,
@@ -74,7 +75,7 @@ namespace Flux
 		int			m_volcano;
 		
 		/** The instrument that collected this scan */
-		CString		m_instrument;
+		novac::CString		m_instrument;
 
 		/** The type of the instrument that collected this scan */
 		INSTRUMENT_TYPE m_instrumentType;
