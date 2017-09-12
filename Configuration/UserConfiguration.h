@@ -4,6 +4,7 @@
 #include "../Common/Common.h"
 #include "../Molecule.h"
 
+#include <PPPLib/CString.h>
 
 namespace Configuration{
 	/** The class <b>CUserConfiguration</b> stores the settings from the user
@@ -13,8 +14,8 @@ namespace Configuration{
 		which time period to evaluate scans from...
 	*/
 
-#define ENDTAG(x) ("/" + CString(x))
-#define FLAG(x)	("--" + CString(x) + "=")
+#define ENDTAG(x) ("/" + novac::CString(x))
+#define FLAG(x)	("--" + novac::CString(x) + "=")
 
 	class CUserConfiguration
 	{
@@ -65,11 +66,11 @@ namespace Configuration{
 		// ------------------------------------------------------------------------
 
 		/** The directory that we should use for temporary files */
-		CString			m_tempDirectory;
+		novac::CString			m_tempDirectory;
 		#define			str_tempDirectory "tempdirectory"
 		
 		/** The directory that we should use to store the results */
-		CString			m_outputDirectory;
+		novac::CString			m_outputDirectory;
 		#define			str_outputDirectory "outputdirectory"
 
 		// ------------------------------------------------------------------------
@@ -113,7 +114,7 @@ namespace Configuration{
 		
 		/** The path to a directory on the location computer which we should scan for
 			data files. */
-		CString			m_LocalDirectory;
+		novac::CString			m_LocalDirectory;
 		#define			str_LocalDirectory "LocalDirectory"
 		
 		/** This is non-zero if we should include sub-directories to 'm_LocalDirectory' 
@@ -123,7 +124,7 @@ namespace Configuration{
 		
 		/** The full path to a directory on a FTP - server where we should scan for 
 			data files */
-		CString			m_FTPDirectory;
+		novac::CString			m_FTPDirectory;
 		#define			str_FTPDirectory "FTPDirectory"
 		
 		/** This is non-zero if we should include sub-directories to 'm_FTPDirectory' 
@@ -132,7 +133,7 @@ namespace Configuration{
 		#define			str_includeSubDirectories_FTP "IncludeSubDirs_FTP"
 		
 		/** The username and password to log in to the FTP-server */
-		CString		m_FTPUsername, m_FTPPassword;
+		novac::CString		m_FTPUsername, m_FTPPassword;
 		#define		str_FTPUsername "FTPUsername"
 		#define		str_FTPPassword "FTPPassword"
 
@@ -151,7 +152,7 @@ namespace Configuration{
 		// ------------------------------------------------------------------------
 		
 		/** The file where to search for the wind field */
-		CString			m_windFieldFile;
+		novac::CString			m_windFieldFile;
 		#define			str_windFieldFile "WindFieldFile"
 
 		/** How to interpret the m_windFieldFile 
@@ -225,7 +226,7 @@ namespace Configuration{
 		// ------------------------------------------------------------------------
 
 		/** The names of the fit-windows that we should evaluate for */
-		CString			m_fitWindowsToUse[MAX_FIT_WINDOWS];
+		novac::CString			m_fitWindowsToUse[MAX_FIT_WINDOWS];
 		long			m_nFitWindowsToUse;
 		#define			m_str_fitWindowToUse "FitWindow_Item"
 		
@@ -242,7 +243,7 @@ namespace Configuration{
 		#define			str_skyOption ""
 		long			m_skyIndex;
 		#define			str_skyIndex ""
-		CString			m_skySpectrumFromUser; // the sky-spectrum, only used if m_skyOption is SKY_USER
+		novac::CString			m_skySpectrumFromUser; // the sky-spectrum, only used if m_skyOption is SKY_USER
 		#define			str_skySpectrumFromUser ""
 
 		// ------------------------------------------------------------------------

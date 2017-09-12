@@ -1,6 +1,9 @@
 #pragma once
 
-#include <afxtempl.h>
+#include <PPPLib/CString.h>
+#include <PPPLib/CList.h>
+
+// #include <afxtempl.h>
 
 /** The class <b>CContinuationOfProcessing</b> is used to keep track of 
 	what has already been done when continuing an old processing run.
@@ -30,7 +33,7 @@ public:
 		
 		/** This returns true if the given pak-file has previously been
 			processed at an earlier processing round. */
-		bool IsPreviouslyIgnored(const CString &pakFileName);
+		bool IsPreviouslyIgnored(const novac::CString &pakFileName);
 
 private:	
 
@@ -41,7 +44,7 @@ private:
 		/** This list is only used if g_userSettings.m_fIsContinuation == true
 			It is used to store the names of the .pak-files that we have already processed 
 			and ignored */
-		CList <CString, CString &> m_previouslyIgnoredFiles;
+        novac::CList <novac::CString, novac::CString &> m_previouslyIgnoredFiles;
 
 		// ----------------------------------------------------------------------
 		// --------------------- PRIVATE METHODS --------------------------------

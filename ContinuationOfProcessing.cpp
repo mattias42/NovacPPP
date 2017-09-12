@@ -23,8 +23,8 @@ CContinuationOfProcessing::~CContinuationOfProcessing(void)
 	if g_userSettings.m_fIsContinuation == false then this will just return without 
 		doing anything.	 */
 void CContinuationOfProcessing::ScanStatusLogFileForOldScans(){
-	CString oldStatusLogfile;
-	CString fileName;
+	novac::CString oldStatusLogfile;
+	novac::CString fileName;
 
 	m_previouslyIgnoredFiles.RemoveAll();
 
@@ -55,10 +55,10 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans(){
 	fclose(f);
 }
 
-bool CContinuationOfProcessing::IsPreviouslyIgnored(const CString &pakFileName){
+bool CContinuationOfProcessing::IsPreviouslyIgnored(const novac::CString &pakFileName){
 	POSITION p = m_previouslyIgnoredFiles.GetHeadPosition();
 	while(p != NULL){
-		CString &fileName = m_previouslyIgnoredFiles.GetNext(p);
+		novac::CString &fileName = m_previouslyIgnoredFiles.GetNext(p);
 		if(Equals(fileName, pakFileName))
 			return true;
 	}
