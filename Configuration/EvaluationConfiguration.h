@@ -11,7 +11,7 @@ namespace Configuration{
 		~CEvaluationConfiguration(void);
 
 		/** The serial-number of the spectrometer for which this setup is valid */
-		CString m_serial;
+		novac::CString m_serial;
 
 		/** Clears all configurations for this spectrometer */
 		void Clear();

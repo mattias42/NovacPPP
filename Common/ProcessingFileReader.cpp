@@ -17,7 +17,7 @@ CProcessingFileReader::~CProcessingFileReader(void)
 
 RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, Configuration::CUserConfiguration &settings){
 	CFileException exceFile;
-	CStdioFile file;
+	novac::CStdioFile file;
 
 	// 1. Open the file
 	if(!file.Open(filename, CFile::modeRead | CFile::typeText, &exceFile)){

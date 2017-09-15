@@ -8,6 +8,8 @@
 #include <afxtempl.h>
 #define RESPONSE_LEN 12288
 
+#include <PPPLib/CString.h>
+
 namespace Communication
 {
 
@@ -31,7 +33,7 @@ namespace Communication
 		  @return the error code if this thread's last Windows Sockets operation failed.
 		  @return 0 if successful.
 		*/
-		int SendCommand(CString command,CString commandText);
+		int SendCommand(novac::CString command,novac::CString commandText);
 
 		/**Connect FTP server
 		   @param usedSocket - the socket to be used to make connection
@@ -50,20 +52,20 @@ namespace Communication
 		bool ReadData();
 
 		/** Set the ftp log file name*/
-		void SetLogFileName(const CString fileName);
+		void SetLogFileName(const novac::CString fileName);
 
 		/**Upload a file from the local path
 		   @param fileLocalPath file full path including file name
 		*/
-		bool UploadFile(CString fileLocalPath);
+		bool UploadFile(novac::CString fileLocalPath);
 
 		/** delete a file in remote ftp server*/
-		bool DeleteFTPFile(CString fileName);
+		bool DeleteFTPFile(novac::CString fileName);
 
 		/**Get file name from full file path
 		    @param filePath - file's full path
 		*/
-		void GetFileName(CString& filePath);
+		void GetFileName(novac::CString& filePath);
 
 		/**Get port number from FTP server's response
 		    @return port number if successful
@@ -71,7 +73,7 @@ namespace Communication
 		*/
 		int GetPortNumber();
 
-		bool SendFileToServer(CString& fileLocalPath);
+		bool SendFileToServer(novac::CString& fileLocalPath);
 
 		/**Login FTP server
 		   @param ftpServerIP - ip address of ftp server
@@ -80,13 +82,13 @@ namespace Communication
 		   @param pwd - login password
 		   @return true if successful
 		*/
-		bool Login(const CString ftpServerIP, CString userName, CString pwd, int ftpPort = 21);
+		bool Login(const novac::CString ftpServerIP, novac::CString userName, novac::CString pwd, int ftpPort = 21);
 
 		/** Get system type*/
-		void GetSysType(CString& type);
+		void GetSysType(novac::CString& type);
 
 		/** Enter one folder*/
-		bool EnterFolder(CString& folder);
+		bool EnterFolder(novac::CString& folder);
 
 		/** Go to upper folder*/
 		bool GoToUpperFolder();
@@ -114,7 +116,7 @@ namespace Communication
 		  @return file size if successful,
 		  @return -1 if fails
 		*/
-		long Size(CString& fileName);
+		long Size(novac::CString& fileName);
 
 		/**Check whehter the remote file exists
 		*@param remoteFileName - the remote file name 
@@ -122,14 +124,14 @@ namespace Communication
 		*@return true if exists
 		*@return false if the file does not exist
 		*/
-		bool CheckFileExistence(CString& remoteFileName, CString& remoteDirectory);
+		bool CheckFileExistence(novac::CString& remoteFileName, novac::CString& remoteDirectory);
 		
 		/**Get FTP error code which is at the beginning of the reply
 		*@ftpMsg- the mesage that the FTP server responses.
 		*@return 0 if fail to find a number at the beginning of the reply
 		*@return a positive integer if successful
 		*/
-		int GetMsgCode(CString& ftpMsg);
+		int GetMsgCode(novac::CString& ftpMsg);
 		
 		/**judge the ftp error code meaning
 		*@code - the ftp error code
@@ -143,30 +145,30 @@ namespace Communication
 		*/
 		bool IsFTPCommandDone();
 		
-		int DownloadFile(CString remoteFileName,CString localFileName);
+		int DownloadFile(novac::CString remoteFileName,novac::CString localFileName);
 		
-		bool OpenFileHandle(CString& fileName);
+		bool OpenFileHandle(novac::CString& fileName);
 		
 		/**Makes the given directory to be the current directory in the FTP server
 		*@directory the directory to be change to in the FTP server
 		*/
-		bool SetCurrentFTPDirectory(CString& directory);
+		bool SetCurrentFTPDirectory(novac::CString& directory);
 		
 		/**Get the current directory*/
-		bool GetCurrentFTPDirectory(CString& curDirectory);
+		bool GetCurrentFTPDirectory(novac::CString& curDirectory);
 		
 		/**Get a string which is in one pair of seperator
 		*@param line a string which includes the wanted part
 		*@param seperator one pair of seperators which keep the wanted part in the middle
 		*for example, 220 xx "\" is the current. "\" is what we want
 		*/
-		void GetCitedString(CString& line, CString& leftSeperator, CString& rightSeperator);
+		void GetCitedString(novac::CString& line, novac::CString& leftSeperator, novac::CString& rightSeperator);
 		
 		/**Create a directory in remote FTP server
 		*@param parenetDirectory parent directory name
 		*@param newDirectory new directory name
 		*/
-		bool CreateFTPDirectory(CString& parentDirectory, CString& newDirectory);
+		bool CreateFTPDirectory(novac::CString& parentDirectory, novac::CString& newDirectory);
 		
 		/**close socket*/
 		int Disconnect();
@@ -176,13 +178,13 @@ namespace Communication
 		/** find a file in ftp server
 			@return true if it finds the file
 		*/
-		bool FindFile(CString fileName);
+		bool FindFile(novac::CString fileName);
 		
 		/**store receive data from data socket in m_vDataBuffer*/
 		virtual void StoreReceivedBytes(const TByteVector& vBuffer, long receivedBytes);
 		
 		/**write the data from the vector into a file*/
-		void WriteVectorFile(CString fileName, const TByteVector& vBuffer, long receivedBytes);
+		void WriteVectorFile(novac::CString fileName, const TByteVector& vBuffer, long receivedBytes);
 		
 		/**check whether there  is data to be read*/
 		bool IsDataReady(const SOCKET& socket, long timeout);
@@ -195,9 +197,9 @@ namespace Communication
 		SOCKET m_controlSocket;
 
 		/**the server's reply */
-		CString m_serverMsg;
+		novac::CString m_serverMsg;
 
-		CString m_msg;
+		novac::CString m_msg;
 
 		/**data structure to store ftp server parameters*/
 		typedef struct
@@ -205,8 +207,8 @@ namespace Communication
 			char m_serverIP[64];
 			int m_serverPort;
 			int m_serverDataPort;
-			CString userName;
-			CString password;
+			novac::CString userName;
+			novac::CString password;
 		} ftpParameter;
 
 		ftpParameter m_serverParam;
@@ -215,7 +217,7 @@ namespace Communication
 		HANDLE m_hDownloadedFile;
 
 		/** file to store the file list of the FTP server */
-		CString m_listFileName;
+		novac::CString m_listFileName;
 
 		// ----------------------------------------------------------------------
 		// ---------------------- PRIVATE DATA -----------------------------------

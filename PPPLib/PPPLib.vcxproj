@@ -22,9 +22,11 @@
     <ClInclude Include="include\PPPLib\CCriticalSection.h" />
     <ClInclude Include="include\PPPLib\CList.h" />
     <ClInclude Include="include\PPPLib\CSingleLock.h" />
+    <ClInclude Include="include\PPPLib\CStdioFile.h" />
     <ClInclude Include="include\PPPLib\CString.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CStdioFile.cpp" />
     <ClCompile Include="src\CString.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

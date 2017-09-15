@@ -14,7 +14,6 @@
 
 #include <PPPLib/CString.h>
 
-extern CDialog* pView;
 
 namespace Flux{
 	/** The class <b>CFluxCalculator</b> s used to to perform the 

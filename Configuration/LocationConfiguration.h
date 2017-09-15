@@ -1,5 +1,7 @@
 #pragma once
+
 #include "InstrumentLocation.h"
+#include <PPPLib/CString.h>
 
 namespace Configuration{
 	class CLocationConfiguration
@@ -9,7 +11,7 @@ namespace Configuration{
 		~CLocationConfiguration(void);
 
 		/** The serial-number of the spectrometer for which this setup is valid */
-		CString m_serial;
+		novac::CString m_serial;
 
 		/** Clears all configurations for this location */
 		void Clear();

@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "../Evaluation/ScanResult.h"
 //#include "../Evaluation/EvaluationResult.h"
+#include <PPPLib/CString.h>
 
 namespace FileHandler
 {
@@ -17,7 +18,7 @@ namespace FileHandler
 		~CEvaluationLogFileHandler(void);
 
 		/** The evaluation log */
-		CString m_evaluationLog;
+		novac::CString m_evaluationLog;
 
 		// ------------------- PUBLIC METHODS -------------------------
 
@@ -25,7 +26,7 @@ namespace FileHandler
 		RETURN_CODE ReadEvaluationLog();
 
 		/** Writes the contents of the array 'm_scan' to a new evaluation-log file */
-		RETURN_CODE WriteEvaluationLog(const CString fileName);
+		RETURN_CODE WriteEvaluationLog(const novac::CString fileName);
 
 		/** Returns true if the scan number 'scanNo' in the most recently read 
 				evaluation log file is a wind speed measurement. */
@@ -40,12 +41,12 @@ namespace FileHandler
 				@param result - the evaluation result, can be NULL
 				@param string - will on return be filled with the output line to be written to the evaluation-log.
 				@return SUCCESS - always */
-		static RETURN_CODE FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, CString &string);
+		static RETURN_CODE FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString &string);
 
 		/** Takes the filename of an evaluation log and extracts the 
 				Serial-number of the spectrometer, the date the scan was performed
 				and the start-time of the scan from the filename. */
-		static bool GetInfoFromFileName(const CString fileName, CDateTime &start, CString &serial, int &channel, MEASUREMENT_MODE &mode);
+		static bool GetInfoFromFileName(const novac::CString fileName, CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode);
 
 		// ------------------- PUBLIC DATA -------------------------
 
@@ -59,7 +60,7 @@ namespace FileHandler
 		long  m_scanNum;
 
 		/** The species that were found in this evaluation log */
-		CString m_specie[20];
+		novac::CString m_specie[20];
 
 		/** The number of species found in the evaluation log */
 		long    m_specieNum;

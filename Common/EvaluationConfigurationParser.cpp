@@ -16,7 +16,7 @@ CEvaluationConfigurationParser::~CEvaluationConfigurationParser(void)
 	@return 0 on sucess */
 int CEvaluationConfigurationParser::ReadConfigurationFile(const CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings){
 	CFileException exceFile;
-	CStdioFile file;
+	novac::CStdioFile file;
 	Evaluation::CFitWindow tmpWindow;
 	int curWindow = 0;
 

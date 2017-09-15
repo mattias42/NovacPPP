@@ -138,6 +138,18 @@ namespace novac
 		this->m_data = trim(this->m_data);
 	}
 
+	void CString::MakeLower()
+	{
+		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), ::tolower);
+	}
 
+	void CString::MakeUpper()
+	{
+		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), ::toupper);
+	}
 
+	void CString::Remove(char character)
+	{
+
+	}
 }

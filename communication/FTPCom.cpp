@@ -23,9 +23,9 @@ int CFTPCom::Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL 
 
 	INTERNET_PORT  port = 21;
 	DWORD dwServiceType = AFX_INET_SERVICE_FTP;
-	CString strServer;
-	CString strObject;
-	CString urlAddress = _T("ftp://");
+	novac::CString strServer;
+	novac::CString strObject;
+	novac::CString urlAddress = _T("ftp://");
 	urlAddress += siteName;	
 	m_FTPSite.Format("%s", siteName);
 
@@ -35,11 +35,11 @@ int CFTPCom::Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL 
 	delete m_FtpConnection;
 	m_FtpConnection = NULL;
 
-	if (!AfxParseURL(siteName, dwServiceType, (CString)siteName, strObject, port))
+	if (!AfxParseURL(siteName, dwServiceType, (novac::CString)siteName, strObject, port))
 	{
 		// try adding the "ftp://" protocol		
 
-		if (!AfxParseURL(urlAddress, dwServiceType, (CString)siteName, strObject, port))
+		if (!AfxParseURL(urlAddress, dwServiceType, (novac::CString)siteName, strObject, port))
 		{
 			m_ErrorMsg = TEXT("Can not parse  ftp address");
 			ShowMessage(m_ErrorMsg);
@@ -120,7 +120,7 @@ int CFTPCom::UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile)
 	}
 
 	// If the file exists, remove it first...
-	if(FindFile((CString&)remoteFile) == TRUE)
+	if(FindFile((novac::CString&)remoteFile) == TRUE)
 		m_FtpConnection->Remove(remoteFile);
 
 	// Upload the file
@@ -130,7 +130,7 @@ int CFTPCom::UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile)
 BOOL CFTPCom::DownloadAFile(LPCTSTR remoteFile, LPCTSTR fileFullName)
 {
 	BOOL result = FALSE;
-	CString msg;
+	novac::CString msg;
 
 	// Check that we're connected...
 	if(m_FtpConnection == NULL){
@@ -200,7 +200,7 @@ int CFTPCom::UploadFile(LPCTSTR localFile, LPCTSTR remoteFile)
 
 	// See if we can find the file on the remote computer, if so
 	//	then we can't upload it...
-	if(FindFile((CString&)remoteFile) == TRUE)
+	if(FindFile((novac::CString&)remoteFile) == TRUE)
 		return 1;
 
 	try{
@@ -248,7 +248,7 @@ BOOL CFTPCom::SetCurDirectory(LPCTSTR curDirName)
 	return result;
 }
 
-int CFTPCom::FindFile(CString& fileName)
+int CFTPCom::FindFile(novac::CString& fileName)
 {
 	if(m_FtpConnection == NULL){
 		ShowMessage("ERROR: Attempted to find file using FTP while not connected!");
@@ -266,7 +266,7 @@ int CFTPCom::FindFile(CString& fileName)
 }
 
 // @return 0 if fail...
-BOOL CFTPCom::DeleteFolder(const CString& folder)
+BOOL CFTPCom::DeleteFolder(const novac::CString& folder)
 {
 	// Check
 	if(m_FtpConnection == NULL){
@@ -279,9 +279,9 @@ BOOL CFTPCom::DeleteFolder(const CString& folder)
 	return result;
 }
 
-BOOL CFTPCom::EnterFolder(const CString& folder)
+BOOL CFTPCom::EnterFolder(const novac::CString& folder)
 {
-	CString strDir, strFolder, msg;
+	novac::CString strDir, strFolder, msg;
 
 	// Check...
 	if(m_FtpConnection == NULL){
@@ -317,14 +317,14 @@ BOOL CFTPCom::EnterFolder(const CString& folder)
 
 BOOL CFTPCom::GotoTopDirectory()
 {
-	CString folder("//");	
+	novac::CString folder("//");	
 	return EnterFolder(folder);
 }
 
 void CFTPCom::ReadResponse(CInternetFile* file)
 {
 	char readBuf[256];
-	CString str,restStr;
+	novac::CString str,restStr;
 	unsigned int rd = 0;
 
 	// Check input-parameter...
@@ -345,8 +345,8 @@ void CFTPCom::ReadResponse(CInternetFile* file)
 }
 
 /** Retrieves the list of files in the current directory */
-int CFTPCom::GetFileList(CList <CString, CString &> &fileNames){
-	CString name;
+int CFTPCom::GetFileList(CList <novac::CString, novac::CString &> &fileNames){
+	novac::CString name;
 
 	// start by clearing the list
 	fileNames.RemoveAll();
@@ -373,7 +373,7 @@ int CFTPCom::GetFileList(CList <CString, CString &> &fileNames){
 }
 
 /** Retrieves the list of files in the current directory */
-int CFTPCom::GetFileList(const CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos){
+int CFTPCom::GetFileList(const novac::CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos){
 	CFileInfo info;
 
 	// start by clearing the list

@@ -3,14 +3,16 @@
 #include "../Common/SpectrometerModel.h"
 #include "../Common/Version.h"
  
+ #include <PPPLib/CSingleLock.h>
+
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
  
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
 // Global variables;
-CCriticalSection									g_evalLogCritSect; // synchronization access to evaluation-log files
+novac::CCriticalSection									g_evalLogCritSect; // synchronization access to evaluation-log files
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
 
@@ -176,7 +178,7 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 
 		// The column
 		if(0 == strnicmp(szToken, column, strlen(column))){
-			CString str;
+			novac::CString str;
 			m_col.column[m_evResult.m_speciesNum] = curCol;
 			char *pt = szToken + strlen(column) + 1;
 			szToken[strlen(szToken) - 1] = 0;
@@ -275,7 +277,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 	char  fluxInformation[]   = _T("<fluxinfo>");           // this string only exists in the flux-information section before the scan-data
 	char  spectralData[]      = _T("<spectraldata>");
 	char  endofSpectralData[] = _T("</spectraldata>");
-	CString str;
+	novac::CString str;
 	char szLine[8192];
 	int measNr = 0;
 	double fValue;
@@ -296,7 +298,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 	}
 
 	// Open the evaluation log
-	CSingleLock singleLock(&g_evalLogCritSect);
+	novac::CSingleLock singleLock(&g_evalLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 		FILE *f = fopen(m_evaluationLog, "r");
@@ -614,7 +616,7 @@ long CEvaluationLogFileHandler::CountScansInFile(){
 	if(strlen(m_evaluationLog) <= 1)
 		return 0;
 
-	CSingleLock singleLock(&g_evalLogCritSect);
+	novac::CSingleLock singleLock(&g_evalLogCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 
@@ -931,9 +933,9 @@ bool	CEvaluationLogFileHandler::IsSorted(){
 
 
 /** Writes the contents of the array 'm_scan' to a new evaluation-log file */
-RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const CString fileName){
-	CString string, specieName;
-	CString wsSrc, wdSrc, phSrc, specModel;
+RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString fileName){
+	novac::CString string, specieName;
+	novac::CString wsSrc, wdSrc, phSrc, specModel;
 	CDateTime startTime;
 
 	// 1. Test if the file already exists, if so then return false
@@ -1065,7 +1067,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const CString fileName
 	return SUCCESS;
 }
 
-RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, CString &string){
+RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString &string){
 	int itSpecie;
 	Common common;
 
@@ -1273,8 +1275,8 @@ void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(CArray<Evaluation::
 /** Takes the filename of an evaluation log and extracts the 
 		Serial-number of the spectrometer, the date the scan was performed
 		and the start-time of the scan from the filename. */
-bool FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(const CString fileName, CDateTime &start, CString &serial, int &channel, MEASUREMENT_MODE &mode){
-	CString name, sDate, sTime, resToken;
+bool FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(const novac::CString fileName, CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode){
+	novac::CString name, sDate, sTime, resToken;
 	int iDate, iTime;
 	int curPos = 0;
 

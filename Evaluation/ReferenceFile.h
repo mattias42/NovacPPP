@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CrossSectionData.h"
+#include <PPPLib/CString.h>
 
 namespace Evaluation
 {
@@ -19,10 +20,10 @@ namespace Evaluation
 		~CReferenceFile(void);
 
 		/** The name of the specie */
-		CString m_specieName;
+		novac::CString m_specieName;
 
 		/** The path to the reference file */
-		CString m_path;
+		novac::CString m_path;
 
 		/** assignment operator */
 		CReferenceFile &operator=(const CReferenceFile &ref2);

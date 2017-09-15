@@ -82,7 +82,7 @@ CEvaluationResult &CEvaluationResult::operator =(const CEvaluationResult &b){
 	return *this;
 }
 
-RETURN_CODE CEvaluationResult::InsertSpecie(const CString &name){
+RETURN_CODE CEvaluationResult::InsertSpecie(const novac::CString &name){
 	CReferenceFitResult ref;
 	ref.m_specieName.Format(name);
 	m_ref.SetAtGrow(m_speciesNum, ref);

@@ -2,6 +2,9 @@
 #include "common/xmlfilereader.h"
 #include "Configuration/NovacPPPConfiguration.h"
 
+#include <PPPLib/CString.h>
+#include <PPPLib/CStdioFile.h>
+
 namespace FileHandler{
 
 	/** The class <b>CSetupFileReader</b> is used to read and write the setup 
@@ -22,11 +25,11 @@ namespace FileHandler{
 				found in the file.
 			@return SUCCESS - if successful.
 		*/
-		RETURN_CODE ReadSetupFile(const CString &fileName, Configuration::CNovacPPPConfiguration &setup);
+		RETURN_CODE ReadSetupFile(const novac::CString &fileName, Configuration::CNovacPPPConfiguration &setup);
 
 		/** This takes care of writing the contents of a setup data-structure to file
 			Only the part regarding the instrument's location will be written to the file */
-		RETURN_CODE WriteSetupFile(const CString &fileName, const Configuration::CNovacPPPConfiguration &setup);
+		RETURN_CODE WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup);
 
 	private:
 		/** Parses an individual location section */
@@ -36,7 +39,7 @@ namespace FileHandler{
 		void Parse_Instrument(Configuration::CInstrumentConfiguration &instr);
 
 		/** Parses an spectrometer model  */
-		void Parse_SpectrometerModel(const CString &label, SPECTROMETER_MODEL &model);
+		void Parse_SpectrometerModel(const novac::CString &label, SPECTROMETER_MODEL &model);
 		
 		
 	};

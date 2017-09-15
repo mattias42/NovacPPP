@@ -26,26 +26,26 @@ namespace Communication{
 		/** Downloads .pak - files from the given FTP-server 
 			@return 0 on successful connection and completion of the list
 		*/
-		int DownloadDataFromFTP(const CString &server, const CString &username,
-			const CString &password, CList <CString, CString &> &pakFileList);
+		int DownloadDataFromFTP(const novac::CString &server, const novac::CString &username,
+			const novac::CString &password, CList <novac::CString, novac::CString &> &pakFileList);
 
 		/** Downloads a single file from the given FTP-server 
 			@return 0 on successful connection and completion of the download
 		*/
-		int DownloadFileFromFTP(const CString &remoteFileName, const CString &localFileName,
-			const CString &username, const CString &password);
+		int DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
+			const novac::CString &username, const novac::CString &password);
 
 		/** Retrieves the list of files in a given directory on the FTP-server
 			@return 0 on successful connection and completion of the download
 		*/
-		int DownloadFileListFromFTP(const CString &serverDir, CList <CString, CString&> &fileList,
-			const CString &username, const CString &password);
+		int DownloadFileListFromFTP(const novac::CString &serverDir, CList <novac::CString, novac::CString&> &fileList,
+			const novac::CString &username, const novac::CString &password);
 
 		/** Uploads result-files to the given FTP-server 
 			@return 0 on success otherwise non-zero
 		*/
-		int UploadResults(const CString &server, const CString &username, 
-			const CString &password, CList <CString, CString &> &fileList);
+		int UploadResults(const novac::CString &server, const novac::CString &username, 
+			const novac::CString &password, CList <novac::CString, novac::CString &> &fileList);
 
 private:
 		// -----------------------------------------------------------

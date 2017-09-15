@@ -7,6 +7,7 @@
 #include "BasicMath.h"
 //#include "MFCTools.h"
 //#include "MathHistory.h"
+#include "../fit/Vector.h"
 #include "../Fit/GaussFunction.h"
 #include "../Fit/CubicSplineFunction.h"
 #include "../Fit/StandardMetricFunction.h"

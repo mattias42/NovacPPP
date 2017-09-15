@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "spectrum.h"
 
+#include <algorithm>
+
 #include <cstdarg>
+#include <cassert>
 
 CSpectrum::CSpectrum(void)
 {
@@ -23,12 +26,12 @@ CSpectrum::~CSpectrum(void)
 
 int CSpectrum::AssertRange(long &fromPixel, long &toPixel) const{
 	/* Check the input */
-	ASSERT(fromPixel >= 0 && toPixel >= 0);
+	assert(fromPixel >= 0 && toPixel >= 0);
 
-	toPixel	= min(toPixel, m_length - 1);
-	fromPixel = max(fromPixel, toPixel - 1);
+	toPixel	= std::min(toPixel, m_length - 1);
+	fromPixel = std::max(fromPixel, toPixel - 1);
 	  
-	ASSERT(fromPixel <= toPixel);
+	assert(fromPixel <= toPixel);
 
 	return 0;
 }
@@ -42,7 +45,7 @@ SpecData CSpectrum::MaxValue(long fromPixel, long toPixel) const{
 
 	SpecData maxv = m_data[fromPixel];
 	for(long i = fromPixel+1; i <= toPixel; ++i){
-		maxv = max(maxv, m_data[i]);
+		maxv = std::max(maxv, m_data[i]);
 	}
 	return maxv;
 }
@@ -56,7 +59,7 @@ SpecData CSpectrum::MinValue(long fromPixel, long toPixel) const{
 	  
 	SpecData minv = m_data[fromPixel];
 	for(long i = fromPixel+1; i <= toPixel; ++i){
-		minv = min(minv, m_data[i]);
+		minv = std::min(minv, m_data[i]);
 	}
 	return minv;
 }
@@ -142,8 +145,8 @@ int CSpectrum::PixelwiseOperation(const SpecData value, SpecData f(SpecData, Spe
 }
 
 CSpectrum &CSpectrum::operator =(const CSpectrum &s2){
-  this->m_length = min(s2.m_length, MAX_SPECTRUM_LENGTH);
-  this->m_length = max(this->m_length, 0);
+  this->m_length = std::min(s2.m_length, long(MAX_SPECTRUM_LENGTH));
+  this->m_length = std::max(this->m_length, 0L);
   this->m_info = s2.m_info;
   memcpy(m_data, s2.m_data, sizeof(SpecData) * m_length);
   return *this;

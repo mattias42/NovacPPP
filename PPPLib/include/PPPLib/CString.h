@@ -41,8 +41,14 @@ namespace novac
 		CString Right(int nChars) const;
 		CString Right(size_t nChars) const;
 
+		// ---------------------- Changing the String -----------------------
+
 		void Trim();
 		void Trim(const char* characters);
+
+		void MakeLower();
+		void MakeUpper();
+		void Remove(char character);
 
 		// ---------------------- Conversion -----------------------
 

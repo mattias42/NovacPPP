@@ -28,10 +28,10 @@ CFTPServerConnection::~CFTPServerConnection(void)
 {
 }
 
-CString s_username;
-CString s_password;
-CString s_server;
-CList <CString, CString &> s_pakFileList;
+novac::CString s_username;
+novac::CString s_password;
+novac::CString s_server;
+CList <novac::CString, novac::CString &> s_pakFileList;
 CCriticalSection s_pakFileListCritSect; // synchronization access to the list of pak-files
 CCriticalSection s_ThreadNumCritSect; // synchronization access to the number of concurrently running threads
 volatile int nFTPThreadsRunning = 0;
@@ -43,10 +43,10 @@ double nSecondsPassed = 0.0;
 	@return 0 on successful connection and completion of the list
 		otherwise non-zero
 */
-int CFTPServerConnection::DownloadDataFromFTP(const CString &serverDir, const CString &username,
-	const CString &password, CList <CString, CString &> &pakFileList){
+int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, const novac::CString &username,
+	const novac::CString &password, CList <novac::CString, novac::CString &> &pakFileList){
 	
-	CString userMessage;
+	novac::CString userMessage;
 	unsigned int nRounds = 0;
 
 	s_username.Format(username);
@@ -55,8 +55,8 @@ int CFTPServerConnection::DownloadDataFromFTP(const CString &serverDir, const CS
 	nFTPThreadsRunning = 0;
 
 	// Extract the name of the server and each of the sub-directories specified
-	CString subString;
-	CString directory;
+	novac::CString subString;
+	novac::CString directory;
 	int indexOfSlash[128];
 	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
 	if(serverDir.Find("ftp://") != -1){
@@ -82,7 +82,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const CString &serverDir, const CS
 	}	
 	
 	// download the data in this directory
-	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
+	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
 	Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 
 	// wait for all threads to terminate
@@ -106,7 +106,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const CString &serverDir, const CS
 	// copy the data to the output list
 	POSITION p = s_pakFileList.GetHeadPosition();
 	while(p != NULL){
-		pakFileList.AddTail(CString(s_pakFileList.GetNext(p)));
+		pakFileList.AddTail(novac::CString(s_pakFileList.GetNext(p)));
 	}
 
 	return 0;
@@ -115,11 +115,11 @@ int CFTPServerConnection::DownloadDataFromFTP(const CString &serverDir, const CS
 // this function takes care of adding filenames to the list
 //	in a synchronized way so that no two threads access
 //	the list at the same time...
-void AddFileToList(const CString &fileName){
+void AddFileToList(const novac::CString &fileName){
 	CSingleLock singleLock(&s_pakFileListCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
-		s_pakFileList.AddTail(CString(fileName));
+		s_pakFileList.AddTail(novac::CString(fileName));
 	}
 	singleLock.Unlock();
 }
@@ -129,11 +129,11 @@ void AddFileToList(const CString &fileName){
 	@return 0 on success, otherwise non-zero */
 UINT DownloadDataFromDir(LPVOID pParam){
 	// the directory to search in
-	CString *directory = (CString *)pParam;
+	novac::CString *directory = (novac::CString *)pParam;
 
 	CList <CFileInfo, CFileInfo &> filesFound;
-	CString localFileName, serial;
-	CString userMessage;
+	novac::CString localFileName, serial;
+	novac::CString userMessage;
 	CDateTime start;
 	int channel;
 	MEASUREMENT_MODE mode;
@@ -225,10 +225,10 @@ UINT DownloadDataFromDir(LPVOID pParam){
 			}
 			if(nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum){
 				// start downloading using the same thread as we're running in
-				DownloadDataFromDir(new CString(fileInfo.m_fullFileName + "/"));
+				DownloadDataFromDir(new novac::CString(fileInfo.m_fullFileName + "/"));
 			}else{
 				// start downloading using a new thread
-				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
+				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
 				Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 			}
 		}
@@ -253,12 +253,12 @@ UINT DownloadDataFromDir(LPVOID pParam){
 /** Retrieves the list of files in a given directory on the FTP-server
 	@return 0 on successful connection and completion of the download
 */
-int CFTPServerConnection::DownloadFileListFromFTP(const CString &serverDir, CList <CString, CString&> &fileList, const CString &username, const CString &password){
+int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, CList <novac::CString, novac::CString&> &fileList, const novac::CString &username, const novac::CString &password){
 
 	CList <CFileInfo, CFileInfo &> filesFound;
 
 	// Extract the name of the server and each of the sub-directories specified
-	CString subString, directory, server;
+	novac::CString subString, directory, server;
 	int indexOfSlash[128];
 	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
 	if(serverDir.Find("ftp://") != -1){
@@ -310,18 +310,18 @@ int CFTPServerConnection::DownloadFileListFromFTP(const CString &serverDir, CLis
 /** Downloads a single file from the given FTP-server 
 	@return 0 on successful connection and completion of the download
 */
-int CFTPServerConnection::DownloadFileFromFTP(const CString &remoteFileName, const CString &localFileName,
-	const CString &username, const CString &password){
+int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
+	const novac::CString &username, const novac::CString &password){
 	CDateTime now;
-	CString errorMessage;
+	novac::CString errorMessage;
 
 	// Extract the name of the server and the login
 	s_username.Format(username);
 	s_password.Format(password);
 
 	// Extract the name of the server and each of the sub-directories specified
-	CString subString;
-	CString directory;
+	novac::CString subString;
+	novac::CString directory;
 	int indexOfSlash[128];
 	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
 	if(remoteFileName.Find("ftp://") != -1){
@@ -361,8 +361,8 @@ int CFTPServerConnection::DownloadFileFromFTP(const CString &remoteFileName, con
 /** Uploads result-files to the given FTP-server 
 	@return 0 on success otherwise non-zero
 */
-int CFTPServerConnection::UploadResults(const CString &server, const CString &username, 
-						const CString &password, CList <CString, CString &> &fileList){
+int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username, 
+						const novac::CString &password, CList <novac::CString, novac::CString &> &fileList){
 	CDateTime now;
 
 	// Extract the name of the server and the login
@@ -370,7 +370,7 @@ int CFTPServerConnection::UploadResults(const CString &server, const CString &us
 	s_password.Format(password);
 	s_server.Format(server);
 
-	CString volcanoName, directoryName, remoteFile, errorMessage;
+	novac::CString volcanoName, directoryName, remoteFile, errorMessage;
 
 	// create a new connection
 	CFTPCom *ftp = new CFTPCom();
@@ -401,7 +401,7 @@ int CFTPServerConnection::UploadResults(const CString &server, const CString &us
 	POSITION p = fileList.GetHeadPosition();
 	while(p != NULL){
 		// Get the local name and path of the file to upload
-		CString &localFile = fileList.GetNext(p);
+		novac::CString &localFile = fileList.GetNext(p);
 		
 		// Get the file-name to upload the file to...
 		remoteFile.Format(localFile);

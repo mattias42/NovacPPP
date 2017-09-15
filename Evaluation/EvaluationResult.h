@@ -6,6 +6,7 @@
 #include "ReferenceFitResult.h"
 #include "../Common/Spectra/SpectrumInfo.h"
 #include "ColumnCorrection.h"
+#include <PPPLib/CString.h>
 
 namespace Evaluation
 {
@@ -58,7 +59,7 @@ namespace Evaluation
 		int	 m_evaluationStatus;
 
 		// --------------- PUBLIC METHODS ---------------------
-		RETURN_CODE InsertSpecie(const CString &name);
+		RETURN_CODE InsertSpecie(const novac::CString &name);
 
 		/** Checks the goodness of fit for this spectrum.
 			@param info - the information about this spectrum

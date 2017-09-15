@@ -2,6 +2,9 @@
 
 #include "DateTime.h"
 
+#include <PPPLib/CString.h>
+#include <PPPLib/CStdioFile.h>
+
 namespace FileHandler
 {
 	class CXMLFileReader
@@ -16,36 +19,36 @@ namespace FileHandler
 		/** Retrieves the value of the given attribute from the current token 
 			@return NULL if this attribute does not exist or the current token is not
 				a valid element */
-		const char * GetAttributeValue(const CString &label);		
+		const char * GetAttributeValue(const novac::CString &label);		
 
 		/** General parsing of a single, simple string item */
-		int Parse_StringItem(const CString &label, CString &string);
+		int Parse_StringItem(const novac::CString &label, novac::CString &string);
 
 		/** General parsing of a single, simple float item */
-		int Parse_FloatItem(const CString &label, double &number);
+		int Parse_FloatItem(const novac::CString &label, double &number);
 
 		/** General parsing of a single, simple integer item */
-		int Parse_IntItem(const CString &label, int &number);
+		int Parse_IntItem(const novac::CString &label, int &number);
 
 		/** General parsing of a single, simple long integer item */
-		int Parse_LongItem(const CString &label, long &number);
+		int Parse_LongItem(const novac::CString &label, long &number);
 
 		/** General parsing of a single, simple long integer item */
-		int Parse_IPNumber(const CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3);
+		int Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3);
 
 		/** General parsing of a date */
-		int Parse_Date(const CString &label, CDateTime &datum);
+		int Parse_Date(const novac::CString &label, CDateTime &datum);
 
 		/**set the opened file pointer*/
-		void SetFile(CStdioFile* file);
+		void SetFile(novac::CStdioFile* file);
 
 		/**variables*/
 
 		/** A handle to the file to read from. */
-		CStdioFile *m_File;
+		novac::CStdioFile *m_File;
 		
 		/** The name of the currently opened file. For debugging reasons */
-		CString m_filename;
+		novac::CString m_filename;
 		
 		/** The number of lines that has been read from the file */
 		long nLinesRead;

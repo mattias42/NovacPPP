@@ -6949,7 +6949,7 @@ void CGridCtrl::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 
 BOOL CGridCtrl::Save(LPCTSTR filename, TCHAR chSeparator/*=_T(',')*/)
 {
-    CStdioFile File;
+	novac::CStdioFile File;
     CFileException ex;
 	CString strSeparator(chSeparator);
 
@@ -6991,7 +6991,7 @@ BOOL CGridCtrl::Load(LPCTSTR filename, TCHAR chSeparator/*=_T(',')*/)
 
     TCHAR *token, *end;
     TCHAR buffer[1024];
-    CStdioFile File;
+	novac::CStdioFile File;
     CFileException ex;
 
     if (!File.Open(filename, CFile::modeRead | CFile::typeText))

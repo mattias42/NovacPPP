@@ -5,7 +5,11 @@
 #if !defined(AFX_BASICMATH_H__1DEB20E2_5D81_11D4_866C_00E098701FA6__INCLUDED_)
 #define AFX_BASICMATH_H__1DEB20E2_5D81_11D4_866C_00E098701FA6__INCLUDED_
 
-#include "../fit/Vector.h"
+namespace MathFit
+{
+	class CVector;
+}
+
 #include "../fit/FitException.h"
 
 #if _MSC_VER > 1000

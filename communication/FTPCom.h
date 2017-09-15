@@ -4,6 +4,7 @@
 #include <afxtempl.h>
 
 #include "../FileInfo.h"
+#include <PPPLib/CString.h>
 
 namespace Communication
 {
@@ -42,15 +43,15 @@ namespace Communication
 
 		/**find file in the current ftp folder
 			@return TRUE if exists */
-		int FindFile(CString& fileName);
+		int FindFile(novac::CString& fileName);
 
 		/** Retrieves the list of files in the current directory
 			@return 0 on success */
-		int GetFileList(CList <CString, CString &> &fileNames);
+		int GetFileList(CList <novac::CString, novac::CString &> &fileNames);
 
 		/** Retrieves the list of files in the current directory
 			@return 0 on success */
-		int GetFileList(const CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos);
+		int GetFileList(const novac::CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos);
 
 		/**Set current directory
 		*@param curDirName current directory name
@@ -59,10 +60,10 @@ namespace Communication
 		BOOL SetCurDirectory(LPCTSTR curDirName);
 
 		/** Remove a folder*/
-		BOOL DeleteFolder(const CString& folder);
+		BOOL DeleteFolder(const novac::CString& folder);
 
 		/** Enter a folder*/
-		BOOL EnterFolder(const CString& folder);
+		BOOL EnterFolder(const novac::CString& folder);
 
 		/** Go to top directory "/" */
 		BOOL GotoTopDirectory();
@@ -74,8 +75,8 @@ namespace Communication
 	
 		CInternetSession* m_InternetSession;
 		CFtpConnection* m_FtpConnection;
-		CString m_FTPSite;
+		novac::CString m_FTPSite;
 		
-		CString m_ErrorMsg;
+		novac::CString m_ErrorMsg;
 	};
 }

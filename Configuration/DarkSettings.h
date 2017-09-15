@@ -21,7 +21,7 @@ namespace Configuration{
 		/** The offset-spectrum, only useful if 'm_darkSpecOption' is not 0.
 				When this should be used is determined by 'm_offsetOption'.
 				If 'm_darkSpecOption' is '3' then this is the dark-spectrum to use */
-		CString m_offsetSpec;
+		novac::CString m_offsetSpec;
 
 		/** The option for how to use the offset-spectrum.
 			Can be:	0 - always use measured
@@ -30,7 +30,7 @@ namespace Configuration{
 
 		/** The dark-current spectrum, only useful if 'm_darkSpecOption' is not 0.
 				When this should be used is determined by 'm_darkCurrentOption'. */
-		CString m_darkCurrentSpec;
+		novac::CString m_darkCurrentSpec;
 
 		/** The option for how to use the dark-current spectrum.
 				Can be:	0 - always use measured

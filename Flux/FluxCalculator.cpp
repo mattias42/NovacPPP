@@ -11,7 +11,6 @@
 #include "../Configuration/UserConfiguration.h"
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
-extern CDialog										*pView;        // <-- The screen
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
 using namespace Flux;

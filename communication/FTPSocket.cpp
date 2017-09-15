@@ -2,6 +2,8 @@
 
 #include "FTPSocket.h"
 #include "..\Common\Common.h"
+#include <PPPLib/CStdioFile.h>
+
 using namespace Communication;
 
 CFTPSocket::CFTPSocket(void)
@@ -14,7 +16,7 @@ CFTPSocket::~CFTPSocket(void)
 }
 
 //login to one ftp server
-bool CFTPSocket::Login(const CString ftpServerIP, CString userName, CString pwd,int ftpPort)
+bool CFTPSocket::Login(const novac::CString ftpServerIP, novac::CString userName, novac::CString pwd,int ftpPort)
 {
 	sprintf(m_serverParam.m_serverIP, "%s", ftpServerIP);
 	m_serverParam.m_serverPort = ftpPort;
@@ -41,20 +43,20 @@ bool CFTPSocket::Login(const CString ftpServerIP, CString userName, CString pwd,
 		return false;
 	}
 }
-void CFTPSocket::GetFileName(CString& filePath)
+void CFTPSocket::GetFileName(novac::CString& filePath)
 {
 	int position  = filePath.ReverseFind('\\'); 
 	int length    = filePath.GetLength();
 	filePath = filePath.Right(length - position - 1);
 }
-void CFTPSocket::GetSysType(CString& type)
+void CFTPSocket::GetSysType(novac::CString& type)
 {
 	SendCommand("SYST","");
 	if(ReadResponse() == 1)
 		type.Format("%s",m_serverMsg);
 	
 }
-bool CFTPSocket::EnterFolder(CString& folder)
+bool CFTPSocket::EnterFolder(novac::CString& folder)
 {
 	SendCommand("CWD",folder);
 	if(ReadResponse()==1)
@@ -185,7 +187,7 @@ bool CFTPSocket::List()
 	}
 }
 
-bool CFTPSocket::UploadFile(CString fileLocalPath)
+bool CFTPSocket::UploadFile(novac::CString fileLocalPath)
 {
 	bool result;
 	SendCommand("TYPE","I");
@@ -193,7 +195,7 @@ bool CFTPSocket::UploadFile(CString fileLocalPath)
 		return false;
 
 		//Send the STOR command
-	CString fileName = fileLocalPath;
+	novac::CString fileName = fileLocalPath;
 	//check file existence first - to be done
 	GetFileName(fileName);		
 	
@@ -211,7 +213,7 @@ bool CFTPSocket::UploadFile(CString fileLocalPath)
 	}
 	return result;
 }
-bool CFTPSocket::DeleteFTPFile(CString fileName)
+bool CFTPSocket::DeleteFTPFile(novac::CString fileName)
 {
 	SendCommand("DELE",fileName);
 	if(ReadResponse()!=1)
@@ -221,7 +223,7 @@ bool CFTPSocket::DeleteFTPFile(CString fileName)
 	else
 		return false;
 }
-int CFTPSocket::SendCommand(CString command,CString commandText)
+int CFTPSocket::SendCommand(novac::CString command,novac::CString commandText)
 {
 	char buf[100];
 	Sleep(100); // Added 2008.06.30 to work with the Axis computer
@@ -240,7 +242,7 @@ int CFTPSocket::SendCommand(CString command,CString commandText)
 	return result;
 }
 
-bool CFTPSocket::SendFileToServer(CString& fileLocalPath)
+bool CFTPSocket::SendFileToServer(novac::CString& fileLocalPath)
 {
 	long fileSize;
 	HANDLE hFile; 
@@ -320,21 +322,21 @@ bool CFTPSocket::ReadData()
 	}
 }
 //set the name for m_listFileName
-void CFTPSocket::SetLogFileName(const CString fileName)
+void CFTPSocket::SetLogFileName(const novac::CString fileName)
 {
 	m_listFileName.Format("%s",fileName);
 }
 //find a file in ftp server
-bool CFTPSocket::FindFile(CString fileName)
+bool CFTPSocket::FindFile(novac::CString fileName)
 {
-	CString  listFileName, list;
+	novac::CString  listFileName, list;
 	time_t startTime,stopTime;
 	time(&startTime);
 	bool result = false;
 	if(!GetFileNameList())
 		return false;
 
-	CStdioFile listFile;
+	novac::CStdioFile listFile;
 	CFileException fileException;
 	listFileName.Format("%s", m_listFileName);
 	if(!listFile.Open(listFileName, CFile::modeRead | CFile::typeText, &fileException))
@@ -361,7 +363,7 @@ bool CFTPSocket::FindFile(CString fileName)
 	listFile.Close();
 	return result;
 }
-void CFTPSocket::WriteVectorFile(CString fileName, const TByteVector& vBuffer, long receivedBytes)
+void CFTPSocket::WriteVectorFile(novac::CString fileName, const TByteVector& vBuffer, long receivedBytes)
 {
 	FILE *localFile;
 	
@@ -524,15 +526,15 @@ int CFTPSocket::GetPortNumber()
 {
 	int portNumber = 0;
 	int serverIPPort[32];
-	CString resToken,str;
+	novac::CString resToken,str;
 	int curPos = 0;
 	int index = 0;
 	int tokenLength = 0;
 	if(m_serverMsg.GetLength()==0)
 		return 0;
 	str = m_serverMsg;
-	CString seperator1 = TEXT("(");
-	CString seperator2 = TEXT(")");
+	novac::CString seperator1 = TEXT("(");
+	novac::CString seperator2 = TEXT(")");
 	GetCitedString(str, seperator1, seperator2);
 	do
 	{
@@ -559,10 +561,10 @@ bool CFTPSocket::GetServerFeature()
 		return false;
 }
 //NOT FOR THE NOVAC SCANNER FTP
-long CFTPSocket::Size(CString& fileName)
+long CFTPSocket::Size(novac::CString& fileName)
 {
 	long fileSize = -1;
-	CString list,sizeStr,listFile;
+	novac::CString list,sizeStr,listFile;
 	listFile.Format("C:\\Temp\\fileList.txt");
 	GetFileList();
 	SendCommand("SIZE",fileName);
@@ -572,9 +574,9 @@ long CFTPSocket::Size(CString& fileName)
 	return fileSize;
 }
 //NOT FOR NOVAC SCANNER FTP SERVER
-bool CFTPSocket::CheckFileExistence(CString& remoteFileName, CString& remoteDirectory)
+bool CFTPSocket::CheckFileExistence(novac::CString& remoteFileName, novac::CString& remoteDirectory)
 {
-	CString serverReply;
+	novac::CString serverReply;
 	SendCommand("SIZE", remoteFileName);
 	if(ReadResponse()!=1)
 		return false;
@@ -587,7 +589,7 @@ bool CFTPSocket::CheckFileExistence(CString& remoteFileName, CString& remoteDire
 	else 
 		return false;	
 }
-int CFTPSocket::GetMsgCode(CString& ftpMsg)
+int CFTPSocket::GetMsgCode(novac::CString& ftpMsg)
 {
 	if(ftpMsg.GetLength() == 0)
 		return -1;
@@ -595,7 +597,7 @@ int CFTPSocket::GetMsgCode(CString& ftpMsg)
 	int curLinePos =  0;
 	
 	int round = 0;
-	CString resToken,line;
+	novac::CString resToken,line;
 	//Empty the list first
 	if(m_ftpCode.GetCount() > 0)
 		m_ftpCode.RemoveAll();
@@ -630,7 +632,7 @@ int CFTPSocket::JudgeFTPCode(int code)
 	return FALSE;
 }
 
-int CFTPSocket::DownloadFile(CString remoteFileName,CString localFileName)
+int CFTPSocket::DownloadFile(novac::CString remoteFileName,novac::CString localFileName)
 {
 	#define DOWNLOAD_BUF_SIZE 4096
 	time_t startTime, stopTime;
@@ -693,7 +695,7 @@ int CFTPSocket::DownloadFile(CString remoteFileName,CString localFileName)
 	}
 	return 1;
 }
-bool CFTPSocket::OpenFileHandle(CString& fileName)
+bool CFTPSocket::OpenFileHandle(novac::CString& fileName)
 {
 	int errorNum = 0;
 	m_hDownloadedFile = CreateFile(fileName,        // open file in local disk
@@ -712,13 +714,13 @@ bool CFTPSocket::OpenFileHandle(CString& fileName)
 	}
 	return true;
 }
-bool CFTPSocket::SetCurrentFTPDirectory(CString& directory)
+bool CFTPSocket::SetCurrentFTPDirectory(novac::CString& directory)
 {
 	SendCommand("CWD", directory);
 	if(ReadResponse()!=1)
 		return false;
 	bool returnFlag = IsFTPCommandDone();
-	CString curDirectory;
+	novac::CString curDirectory;
 	GetCurrentFTPDirectory(curDirectory);
 	return returnFlag;
 }
@@ -743,11 +745,11 @@ bool CFTPSocket::IsFTPCommandDone()
 	else
 		return false;
 }
-bool CFTPSocket::GetCurrentFTPDirectory(CString& curDirectory)
+bool CFTPSocket::GetCurrentFTPDirectory(novac::CString& curDirectory)
 {
 	int msgLength, directoryLength;
-	CString seperator1 = _T("\"");
-	CString seperator2 = _T("\"");
+	novac::CString seperator1 = _T("\"");
+	novac::CString seperator2 = _T("\"");
 	SendCommand("PWD", "");
 	if(ReadResponse()!=1)
 		return false;
@@ -767,7 +769,7 @@ bool CFTPSocket::GetCurrentFTPDirectory(CString& curDirectory)
 	return returnFlag;
 
 }
-void CFTPSocket::GetCitedString(CString& line, CString& leftSeperator,CString& rightSeperator)
+void CFTPSocket::GetCitedString(novac::CString& line, novac::CString& leftSeperator,novac::CString& rightSeperator)
 {
 	int leftPosition, rightPosition, msgLength;
 
@@ -782,9 +784,9 @@ void CFTPSocket::GetCitedString(CString& line, CString& leftSeperator,CString& r
 	line = line.Left(rightPosition);
 
 }
-bool CFTPSocket::CreateFTPDirectory(CString& parentDirectory, CString& newDirectory)
+bool CFTPSocket::CreateFTPDirectory(novac::CString& parentDirectory, novac::CString& newDirectory)
 {
-	CString curDirectory;
+	novac::CString curDirectory;
 	if(!GetCurrentFTPDirectory(curDirectory))
 		return false;
 	SetCurrentFTPDirectory(parentDirectory);

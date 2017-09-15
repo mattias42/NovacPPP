@@ -27,9 +27,15 @@
     <ClInclude Include="include\PPPLib\CCriticalSection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\PPPLib\CStdioFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CStdioFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

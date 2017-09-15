@@ -61,7 +61,7 @@ class CFitWindow
 		int startChannel;
 
 		/** The name of the fit window */
-		CString name;
+		novac::CString name;
 
 		/** The type of fit */
 		FIT_TYPE fitType; // what type of fit to make, must be one of the 'FIT_...' constants defined above

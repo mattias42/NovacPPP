@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "XMLFileReader.h"
 #include "../Common/Common.h"
+
 using namespace FileHandler;
 
 CXMLFileReader::CXMLFileReader(void)
@@ -18,7 +19,7 @@ CXMLFileReader::~CXMLFileReader(void)
 	m_tokenPt = NULL;
 }
 
-void CXMLFileReader::SetFile(CStdioFile *file)
+void CXMLFileReader::SetFile(novac::CStdioFile *file)
 {
 	m_File = file;
 }
@@ -62,8 +63,8 @@ char *CXMLFileReader::NextToken(){
 /** Retrieves the value of the given attribute from the current token 
 	@return NULL if this attribute does not exist or the current token is not
 		a valid element */
-const char *CXMLFileReader::GetAttributeValue(const CString &label){
-	CString toSearchFor;
+const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
+	novac::CString toSearchFor;
 
 	if(nLinesRead == 0 || szToken == NULL)
 		return NULL; // we haven't started reading the file yet...
@@ -92,7 +93,7 @@ const char *CXMLFileReader::GetAttributeValue(const CString &label){
 }
 
 /** General parsing of a single, simple string item */
-int CXMLFileReader::Parse_StringItem(const CString &label, CString &string){
+int CXMLFileReader::Parse_StringItem(const novac::CString &label, novac::CString &string){
 	string.Format("");
 
 	while(szToken = NextToken()){
@@ -105,7 +106,7 @@ int CXMLFileReader::Parse_StringItem(const CString &label, CString &string){
 
 	return 0;
 }
-int CXMLFileReader::Parse_LongItem(const CString &label, long &number){
+int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number){
 
 	while(szToken = NextToken()){
 
@@ -119,7 +120,7 @@ int CXMLFileReader::Parse_LongItem(const CString &label, long &number){
 	return 0;
 }
 /** General parsing of a single, simple float item */
-int CXMLFileReader::Parse_FloatItem(const CString &label, double &number){
+int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number){
 	while(szToken = NextToken()){
 
 		if(Equals(szToken, label))
@@ -132,7 +133,7 @@ int CXMLFileReader::Parse_FloatItem(const CString &label, double &number){
 }
 
 /** General parsing of a single, simple integer item */
-int CXMLFileReader::Parse_IntItem(const CString &label, int &number){
+int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number){
 	while(szToken = NextToken()){
 
 		if(Equals(szToken, label))
@@ -146,7 +147,7 @@ int CXMLFileReader::Parse_IntItem(const CString &label, int &number){
 }
 
 /** General parsing of a single, simple long integer item */
-int CXMLFileReader::Parse_IPNumber(const CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3){
+int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3){
 	while(szToken = NextToken()){
 		int i0, i1, i2,i3;
 
@@ -163,7 +164,7 @@ int CXMLFileReader::Parse_IPNumber(const CString &label, BYTE &ip0, BYTE &ip1, B
 	return 0;
 }
 /** General parsing of a date */
-int CXMLFileReader::Parse_Date(const CString &label, CDateTime &datum){
+int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum){
 	int nFields = 0;
 
 	while(szToken = NextToken()){

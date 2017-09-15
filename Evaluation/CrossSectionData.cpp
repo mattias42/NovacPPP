@@ -3,6 +3,8 @@
 #include "../Common/Common.h"
 #include "BasicMath.h"
 
+#include <algorithm>
+
 using namespace Evaluation;
 
 CCrossSectionData::CCrossSectionData(void)
@@ -26,7 +28,7 @@ void CCrossSectionData::SetAt(int index, double wavel, double value){
 		
 	this->m_waveLength.at(index) = wavel;
 	this->m_crossSection.at(index) = value;
-	this->m_length = max((unsigned long)index, m_length);
+	this->m_length = std::max((unsigned long)index, m_length);
 }
 
 /** Sets the cross-section information to the values in the 
@@ -99,7 +101,7 @@ double CCrossSectionData::GetWavelengthAt(unsigned int index) const{
 /** Reads the cross section from a file */
 int CCrossSectionData::ReadCrossSectionFile(const CString &fileName){
 	CFileException exceFile;
-	CStdioFile fileRef;
+	novac::CStdioFile fileRef;
 	char szLine[4096];
 	int valuesReadNum, nColumns;
 	double fValue1[MAX_SPECTRUM_LENGTH];

@@ -47,6 +47,7 @@ typedef LPCSTR LPCTSTR;
 typedef void* PVOID;
 typedef PVOID HANDLE;
 typedef unsigned int UINT;
+typedef unsigned char BYTE;
 #define MAX_PATH 512
 
 #define IN 

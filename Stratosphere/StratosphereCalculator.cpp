@@ -73,7 +73,7 @@ CStratosphereCalculator::~CStratosphereCalculator(void)
 */
 void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtendedScanResult> &results){
 	double vcd, vcdErr, s0;
-	CString fileName;
+	novac::CString fileName;
 
 	// remove the old stratospheric output-file
 	fileName.Format("%s\\Stratosphere.txt", g_userSettings.m_outputDirectory);
@@ -98,8 +98,8 @@ void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtend
 	result files and builds the list 'm_measurementDays' */
 void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::CExtendedScanResult> &results){
 	std::list<Evaluation::CExtendedScanResult>::const_iterator p = results.begin();
-	CString mainFitWindowName = CString(g_userSettings.m_fitWindowsToUse[g_userSettings.m_mainFitWindow]);
-	CString evalLogfileToRead;
+	novac::CString mainFitWindowName = novac::CString(g_userSettings.m_fitWindowsToUse[g_userSettings.m_mainFitWindow]);
+	novac::CString evalLogfileToRead;
 	CMolecule specie = CMolecule(g_userSettings.m_molecule);
 	Configuration::CInstrumentLocation instrLocation;
 
@@ -216,7 +216,7 @@ void CStratosphereCalculator::CalculateVCD(CMeasurementDay &measDay, double &VCD
 /** Writes the given results to the output file */
 void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double VCD, double VCDErr, double S0){
 	bool writeHeader = false;
-	CString fileName;
+	novac::CString fileName;
 	
 	// the name of the output file
 	fileName.Format("%s\\Stratosphere.txt", g_userSettings.m_outputDirectory);

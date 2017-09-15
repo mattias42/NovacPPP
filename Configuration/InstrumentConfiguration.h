@@ -22,7 +22,7 @@ namespace Configuration{
 
 		/** The serial of the spectrometer. This defines the instrument
 			and is used to identify instruments. */
-		CString m_serial;
+		novac::CString m_serial;
 
 		/** The evaluation configuration of this instrument. 
 			This holds a set of fit-windows telling us how to evaluate the 

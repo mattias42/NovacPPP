@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "setupfilereader.h"
 
+#include <PPPLib/CStdioFile.h>
+
 using namespace FileHandler;
 
 CSetupFileReader::CSetupFileReader(void)
@@ -11,9 +13,9 @@ CSetupFileReader::~CSetupFileReader(void)
 {
 }
 
-RETURN_CODE CSetupFileReader::ReadSetupFile(const CString &filename, Configuration::CNovacPPPConfiguration &setup){
+RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Configuration::CNovacPPPConfiguration &setup){
 	CFileException exceFile;
-	CStdioFile file;
+	novac::CStdioFile file;
 
 	// 1. Open the file
 	if(!file.Open(filename, CFile::modeRead | CFile::typeText, &exceFile)){
@@ -127,9 +129,9 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
 
 /** This takes care of writing the contents of a setup data-structure to file
 	Only the part regarding the instrument's location will be written to the file */
-RETURN_CODE CSetupFileReader::WriteSetupFile(const CString &fileName, const Configuration::CNovacPPPConfiguration &setup){
+RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup){
 	Configuration::CInstrumentLocation instrLocation;
-	CString spectrometerModel;
+	novac::CString spectrometerModel;
 
 	// Open the file
 	FILE *f = fopen(fileName, "w");
@@ -187,8 +189,8 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const CString &fileName, const Conf
 	return SUCCESS;
 }
 
-void CSetupFileReader::Parse_SpectrometerModel(const CString &label, SPECTROMETER_MODEL &model){
-	CString str;
+void CSetupFileReader::Parse_SpectrometerModel(const novac::CString &label, SPECTROMETER_MODEL &model){
+	novac::CString str;
 
 	while(szToken = NextToken()){
 

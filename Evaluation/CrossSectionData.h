@@ -1,9 +1,12 @@
 #pragma once
-#include "../FIT\Vector.h"
 
-// include the vector-template from the C++ standard library
 #include <vector>
+#include <PPPLib/CString.h>
 
+namespace MathFit
+{
+	class CVector;
+}
 
 namespace Evaluation{
 	/** 
@@ -46,7 +49,7 @@ namespace Evaluation{
 		/** Reads the cross section from a file 
 			@return 0 on success
 			@return non-zero value on fail */
-		int ReadCrossSectionFile(const CString &fileName);
+		int ReadCrossSectionFile(const novac::CString &fileName);
 
 		/** Performs a high-pass filtering of this cross section file */
 		int HighPassFilter();
