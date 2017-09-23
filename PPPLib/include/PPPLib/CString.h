@@ -22,6 +22,13 @@ namespace novac
 		{
 		}
 
+		// --------------------- Simple Operators -----------------------
+		bool operator==(const CString& other) const { return this->m_data == other.m_data; }
+		bool operator==(const char* other) const { return this->m_data == std::string(other); }
+		bool operator!=(const CString& other) const { return this->m_data != other.m_data; }
+		bool operator!=(const char* other) const { return this->m_data != std::string(other); }
+
+
 		// --------------------- Properties -----------------------
 
 		size_t GetLength() const { return m_data.size(); }

@@ -8,7 +8,6 @@ namespace novac
 {
 	struct CFileException
 	{
-		CString errorReason;
 	};
 
 	class CStdioFile

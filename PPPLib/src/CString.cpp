@@ -102,14 +102,28 @@ namespace novac
 			return CString("");
 		}
 
-		// 1. skip initial delimiters
+		size_t strStart = (size_t)iStart;
+		size_t foundPos = m_data.find_first_of(tokenDelimiters, strStart);
 
+		if (std::string::npos == foundPos)
+		{
+			return CString("");
+		}
+
+		// 1. skip initial delimiters
+		while (foundPos == strStart)
+		{
+			strStart += 1;
+			foundPos = m_data.find_first_of(tokenDelimiters, strStart);
+
+			if (strStart >= m_data.size() || foundPos >= m_data.size())
+			{
+				return CString("");
+			}
+		}
 
 		// 2. extract the string
-		for (int curPos = iStart; curPos < m_data.size(); ++curPos)
-		{
-//			if()
-		}
+		return CString(m_data.substr(strStart, foundPos));
 	}
 
 	// trim from start

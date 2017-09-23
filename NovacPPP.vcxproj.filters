@@ -97,6 +97,9 @@
       <UniqueIdentifier>{fa819163-dc03-4b96-bfe8-7b28517d455a}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
     </Filter>
+    <Filter Include="Header Files\Fit">
+      <UniqueIdentifier>{0c2db29d-148e-4a4d-9eb0-e2b343be3a21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ContinuationOfProcessing.cpp">
@@ -613,6 +616,129 @@
     </ClInclude>
     <ClInclude Include="Stratosphere\StratosphereCalculator.h">
       <Filter>Header Files\Stratosphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ApertureFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BandedMatrix.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSpline.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSplineD.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSplineF.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSplineImpl.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConstFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConvoluteFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConvolutionCoreFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\CubicBSplineFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\CubicSplineFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DataSet.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DiscreteFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DivFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DOASVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ExpFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Fit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\FitBasic.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\FitException.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Function.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\GaussFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LeastSquareFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LevenbergMarquardtFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LinearInterpolateFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LnFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Matrix.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Minimizer.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\MulFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\NegateFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\NonlinearParameterFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParameterLinkItem.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParameterVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParamFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\PolynomialFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ReferenceSpectrumFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\SimpleDOASFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StandardFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StandardMetricFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StatisticVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\SumFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Vector.h">
+      <Filter>Header Files\Fit</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

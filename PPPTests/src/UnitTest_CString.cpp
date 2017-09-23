@@ -17,7 +17,7 @@ namespace novac
 			std::string original = "Mary had a little lamb";
 
 			CString copiedString{ original };
-			
+
 			REQUIRE(copiedString.ToStdString() == original);
 		}
 
@@ -112,7 +112,7 @@ namespace novac
 
 		SECTION("String - CString")
 		{
-			CString copy{original}; // this will have the same contents as the original
+			CString copy{ original }; // this will have the same contents as the original
 
 			CString sut;
 			sut.Format("%s", (const char*)copy);
@@ -137,8 +137,8 @@ namespace novac
 
 		SECTION("String - CString")
 		{
-			CString cFirst { first }; // this will have the same contents as the first
-			CString cSecond { second }; // this will have the same contents as the second
+			CString cFirst{ first }; // this will have the same contents as the first
+			CString cSecond{ second }; // this will have the same contents as the second
 
 			CString sut;
 			sut.Format("%s", (const char*)cFirst);
@@ -152,7 +152,7 @@ namespace novac
 	{
 		SECTION("Trim_1 - space")
 		{
-			CString sut{"  Mary had a little lamb  "};
+			CString sut{ "  Mary had a little lamb  " };
 			sut.Trim();
 			REQUIRE(sut.ToStdString() == "Mary had a little lamb");
 		}
@@ -239,4 +239,30 @@ namespace novac
 		}
 	}
 
+	TEST_CASE("Tokenize behaves as expected", "[CString]")
+	{
+		SECTION("Empty String")
+		{
+			CString str("    ");
+			int curPos = 0;
+			CString resToken = str.Tokenize(" ", curPos);
+			REQUIRE(resToken == "");
+		}
+
+		SECTION("Example from MSDN")
+		{
+			CString str("%First Second#Third");
+			CString resToken;
+			int curPos;
+			CString expected[] = {CString("First"), CString("Second"), CString("Third")};
+
+			int iteration = 0;
+			resToken = str.Tokenize("% #", curPos);
+			while (resToken != "")
+			{
+				REQUIRE(resToken == expected[iteration]);
+				resToken = str.Tokenize("% #", curPos);
+			};
+		}
+	}
 }

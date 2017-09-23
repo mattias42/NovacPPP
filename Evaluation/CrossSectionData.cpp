@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <PPPLib/CStdioFile.h>
 
+#include "../Fit/Vector.h"
+
 using namespace Evaluation;
 
 CCrossSectionData::CCrossSectionData(void)
@@ -100,7 +102,7 @@ double CCrossSectionData::GetWavelengthAt(unsigned int index) const{
 }
 
 /** Reads the cross section from a file */
-int CCrossSectionData::ReadCrossSectionFile(const CString &fileName){
+int CCrossSectionData::ReadCrossSectionFile(const novac::CString &fileName){
 	novac::CFileException exceFile;
 	novac::CStdioFile fileRef;
 	char szLine[4096];
