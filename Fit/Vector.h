@@ -12,6 +12,10 @@
 #include <crtdbg.h>
 #endif
 
+#undef min
+#undef max
+
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 #include "FitBasic.h"

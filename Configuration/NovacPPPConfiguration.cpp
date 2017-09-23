@@ -20,8 +20,8 @@ CNovacPPPConfiguration::~CNovacPPPConfiguration(void)
 
 /** Retrieves the CInstrumentConfiguration that is connected with a given
 	serial-number */
-const CInstrumentConfiguration *CNovacPPPConfiguration::GetInstrument(const CString &serial) const{
-	CString errorMessage;
+const CInstrumentConfiguration *CNovacPPPConfiguration::GetInstrument(const novac::CString &serial) const{
+	novac::CString errorMessage;
 
 	// First of all find the instrument 
 	for(unsigned int k = 0; k < g_setup.m_instrumentNum; ++k){
@@ -41,9 +41,9 @@ const CInstrumentConfiguration *CNovacPPPConfiguration::GetInstrument(const CStr
 	for the given time 
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetInstrumentLocation(const CString &serial, const CDateTime &day, CInstrumentLocation &instrLocation) const{
+int CNovacPPPConfiguration::GetInstrumentLocation(const novac::CString &serial, const CDateTime &day, CInstrumentLocation &instrLocation) const{
 	CInstrumentLocation singleLocation;
-	CString errorMessage;
+	novac::CString errorMessage;
 
 	// First of all find the instrument 
 	const CInstrumentConfiguration *instrumentConf = GetInstrument(serial);
@@ -80,9 +80,9 @@ int CNovacPPPConfiguration::GetInstrumentLocation(const CString &serial, const C
 		will be returned.
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetFitWindow(const CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const CString *fitWindowName) const{
+int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName) const{
 	CDateTime evalValidFrom, evalValidTo;
-	CString errorMessage, windowName;
+	novac::CString errorMessage, windowName;
 	
 	if(fitWindowName != NULL){
 		windowName.Format(*fitWindowName);
@@ -135,7 +135,7 @@ int CNovacPPPConfiguration::GetFitWindow(const CString &serial, int channel, con
 
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetDarkCorrection(const CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const{
+int CNovacPPPConfiguration::GetDarkCorrection(const novac::CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const{
 	// First of all find the instrument 
 	const CInstrumentConfiguration *instrumentConf = GetInstrument(serial);
 	if(instrumentConf == NULL)

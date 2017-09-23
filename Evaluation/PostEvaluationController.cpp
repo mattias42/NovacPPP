@@ -468,7 +468,7 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
 	}
 
 	// the serial of the instrument
-	fprintf(f, "%s\t",	result->GetSerial());
+	fprintf(f, "%s\t",	(const char*)result->GetSerial());
 
 	// the start-time
 	fprintf(f, "%04d.%02d.%02dT%02d:%02d:%02d\t",		scan->m_startTime.year, scan->m_startTime.month, scan->m_startTime.day, scan->m_startTime.hour, scan->m_startTime.minute, scan->m_startTime.second);

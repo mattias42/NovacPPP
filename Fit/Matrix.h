@@ -11,6 +11,11 @@
 
 #pragma warning (push, 3)
 
+#undef max
+#undef min
+
+#include <algorithm>
+
 namespace MathFit
 {
 	/*@@
@@ -203,7 +208,7 @@ namespace MathFit
 			mSizeX = iCols;
 			mSizeY = iRows;
 
-			mLineOffset = max(mSecond.mSizeX, mSecond.mLineOffset);
+			mLineOffset = std::max(mSecond.mSizeX, mSecond.mLineOffset);
 		}
 
 		/**
@@ -1598,7 +1603,7 @@ namespace MathFit
 		TFitData* GetSafePtr() const
 		{
 			MATHFIT_ASSERT(mSizeX > 0 && mSizeY > 0);
-			MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mSizeX * mSizeY, TRUE));
+			// MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mSizeX * mSizeY, TRUE));
 
 			return mData;
 		}

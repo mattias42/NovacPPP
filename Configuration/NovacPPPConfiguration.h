@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InstrumentConfiguration.h"
+#include <PPPLib/CString.h>
 
 	/**
 		The class <b>CNovacPPPConfiguration</b> is the main configuration
@@ -36,13 +37,13 @@ namespace Configuration{
 			serial-number.
 			@return a pointer to the found CInstrumentconfiguraion. If none is found
 				then return value is NULL. */
-		const CInstrumentConfiguration *GetInstrument(const CString &serial) const;
+		const CInstrumentConfiguration *GetInstrument(const novac::CString &serial) const;
 
 		/** Retrieves the CInstrumentLocation that is valid for the given instrument and
 			for the given time 
 			@return 0 if successful otherwise non-zero		
 		*/
-		int GetInstrumentLocation(const CString &serial, const CDateTime &dateAndTime, CInstrumentLocation &instrLocation) const;
+		int GetInstrumentLocation(const novac::CString &serial, const CDateTime &dateAndTime, CInstrumentLocation &instrLocation) const;
 
 		/** Retrieves the CFitWindow that is valid for the given instrument and
 			for the given time
@@ -52,14 +53,14 @@ namespace Configuration{
 				will be returned.
 			@return 0 if successful otherwise non-zero		
 		*/
-		int GetFitWindow(const CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const CString *fitWindowName = NULL) const;
+		int GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName = NULL) const;
 
 		/** Retrieves the CDarkSettings that is valid for the given instrument and
 			for the given time
 
 			@return 0 if successful otherwise non-zero		
 		*/
-		int GetDarkCorrection(const CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const;
+		int GetDarkCorrection(const novac::CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const;
 
 	};
 }

@@ -266,7 +266,7 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 	modifiedWind.SetWindDirection(wind.GetWindDirection() + wind.GetWindDirectionError(), wind.GetWindDirectionSource());
 	double flux2 = 	Common::CalculateFlux(scanAngle, scanAngle2, column, specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
 	
-	double fluxErrorDueToWindDirection = max(fabs(flux2 - m_flux.m_flux), fabs(flux1 - m_flux.m_flux));
+	double fluxErrorDueToWindDirection = std::max(fabs(flux2 - m_flux.m_flux), fabs(flux1 - m_flux.m_flux));
 	
 	double fluxErrorDueToWindSpeed = m_flux.m_flux * wind.GetWindSpeedError() / wind.GetWindSpeed();
 	
@@ -371,7 +371,7 @@ double CScanResult::GetMaxColumn(const novac::CString &specie) const{
 		if(m_spec[i].IsBad() || m_spec[i].IsDeleted()){
 			continue;
 		}
-		maxColumn = max(maxColumn, m_spec[i].m_ref[specieIndex].m_column - m_plumeProperties.m_offset);
+		maxColumn = std::max(maxColumn, m_spec[i].m_ref[specieIndex].m_column - m_plumeProperties.m_offset);
 	}
 
 	return maxColumn;
@@ -447,7 +447,7 @@ double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long speci
 	}
 }
 
-const CSpectrumInfo &CScanResult::GetSpectrumInfo(unsigned long index) const {
+const CSpectrumInfo& CScanResult::GetSpectrumInfo(unsigned long index) {
 	return m_specInfo[index];
 }
 

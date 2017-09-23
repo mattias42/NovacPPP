@@ -50,6 +50,9 @@ typedef unsigned int UINT;
 typedef unsigned char BYTE;
 #define MAX_PATH 260
 
+#define TRUE true
+#define FALSE false
+
 #define IN 
 #define WINAPI __stdcall
 

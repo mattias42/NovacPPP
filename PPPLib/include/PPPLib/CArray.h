@@ -60,6 +60,11 @@ namespace novac
 			m_data.resize(newSize);
 		}
 
+		void SetSize(int newSize, int /*growBy*/)
+		{
+			m_data.resize(newSize);
+		}
+
 		TYPE& GetAt(int index)
 		{
 			return m_data[index];
