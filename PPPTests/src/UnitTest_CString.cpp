@@ -185,4 +185,58 @@ namespace novac
 			REQUIRE(sut.ToStdString() == "\t Mary had a little lamb\t");
 		}
 	}
+
+	TEST_CASE("Remove behaves as expected", "[CString]")
+	{
+		SECTION("Remove - space")
+		{
+			CString sut{ "  Mary had a little lamb  " };
+			sut.Remove(' ');
+			REQUIRE(sut.ToStdString() == "Maryhadalittlelamb");
+		}
+
+		SECTION("Remove - a")
+		{
+			CString sut{ "  Mary had a little lamb  " };
+			sut.Remove('a');
+			REQUIRE(sut.ToStdString() == "  Mry hd  little lmb  ");
+		}
+	}
+
+	TEST_CASE("MakeUpper + MakeLower behaves as expected", "[CString]")
+	{
+		SECTION("MakeUpper - 1")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			sut.MakeUpper();
+			REQUIRE(sut.ToStdString() == "MARY HAD A LITTLE LAMB");
+		}
+
+		SECTION("MakeLower - 1")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			sut.MakeLower();
+			REQUIRE(sut.ToStdString() == "mary had a little lamb");
+		}
+	}
+
+	TEST_CASE("Find + ReverseFind behaves as expected", "[CString]")
+	{
+		SECTION("Find - 1")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			REQUIRE(-1 == sut.Find('q'));
+			REQUIRE(1 == sut.Find('a'));
+			REQUIRE(9 == sut.Find('A'));
+		}
+
+		SECTION("ReverseFind - 1")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			REQUIRE(-1 == sut.ReverseFind('q'));
+			REQUIRE(9 == sut.ReverseFind('A'));
+			REQUIRE(19 == sut.ReverseFind('a'));
+		}
+	}
+
 }

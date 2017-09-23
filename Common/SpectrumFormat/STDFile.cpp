@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "stdfile.h"
+#include <algorithm>
 
 using namespace SpectrumIO;
 
@@ -12,7 +13,7 @@ CSTDFile::~CSTDFile(void)
 }
 
 /** Reads a spectrum from a STD-file */
-RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
+RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const novac::CString &fileName){
 	FILE *f = fopen(fileName, "r");
 	if(f == NULL)
 		return FAIL;
@@ -28,7 +29,7 @@ RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
 	if(NULL == fgets(buffer, bufSize, f)){
 		fclose(f); return FAIL;
 	}
-	if(0 != strnicmp("GDBGMNUP\n", buffer, strlen(buffer))){
+	if(0 != _strnicmp("GDBGMNUP\n", buffer, strlen(buffer))){
 		fclose(f); return FAIL;
 	}
 
@@ -41,10 +42,11 @@ RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
 	if(NULL == fgets(buffer, bufSize, f)){
 		fclose(f); return FAIL;
 	}
-	if(1 > sscanf(buffer, "%d", &tmpInt)){
+	long tmpLength = 0L;
+	if(1 > sscanf(buffer, "%d", &tmpLength)){
 		fclose(f); return FAIL;
 	}
-	spec.m_length = min(tmpInt, MAX_SPECTRUM_LENGTH);
+	spec.m_length = std::min(tmpLength, MAX_SPECTRUM_LENGTH);
 
 	// 4. The spectrum data
 	for(int i = 0; i < spec.m_length; ++i){
@@ -221,11 +223,11 @@ RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
 	fclose(f);
 	return SUCCESS;
 }
-RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum *spec, const CString &fileName, int extendedFormat){
+RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum *spec, const novac::CString &fileName, int extendedFormat){
 	return WriteSpectrum(*spec, fileName);
 }
 
-RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const CString &fileName, int extendedFormat){
+RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const novac::CString &fileName, int extendedFormat){
   const CSpectrumInfo &info = spec.m_info;
   FILE *f = fopen(fileName, "w");
   if(f == NULL)
@@ -244,11 +246,11 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const CString &fileNa
 
   int index = fileName.ReverseFind('\\');
   if(index != 0)
-    fprintf(f, "%s\n", fileName.Left(index));
+    fprintf(f, "%s\n", (const char*)fileName.Left(index));
   else
-    fprintf(f, "%s\n", fileName);
+    fprintf(f, "%s\n", (const char*)fileName);
   fprintf(f, ".......\n"); // the detector
-  fprintf(f, "%s\n", info.m_device); // the spectrometer
+  fprintf(f, "%s\n", (const char*)info.m_device); // the spectrometer
 
 	if(info.m_startTime.year == 0 && info.m_startTime.month == 0 && info.m_startTime.day == 0){
 		fprintf(f, "01.01.01\n"); /* Default date */
@@ -263,7 +265,7 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const CString &fileNa
   fprintf(f, "SCANS %ld\n", info.m_numSpec);
   fprintf(f, "INT_TIME %ld\n", info.m_exposureTime);
 
-  fprintf(f, "SITE %s\n", info.m_name);
+  fprintf(f, "SITE %s\n", (const char*)info.m_name);
   fprintf(f, "LONGITUDE %.6lf\n", info.m_gps.Longitude());
   fprintf(f, "LATITUDE %.6lf\n", info.m_gps.Latitude());
 
@@ -277,7 +279,7 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const CString &fileNa
 		fprintf(f, "Device = \"\"\n");
 		fprintf(f, "ElevationAngle = %.2lf\n",	info.m_scanAngle);
 		fprintf(f, "ExposureTime = %d\n",				info.m_exposureTime);
-		fprintf(f, "FileName = %s\n",						fileName);
+		fprintf(f, "FileName = %s\n", (const char*)fileName);
 		fprintf(f, "FitHigh = 0\n");
 		fprintf(f, "FitLow = 0\n");
 		fprintf(f, "Gain = 0\n");
@@ -293,7 +295,7 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const CString &fileNa
 		fprintf(f, "Min = %.3lf\n",							spec.MinValue());
 		fprintf(f, "MinChannel = 0\n");
 		fprintf(f, "MultiChannelCounter = 0\n");
-		fprintf(f, "Name = \"%s\"\n",						info.m_name);
+		fprintf(f, "Name = \"%s\"\n", (const char*)info.m_name);
 		fprintf(f, "NumScans = %d\n",						info.m_numSpec);
 		fprintf(f, "OpticalDensity = 0\n");
 		fprintf(f, "OpticalDensityCenter = %d\n",	spec.m_length / 2);

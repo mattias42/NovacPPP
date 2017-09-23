@@ -41,13 +41,33 @@ namespace novac
 		CString Right(int nChars) const;
 		CString Right(size_t nChars) const;
 
+		/** Finds the next token in a target string 
+			@return A CStringT object containing the current token value. */
+		CString Tokenize(const char* delimiters, int& iStart) const;
+
+		// ---------------------- Searching -----------------------
+
+		/** Finds the first occurrence of the given character, -1 if the character is not found. */
+		int Find(char ch) const;
+
+		/** Finds the last occurrence of the given character, -1 if the character is not found. */
+		int ReverseFind(char ch) const;
+
 		// ---------------------- Changing the String -----------------------
 
 		void Trim();
 		void Trim(const char* characters);
 
-		void MakeLower();
-		void MakeUpper();
+		/** Converts all characters in this string to lower-case.
+			@return a reference to this object. */
+		CString& MakeLower();
+
+		/** Converts all characters in this string to upper-case.
+			@return a reference to this object. */
+		CString& MakeUpper();
+
+		/** Call this member function to remove instances of ch from the string. Comparisons for the character are case-sensitive.
+			@return the number of characters removed. */
 		void Remove(char character);
 
 		// ---------------------- Conversion -----------------------

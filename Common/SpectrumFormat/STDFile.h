@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Spectra/Spectrum.h"
+#include <PPPLib/CString.h>
 
 namespace SpectrumIO
 {
@@ -14,12 +15,12 @@ namespace SpectrumIO
     ~CSTDFile(void);
 
     /** Reads a spectrum from a STD-file */
-    static RETURN_CODE ReadSpectrum(CSpectrum &spec, const CString &fileName);
+    static RETURN_CODE ReadSpectrum(CSpectrum &spec, const novac::CString &fileName);
 
     /** Writes a spectrum to a STD-file */
-    static RETURN_CODE WriteSpectrum(const CSpectrum &spec, const CString &fileName, int extendedFormat = 0);
+    static RETURN_CODE WriteSpectrum(const CSpectrum &spec, const novac::CString &fileName, int extendedFormat = 0);
 
     /** Writes a spectrum to a STD-file */
-    static RETURN_CODE WriteSpectrum(const CSpectrum *spec, const CString &fileName, int extendedFormat = 0);
+    static RETURN_CODE WriteSpectrum(const CSpectrum *spec, const novac::CString &fileName, int extendedFormat = 0);
   };
 }

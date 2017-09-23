@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\PPPLib\CArray.h" />
     <ClInclude Include="include\PPPLib\CCriticalSection.h" />
     <ClInclude Include="include\PPPLib\CList.h" />
     <ClInclude Include="include\PPPLib\CSingleLock.h" />

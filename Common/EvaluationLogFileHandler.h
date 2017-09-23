@@ -4,6 +4,7 @@
 #include "../Evaluation/ScanResult.h"
 //#include "../Evaluation/EvaluationResult.h"
 #include <PPPLib/CString.h>
+#include <PPPLib/CArray.h>
 
 namespace FileHandler
 {
@@ -51,10 +52,10 @@ namespace FileHandler
 		// ------------------- PUBLIC DATA -------------------------
 
 		/** Information from the evaluated scans */
-		CArray<Evaluation::CScanResult, Evaluation::CScanResult&> m_scan;
+		novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> m_scan;
 
 		/** Information of the wind field used to calculate the flux of each scan */
-		CArray<Meteorology::CWindField, Meteorology::CWindField &> m_windField;
+		novac::CArray<Meteorology::CWindField, Meteorology::CWindField &> m_windField;
 
 		/** How many scans that have been read from the evaluation log */
 		long  m_scanNum;
@@ -133,17 +134,17 @@ namespace FileHandler
 
 		/** Sorts the CScanResult-objects in the given array.
 				Algorithm based on MergeSort (~O(NlogN)) */
-		static void SortScans(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
+		static void SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
 
 		/** Sorts the CScanResult-objects in the given array.
 				Algorithm based on BubbleSort (~O(N2))
 				Quite efficient for small arrays since the elements does not have to be copied
 					and thus uses very little memory */
-		static void BubbleSortScans(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
+		static void BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
 
 		/** Merges the two arrays in a sorted way and stores the
 				result in the output-array 'result' */
-		static void MergeArrays(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending = true);
+		static void MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending = true);
 		
 	};
 }

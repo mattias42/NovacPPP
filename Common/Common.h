@@ -114,7 +114,7 @@ const enum PROCESSING_MODE{
 #define MAX_FIT_WINDOWS 5
 
 // the maximum length of any single spectrum
-#define MAX_SPECTRUM_LENGTH 4096
+#define MAX_SPECTRUM_LENGTH 4096L
 
 // the maximum number of channels that the program can handle
 #define MAX_CHANNEL_NUM 8

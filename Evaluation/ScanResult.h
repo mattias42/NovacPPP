@@ -8,6 +8,7 @@
 #include "../Flux/FluxResult.h"
 #include "../Geometry/PlumeHeight.h"
 #include "../Molecule.h"
+#include <PPPLib/CString.h>
 
 namespace Evaluation
 {
@@ -52,7 +53,7 @@ namespace Evaluation
 		        applied to all species.
 		    @return zero if all is ok, otherwise a non-zero value
 		*/
-		int ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, CString *specie = NULL);
+		int ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie = NULL);
 
 		/** Intializes the memory arrays to have, initially, space for 
 		    'specNum' spectra. */
@@ -162,7 +163,7 @@ namespace Evaluation
 		    corrected for the offset.
 		    NB!! The function 'CalculateOffset' must have been called
 		    before this function is called. */
-		double GetMaxColumn(const CString &specie) const;
+		double GetMaxColumn(const novac::CString &specie) const;
 
 		/** Returns the calculated flux */
 		double GetFlux() const {return m_flux.m_flux; }
@@ -225,10 +226,10 @@ namespace Evaluation
 		float	GetBatteryVoltage() const;
 
 		/** Returns the name of the requested spectrum */
-		CString GetName(int index) const;
+		novac::CString GetName(int index) const;
 
 		/** Returns the serial-number of the spectrometer that collected this scan */
-		CString GetSerial() const;
+		novac::CString GetSerial() const;
 
 		/** returns the goodness of fit for the fitting of the evaluated 
 		        spectrum number 'index'. 
@@ -369,14 +370,14 @@ namespace Evaluation
 		/** returns true if the spectra have been evaluated for the supplied specie.
 		    @param specie - a string containing the name of the specie to 
 		        search for, e.g. "SO2" (case insensitive)*/
-		bool IsEvaluatedSpecie(const CString &specie) const {return (-1 != GetSpecieIndex(specie)); }
+		bool IsEvaluatedSpecie(const novac::CString &specie) const {return (-1 != GetSpecieIndex(specie)); }
 
 		/** returns the number of species that were used in the evaluation of a 
 		    given spectrum */
 		int GetSpecieNum(unsigned long spectrumNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_speciesNum : 0; }
 
 		/** returns the specie name */
-		const CString GetSpecieName(unsigned long spectrumNum, unsigned long specieNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_ref[specieNum].m_specieName : 0; }
+		const novac::CString GetSpecieName(unsigned long spectrumNum, unsigned long specieNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_ref[specieNum].m_specieName : 0; }
 
 		/** Sets the type of the instrument used */
 		void SetInstrumentType(INSTRUMENT_TYPE type);
@@ -432,10 +433,10 @@ namespace Evaluation
 		CPlumeInScanProperty m_plumeProperties;
 
 		/** result of evaluating the spectra */
-		CArray<CEvaluationResult, CEvaluationResult&> m_spec;
+		novac::CArray<CEvaluationResult, CEvaluationResult&> m_spec;
 
 		/** information about the collected spectra */
-		CArray<CSpectrumInfo, CSpectrumInfo&> m_specInfo;
+		novac::CArray<CSpectrumInfo, CSpectrumInfo&> m_specInfo;
 
 		/** information about the sky-spectrum used */
 		CSpectrumInfo	m_skySpecInfo;
@@ -450,7 +451,7 @@ namespace Evaluation
 		CSpectrumInfo	m_darkCurSpecInfo;
 
 		/** A list of which spectra were corrupted and could not be evaluated */
-		CArray <unsigned int, unsigned int &>		m_corruptedSpectra;
+		novac::CArray <unsigned int, unsigned int &>		m_corruptedSpectra;
 		int											m_corruptedNum;
 
 		/** The number of evaluations */
@@ -470,7 +471,7 @@ namespace Evaluation
 		    @param specie - the gas to search for e.g. SO2 (case insensitive).
 		    @return the zero-based index of the specie.
 		    @return -1 if specie not found.*/
-		int GetSpecieIndex(const CString &specie) const;
+		int GetSpecieIndex(const novac::CString &specie) const;
 
 		/** makes a sanity check of the parameters and returns fit parameter number 'index'.
 		    @param specIndex - the zero based into the list of evaluated spectra.

@@ -2,6 +2,7 @@
 
 #include "../Common/DateTime.h"
 #include "../Evaluation/FitWindow.h"
+#include <PPPLib/CArray.h>
 
 namespace Configuration{
 	class CEvaluationConfiguration
@@ -54,8 +55,8 @@ namespace Configuration{
 		
 	private:
 		/** The array of fit-windows for this spectrometer */
-		CArray <Evaluation::CFitWindow *, Evaluation::CFitWindow *> m_fitWindows;
-		CArray <CDateTime *, CDateTime *> m_validFrom;
-		CArray <CDateTime *, CDateTime *> m_validTo;
+		novac::CArray <Evaluation::CFitWindow *, Evaluation::CFitWindow *> m_fitWindows;
+		novac::CArray <CDateTime *, CDateTime *> m_validFrom;
+		novac::CArray <CDateTime *, CDateTime *> m_validTo;
 	};
 }

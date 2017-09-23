@@ -157,7 +157,7 @@ namespace FileHandler
 			These are read in when 'CheckScanFile' is called and retrieved
 			by GetSpectrum(...)
 			The buffer is introduced to save some read/writes from hard-disk */
-		CArray <CSpectrum, CSpectrum&> m_spectrumBuffer;
+		novac::CArray <CSpectrum, CSpectrum&> m_spectrumBuffer;
 		
 		/** The number of spectra read in to the m_spectrumBuffer 
 			This might not be the same as 'm_specNum' */

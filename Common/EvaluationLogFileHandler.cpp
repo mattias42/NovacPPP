@@ -1145,7 +1145,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
 
 /** Sorts the CDateTime-objects in the given array.
 		Algorithm based on MergeSort (~O(NlogN)) */
-void FileHandler::CEvaluationLogFileHandler::SortScans(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
+void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
 	unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
 	unsigned long it				= 0; // <-- iterator
 	unsigned long halfSize	= nElements / 2;
@@ -1158,8 +1158,8 @@ void FileHandler::CEvaluationLogFileHandler::SortScans(CArray<Evaluation::CScanR
 		BubbleSortScans(array, ascending);
 		return;
 	}else{
-		CArray <Evaluation::CScanResult, Evaluation::CScanResult&> left;
-		CArray <Evaluation::CScanResult, Evaluation::CScanResult&> right;
+		novac::CArray <Evaluation::CScanResult, Evaluation::CScanResult&> left;
+		novac::CArray <Evaluation::CScanResult, Evaluation::CScanResult&> right;
 		left.SetSize(halfSize);
 		right.SetSize(halfSize);
 
@@ -1184,7 +1184,7 @@ void FileHandler::CEvaluationLogFileHandler::SortScans(CArray<Evaluation::CScanR
 
 /** Merges the two arrays in a sorted way and stores the
 		result in the output-array 'result' */
-void FileHandler::CEvaluationLogFileHandler::MergeArrays(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending){
+void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending){
 	CDateTime	time1, time2;
 	unsigned long it1 = 0; // iterator for array1
 	unsigned long it2 = 0; // iterator for array2
@@ -1243,7 +1243,7 @@ void FileHandler::CEvaluationLogFileHandler::MergeArrays(CArray<Evaluation::CSca
 		Algorithm based on BubbleSort (~O(N2))
 		Quite efficient for small arrays since the elements does not have to be copied
 			and thus uses very little memory */
-void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
+void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
 	CDateTime time1, time2;
 	bool change;
 	unsigned long nElements = (unsigned long)array.GetSize(); // number of elements

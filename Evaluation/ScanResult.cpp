@@ -157,7 +157,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie){
 	return 0;
 }
 
-int CScanResult::GetSpecieIndex(const CString &specie) const
+int CScanResult::GetSpecieIndex(const novac::CString &specie) const
 {
 	unsigned long i; // iterator
 
@@ -356,7 +356,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 }
 
 /** Calculates the maximum good column value in the scan, corrected for the offset */
-double CScanResult::GetMaxColumn(const CString &specie) const{
+double CScanResult::GetMaxColumn(const novac::CString &specie) const{
 	unsigned long i; // iterator
 	double maxColumn = 0.0;
 
@@ -586,22 +586,22 @@ double	CScanResult::GetRoll() const{
 }
 
 /** Returns the name of the requested spectrum */
-CString CScanResult::GetName(int index) const{
+novac::CString CScanResult::GetName(int index) const{
 	if(!IsValidSpectrumIndex(index))
-		return CString("");
+		return novac::CString("");
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(index);
 	return info.m_name;
 }
 
 /** Returns the serial-number of the spectrometer that collected this scan */
-CString CScanResult::GetSerial() const{
+novac::CString CScanResult::GetSerial() const{
 	for(unsigned int k = 0; k < m_specNum; ++k){
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
 		if(strlen(info.m_device) > 0)
 			return info.m_device;
 	}
-	return CString("");	
+	return novac::CString("");	
 }
 
 /** Checks the kind of measurement that we have here and sets the flag 'm_measurementMode'
@@ -809,7 +809,7 @@ bool CScanResult::IsDirectSunMeasurement() const{
 	// It is here assumed that the measurement is a direct-sun measurment
 	//	if there is at least 1 spectrum with the name 'direct_sun'
 	for(unsigned int k = 5; k < m_specNum; ++k){
-		CString &name = GetName(k);
+		novac::CString &name = GetName(k);
 		if(Equals(name, "direct_sun"))
 			return true;
 	}
@@ -824,7 +824,7 @@ bool CScanResult::IsLunarMeasurement() const{
 	// It is here assumed that the measurement is a lunar measurment
 	//	if there is at least 1 spectrum with the name 'lunar'
 	for(unsigned int k = 5; k < m_specNum; ++k){
-		CString &name = GetName(k);
+		novac::CString &name = GetName(k);
 		if(Equals(name, "lunar"))
 			++nFound;
 			if(nFound == 5)
@@ -844,7 +844,7 @@ bool CScanResult::IsCompositionMeasurement() const{
 		return false;
 
 	for(unsigned int k = 0; k < m_specNum; ++k){
-		CString &name = GetName(k);
+		novac::CString &name = GetName(k);
 		if(Equals(name, "comp")){
 			return true;
 		}
@@ -930,7 +930,7 @@ void	CScanResult::SetSpectroscopicalError(double err){
 		@param specie - The name of the specie for which to apply the correction, if NULL then correction will be applied to all species.
 		@return zero if all is ok, otherwise a non-zero value
 */
-int CScanResult::ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, CString *specie){
+int CScanResult::ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie){
 	unsigned int i, k;
 	double f; // the correction factor
 

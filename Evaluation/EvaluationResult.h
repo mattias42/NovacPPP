@@ -7,6 +7,7 @@
 #include "../Common/Spectra/SpectrumInfo.h"
 #include "ColumnCorrection.h"
 #include <PPPLib/CString.h>
+#include <PPPLib/CArray.h>
 
 namespace Evaluation
 {
@@ -31,10 +32,10 @@ namespace Evaluation
 		~CEvaluationResult(void);
 
 		/** The evaluated result for the reference files */
-		CArray<CReferenceFitResult, CReferenceFitResult&> m_ref;
+		novac::CArray<CReferenceFitResult, CReferenceFitResult&> m_ref;
 
 		/** The Corrections applied to each of the evaluation results */
-		CArray <CColumnCorrection, CColumnCorrection&> m_correction;
+		novac::CArray <CColumnCorrection, CColumnCorrection&> m_correction;
 
 		/** The result for the polynomial. The polynomial is stored so that m_polynomial[i] is
 			the i:th order term */

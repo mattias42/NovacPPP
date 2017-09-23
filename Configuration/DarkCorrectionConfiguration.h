@@ -43,9 +43,9 @@ namespace Configuration{
 		
 	private:
 		/** The array of dark-current correction options for this spectrometer */
-		CArray <CDarkSettings*, CDarkSettings *> m_darkSettings;
-		CArray <CDateTime *, CDateTime *> m_validFrom;
-		CArray <CDateTime *, CDateTime *> m_validTo;
+		novac::CArray <CDarkSettings*, CDarkSettings *> m_darkSettings;
+		novac::CArray <CDateTime *, CDateTime *> m_validFrom;
+		novac::CArray <CDateTime *, CDateTime *> m_validTo;
 		
 	};
 }

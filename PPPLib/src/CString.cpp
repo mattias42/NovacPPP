@@ -95,6 +95,23 @@ namespace novac
 		}
 	}
 
+	CString CString::Tokenize(const char* tokenDelimiters, int& iStart) const
+	{
+		if (iStart >= m_data.size())
+		{
+			return CString("");
+		}
+
+		// 1. skip initial delimiters
+
+
+		// 2. extract the string
+		for (int curPos = iStart; curPos < m_data.size(); ++curPos)
+		{
+			if()
+		}
+	}
+
 	// trim from start
 	static inline std::string &ltrim(std::string &s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(),
@@ -138,18 +155,48 @@ namespace novac
 		this->m_data = trim(this->m_data);
 	}
 
-	void CString::MakeLower()
+	CString& CString::MakeLower()
 	{
-		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), ::tolower);
+		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), [](char c) { return char(::tolower(c));});
+
+		return (*this);
 	}
 
-	void CString::MakeUpper()
+	CString& CString::MakeUpper()
 	{
-		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), ::toupper);
+		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), [](char c) { return char(::toupper(c)); });
+
+		return (*this);
 	}
 
 	void CString::Remove(char character)
 	{
+		m_data.erase(std::remove(m_data.begin(), m_data.end(), character), m_data.end());
+	}
 
+	int CString::Find(char ch) const
+	{
+		const char* pt = strchr(m_data.c_str(), int(ch));
+		if (nullptr == pt)
+		{
+			return -1;
+		}
+		else
+		{
+			return int(pt - m_data.c_str());
+		}
+	}
+
+	int CString::ReverseFind(char ch) const
+	{
+		const char* pt = strrchr(m_data.c_str(), int(ch));
+		if (nullptr == pt)
+		{
+			return -1;
+		}
+		else
+		{
+			return int(pt - m_data.c_str());
+		}
 	}
 }

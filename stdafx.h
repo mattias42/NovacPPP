@@ -48,7 +48,7 @@ typedef void* PVOID;
 typedef PVOID HANDLE;
 typedef unsigned int UINT;
 typedef unsigned char BYTE;
-#define MAX_PATH 512
+#define MAX_PATH 260
 
 #define IN 
 #define WINAPI __stdcall

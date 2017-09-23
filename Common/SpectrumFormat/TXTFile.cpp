@@ -12,7 +12,7 @@ CTXTFile::~CTXTFile(void)
 }
 
 /** Reads a spectrum from a TXT-file */
-RETURN_CODE CTXTFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
+RETURN_CODE CTXTFile::ReadSpectrum(CSpectrum &spec, const novac::CString &fileName){
 	double col1, col2;
 
 	// Open the file
@@ -44,14 +44,14 @@ RETURN_CODE CTXTFile::ReadSpectrum(CSpectrum &spec, const CString &fileName){
 }
 
 /** Writes a spectrum to a TXT-file */
-RETURN_CODE CTXTFile::WriteSpectrum(const CSpectrum *spec, const CString &fileName){
+RETURN_CODE CTXTFile::WriteSpectrum(const CSpectrum *spec, const novac::CString &fileName){
 	if(spec == NULL)
 		return FAIL;
 	return WriteSpectrum(*spec, fileName);
 }
 
 /** Writes a spectrum to a TXT-file */
-RETURN_CODE CTXTFile::WriteSpectrum(const CSpectrum &spec, const CString &fileName){
+RETURN_CODE CTXTFile::WriteSpectrum(const CSpectrum &spec, const novac::CString &fileName){
 	// Open the file
 	FILE *f = fopen(fileName, "w");
 	if(NULL == f)

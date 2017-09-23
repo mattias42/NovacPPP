@@ -124,6 +124,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\UnitTest_CList.cpp" />
     <ClCompile Include="src\UnitTest_CString.cpp" />
+    <ClCompile Include="UnitTest_CArray.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
