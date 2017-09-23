@@ -41,7 +41,7 @@ int CFTPCom::Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL 
 
 		if (!AfxParseURL(urlAddress, dwServiceType, (novac::CString)siteName, strObject, port))
 		{
-			m_ErrorMsg = TEXT("Can not parse  ftp address");
+			m_ErrorMsg = "Can not parse  ftp address";
 			ShowMessage(m_ErrorMsg);
 			return 2;
 		}
@@ -54,7 +54,7 @@ int CFTPCom::Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL 
 	// not be started and close app
 	if (!m_InternetSession)
 	{
-		m_ErrorMsg = TEXT("FAIL TO CONNECT INTERNET");
+		m_ErrorMsg = "FAIL TO CONNECT INTERNET";
 		ShowMessage(m_ErrorMsg);
 		return 3;
 	}

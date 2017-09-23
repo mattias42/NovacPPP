@@ -250,23 +250,23 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
 		}
 
 		if(Equals(szToken, "source")){
-			Parse_StringItem(TEXT("/source"), sourceStr);
+			Parse_StringItem("/source", sourceStr);
 			windSource = Meteorology::StringToMetSource(sourceStr);
 			continue;
 		}
 
 		if(Equals(szToken, "altitude")){
-			Parse_FloatItem(TEXT("/altitude"), altitude);
+			Parse_FloatItem("/altitude", altitude);
 			continue;
 		}
 		
 		if(Equals(szToken, "valid_from")){
-			Parse_Date(TEXT("/valid_from"), validFrom);
+			Parse_Date("/valid_from", validFrom);
 			continue;
 		}		
 
 		if(Equals(szToken, "valid_to")){
-			Parse_Date(TEXT("/valid_to"), validTo);
+			Parse_Date("/valid_to", validTo);
 			continue;
 		}
 		

@@ -38,7 +38,7 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 
 	// 1. Assert that the evaluation-log-file exists
 	if(!IsExistingFile(evalLogFileName)){
-		ShowMessage(TEXT("Recieved evaluation-log with illegal path. Could not calculate flux."));
+		ShowMessage("Recieved evaluation-log with illegal path. Could not calculate flux.");
 		return 1;
 	}
 
@@ -327,7 +327,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 		// write the header
 		FILE *f = fopen(fluxLogFile, "w");
 		if(f != NULL){
-			fprintf(f, "serial=%s\n",			serialNumber);
+			fprintf(f, "serial=%s\n", (const char*)serialNumber);
 			fprintf(f, "volcano=x\n");//,		m_common.SimplifyString(spectrometer.m_scanner.volcano));
 			fprintf(f, "site=x\n");//,				m_common.SimplifyString(spectrometer.m_scanner.site));
 			fprintf(f, "#scandate\tscanstarttime\tscanstoptime\t");

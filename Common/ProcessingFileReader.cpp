@@ -2,6 +2,8 @@
 #include "ProcessingFileReader.h"
 #include "../VolcanoInfo.h"
 
+#include <algorithm>
+
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
 
 using namespace FileHandler;
@@ -15,12 +17,12 @@ CProcessingFileReader::~CProcessingFileReader(void)
 }
 
 
-RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, Configuration::CUserConfiguration &settings){
-	CFileException exceFile;
+RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &filename, Configuration::CUserConfiguration &settings){
+	novac::CFileException exceFile;
 	novac::CStdioFile file;
 
 	// 1. Open the file
-	if(!file.Open(filename, CFile::modeRead | CFile::typeText, &exceFile)){
+	if(!file.Open(filename, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)){
 		return FAIL;
 	}
 	this->m_File = &file;
@@ -48,7 +50,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 		if(Equals(szToken, str_maxThreadNum, strlen(str_maxThreadNum))){
 			int number = 1;
 			Parse_IntItem(ENDTAG(str_maxThreadNum), number);
-			settings.m_maxThreadNum = (unsigned long)max(1, number);
+			settings.m_maxThreadNum = (unsigned long)std::max(1, number);
 			continue;
 		}
 
@@ -56,7 +58,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 		if(Equals(szToken, str_startNow, strlen(str_startNow))){
 			int number = 1;
 			Parse_IntItem(ENDTAG(str_startNow), number);
-			settings.m_startNow = (unsigned int)max(0, number);
+			settings.m_startNow = (unsigned int)std::max(0, number);
 			continue;
 		}
 
@@ -75,7 +77,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 		
 		// Look for the volcano to parse
 		if(Equals(szToken, str_volcano, strlen(str_volcano))){
-			CString code;
+			novac::CString code;
 			Parse_StringItem(ENDTAG(str_volcano), code);
 			settings.m_volcano = g_volcanoes.GetVolcanoIndex(code);
 		}
@@ -88,7 +90,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 		
 		// If we've found the mode
 		if(Equals(szToken, str_processingMode, strlen(str_processingMode))){
-			CString modeStr;
+			novac::CString modeStr;
 			Parse_StringItem(ENDTAG(str_processingMode), modeStr);
 			if(Equals(modeStr, "composition")){
 				settings.m_processingMode = PROCESSING_MODE_COMPOSITION;
@@ -106,7 +108,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 
 		// If we've found the main gas
 		if(Equals(szToken, str_molecule, strlen(str_molecule))){
-			CString molecStr;
+			novac::CString molecStr;
 			Parse_StringItem(ENDTAG(str_molecule), molecStr);
 			if(Equals(molecStr, "BrO")){
 				settings.m_molecule = MOLEC_BRO;
@@ -198,7 +200,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const CString &filename, C
 
 // Parse for serial tag and store in the InstrumentConfiguration object
 void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration &settings){
-	CString fitWindowName, mainFitWindowName;
+	novac::CString fitWindowName, mainFitWindowName;
 	int nFitWindowsFound = 0;
 
 	// Parse the file
@@ -242,10 +244,10 @@ void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration &s
 
 /** Parses an individual geometry-calculation section */
 void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration &settings){
-	CString option	= CString("option");
-	CString value	= CString("value");
-	CString parsedValueStr;
-	CString tmpString;
+	novac::CString option	= novac::CString("option");
+	novac::CString value	= novac::CString("value");
+	novac::CString parsedValueStr;
+	novac::CString tmpString;
 
 	// Parse the file
 	while(szToken = NextToken()){
@@ -414,7 +416,7 @@ void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfigurat
 	}
 }
 
-RETURN_CODE CProcessingFileReader::WriteProcessingFile(const CString &fileName, const Configuration::CUserConfiguration &settings){
+RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fileName, const Configuration::CUserConfiguration &settings){
 	
 	// try to open the file
 	FILE *f = fopen(fileName, "w");
@@ -497,9 +499,9 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const CString &fileName, 
 	// the fit fit windows to use
 	fprintf(f, "\t<FitWindows>\n");
 	for(int k = 0; k < settings.m_nFitWindowsToUse; ++k){
-		fprintf(f, "\t\t<item>%s</item>\n",	settings.m_fitWindowsToUse[k]);
+		fprintf(f, "\t\t<item>%s</item>\n",	(const char*)settings.m_fitWindowsToUse[k]);
 	}
-	fprintf(f, "\t\t<main>%s</main>\n",		settings.m_fitWindowsToUse[settings.m_mainFitWindow]);
+	fprintf(f, "\t\t<main>%s</main>\n", (const char*)settings.m_fitWindowsToUse[settings.m_mainFitWindow]);
 	fprintf(f, "\t</FitWindows>\n");
 
 	// the sky-spectrum to use
@@ -513,7 +515,7 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const CString &fileName, 
 		fprintf(f, "\t\t<value>%d</value>\n", settings.m_skyIndex);
 	}else if(settings.m_skyOption == SKY_USER){
 		fprintf(f, "\t\t<option>User</option>\n");
-		fprintf(f, "\t\t<value>%s</value>\n", settings.m_skySpectrumFromUser);
+		fprintf(f, "\t\t<value>%s</value>\n", (const char*)settings.m_skySpectrumFromUser);
 	}	
 	fprintf(f, "\t</SkySpectrum>\n");
 	
@@ -548,33 +550,33 @@ inline void PrintTabs(FILE *f, int nTabs){
 	}
 }
 
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const CString &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const novac::CString &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%s</%s>\n",		tag, value, tag);
+	fprintf(f, "<%s>%s</%s>\n", (const char*)tag, (const char*)value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const int &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const int &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%d</%s>\n",		tag, value, tag);
+	fprintf(f, "<%s>%d</%s>\n", (const char*)tag, value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const unsigned int &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned int &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%u</%s>\n",		tag, value, tag);
+	fprintf(f, "<%s>%u</%s>\n", (const char*)tag, value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const unsigned long &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned long &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%u</%s>\n",		tag, value, tag);
+	fprintf(f, "<%s>%u</%s>\n", (const char*)tag, value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const double &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const double &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%.2lf</%s>\n",		tag, value, tag);
+	fprintf(f, "<%s>%.2lf</%s>\n", (const char*)tag, value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const CString &tag, const CDateTime &value){
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const CDateTime &value){
 	PrintTabs(f, nTabs);
-	fprintf(f, "<%s>%04d.%02d.%02d</%s>\n",		tag, value.year, value.month, value.day, tag);
+	fprintf(f, "<%s>%04d.%02d.%02d</%s>\n", (const char*)tag, value.year, value.month, value.day, (const char*)tag);
 	return;
 }

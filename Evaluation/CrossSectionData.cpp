@@ -4,6 +4,7 @@
 #include "BasicMath.h"
 
 #include <algorithm>
+#include <PPPLib/CStdioFile.h>
 
 using namespace Evaluation;
 
@@ -100,16 +101,16 @@ double CCrossSectionData::GetWavelengthAt(unsigned int index) const{
 
 /** Reads the cross section from a file */
 int CCrossSectionData::ReadCrossSectionFile(const CString &fileName){
-	CFileException exceFile;
+	novac::CFileException exceFile;
 	novac::CStdioFile fileRef;
 	char szLine[4096];
 	int valuesReadNum, nColumns;
 	double fValue1[MAX_SPECTRUM_LENGTH];
 	double fValue2[MAX_SPECTRUM_LENGTH];
 	
-	if(!fileRef.Open(fileName, CFile::modeRead | CFile::typeText, &exceFile))
+	if(!fileRef.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile))
 	{
-		CString str;
+		novac::CString str;
 		str.Format("ERROR: Cannot open reference file: %s", fileName);
 		ShowMessage(str);
 		return 1; /* Failed to open the file */

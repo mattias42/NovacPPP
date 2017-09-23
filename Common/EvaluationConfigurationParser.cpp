@@ -14,14 +14,14 @@ CEvaluationConfigurationParser::~CEvaluationConfigurationParser(void)
 /** Reads in an evaluation-configuration file. 
 	In the format specified for the NovacPostProcessingProgram (NPPP) 
 	@return 0 on sucess */
-int CEvaluationConfigurationParser::ReadConfigurationFile(const CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings){
-	CFileException exceFile;
+int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings){
+	novac::CFileException exceFile;
 	novac::CStdioFile file;
 	Evaluation::CFitWindow tmpWindow;
 	int curWindow = 0;
 
 	// 1. Open the file
-	if(!file.Open(fileName, CFile::modeRead | CFile::typeText, &exceFile)){
+	if(!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)){
 		return FAIL;
 	}
 	this->m_File = &file;
@@ -65,8 +65,8 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const CString &fileNam
 
 /** Writes an evaluation configuration file in the NPPP-format 
 	@return 0 on success */
-int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings){
-	CString indent, str; 
+int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings){
+	novac::CString indent, str; 
 	Evaluation::CFitWindow window;
 	Configuration::CDarkSettings dSettings;
 	CDateTime from, to;
@@ -77,13 +77,13 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileNa
 		return 1;
 		
 	// write the header lines and the start of the file
-	fprintf(f, TEXT("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
-	fprintf(f, TEXT("<!-- This is the configuration file for the evaluation of spectra in the NOVAC Post Processing Program -->\n\n"));
-	fprintf(f, TEXT("<EvaluationConfiguration>\n"));
+	fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+	fprintf(f, "<!-- This is the configuration file for the evaluation of spectra in the NOVAC Post Processing Program -->\n\n");
+	fprintf(f, "<EvaluationConfiguration>\n");
 	indent.Format("\t");
 
 	// Write the serial-number of the spectrometer for which this configuration is valid
-	fprintf(f, "\t<serial>%s</serial>\n", settings->m_serial);
+	fprintf(f, "\t<serial>%s</serial>\n", (const char*)settings->m_serial);
 
 	// ------ loop through each of the fit windows and write them to file --------
 	unsigned long nWindows = settings->GetFitWindowNum();
@@ -96,7 +96,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileNa
 		fprintf(f, "\t\t<channel>%d</channel>\n", window.channel);
 
 		// the name of the fit-window
-		fprintf(f, "\t\t<name>%s</name>\n", window.name);
+		fprintf(f, "\t\t<name>%s</name>\n", (const char*)window.name);
 
 		// the time-range when the fit-window is valid
 		fprintf(f, "\t\t<validFrom>%04d.%02d.%02d</validFrom>\n", from.year, from.month, from.day);
@@ -120,15 +120,15 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileNa
 		//  the shift & squeeze of the spectra
 		if(window.fraunhoferRef.m_path.GetLength() > 3){
 			fprintf(f, "\t\t<wavelengthCalibration>\n");
-			fprintf(f, "\t\t<fraunhoferSpec>%d</fraunhoferSpec>\n", window.fraunhoferRef.m_path);
+			fprintf(f, "\t\t<fraunhoferSpec>%s</fraunhoferSpec>\n", (const char*)window.fraunhoferRef.m_path);
 			fprintf(f, "\t\t</wavelengthCalibration>\n");
 		}
 
 		// Each of the references...
 		for(int j = 0; j < window.nRef; ++j){
 			fprintf(f, "\t\t<Reference>\n");
-			fprintf(f, "\t\t\t<name>%s</name>\n", window.ref[j].m_specieName);
-			fprintf(f, "\t\t\t<path>%s</path>\n", window.ref[j].m_path);
+			fprintf(f, "\t\t\t<name>%s</name>\n", (const char*)window.ref[j].m_specieName);
+			fprintf(f, "\t\t\t<path>%s</path>\n", (const char*)window.ref[j].m_path);
 			
 			// The value for the shift
 			fprintf(f, "\t\t\t<shiftOption>%d</shiftOption>\n", window.ref[j].m_shiftOption);
@@ -174,7 +174,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileNa
 				fprintf(f, "\t\t<darkCurrent>SCAN</darkCurrent>\n");
 			}else{
 				fprintf(f, "\t\t<darkCurrent>USER</darkCurrent>\n");
-				fprintf(f, "\t\t<darkCurrentSpec>%s</darkCurrentSpec>\n", dSettings.m_darkCurrentSpec);
+				fprintf(f, "\t\t<darkCurrentSpec>%s</darkCurrentSpec>\n", (const char*)dSettings.m_darkCurrentSpec);
 			}
 			
 			// offset
@@ -182,19 +182,19 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const CString &fileNa
 				fprintf(f, "\t\t<offset>SCAN</offset>\n");
 			}else{
 				fprintf(f, "\t\t<offset>USER</offset>\n");
-				fprintf(f, "\t\t<offsetSpec>%s</offsetSpec>\n", dSettings.m_offsetSpec);
+				fprintf(f, "\t\t<offsetSpec>%s</offsetSpec>\n", (const char*)dSettings.m_offsetSpec);
 			}
 			
 		}else if(dSettings.m_darkSpecOption == DARK_USER_SUPPLIED){
 			fprintf(f, "\t\t<dark>USER</dark>\n");
-			fprintf(f, "\t\t<darkCurrentSpec>%s</darkCurrentSpec>\n", dSettings.m_darkCurrentSpec);
-			fprintf(f, "\t\t<offsetSpec>%s</offsetSpec>\n", dSettings.m_offsetSpec);
+			fprintf(f, "\t\t<darkCurrentSpec>%s</darkCurrentSpec>\n", (const char*)dSettings.m_darkCurrentSpec);
+			fprintf(f, "\t\t<offsetSpec>%s</offsetSpec>\n", (const char*)dSettings.m_offsetSpec);
 		}
 
-		fprintf(f, "\t</DarkCorrection>\n");		
+		fprintf(f, "\t</DarkCorrection>\n");
 	}
 
-	fprintf(f, TEXT("</EvaluationConfiguration>\n"));
+	fprintf(f, "</EvaluationConfiguration>\n");
 	
 	// remember to close the file when we're done
 	fclose(f);
@@ -223,74 +223,74 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "name")){
-			Parse_StringItem(TEXT("/name"), window.name);
+			Parse_StringItem("/name", window.name);
 			continue;
 		}
 
 		if(Equals(szToken, "validFrom")){
-			Parse_Date(TEXT("/validFrom"), validFrom);
+			Parse_Date("/validFrom", validFrom);
 			continue;
 		}
 
 		if(Equals(szToken, "validTo")){
-			Parse_Date(TEXT("/validTo"), validTo);
+			Parse_Date("/validTo", validTo);
 			continue;
 		}
 
 		if(Equals(szToken, "fitLow")){
-			Parse_IntItem(TEXT("/fitLow"), window.fitLow);
+			Parse_IntItem("/fitLow", window.fitLow);
 			continue;
 		}
 
 		if(Equals(szToken, "fitHigh")){
-			Parse_IntItem(TEXT("/fitHigh"), window.fitHigh);
+			Parse_IntItem("/fitHigh", window.fitHigh);
 			continue;
 		}
 
 		if(Equals(szToken, "polyOrder")){
-			Parse_IntItem(TEXT("/polyOrder"), window.polyOrder);
+			Parse_IntItem("/polyOrder", window.polyOrder);
 			continue;
 		}
 
 		if(Equals(szToken, "fitType")){
-			Parse_IntItem(TEXT("/fitType"), (int&)window.fitType); // TODO: Will this be ok????
+			Parse_IntItem("/fitType", (int&)window.fitType); // TODO: Will this be ok????
 			continue;
 		}
 
 		if(Equals(szToken, "channel")){
-			Parse_IntItem(TEXT("/channel"), window.channel);
+			Parse_IntItem("/channel", window.channel);
 			continue;
 		}
 
 		if(Equals(szToken, "specLength")){
-			Parse_IntItem(TEXT("/specLength"), window.specLength);
+			Parse_IntItem("/specLength", window.specLength);
 			continue;
 		}
 
 		if(Equals(szToken, "fOptShift")){
-			Parse_IntItem(TEXT("/fOptShift"), window.findOptimalShift);
+			Parse_IntItem("/fOptShift", window.findOptimalShift);
 			continue;
 		}
 
 		if(Equals(szToken, "shiftSky")){
-			Parse_IntItem(TEXT("/shiftSky"), window.shiftSky);
+			Parse_IntItem("/shiftSky", window.shiftSky);
 			continue;
 		}
 
 		if(Equals(szToken, "interlaceStep")){
-			Parse_IntItem(TEXT("/interlaceStep"), window.interlaceStep);
+			Parse_IntItem("/interlaceStep", window.interlaceStep);
 			continue;
 		}
 
 		if(Equals(szToken, "interlaced")){
-			Parse_IntItem(TEXT("/interlaced"), window.interlaceStep);
+			Parse_IntItem("/interlaced", window.interlaceStep);
 			window.interlaceStep += 1;
 			continue;
 		}
 
 		if(Equals(szToken, "fraunhoferSpec", 14)){
 			// Parse the settings for the wavelength calibration
-			this->Parse_StringItem(TEXT("/fraunhoferSpec"), window.fraunhoferRef.m_path);
+			this->Parse_StringItem("/fraunhoferSpec", window.fraunhoferRef.m_path);
 			continue;
 		}
 		
@@ -325,13 +325,13 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "name")){
-			Parse_StringItem(TEXT("/name"), window.ref[nRef].m_specieName);
+			Parse_StringItem("/name", window.ref[nRef].m_specieName);
 			continue;
 		}
 
 		if(Equals(szToken, "filtered")){
-			CString str;
-			Parse_StringItem(TEXT("/filtered"), str);
+			novac::CString str;
+			Parse_StringItem("/filtered", str);
 			if(Equals(str, "HP500")){
 				window.ref[nRef].m_isFiltered = true;
 			}
@@ -339,13 +339,13 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "path")){
-			Parse_StringItem(TEXT("/path"), window.ref[nRef].m_path);
+			Parse_StringItem("/path", window.ref[nRef].m_path);
 			continue;
 		}
 
 		if(Equals(szToken, "shiftOption")){
 			int tmpInt;
-			Parse_IntItem(TEXT("/shiftOption"), tmpInt);
+			Parse_IntItem("/shiftOption", tmpInt);
 			switch(tmpInt){
 				case 0: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_FREE; break;
 				case 1: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_FIX; break;
@@ -356,13 +356,13 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "shiftValue")){
-			Parse_FloatItem(TEXT("/shiftValue"), window.ref[nRef].m_shiftValue);
+			Parse_FloatItem("/shiftValue", window.ref[nRef].m_shiftValue);
 			continue;
 		}
 
 		if(Equals(szToken, "squeezeOption")){
 			int tmpInt;
-			Parse_IntItem(TEXT("/squeezeOption"), tmpInt);
+			Parse_IntItem("/squeezeOption", tmpInt);
 			switch(tmpInt){
 				case 0: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_FREE; break;
 				case 1: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_FIX; break;
@@ -373,13 +373,13 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "squeezeValue")){
-			Parse_FloatItem(TEXT("/squeezeValue"), window.ref[nRef].m_squeezeValue);
+			Parse_FloatItem("/squeezeValue", window.ref[nRef].m_squeezeValue);
 			continue;
 		}
 
 		if(Equals(szToken, "columnOption")){
 			int tmpInt;
-			Parse_IntItem(TEXT("/columnOption"), tmpInt);
+			Parse_IntItem("/columnOption", tmpInt);
 			switch(tmpInt){
 				case 0: window.ref[nRef].m_columnOption = Evaluation::SHIFT_FREE; break;
 				case 1: window.ref[nRef].m_columnOption = Evaluation::SHIFT_FIX; break;
@@ -390,7 +390,7 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "columnValue")){
-			Parse_FloatItem(TEXT("/columnValue"), window.ref[nRef].m_columnValue);
+			Parse_FloatItem("/columnValue", window.ref[nRef].m_columnValue);
 			continue;
 		}
 	}
@@ -403,7 +403,7 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 /** Reads a 'dark-correction' section */
 int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo){
 	dSettings.Clear();
-	CString str;
+	novac::CString str;
 
 	// parse the file
 	while(szToken = NextToken()){
@@ -423,17 +423,17 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
 
 		// valid interval
 		if(Equals(szToken, "validFrom")){
-			Parse_Date(TEXT("/validFrom"), validFrom);
+			Parse_Date("/validFrom", validFrom);
 			continue;
 		}
 		if(Equals(szToken, "validTo")){
-			Parse_Date(TEXT("/validTo"), validTo);
+			Parse_Date("/validTo", validTo);
 			continue;
 		}
 
 		// the option for the dark
 		if(Equals(szToken, "dark")){
-			Parse_StringItem(TEXT("/dark"), str);
+			Parse_StringItem("/dark", str);
 
 			if(Equals(str, "MODEL")){
 				dSettings.m_darkSpecOption = MODEL_ALWAYS;
@@ -446,12 +446,12 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
 		}
 
 		if(Equals(szToken, "darkCurrentSpec")){
-			Parse_StringItem(TEXT("/darkCurrentSpec"), dSettings.m_darkCurrentSpec);
+			Parse_StringItem("/darkCurrentSpec", dSettings.m_darkCurrentSpec);
 			continue;
 		}
 
 		if(Equals(szToken, "darkCurrent")){
-			Parse_StringItem(TEXT("/darkCurrent"), str);
+			Parse_StringItem("/darkCurrent", str);
 
 			if(Equals(str, "USER")){
 				dSettings.m_darkCurrentOption = USER_SUPPLIED;
@@ -462,12 +462,12 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
 		}
 
 		if(Equals(szToken, "offsetSpec")){
-			Parse_StringItem(TEXT("/offsetSpec"), dSettings.m_offsetSpec);
+			Parse_StringItem("/offsetSpec", dSettings.m_offsetSpec);
 			continue;
 		}
 
 		if(Equals(szToken, "offset")){
-			Parse_StringItem(TEXT("/offset"), str);
+			Parse_StringItem("/offset", str);
 
 			if(Equals(str, "USER")){
 				dSettings.m_offsetOption = USER_SUPPLIED;

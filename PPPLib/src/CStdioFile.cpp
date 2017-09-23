@@ -9,10 +9,16 @@ namespace novac
 
 	bool CStdioFile::Open(const char* fileName, unsigned nOpenFlags)
 	{
+		return Open(fileName, nOpenFlags, nullptr);
+	}
+
+	bool CStdioFile::Open(const char* fileName, unsigned nOpenFlags, CFileException* ex)
+	{
 		m_f.open(fileName, nOpenFlags);
 
 		return m_f.is_open();
 	}
+
 
 	void CStdioFile::Close()
 	{

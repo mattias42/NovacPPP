@@ -108,7 +108,7 @@ namespace novac
 		// 2. extract the string
 		for (int curPos = iStart; curPos < m_data.size(); ++curPos)
 		{
-			if()
+//			if()
 		}
 	}
 
@@ -198,5 +198,19 @@ namespace novac
 		{
 			return int(pt - m_data.c_str());
 		}
+	}
+
+
+	CString operator+(const CString& str1, CString& other)
+	{
+		return CString(str1.ToStdString() + other.ToStdString());
+	}
+	CString operator+(const CString& str1, const char* other)
+	{
+		return CString(str1.ToStdString() + std::string(other));
+	}
+	CString operator+(const CString& str1, std::string other)
+	{
+		return CString(str1.ToStdString() + other);
 	}
 }

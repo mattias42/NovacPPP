@@ -14,11 +14,11 @@ namespace FileHandler{
 		/** Reads in an evaluation-configuration file. 
 			In the format specified for the NovacPostProcessingProgram (NPPP) 
 			@return 0 on sucess */
-		int ReadConfigurationFile(const CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings);
+		int ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings);
 		
 		/** Writes an evaluation configuration file in the NPPP-format 
 			@return 0 on success */
-		int WriteConfigurationFile(const CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings);
+		int WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings);
 		
 	private:
 

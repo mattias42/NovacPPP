@@ -2,9 +2,15 @@
 #define NOVAC_PPPLIB_CSTDIOFILE_H
 
 #include <fstream>
+#include <CString>
 
 namespace novac
 {
+	struct CFileException
+	{
+		CString errorReason;
+	};
+
 	class CStdioFile
 	{
 	public:
@@ -21,6 +27,8 @@ namespace novac
 		};
 
 		bool Open(const char* fileName, unsigned nOpenFlags);
+
+		bool Open(const char* fileName, unsigned nOpenFlags, CFileException* ex);
 
 		void Close();
 

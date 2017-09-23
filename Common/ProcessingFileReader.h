@@ -23,11 +23,11 @@ namespace FileHandler{
 				found in the file.
 			@return SUCCESS - if successful.
 		*/
-		RETURN_CODE ReadProcessingFile(const CString &fileName, Configuration::CUserConfiguration &settings);
+		RETURN_CODE ReadProcessingFile(const novac::CString &fileName, Configuration::CUserConfiguration &settings);
 
 		/** This takes care of writing the contents of a settings data-structure to file
 			Only the part regarding the processing of the data will be written to the file */
-		RETURN_CODE WriteProcessingFile(const CString &fileName, const Configuration::CUserConfiguration &settings);
+		RETURN_CODE WriteProcessingFile(const novac::CString &fileName, const Configuration::CUserConfiguration &settings);
 
 	private:
 		/** Parses an individual fit-window section */
@@ -45,12 +45,12 @@ namespace FileHandler{
 		/** Parses an individual quality-judgement section */
 		void Parse_DiscardSettings(Configuration::CUserConfiguration &settings);
 
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const CString &value);
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const int &value);
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const unsigned int &value);
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const unsigned long &value);
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const double &value);
-		void PrintParameter(FILE *f, int nTabs, const CString &tag, const CDateTime &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const novac::CString &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const int &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned int &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned long &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const double &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const CDateTime &value);
 
 	};
 }

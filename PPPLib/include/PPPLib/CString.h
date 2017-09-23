@@ -81,6 +81,12 @@ namespace novac
 	private:
 		std::string m_data;
 	};
+
+	// Appending CStrings
+	CString operator+(const CString& str1, CString& other);
+	CString operator+(const CString& str1, const char* other);
+	CString operator+(const CString& str1, std::string other);
+
 }
 
 #endif // !NOVAC_PPPLIB_CSTRING_H
