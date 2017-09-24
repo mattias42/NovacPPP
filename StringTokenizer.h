@@ -20,10 +20,10 @@ private:
 	char	*m_stringToInterpret;
 	
 	/** The length of the string to interpret */
-	long	m_strLen;
+	size_t	m_strLen;
 	
 	/** Out current position in the string to interpret */
-	long	m_stringPos;
+	size_t	m_stringPos;
 
 	/** Local buffer holding the last token returned */
 	char	*m_lastToken;

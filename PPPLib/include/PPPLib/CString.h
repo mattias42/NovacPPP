@@ -22,6 +22,12 @@ namespace novac
 		{
 		}
 
+		// --------------------- Setting the contents -----------------------
+
+		void SetData(const char* data);
+		void SetData(const CString& other);
+		void SetData(const std::string& other);
+
 		// --------------------- Simple Operators -----------------------
 		bool operator==(const CString& other) const { return this->m_data == other.m_data; }
 		bool operator==(const char* other) const { return this->m_data == std::string(other); }
@@ -56,6 +62,9 @@ namespace novac
 
 		/** Finds the first occurrence of the given character, -1 if the character is not found. */
 		int Find(char ch) const;
+
+		/** Finds the first occurrence of the given string, -1 if the character is not found. */
+		int Find(const char* str) const;
 
 		/** Finds the last occurrence of the given character, -1 if the character is not found. */
 		int ReverseFind(char ch) const;

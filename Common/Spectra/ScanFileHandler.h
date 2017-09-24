@@ -1,6 +1,6 @@
 #pragma once
 
-#include <afxtempl.h>
+// #include <afxtempl.h>
 
 #include "../Common.h"
 #include "SpectrumIO.h"

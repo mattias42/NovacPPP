@@ -2,7 +2,7 @@
 #include "FTPServerConnection.h"
 
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
 
 #include "../Common/Common.h"
 #include "../Common/EvaluationLogFileHandler.h"
@@ -12,6 +12,9 @@
 
 // This is the global list of volcanoes
 #include "../VolcanoInfo.h"
+
+#include <PPPLib/CCriticalSection.h>
+#include <PPPLib/CSingleLock.h>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
@@ -31,9 +34,9 @@ CFTPServerConnection::~CFTPServerConnection(void)
 novac::CString s_username;
 novac::CString s_password;
 novac::CString s_server;
-CList <novac::CString, novac::CString &> s_pakFileList;
-CCriticalSection s_pakFileListCritSect; // synchronization access to the list of pak-files
-CCriticalSection s_ThreadNumCritSect; // synchronization access to the number of concurrently running threads
+novac::CList <novac::CString, novac::CString &> s_pakFileList;
+novac::CCriticalSection s_pakFileListCritSect; // synchronization access to the list of pak-files
+novac::CCriticalSection s_ThreadNumCritSect; // synchronization access to the number of concurrently running threads
 volatile int nFTPThreadsRunning = 0;
 volatile double nMbytesDownloaded = 0.0;
 double nSecondsPassed = 0.0;
@@ -44,7 +47,7 @@ double nSecondsPassed = 0.0;
 		otherwise non-zero
 */
 int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, const novac::CString &username,
-	const novac::CString &password, CList <novac::CString, novac::CString &> &pakFileList){
+	const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList){
 	
 	novac::CString userMessage;
 	unsigned int nRounds = 0;
@@ -116,7 +119,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 //	in a synchronized way so that no two threads access
 //	the list at the same time...
 void AddFileToList(const novac::CString &fileName){
-	CSingleLock singleLock(&s_pakFileListCritSect);
+	novac::CSingleLock singleLock(&s_pakFileListCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 		s_pakFileList.AddTail(novac::CString(fileName));
@@ -131,7 +134,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	// the directory to search in
 	novac::CString *directory = (novac::CString *)pParam;
 
-	CList <CFileInfo, CFileInfo &> filesFound;
+	novac::CList <CFileInfo, CFileInfo &> filesFound;
 	novac::CString localFileName, serial;
 	novac::CString userMessage;
 	CDateTime start;
@@ -142,7 +145,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	while(nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum){
 		Sleep(500);
 	}
-	CSingleLock singleLockThread(&s_ThreadNumCritSect);
+	novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 	singleLockThread.Lock();
 	if(singleLockThread.IsLocked()){
 		++nFTPThreadsRunning;
@@ -158,7 +161,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	// connect to the server
 	if(ftp->Connect(s_server, s_username, s_password, TRUE) != 1){
 
-		CSingleLock singleLockThread(&s_ThreadNumCritSect);
+		novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 		singleLockThread.Lock();
 		if(singleLockThread.IsLocked()){
 			--nFTPThreadsRunning;
@@ -174,7 +177,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	if(ftp->GetFileList(*directory, filesFound)){
 		ftp->Disconnect();
 
-		CSingleLock singleLockThread(&s_ThreadNumCritSect);
+		novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 		singleLockThread.Lock();
 		if(singleLockThread.IsLocked()){
 			--nFTPThreadsRunning;
@@ -240,7 +243,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	// clean up	
 	delete directory;
 
-	CSingleLock singleLockThread2(&s_ThreadNumCritSect);
+	novac::CSingleLock singleLockThread2(&s_ThreadNumCritSect);
 	singleLockThread2.Lock();
 	if(singleLockThread2.IsLocked()){
 		--nFTPThreadsRunning;
@@ -253,9 +256,9 @@ UINT DownloadDataFromDir(LPVOID pParam){
 /** Retrieves the list of files in a given directory on the FTP-server
 	@return 0 on successful connection and completion of the download
 */
-int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, CList <novac::CString, novac::CString&> &fileList, const novac::CString &username, const novac::CString &password){
+int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, novac::CList <novac::CString, novac::CString&> &fileList, const novac::CString &username, const novac::CString &password){
 
-	CList <CFileInfo, CFileInfo &> filesFound;
+	novac::CList <CFileInfo, CFileInfo &> filesFound;
 
 	// Extract the name of the server and each of the sub-directories specified
 	novac::CString subString, directory, server;
@@ -362,7 +365,7 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 	@return 0 on success otherwise non-zero
 */
 int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username, 
-						const novac::CString &password, CList <novac::CString, novac::CString &> &fileList){
+						const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList){
 	CDateTime now;
 
 	// Extract the name of the server and the login

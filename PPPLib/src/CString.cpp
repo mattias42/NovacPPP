@@ -28,9 +28,20 @@ namespace novac
 	CString::CString(const std::string& other)
 		: m_data{ other }
 	{
-
 	}
 
+	void CString::SetData(const char* data)
+	{
+		m_data = std::string(data);
+	}
+	void CString::SetData(const CString& data)
+	{
+		m_data = std::string(data.m_data);
+	}
+	void CString::SetData(const std::string& data)
+	{
+		m_data = std::string(data);
+	}
 
 	// --------------------- Formatting -----------------------
 
@@ -171,7 +182,7 @@ namespace novac
 
 	CString& CString::MakeLower()
 	{
-		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), [](char c) { return char(::tolower(c));});
+		std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), [](char c) { return char(::tolower(c)); });
 
 		return (*this);
 	}
@@ -191,6 +202,20 @@ namespace novac
 	int CString::Find(char ch) const
 	{
 		const char* pt = strchr(m_data.c_str(), int(ch));
+		if (nullptr == pt)
+		{
+			return -1;
+		}
+		else
+		{
+			return int(pt - m_data.c_str());
+		}
+	}
+
+	int CString::Find(const char* str) const
+	{
+		const char* pt = strstr(m_data.c_str(), str);
+
 		if (nullptr == pt)
 		{
 			return -1;

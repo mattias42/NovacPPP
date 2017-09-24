@@ -8,7 +8,18 @@ namespace novac
 	template<class TYPE>
 	struct POSITION
 	{
-		typename std::list<TYPE>::iterator m_position;
+	public:
+		typename std::list<TYPE>::iterator* m_position;
+
+		POSITION(typename std::list<TYPE>::iterator* pos, std::list<TYPE>* data)
+			: m_position(pos), m_data(data)
+		{
+		}
+
+		bool HasNext() const { return (*(*m_position)) < m_data->end(); }
+
+	private:
+		std::list<TYPE>* m_data;
 	};
 
 	template<class TYPE, class ARG_TYPE = const TYPE&>
@@ -35,9 +46,20 @@ namespace novac
 			return (int)m_data.size();
 		}
 
-		POSITION<TYPE> GetHeadPosition() const
+		POSITION<TYPE> GetHeadPosition()
 		{
-			return POSITION<TYPE>(m_data.begin());
+			return POSITION<TYPE>{m_data.begin(), m_data};
+		}
+
+		POSITION<TYPE> GetTailPosition()
+		{
+			POSITION<TYPE> p(&(--m_data.end()), &m_data);
+			return p;
+		}
+
+		ARG_TYPE GetAt(POSITION<TYPE> p) const
+		{
+			return *(*(p.m_position));
 		}
 
 		ARG_TYPE GetNext(POSITION<TYPE> p) const
@@ -52,9 +74,14 @@ namespace novac
 			m_data.clear();
 		}
 
+		void RemoveTail()
+		{
+			m_data.erase(--m_data.end());
+		}
+
 		void AddTail(TYPE item)
 		{
-			m_data.push_back();
+			m_data.push_back(item);
 		}
 
 	private:

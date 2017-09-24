@@ -2,7 +2,7 @@
 #define NOVAC_PPPLIB_CSTDIOFILE_H
 
 #include <fstream>
-#include <CString>
+#include "CString.h"
 
 namespace novac
 {
@@ -35,6 +35,11 @@ namespace novac
 		// This reads until a new-line is encountered OR nMax-1 characters have been read.
 		// Return FALSE if end-of-file was reached without reading any data.
 		bool ReadString(char* destination, unsigned int nMax);
+
+		// Reads text data into CString receiver, from the file associated with the CStdioFile object.
+		// This reads until a new-line is encountered.
+		bool ReadString(CString& destination);
+
 		
 	private:
 		std::ifstream m_f;

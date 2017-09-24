@@ -351,7 +351,7 @@ void CWindSpeedCalculator::InitializeArrays(){
 		NOTE THAT THE WIND-DIRECTION WILL NOT BE CALCULATED AND WILL THUS NOT MAKE
 		ANY SENSE...
 */
-int CWindSpeedCalculator::CalculateWindSpeed(const CString &evalLog1, const CString &evalLog2, const Configuration::CInstrumentLocation &location, const Geometry::CPlumeHeight &plumeHeight, Meteorology::CWindField &windField){
+int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation &location, const Geometry::CPlumeHeight &plumeHeight, Meteorology::CWindField &windField){
 	double distance; // the distance between the two viewing directions at the altitude of the plume.
 	
 	// Extract the relative plume height
@@ -434,11 +434,11 @@ int CWindSpeedCalculator::CalculateWindSpeed(const CString &evalLog1, const CStr
 
 /** Calculate the correlation between the two time-series found in the 
 		given evaluation-files. */
-RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const CString &evalLog1, const CString &evalLog2){
+RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &evalLog1, const novac::CString &evalLog2){
 	FileHandler::CEvaluationLogFileHandler reader[2];
 	CDateTime time;
 	Meteorology::CWindField wf;
-	CString errorMessage;
+	novac::CString errorMessage;
 	WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
 	int scanIndex[2], k;
 	double delay;
@@ -557,7 +557,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const CString &evalLog1, 
 
 /** Calculate the correlation between the two time-series found in the 
 		given evaluation-file. */
-RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const CString &evalLog){
+RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::CString &evalLog){
 	FileHandler::CEvaluationLogFileHandler reader;
 	WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
 	Meteorology::CWindField wf;
@@ -656,7 +656,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const CString 
 
 /** Writes the header of a dual-beam wind speed log file to the given
 	file. */
-void CWindSpeedCalculator::WriteWindSpeedLogHeader(const CString &fileName){
+void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileName){
 	CDateTime now;
 
 	if(IsExistingFile(fileName))
@@ -680,7 +680,7 @@ void CWindSpeedCalculator::WriteWindSpeedLogHeader(const CString &fileName){
 }
 
 /** Appends a dual-beam wind speed result to the given file */
-void CWindSpeedCalculator::AppendResultToFile(const CString &fileName, const CDateTime &startTime,
+void CWindSpeedCalculator::AppendResultToFile(const novac::CString &fileName, const CDateTime &startTime,
 	const Configuration::CInstrumentLocation &location,
 	const Geometry::CPlumeHeight &plumeHeight,
 	Meteorology::CWindField &windField){

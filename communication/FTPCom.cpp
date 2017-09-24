@@ -1,8 +1,10 @@
 #include "StdAfx.h"
 #include "ftpcom.h"
 #include "../Common/common.h"
-#include "Winsock2.h"
+// #include "Winsock2.h"
+
 using namespace Communication;
+
 CFTPCom::CFTPCom(void)
 {
 	m_FtpConnection = NULL;
@@ -345,7 +347,7 @@ void CFTPCom::ReadResponse(CInternetFile* file)
 }
 
 /** Retrieves the list of files in the current directory */
-int CFTPCom::GetFileList(CList <novac::CString, novac::CString &> &fileNames){
+int CFTPCom::GetFileList(novac::CList <novac::CString, novac::CString &> &fileNames){
 	novac::CString name;
 
 	// start by clearing the list
@@ -373,7 +375,7 @@ int CFTPCom::GetFileList(CList <novac::CString, novac::CString &> &fileNames){
 }
 
 /** Retrieves the list of files in the current directory */
-int CFTPCom::GetFileList(const novac::CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos){
+int CFTPCom::GetFileList(const novac::CString &directory, novac::CList <CFileInfo, CFileInfo &> &fileInfos){
 	CFileInfo info;
 
 	// start by clearing the list

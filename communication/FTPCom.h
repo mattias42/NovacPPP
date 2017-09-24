@@ -1,10 +1,11 @@
 #pragma once
 
-#include <afxinet.h>
-#include <afxtempl.h>
+// #include <afxinet.h>
+// #include <afxtempl.h>
 
 #include "../FileInfo.h"
 #include <PPPLib/CString.h>
+#include <PPPLib/CList.h>
 
 namespace Communication
 {
@@ -18,12 +19,12 @@ namespace Communication
 		*@param siteName - address of the FTP server
 		*@param userName - user name for login
 		*@param password - password for login
-		*@param mode		 - Specifies passive(TRUE) or active mode(FASLE) for this FTP session. 
-		*						 If set to TRUE, it sets the Win32 API dwFlag to INTERNET_FLAG_PASSIVE. 
-		*						 Passive mode is for client behind a firewall; it is safer comparing 
+		*@param mode		 - Specifies passive(TRUE) or active mode(FASLE) for this FTP session.
+		*						 If set to TRUE, it sets the Win32 API dwFlag to INTERNET_FLAG_PASSIVE.
+		*						 Passive mode is for client behind a firewall; it is safer comparing
 		*						 with active mode.
 		*/
-		int Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL mode= FALSE);
+		int Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL mode = FALSE);
 
 		int Disconnect();
 
@@ -37,7 +38,7 @@ namespace Communication
 		int UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile);
 
 		/** Creates a direcotry in the current working-directory
-			on the FTP-server. 
+			on the FTP-server.
 			@return non-zero if successful */
 		int CreateDirectory(LPCTSTR remoteDirectory);
 
@@ -47,11 +48,11 @@ namespace Communication
 
 		/** Retrieves the list of files in the current directory
 			@return 0 on success */
-		int GetFileList(CList <novac::CString, novac::CString &> &fileNames);
+		int GetFileList(novac::CList <novac::CString, novac::CString &> &fileNames);
 
 		/** Retrieves the list of files in the current directory
 			@return 0 on success */
-		int GetFileList(const novac::CString &directory, CList <CFileInfo, CFileInfo &> &fileInfos);
+		int GetFileList(const novac::CString &directory, novac::CList <CFileInfo, CFileInfo &> &fileInfos);
 
 		/**Set current directory
 		*@param curDirName current directory name
@@ -72,11 +73,11 @@ namespace Communication
 		void ReadResponse(CInternetFile* file);
 
 	private:
-	
+
 		CInternetSession* m_InternetSession;
 		CFtpConnection* m_FtpConnection;
 		novac::CString m_FTPSite;
-		
+
 		novac::CString m_ErrorMsg;
 	};
 }

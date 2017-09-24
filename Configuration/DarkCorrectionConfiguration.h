@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DarkSettings.h"
+#include <PPPLib/CArray.h>
 
 namespace Configuration{
 	class CDarkCorrectionConfiguration

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <PPPLib/CString.h>
+
 #define MAX_OBSERVATORIES 35
 
 /** The class <b>CObservatoryInfo</b> keeps track of the volcano observatories
@@ -14,6 +16,6 @@ public:
 	unsigned int	m_observatoryNum;
 
 	/** The name of the observatories */
-	CString				m_name[MAX_OBSERVATORIES];
+	novac::CString	m_name[MAX_OBSERVATORIES];
 
 };

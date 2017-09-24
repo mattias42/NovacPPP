@@ -1,4 +1,5 @@
 #include "CStdioFile.h"
+#include <vector>
 
 namespace novac
 {
@@ -34,6 +35,26 @@ namespace novac
 		else
 		{
 			m_f.getline(destination, nMax);
+			return true;
+		}
+	}
+
+	bool CStdioFile::ReadString(CString& destination)
+	{
+		if (!m_f.is_open() || m_f.eof())
+		{
+			return false;
+		}
+		else
+		{
+			// TODO: This is formally a bit of cheating, this doesn't read the full string....
+			const size_t maxSize = 65535;
+
+			std::vector<char> tmpBuffer(maxSize);
+			m_f.getline(tmpBuffer.data(), maxSize);
+
+			destination.SetData(tmpBuffer.data());
+
 			return true;
 		}
 	}

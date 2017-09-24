@@ -4,6 +4,8 @@
 #include "WindSpeedMeasSettings.h"
 #include "../Configuration/NovacPPPConfiguration.h"
 
+#include <PPPLib/CString.h>
+
 namespace WindSpeedMeasurement{
 
 	/** The <b>CWindSpeedCalculator</b> class contains the basic
@@ -62,17 +64,17 @@ namespace WindSpeedMeasurement{
 				ANY SENSE...
 			@return 0 on success, else non-zero.
 		*/
-		int CalculateWindSpeed(const CString &evalLog1,const CString &evalLog2, 
+		int CalculateWindSpeed(const novac::CString &evalLog1,const novac::CString &evalLog2, 
 								const Configuration::CInstrumentLocation &location,
 								const Geometry::CPlumeHeight &plumeHeight,
 								Meteorology::CWindField &windField);
 
 		/** Writes the header of a dual-beam wind speed log file to the given
 			file. */
-		void WriteWindSpeedLogHeader(const CString &fileName);
+		void WriteWindSpeedLogHeader(const novac::CString &fileName);
 		
 		/** Appends a dual-beam wind speed result to the given file */
-		void AppendResultToFile(const CString &fileName, const CDateTime &startTime,
+		void AppendResultToFile(const novac::CString &fileName, const CDateTime &startTime,
 			const Configuration::CInstrumentLocation &location,
 			const Geometry::CPlumeHeight &plumeHeight,
 			Meteorology::CWindField &windField);
@@ -106,7 +108,7 @@ private:
 			The results of the calculations will be filled into the buffers 'shift', 
 			'corr', 'used' and 'delays'
 			 */
-		RETURN_CODE CalculateCorrelation(const CString &evalLog1, const CString &evalLog2);
+		RETURN_CODE CalculateCorrelation(const novac::CString &evalLog1, const novac::CString &evalLog2);
 
 		/** Calculate the correlation between the two time-series found in the 
 				given evaluation-file. 
@@ -115,7 +117,7 @@ private:
 			The results of the calculations will be filled into the buffers 'shift', 
 			'corr', 'used' and 'delays'
 			*/
-		RETURN_CODE CalculateCorrelation_Heidelberg(const CString &evalLog);
+		RETURN_CODE CalculateCorrelation_Heidelberg(const novac::CString &evalLog);
 
 
 		/** Calculate the time delay between the two provided time series 

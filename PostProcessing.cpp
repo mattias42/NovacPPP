@@ -1,6 +1,11 @@
 #include "StdAfx.h"
 #include "postprocessing.h"
 
+#undef min
+#undef max
+
+#include <algorithm>
+
 // Include synchronization classes
 // #include <afxmt.h>
 
@@ -36,6 +41,9 @@
 // we need to be able to download data from the FTP-server
 #include "Communication/FTPServerConnection.h"
 
+#include <PPPLib/CCriticalSection.h>
+#include <PPPLib/CSingleLock.h>
+
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
@@ -47,10 +55,10 @@ UINT EvaluateOneScan(LPVOID pParam);
 // this takes care of adding the evaluated log-files to the list in an synchronized way
 //	 the parameter passed in a reference to an array of strings holding the names of the 
 //	 eval-log files generated
-void AddResultToList(const CString &pakFileName, const CString (&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties);
+void AddResultToList(const novac::CString &pakFileName, const novac::CString (&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties);
 //	this retrieves the next  .pak-file from the list of files. Called from
 //		'EvaluateOneScan'
-int GetNextPakFileToProcess(CString &pakFileName);
+int GetNextPakFileToProcess(novac::CString &pakFileName);
 
 CPostProcessing::CPostProcessing(void)
 {
@@ -61,9 +69,9 @@ CPostProcessing::~CPostProcessing(void)
 }
 
 void CPostProcessing::DoPostProcessing_Flux(){
-	CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
-	CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
-	CString messageToUser, statFileName, windFileName;
+	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
+	novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
+	novac::CString messageToUser, statFileName, windFileName;
 
 	// --------------- PREPARING FOR THE PROCESSING -----------
 
@@ -94,7 +102,7 @@ void CPostProcessing::DoPostProcessing_Flux(){
 	// --------------- DOING THE PROCESSING -----------
 
 	// 1. Find all .pak files in the directory.
-	CList <CString, CString&> pakFileList;
+	novac::CList <novac::CString, novac::CString&> pakFileList;
 	if(g_userSettings.m_LocalDirectory.GetLength() > 3){
 		CheckForSpectraInDir(g_userSettings.m_LocalDirectory, pakFileList);
 	}
@@ -156,8 +164,9 @@ void CPostProcessing::DoPostProcessing_Flux(){
 	}
 	
 	// ------------ Clean up -----------
-	POSITION p = geometryResults.GetTailPosition();
-	while(p != NULL){
+	auto p = geometryResults.GetTailPosition();
+	while(geometryResults.GetSize() != 0)
+	{
 		Geometry::CGeometryResult *g = geometryResults.GetAt(p);
 		delete g;
 		geometryResults.RemoveTail();
@@ -168,8 +177,8 @@ void CPostProcessing::DoPostProcessing_Flux(){
 /** Performs an post processing of the data in order to extract
 	good stratospheric data */
 void CPostProcessing::DoPostProcessing_Strat(){
-	CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
-	CString messageToUser, statFileName;
+	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
+	novac::CString messageToUser, statFileName;
 	Stratosphere::CStratosphereCalculator strat;
 
 	// --------------- PREPARING FOR THE PROCESSING -----------
@@ -189,7 +198,7 @@ void CPostProcessing::DoPostProcessing_Strat(){
 	// --------------- DOING THE PROCESSING -----------
 
 	// 1. Find all .pak files in the directory.
-	CList <CString, CString&> pakFileList;
+	novac::CList <novac::CString, novac::CString&> pakFileList;
 	if(g_userSettings.m_LocalDirectory.GetLength() > 3){
 		CheckForSpectraInDir(g_userSettings.m_LocalDirectory, pakFileList);
 	}
@@ -226,16 +235,16 @@ void CPostProcessing::DoPostProcessing_Strat(){
 /** Performs an post processing of already evaluated data in order
 	to generate plume heights and wind directions */
 void CPostProcessing::DoPostProcessing_Geometry(){
-	CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
-	CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
-	CString messageToUser, statFileName;
+	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
+	novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
+	novac::CString messageToUser, statFileName;
 
 }
 
-void CPostProcessing::CheckForSpectraInDir(const CString &path, CList <CString, CString&> &fileList){
+void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CList <novac::CString, novac::CString&> &fileList){
 	int channel;
 	CDateTime startTime;
-	CString serial, fileName, userMessage;
+	novac::CString serial, fileName, userMessage;
 	MEASUREMENT_MODE mode;
 	HANDLE hFile;
 	WIN32_FIND_DATA FindFileData;
@@ -248,7 +257,7 @@ void CPostProcessing::CheckForSpectraInDir(const CString &path, CList <CString, 
 	// ------ If we want to search for sub-directories, then search for all directories... ---
 	// ---------------------------------------------------------------------------------------
 	if(g_userSettings.m_includeSubDirectories_Local){
-		sprintf(fileToFind, "%s\\*", path);
+		sprintf(fileToFind, "%s\\*", (const char*)path);
 
 		// Search for the file
 		hFile = FindFirstFile(fileToFind, &FindFileData);
@@ -295,7 +304,7 @@ void CPostProcessing::CheckForSpectraInDir(const CString &path, CList <CString, 
 	// --------------------- Find all .pak-files in the specified directory ------------------
 	// ---------------------------------------------------------------------------------------
 
-	sprintf(fileToFind, "%s\\*.pak", path);
+	sprintf(fileToFind, "%s\\*.pak", (const char*)path);
 
 	// Search for the file
 	hFile = FindFirstFile(fileToFind, &FindFileData);
@@ -339,7 +348,7 @@ void CPostProcessing::CheckForSpectraInDir(const CString &path, CList <CString, 
 		to search for files
 	@param fileList - will be appended with the path's and 
 	file-names of the found .pak-files */
-void CPostProcessing::CheckForSpectraOnFTPServer(CList <CString, CString&> &fileList){
+void CPostProcessing::CheckForSpectraOnFTPServer(novac::CList <novac::CString, novac::CString&> &fileList){
 	Communication::CFTPServerConnection *serverDownload = new Communication::CFTPServerConnection();
 	
 	int ret = serverDownload->DownloadDataFromFTP(g_userSettings.m_FTPDirectory, 
@@ -359,11 +368,11 @@ void CPostProcessing::CheckForSpectraOnFTPServer(CList <CString, CString&> &file
 CWinThread **evalThreads = NULL;
 volatile int nThreadsRunning;
 volatile unsigned long s_nFilesProcessed, s_nFilesToProcess;
-const CList <CString, CString &> *s_pakFileList;
-POSITION s_pakFileListPosition = NULL;
-CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> *s_evalLogs;
-CCriticalSection s_evalLogFileListCritSect; // synchronization access to the list of eval-log-files
-CCriticalSection s_pakListCritSect; // synchronization access to the list of pak-files
+const novac::CList <novac::CString, novac::CString &> *s_pakFileList;
+novac::POSITION<novac::CString> s_pakFileListPosition = nullptr;
+novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> *s_evalLogs;
+novac::CCriticalSection s_evalLogFileListCritSect; // synchronization access to the list of eval-log-files
+novac::CCriticalSection s_pakListCritSect; // synchronization access to the list of pak-files
 
 /** Runs through the supplied list of .pak-files and evaluates each one
 	using the setups found in the global settings. 
@@ -371,10 +380,10 @@ CCriticalSection s_pakListCritSect; // synchronization access to the list of pak
 	@param evalLogs - will on successful return be filled with the path's and
 		filenames of each evaluation log file generated.
 	*/
-void CPostProcessing::EvaluateScans(const CList <CString, CString &> &pakFileList, CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles){
+void CPostProcessing::EvaluateScans(const novac::CList <novac::CString, novac::CString &> &pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles){
 	s_nFilesProcessed = 0;
 	s_nFilesToProcess = (long)pakFileList.GetCount();
-	CString messageToUser;
+	novac::CString messageToUser;
 	
 	// share the list of eval-logs with the other functions around here
 	s_evalLogs = &evalLogFiles;
@@ -408,10 +417,10 @@ UINT EvaluateOneScan(LPVOID pParam){
 	// increase the count of how many threads are running
 	++nThreadsRunning;
 
-	CString evalLog[MAX_FIT_WINDOWS];
-	CString fileName;
+	novac::CString evalLog[MAX_FIT_WINDOWS];
+	novac::CString fileName;
 	int fitWindowIndex;
-	CString messageToUser;
+	novac::CString messageToUser;
 	CPlumeInScanProperty scanProperties[MAX_FIT_WINDOWS];
 
 	// create a new CPostEvaluationController
@@ -447,15 +456,15 @@ UINT EvaluateOneScan(LPVOID pParam){
 
 // this function takes care of extracting .pak-file names
 //	from the list in a synchronized way.
-int GetNextPakFileToProcess(CString &pakFileName){
-	CString messageToUser;
+int GetNextPakFileToProcess(novac::CString &pakFileName){
+	novac::CString messageToUser;
 
 	// check if we've passed the end of the list
 	if(s_pakFileListPosition == NULL)
 		return 1;
 
 	// lock access to the list
-	CSingleLock singleLock(&s_pakListCritSect);
+	novac::CSingleLock singleLock(&s_pakListCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 		pakFileName = s_pakFileList->GetNext(s_pakFileListPosition);
@@ -474,13 +483,13 @@ int GetNextPakFileToProcess(CString &pakFileName){
 // this function takes care of adding filenames to the list
 //	in a synchronized way so that no two threads access
 //	the list at the same time...
-void AddResultToList(const CString &pakFileName, const CString (&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties){
+void AddResultToList(const novac::CString &pakFileName, const novac::CString (&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties){
 	// these are not used...
-	CString serial;
+	novac::CString serial;
 	int channel;
 	MEASUREMENT_MODE mode;
 
-	CSingleLock singleLock(&s_evalLogFileListCritSect);
+	novac::CSingleLock singleLock(&s_evalLogFileListCritSect);
 	singleLock.Lock();
 	if(singleLock.IsLocked()){
 	
@@ -505,7 +514,7 @@ void AddResultToList(const CString &pakFileName, const CString (&evalLog)[MAX_FI
 
 int CPostProcessing::CheckSettings(){
 	unsigned int j, k; //iterators
-	CString errorMessage;
+	novac::CString errorMessage;
 	CDateTime now;
 
 	// Check that no instrument is duplicated in the list of instruments...
@@ -578,7 +587,7 @@ int CPostProcessing::CheckSettings(){
 
 int CPostProcessing::PrepareEvaluation(){
 	CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
-	CString errorMessage, fileName;
+	novac::CString errorMessage, fileName;
 
 	// this is true if we failed to prepare the evaluation...
 	bool failure = false;
@@ -679,7 +688,7 @@ int CPostProcessing::PrepareEvaluation(){
 	wind-field file.
 	@return 0 on success, otherwise non-zero */
 int CPostProcessing::ReadWindField(){
-	CString name1, name2, name3, path1, path2, path3, messageToUser;
+	novac::CString name1, name2, name3, path1, path2, path3, messageToUser;
 	Common common;
 	FileHandler::CXMLWindFileReader reader;
 	common.GetExePath();
@@ -786,14 +795,14 @@ int CPostProcessing::PreparePlumeHeights(){
 	//	instrument for this volcano and the volcano altitude
 	double maxInstrumentAltitude = -1e6;
 	Configuration::CInstrumentLocation location;
-	CString volcanoName;
+	novac::CString volcanoName;
 	g_volcanoes.GetVolcanoName(g_userSettings.m_volcano, volcanoName);
 	for(unsigned int k = 0; k < g_setup.m_instrumentNum; ++k){
 		unsigned long N = g_setup.m_instrument[k].m_location.GetLocationNum();
 		for(unsigned int j = 0; j < N; ++j){
 			g_setup.m_instrument[k].m_location.GetLocation(j, location);
 			if(Equals(volcanoName, location.m_volcano)){
-				maxInstrumentAltitude = max(maxInstrumentAltitude, location.m_altitude);
+				maxInstrumentAltitude = std::max(maxInstrumentAltitude, double(location.m_altitude));
 			}
 		}
 	}
@@ -817,8 +826,8 @@ int CPostProcessing::PreparePlumeHeights(){
 	@param geometryResults - will on successfull return be filled with the
 		calculated plume heights and wind-directions.
 	*/
-void CPostProcessing::CalculateGeometries(const CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
-	CString serial1, serial2, messageToUser;
+void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
+	novac::CString serial1, serial2, messageToUser;
 	CDateTime startTime1, startTime2;
 	MEASUREMENT_MODE measMode1, measMode2;
 	int channel;
@@ -836,7 +845,7 @@ void CPostProcessing::CalculateGeometries(const CList <Evaluation::CExtendedScan
 	// Loop through list with output text files from evaluation and apply geometrical corrections
 	POSITION pos1 = evalLogFiles.GetHeadPosition();
 	while(pos1 != NULL){
-		const CString &evalLog1				= evalLogFiles.GetAt(pos1).m_evalLogFile[g_userSettings.m_mainFitWindow];
+		const novac::CString &evalLog1				= evalLogFiles.GetAt(pos1).m_evalLogFile[g_userSettings.m_mainFitWindow];
 		const CPlumeInScanProperty &plume1	= evalLogFiles.GetNext(pos1).m_scanProperties;
 		
 		++nFilesChecked1; // for debugging...
@@ -866,7 +875,7 @@ void CPostProcessing::CalculateGeometries(const CList <Evaluation::CExtendedScan
 		evalLogFiles.GetNext(pos2);
 		bool successfullyCombined = false; // this is true if evalLog1 was combined with (at least one) other eval-log to make a geomery calculation.
 		while(pos2 != NULL){
-			const CString &evalLog2				= evalLogFiles.GetAt(pos2).m_evalLogFile[g_userSettings.m_mainFitWindow];
+			const novac::CString &evalLog2				= evalLogFiles.GetAt(pos2).m_evalLogFile[g_userSettings.m_mainFitWindow];
 			const CPlumeInScanProperty &plume2	= evalLogFiles.GetNext(pos2).m_scanProperties;
 
 			++nFilesChecked2; // for debugging...
@@ -1015,7 +1024,7 @@ void CPostProcessing::CalculateGeometries(const CList <Evaluation::CExtendedScan
 	@return - true if so large changes are made that the geometries would need to
 		be re-calculated. Otherwise false.
 	*/	
-bool CPostProcessing::ApplyACDCCorrections(const CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs, const CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
+bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs, const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
 
 	ShowMessage("Applying ACDC corrections - This is not yet implemented!!");
 
@@ -1033,16 +1042,16 @@ bool CPostProcessing::ApplyACDCCorrections(const CList <Evaluation::CExtendedSca
 		taken from the calculations - a default plume height equal to the 
 		altitude of the summit of the volcano will be used.
 	*/
-void CPostProcessing::CalculateFluxes(const CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles){
+void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles){
 	CDateTime scanStartTime;
-	CString serial, messageToUser;
+	novac::CString serial, messageToUser;
 	Geometry::CPlumeHeight plumeHeight; // the altitude of the plume, in meters above sea level
 	MEASUREMENT_MODE measMode;
 	int channel;
 	Flux::CFluxStatistics stat;
 
 	// we keep the calculated fluxes in a list
-	CList <Flux::CFluxResult, Flux::CFluxResult &> calculatedFluxes;
+	novac::CList <Flux::CFluxResult, Flux::CFluxResult &> calculatedFluxes;
 
 	// Initiate the flux-calculator
 	Flux::CFluxCalculator *fluxCalc = new Flux::CFluxCalculator();
@@ -1053,7 +1062,7 @@ void CPostProcessing::CalculateFluxes(const CList <Evaluation::CExtendedScanResu
 	POSITION pos = evalLogFiles.GetHeadPosition();
 	while(pos != NULL){
 		// Get the name of this eval-log
-		const CString &evalLog				= evalLogFiles.GetAt(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
+		const novac::CString &evalLog				= evalLogFiles.GetAt(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
 		const CPlumeInScanProperty &plume	= evalLogFiles.GetNext(pos).m_scanProperties;
 
 		// if the completeness is too low then ignore this scan.
@@ -1099,8 +1108,8 @@ void CPostProcessing::CalculateFluxes(const CList <Evaluation::CExtendedScanResu
 	delete fluxCalc;
 }
 
-void CPostProcessing::WriteFluxResult_XML(const CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
-	CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
+void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
+	novac::CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
 	CDateTime now;
 
 	// get the current time
@@ -1146,7 +1155,7 @@ void CPostProcessing::WriteFluxResult_XML(const CList <Flux::CFluxResult, Flux::
 			fluxResult.m_stopTime.year, fluxResult.m_stopTime.month, fluxResult.m_stopTime.day, 
 			fluxResult.m_stopTime.hour, fluxResult.m_stopTime.minute,fluxResult.m_stopTime.second);
 
-		fprintf(f, "\t\t<serial>%s</serial>\n",							fluxResult.m_instrument);
+		fprintf(f, "\t\t<serial>%s</serial>\n", (const char*)fluxResult.m_instrument);
 
 		// extract the instrument type
 		if(fluxResult.m_instrumentType == INSTR_HEIDELBERG){
@@ -1154,7 +1163,7 @@ void CPostProcessing::WriteFluxResult_XML(const CList <Flux::CFluxResult, Flux::
 		}else{
 			typeStr.Format("gothenburg");
 		}		
-		fprintf(f, "\t\t<instrumentType>%s</instrumentType>\n",			typeStr);
+		fprintf(f, "\t\t<instrumentType>%s</instrumentType>\n", (const char*)typeStr);
 
 		fprintf(f, "\t\t<value>%.2lf</value>\n",						fluxResult.m_flux);
 
@@ -1174,17 +1183,17 @@ void CPostProcessing::WriteFluxResult_XML(const CList <Flux::CFluxResult, Flux::
 		// the wind speed
 		fprintf(f, "\t\t<windspeed>%.2lf</windspeed>\n",				fluxResult.m_windField.GetWindSpeed());
 		fprintf(f, "\t\t<windspeedError>%.2lf</windspeedError>\n",		fluxResult.m_windField.GetWindSpeedError());
-		fprintf(f, "\t\t<windspeedSource>%s</windspeedSource>\n",		wsSrc);
+		fprintf(f, "\t\t<windspeedSource>%s</windspeedSource>\n", (const char*)wsSrc);
 
 		// the wind direction
 		fprintf(f, "\t\t<winddirection>%.2lf</winddirection>\n",			fluxResult.m_windField.GetWindDirection());
 		fprintf(f, "\t\t<winddirectionError>%.2lf</winddirectionError>\n", fluxResult.m_windField.GetWindDirectionError());
-		fprintf(f, "\t\t<winddirectionSource>%s</winddirectionSource>\n", wdSrc);
+		fprintf(f, "\t\t<winddirectionSource>%s</winddirectionSource>\n", (const char*)wdSrc);
 
 		// the plume height
 		fprintf(f, "\t\t<plumeheight>%.2lf</plumeheight>\n",			fluxResult.m_plumeHeight.m_plumeAltitude);
 		fprintf(f, "\t\t<plumeheightError>%.2lf</plumeheightError>\n",	fluxResult.m_plumeHeight.m_plumeAltitudeError);
-		fprintf(f, "\t\t<plumeheightSource>%s</plumeheightSource>\n",	phSrc);
+		fprintf(f, "\t\t<plumeheightSource>%s</plumeheightSource>\n", (const char*)phSrc);
 
 		// some additional information about the scan
 		fprintf(f, "\t\t<Compass>%.1lf<Compass>\n",						fluxResult.m_compass);
@@ -1239,8 +1248,8 @@ void CPostProcessing::WriteFluxResult_XML(const CList <Flux::CFluxResult, Flux::
 	fclose(f);	
 }
 
-void CPostProcessing::WriteFluxResult_Txt(const CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
-	CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
+void CPostProcessing::WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
+	novac::CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
 	CDateTime now;
 
 	// get the current time
@@ -1293,8 +1302,8 @@ void CPostProcessing::WriteFluxResult_Txt(const CList <Flux::CFluxResult, Flux::
 			fluxResult.m_stopTime.hour, fluxResult.m_stopTime.minute,fluxResult.m_stopTime.second);
 
 		// the type of instrument and the serial-number
-		fprintf(f, "%s\t",		fluxResult.m_instrument);
-		fprintf(f, "%s\t",		typeStr);
+		fprintf(f, "%s\t", (const char*)fluxResult.m_instrument);
+		fprintf(f, "%s\t", (const char*)typeStr);
 
 		// The actual flux!!!
 		fprintf(f, "%.2lf\t",	fluxResult.m_flux);
@@ -1315,17 +1324,17 @@ void CPostProcessing::WriteFluxResult_Txt(const CList <Flux::CFluxResult, Flux::
 		// the wind speed
 		fprintf(f, "%.2lf\t",	fluxResult.m_windField.GetWindSpeed());
 		fprintf(f, "%.2lf\t",	fluxResult.m_windField.GetWindSpeedError());
-		fprintf(f, "%s\t",		wsSrc);
+		fprintf(f, "%s\t", (const char*)wsSrc);
 
 		// the wind direction
 		fprintf(f, "%.2lf\t",	fluxResult.m_windField.GetWindDirection());
 		fprintf(f, "%.2lf\t",	fluxResult.m_windField.GetWindDirectionError());
-		fprintf(f, "%s\t",		wdSrc);
+		fprintf(f, "%s\t", (const char*)wdSrc);
 
 		// the plume height
 		fprintf(f, "%.2lf\t",	fluxResult.m_plumeHeight.m_plumeAltitude);
 		fprintf(f, "%.2lf\t",	fluxResult.m_plumeHeight.m_plumeAltitudeError);
-		fprintf(f, "%s\t",		phSrc);
+		fprintf(f, "%s\t", (const char*)phSrc);
 		
 		// write additional information about the scan
 		fprintf(f, "%.1lf\t",	fluxResult.m_compass);
@@ -1343,12 +1352,12 @@ void CPostProcessing::WriteFluxResult_Txt(const CList <Flux::CFluxResult, Flux::
 	fclose(f);
 }
 
-void CPostProcessing::WriteCalculatedGeometriesToFile(const CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
+void CPostProcessing::WriteCalculatedGeometriesToFile(const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
 	if(geometryResults.GetCount() == 0)
 		return; // nothing to write...
 
 	FILE *f = NULL;
-	CString geomLogFile;
+	novac::CString geomLogFile;
 	geomLogFile.Format("%s\\GeometryLog.txt", g_userSettings.m_outputDirectory);
 
 	if(IsExistingFile(geomLogFile)){
@@ -1374,7 +1383,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const CList <Geometry::CGe
 			fprintf(f, "%04d.%02d.%02d\t",	result->m_averageStartTime.year, result->m_averageStartTime.month, result->m_averageStartTime.day);
 			fprintf(f, "%02d:%02d:%02d\t",	result->m_averageStartTime.hour, result->m_averageStartTime.minute, result->m_averageStartTime.second);
 			fprintf(f, "%.1lf\t",			result->m_startTimeDifference / 60.0);
-			fprintf(f, "%s\t%s\t",			result->m_instr1, result->m_instr2);
+			fprintf(f, "%s\t%s\t", (const char*)result->m_instr1, (const char*)result->m_instr2);
 			fprintf(f, "%.0lf\t%.0lf\t",	result->m_plumeAltitude, result->m_plumeAltitudeError);
 			fprintf(f, "%.0lf\t%.0lf\t",	result->m_windDirection, result->m_windDirectionError);
 
@@ -1384,7 +1393,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const CList <Geometry::CGe
 			fprintf(f, "%04d.%02d.%02d\t",	result->m_averageStartTime.year, result->m_averageStartTime.month, result->m_averageStartTime.day);
 			fprintf(f, "%02d:%02d:%02d\t",	result->m_averageStartTime.hour, result->m_averageStartTime.minute, result->m_averageStartTime.second);
 			fprintf(f, "0\t");
-			fprintf(f, "%s\t\t",			result->m_instr1);
+			fprintf(f, "%s\t\t", (const char*)result->m_instr1);
 			fprintf(f, "%.0lf\t%.0lf\t",	result->m_plumeAltitude, result->m_plumeAltitudeError);
 			fprintf(f, "%.0lf\t%.0lf\t",	result->m_windDirection, result->m_windDirectionError);
 
@@ -1396,7 +1405,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const CList <Geometry::CGe
 }
 
 // 5. Insert the calculated geometries into the plume height database
-void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
+void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
 	Meteorology::CWindField windField;
 	CDateTime validFrom, validTo;
 	Configuration::CInstrumentLocation location;
@@ -1433,14 +1442,14 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const CList <Geomet
 	The plume heights are taken from the database 'm_plumeDataBase' and the results are written
 	to the database 'm_windDataBase'
 */
-void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs){
-	CList <CString, CString &> masterList; // list of wind-measurements from the master channel
-	CList <CString, CString &> slaveList;  // list of wind-measurements from the slave channel
-	CList <CString, CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis
+void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs){
+	novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
+	novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
+	novac::CList <novac::CString, novac::CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis
 	CDateTime validFrom, validTo;
 	
-	CString serial, serial2, fileName, fileName2, nonsenseString;
-	CString userMessage, windLogFile;
+	novac::CString serial, serial2, fileName, fileName2, nonsenseString;
+	novac::CString userMessage, windLogFile;
 	CDateTime startTime, startTime2;
 	int channel, channel2, nWindMeasFound = 0;
 	MEASUREMENT_MODE meas_mode, meas_mode2;
@@ -1451,13 +1460,13 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 
 	// -------------------------------- step 1. -------------------------------------
 	// search through 'evalLogs' for dual-beam measurements from master and from slave
-	POSITION pos = evalLogs.GetHeadPosition();
+	auto pos = evalLogs.GetHeadPosition();
 	while(pos != NULL){
-		const CString &fileNameAndPath = evalLogs.GetNext(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
+		const novac::CString &fileNameAndPath = evalLogs.GetNext(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
 		
 		// to know the start-time of the measurement, we need to 
 		//	extract just the file-name, i.e. remove the path
-		fileName = CString(fileNameAndPath);
+		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
 		
 		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
@@ -1470,13 +1479,13 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 			
 			if(location.m_instrumentType == INSTR_HEIDELBERG){
 				// this is a heidelberg instrument
-				heidelbergList.AddTail(CString(fileNameAndPath));
+				heidelbergList.AddTail(novac::CString(fileNameAndPath));
 			}else{
 				// this is a gothenburg instrument
 				if(channel == 0){
-					masterList.AddTail(CString(fileNameAndPath));
+					masterList.AddTail(novac::CString(fileNameAndPath));
 				}else if(channel == 1){
-					slaveList.AddTail(CString(fileNameAndPath));
+					slaveList.AddTail(novac::CString(fileNameAndPath));
 				}
 			}
 		}
@@ -1499,11 +1508,11 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 	//	and calculate the wind speed for each measurement
 	pos = heidelbergList.GetHeadPosition();
 	while(pos != NULL){
-		const CString &fileNameAndPath = heidelbergList.GetNext(pos);
+		const novac::CString &fileNameAndPath = heidelbergList.GetNext(pos);
 		
 		// to know the start-time of the measurement, we need to 
 		//	extract just the file-name, i.e. remove the path
-		fileName = CString(fileNameAndPath);
+		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
 		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
 		
@@ -1545,10 +1554,10 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 	//	from a slave channel...
 	pos = masterList.GetHeadPosition();
 	while(pos != NULL){
-		const CString &fileNameAndPath = masterList.GetNext(pos);
+		const novac::CString &fileNameAndPath = masterList.GetNext(pos);
 		
 		// extract just the file-name, i.e. remove the path
-		fileName = CString(fileNameAndPath);
+		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
 		
 		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
@@ -1556,10 +1565,10 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 		// now check if we can match this one with a file in the slave-channel
 		POSITION pos2 = slaveList.GetHeadPosition();
 		while(pos2 != NULL){
-			const CString &fileNameAndPath2 = slaveList.GetNext(pos2);
+			const novac::CString &fileNameAndPath2 = slaveList.GetNext(pos2);
 			
 			// extract just the file-name, i.e. remove the path
-			fileName2 = CString(fileNameAndPath2);
+			fileName2 = novac::CString(fileNameAndPath2);
 			Common::GetFileName(fileName2);
 			
 			FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName2, startTime2, serial2, channel2, meas_mode2);
@@ -1604,9 +1613,9 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const CList <Evaluation::CExte
 }
 
 /** Sorts the evaluation logs in order of increasing time */
-void CPostProcessing::SortEvaluationLogs(CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs){
-	CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> left;
-	CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> right;
+void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs){
+	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> left;
+	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> right;
 	POSITION pos1, pos2;
 
 	// If this list consists of only one element, then we're done
@@ -1659,10 +1668,10 @@ void CPostProcessing::SortEvaluationLogs(CList <Evaluation::CExtendedScanResult,
 /** Takes care of uploading the result files to the FTP server */
 void CPostProcessing::UploadResultsToFTP(){
 	Communication::CFTPServerConnection *connection = new Communication::CFTPServerConnection();
-	CString fileName;
+	novac::CString fileName;
 
 	// Generate a list with all the files we want to upload.
-	CList <CString, CString&> fileList;
+	novac::CList <novac::CString, novac::CString&> fileList;
 	
 	// 1. the geometry log file
 	fileName.Format("%s\\GeometryLog.txt", g_userSettings.m_outputDirectory);

@@ -23,17 +23,17 @@ CXMLWindFileReader::~CXMLWindFileReader(void)
 /** Reads in an wind-field file. 
 	In the format specified for the NovacPostProcessingProgram (NPPP) 
 	@return 0 on sucess */
-int CXMLWindFileReader::ReadWindFile(const CString &fileName, Meteorology::CWindDataBase &dataBase){
-	CFileException exceFile;
-	CStdioFile file;
+int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology::CWindDataBase &dataBase){
+	novac::CFileException exceFile;
+	novac::CStdioFile file;
 	int curWindow = 0;
-	CString localFileName, userMessage;
+	novac::CString localFileName, userMessage;
 
 	// 0. If the file is on the server, then download it first
 	if(Equals(fileName.Left(6), "ftp://")){
 		Communication::CFTPServerConnection *ftp = new Communication::CFTPServerConnection();
 		
-		CString tmpFileName;
+		novac::CString tmpFileName;
 		tmpFileName.Format(fileName);
 		Common::GetFileName(tmpFileName); // this is the name of the file, without the path...
 		localFileName.Format("%s\\%s", g_userSettings.m_tempDirectory, tmpFileName);
@@ -56,7 +56,7 @@ int CXMLWindFileReader::ReadWindFile(const CString &fileName, Meteorology::CWind
 	
 
 	// 1. Open the file
-	if(!file.Open(localFileName, CFile::modeRead | CFile::typeText, &exceFile)){
+	if(!file.Open(localFileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)){
 		return 1;
 	}
 	this->m_File		= &file;
@@ -101,13 +101,13 @@ int CXMLWindFileReader::ReadWindFile(const CString &fileName, Meteorology::CWind
 	@param dateTo - if not null then only file which contain a wind field before (and including)
 		the date 'dateTo' will be read in.
 	@return 0 on success */
-int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology::CWindDataBase &dataBase, const CDateTime *dateFrom, const CDateTime *dateTo){
-	CFileException exceFile;
-	CStdioFile file;
+int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const CDateTime *dateFrom, const CDateTime *dateTo){
+	novac::CFileException exceFile;
+	novac::CStdioFile file;
 	int curWindow = 0;
-	CString localFileName, remoteFileName, userMessage, ftpDir;
-	CList <CString, CString &> remoteFileList; // the list of wind field files
-	CList <CString, CString &> localFileList; // the list of files on the local computer
+	novac::CString localFileName, remoteFileName, userMessage, ftpDir;
+	novac::CList <novac::CString, novac::CString &> remoteFileList; // the list of wind field files
+	novac::CList <novac::CString, novac::CString &> localFileList; // the list of files on the local computer
 
 	if(Equals(directory.Left(6), "ftp://")){
 		// If the directory is on the server, then this is how to check the files
@@ -133,9 +133,10 @@ int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology:
 		}
 
 		// Download the files, one at a time
-		POSITION p = remoteFileList.GetHeadPosition();
-		while(p != NULL){
-			CString &name = remoteFileList.GetNext(p);
+		auto p = remoteFileList.GetHeadPosition();
+		while(p.HasMore())
+		{
+			novac::CString &name = remoteFileList.GetNext(p);
 			
 			// only download .wxml files
 			if(!Equals(name.Right(5), ".wxml"))
@@ -145,7 +146,7 @@ int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology:
 			//	weather we actually should download this file
 			int rpos = name.ReverseFind('_');
 			if(rpos > 0 && ((name.GetLength() - rpos) == 14)){
-				CString dateStr(name.Right(13).Left(8));
+				novac::CString dateStr(name.Right(13).Left(8));
 				CDateTime t;
 				if(CDateTime::ParseDate(dateStr, t)){
 					if(t < g_userSettings.m_fromDate || t > g_userSettings.m_toDate)
@@ -175,7 +176,7 @@ int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology:
 		WIN32_FIND_DATA FindFileData;
 		char fileToFind[MAX_PATH];
 
-		sprintf(fileToFind, "%s\\*.wxml", directory);
+		sprintf(fileToFind, "%s\\*.wxml", (const char*)directory);
 
 		// Search for the file
 		hFile = FindFirstFile(fileToFind, &FindFileData);
@@ -193,9 +194,10 @@ int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology:
 	}
 
 	// Now we got a list of files on the local computer. Read them in!
-	POSITION p = localFileList.GetHeadPosition();
+	auto p = localFileList.GetHeadPosition();
 	int nFilesRead = 0;
-	while(p != NULL){
+	while(p.HasMore())
+	{
 		localFileName.Format("%s", localFileList.GetNext(p));
 		
 		// make sure that this file falls in the appropriate date-range
@@ -223,7 +225,7 @@ int CXMLWindFileReader::ReadWindDirectory(const CString &directory, Meteorology:
 
 /** Reads a 'windfield' section */
 int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
-	CString sourceStr, userMessage;
+	novac::CString sourceStr, userMessage;
 	Meteorology::CWindField w;
 	CDateTime validFrom, validTo;
 	double latitude = 0.0;
@@ -334,7 +336,7 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
 
 /** Writes an wind-field file in the NPPP-format 
 	@return 0 on success */
-int CXMLWindFileReader::WriteWindFile(const CString &fileName, const Meteorology::CWindDataBase &dataBase){
+int CXMLWindFileReader::WriteWindFile(const novac::CString &fileName, const Meteorology::CWindDataBase &dataBase){
 	return dataBase.WriteToFile(fileName);
 }
 

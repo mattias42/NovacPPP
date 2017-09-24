@@ -20,12 +20,6 @@
     <Filter Include="Source Files\Configuration">
       <UniqueIdentifier>{c01d1657-9667-4a8d-b918-c6a54f8e665f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\DlgControls">
-      <UniqueIdentifier>{969d5c50-2691-49fc-b6a5-954ca4f620f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\DlgControls\GridCtrl">
-      <UniqueIdentifier>{0288808b-1cc9-4829-a189-e677899ce0d3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Evaluation">
       <UniqueIdentifier>{4bab66a8-517b-48a8-8436-88c5f750b19e}</UniqueIdentifier>
     </Filter>
@@ -37,9 +31,6 @@
     </Filter>
     <Filter Include="Source Files\WindMeasurement">
       <UniqueIdentifier>{c04aa3a9-7a04-4391-a990-d58d4fdb5336}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Dialogs">
-      <UniqueIdentifier>{d087f5d5-b9bb-48d1-a7c2-02509d9cc0f6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Flux">
       <UniqueIdentifier>{da6b1c50-b980-458f-aa0a-7b2d74af9e0c}</UniqueIdentifier>
@@ -66,12 +57,6 @@
     <Filter Include="Header Files\Configuration">
       <UniqueIdentifier>{8412cea4-a6fe-4c3f-b27a-c5d987f5e3b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\DlgControls">
-      <UniqueIdentifier>{eefd87d0-f76a-4276-be3e-e1b74290418b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\DlgControls\GridCtrl">
-      <UniqueIdentifier>{73416296-ed8e-4271-b7a0-f504592df33c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Evaluation">
       <UniqueIdentifier>{35d39cfc-662a-4c46-88dc-eedf1d294ac5}</UniqueIdentifier>
     </Filter>
@@ -83,9 +68,6 @@
     </Filter>
     <Filter Include="Header Files\WindMeasurement">
       <UniqueIdentifier>{327310dc-1550-4bb5-8e7c-8c99e33012ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Dialogs">
-      <UniqueIdentifier>{241b03a8-6f9e-4c9e-a8da-d52c12a9b428}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Flux">
       <UniqueIdentifier>{6c923070-2462-483f-94a7-8615d9254e60}</UniqueIdentifier>
@@ -132,9 +114,6 @@
     <ClCompile Include="Configuration\NovacPPPConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NovacPPPDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ObservatoryInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,9 +135,6 @@
     <ClCompile Include="SetupFileReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dialogs\StatusDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StatusLogFileWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -166,18 +142,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Configuration\UserConfiguration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\ViewConfigurationDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\ViewFitWindowPage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\ViewInstrumentPage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\ViewLocationPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VolcanoInfo.cpp">
@@ -255,33 +219,6 @@
     <ClCompile Include="Configuration\InstrumentLocation.cpp">
       <Filter>Source Files\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="DlgControls\Label.cpp">
-      <Filter>Source Files\DlgControls</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\MeasGrid.cpp">
-      <Filter>Source Files\DlgControls</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\ReferenceFileControl.cpp">
-      <Filter>Source Files\DlgControls</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\GridCell.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\GridCellBase.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\GridCtrl.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\GridDropTarget.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\InPlaceEdit.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgControls\GridCtrl\TitleTip.cpp">
-      <Filter>Source Files\DlgControls\GridCtrl</Filter>
-    </ClCompile>
     <ClCompile Include="Evaluation\BasicMath.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
@@ -339,9 +276,6 @@
     <ClCompile Include="WindMeasurement\WindSpeedMeasSettings.cpp">
       <Filter>Source Files\WindMeasurement</Filter>
     </ClCompile>
-    <ClCompile Include="Dialogs\QueryStringDialog.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="Flux\FluxCalculator.cpp">
       <Filter>Source Files\Flux</Filter>
     </ClCompile>
@@ -381,9 +315,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Molecule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NovacPPP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Configuration\NovacPPPConfiguration.h">
@@ -515,39 +446,6 @@
     <ClInclude Include="Configuration\InstrumentLocation.h">
       <Filter>Header Files\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="DlgControls\Label.h">
-      <Filter>Header Files\DlgControls</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\MeasGrid.h">
-      <Filter>Header Files\DlgControls</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\ReferenceFileControl.h">
-      <Filter>Header Files\DlgControls</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\CellRange.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\GridCell.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\GridCellBase.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\GridCtrl.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\GridDropTarget.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\InPlaceEdit.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\MemDC.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgControls\GridCtrl\TitleTip.h">
-      <Filter>Header Files\DlgControls\GridCtrl</Filter>
-    </ClInclude>
     <ClInclude Include="Evaluation\BasicMath.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
@@ -604,9 +502,6 @@
     </ClInclude>
     <ClInclude Include="WindMeasurement\WindSpeedMeasSettings.h">
       <Filter>Header Files\WindMeasurement</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\QueryStringDialog.h">
-      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="Flux\FluxCalculator.h">
       <Filter>Header Files\Flux</Filter>

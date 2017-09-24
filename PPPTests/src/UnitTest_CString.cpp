@@ -222,12 +222,19 @@ namespace novac
 
 	TEST_CASE("Find + ReverseFind behaves as expected", "[CString]")
 	{
-		SECTION("Find - 1")
+		SECTION("Find - character")
 		{
 			CString sut{ "Mary Had A Little Lamb" };
 			REQUIRE(-1 == sut.Find('q'));
 			REQUIRE(1 == sut.Find('a'));
 			REQUIRE(9 == sut.Find('A'));
+		}
+
+		SECTION("Find - String")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			REQUIRE(5 == sut.Find("Had"));
+			REQUIRE(-1 == sut.Find("Bart"));
 		}
 
 		SECTION("ReverseFind - 1")
