@@ -25,7 +25,7 @@ int IsExistingFile(const novac::CString &fileName){
 	WIN32_FIND_DATA FindFileData;
 	char fileToFind[MAX_PATH];
 
-	sprintf(fileToFind, "%s", fileName);
+	sprintf(fileToFind, "%s", (const char*)fileName);
 
 	// Search for the file
 	HANDLE hFile = FindFirstFile(fileToFind, &FindFileData);
@@ -226,7 +226,7 @@ int IsSerialNumber(const novac::CString &serialNumber){
 // open a browser window and let the user search for a file
 bool Common::BrowseForFile(TCHAR *filter, novac::CString &fileName){
 	TCHAR szFile[4096];
-	sprintf(szFile, "%s", fileName);
+	sprintf(szFile, "%s", (const char*)fileName);
 
 	OPENFILENAME ofn;       // common dialog box structure
 	// Initialize OPENFILENAME
@@ -254,7 +254,7 @@ bool Common::BrowseForFile(TCHAR *filter, novac::CString &fileName){
 // open a browser window and let the user search for a file
 bool Common::BrowseForFile_SaveAs(TCHAR *filter, novac::CString &fileName){
 	TCHAR szFile[4096];
-	sprintf(szFile, "%s", fileName);
+	sprintf(szFile, "%s", (const char*)fileName);
 
 	OPENFILENAME ofn;       // common dialog box structure
 	// Initialize OPENFILENAME

@@ -152,7 +152,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 		fprintf(f, "\t<instrument>\n");
 
 		// The serial-number
-		fprintf(f, "\t\t<serial>%s</serial>\n", instr.m_serial);
+		fprintf(f, "\t\t<serial>%s</serial>\n", (const char*)instr.m_serial);
 		
 		// loop through the locations
 		for(unsigned int j = 0; j < instr.m_location.GetLocationNum(); ++j){
@@ -162,8 +162,8 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 			// The location
 			fprintf(f, "\t\t<location>\n");
 
-			fprintf(f, "\t\t\t<name>%s</name>\n",                       instrLocation.m_locationName);
-			fprintf(f, "\t\t\t<volcano>%s</volcano>\n",                 instrLocation.m_volcano);
+			fprintf(f, "\t\t\t<name>%s</name>\n", (const char*)instrLocation.m_locationName);
+			fprintf(f, "\t\t\t<volcano>%s</volcano>\n", (const char*)instrLocation.m_volcano);
 			fprintf(f, "\t\t\t<time_from>%04d.%02d.%02d</time_from>\n", instrLocation.m_validFrom.year, instrLocation.m_validFrom.month, instrLocation.m_validFrom.day);
 			fprintf(f, "\t\t\t<time_to>%04d.%02d.%02d</time_to>\n",     instrLocation.m_validTo.year, instrLocation.m_validTo.month, instrLocation.m_validTo.day);
 			fprintf(f, "\t\t\t<latitude>%.5lf</latitude>\n",            instrLocation.m_latitude);
@@ -173,7 +173,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 			fprintf(f, "\t\t\t<coneangle>%.0lf</coneangle>\n",          instrLocation.m_coneangle);
 			fprintf(f, "\t\t<tilt>%.0lf</tilt>\n",                      instrLocation.m_tilt);
 			fprintf(f, "\t\t<type>%d</type>\n",                         instrLocation.m_instrumentType);
-			fprintf(f, "\t\t<spec>%s</spec>\n",                         spectrometerModel);
+			fprintf(f, "\t\t<spec>%s</spec>\n", (const char*)spectrometerModel);
 
 			fprintf(f, "\t\t</location>\n");
 		}
@@ -197,7 +197,7 @@ void CSetupFileReader::Parse_SpectrometerModel(const novac::CString &label, SPEC
 		if(Equals(szToken, label))
 			return;
 
-		sscanf(szToken, "%s", str);
+		sscanf(szToken, "%s", (const char*)str);
 		model = CSpectrometerModel::GetModel(str);
 	}
 

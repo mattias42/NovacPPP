@@ -257,8 +257,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 	sprintf(szLine, "%s", this->m_commandLine);
 
 	// Go through the received input parameters and set the approprate option
-	novac::CStringTokenizer *tokenizer = new novac::CStringTokenizer(szLine, seps);
-	const char *token = tokenizer->NextToken();
+	novac::CStringTokenizer tokenizer(szLine, seps);
+	const char *token = tokenizer.NextToken();
 
 	while (NULL != token)
 	{
@@ -270,7 +270,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				errorMessage.Format("Could not parse date: %s", parameter);
 				ShowMessage(errorMessage);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -281,7 +281,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				errorMessage.Format("Could not parse date: %s", parameter);
 				ShowMessage(errorMessage);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -296,7 +296,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				errorMessage.Format("Could not find volcano: %s", parameter);
 				ShowMessage(errorMessage);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -304,26 +304,26 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		if (Equals(token, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
 			sscanf(token + strlen(FLAG(str_maxThreadNum)), "%d", &g_userSettings.m_maxThreadNum);
 			g_userSettings.m_maxThreadNum = max(g_userSettings.m_maxThreadNum, 1);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
 		// if we should start the program immediately
 		if (Equals(token, FLAG(str_startNow), strlen(FLAG(str_startNow)))) {
 			sscanf(token + strlen(FLAG(str_startNow)), "%d", &g_userSettings.m_startNow);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 		else if (Equals(token, "--" + novac::CString(str_startNow), strlen("--" + novac::CString(str_startNow)))) {
 			g_userSettings.m_startNow = 1;
-			token = tokenizer->NextToken();
+			token = tokenizer.extToken();
 			continue;
 		}
 
 		// The options for the local directory
 		if (Equals(token, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local)))) {
 			sscanf(token + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &g_userSettings.m_includeSubDirectories_Local);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 		if (Equals(token, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
@@ -335,14 +335,14 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				g_userSettings.m_LocalDirectory.Format("");
 				m_CheckLocalDirectory.SetCheck(0);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
 		// The options for the FTP directory
 		if (Equals(token, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP)))) {
 			sscanf(token + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &g_userSettings.m_includeSubDirectories_FTP);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
@@ -354,28 +354,28 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				g_userSettings.m_FTPDirectory.Format("");
 				m_CheckFtp.SetCheck(0);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername)))) {
 			if (sscanf(token + strlen(FLAG(str_FTPUsername)), "%s", buffer)) {
 				g_userSettings.m_FTPUsername.Format("%s", buffer);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword)))) {
 			if (sscanf(token + strlen(FLAG(str_FTPPassword)), "%s", buffer)) {
 				g_userSettings.m_FTPPassword.Format("%s", buffer);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
 		// If we should upload the results to the NovacFTP server at the end...
 		if (Equals(token, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults)))) {
 			sscanf(token + strlen(FLAG(str_uploadResults)), "%d", &g_userSettings.m_uploadResults);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -388,7 +388,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 					g_userSettings.m_outputDirectory.AppendFormat("\\");
 				}
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -401,7 +401,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 					g_userSettings.m_tempDirectory.AppendFormat("\\");
 				}
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -411,14 +411,14 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			if (sscanf(token + N, "%s", buffer)) {
 				g_userSettings.m_windFieldFile.Format("%s", buffer);
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
 		// The processing mode
 		if (Equals(token, FLAG(str_processingMode), strlen(FLAG(str_processingMode)))) {
 			sscanf(token + strlen(FLAG(str_processingMode)), "%d", &g_userSettings.m_processingMode);
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
@@ -438,13 +438,11 @@ void ParseCommandLineOptions(int argc, char* argv[])
 					g_userSettings.m_molecule = MOLEC_SO2;
 				}
 			}
-			token = tokenizer->NextToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
 		// get the next token
-		token = tokenizer->NextToken();
+		token = tokenizer.NextToken();
 	}
-
-	delete tokenizer;
 }

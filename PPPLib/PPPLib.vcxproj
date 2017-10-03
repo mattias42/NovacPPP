@@ -25,10 +25,12 @@
     <ClInclude Include="include\PPPLib\CSingleLock.h" />
     <ClInclude Include="include\PPPLib\CStdioFile.h" />
     <ClInclude Include="include\PPPLib\CString.h" />
+    <ClInclude Include="include\PPPLib\CStringTokenizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CStdioFile.cpp" />
     <ClCompile Include="src\CString.cpp" />
+    <ClCompile Include="src\CStringTokenizer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
