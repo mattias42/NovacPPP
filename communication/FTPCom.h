@@ -24,23 +24,23 @@ namespace Communication
 		*						 Passive mode is for client behind a firewall; it is safer comparing
 		*						 with active mode.
 		*/
-		int Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL mode = FALSE);
+		int Connect(novac::CString siteName, novac::CString userName, novac::CString password, BOOL mode = FALSE);
 
 		int Disconnect();
 
-		int UploadFile(LPCTSTR localFile, LPCTSTR remoteFile);
+		int UploadFile(novac::CString localFile, novac::CString remoteFile);
 
 		/** Tries to download a file from the remote FTP-server to the local computer
 			@return TRUE if successful
 		*/
-		BOOL DownloadAFile(LPCTSTR remoteFile, LPCTSTR fileFullName);
+		BOOL DownloadAFile(novac::CString remoteFile, novac::CString fileFullName);
 
-		int UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile);
+		int UpdateFile(novac::CString localFile, novac::CString remoteFile);
 
 		/** Creates a direcotry in the current working-directory
 			on the FTP-server.
 			@return non-zero if successful */
-		int CreateDirectory(LPCTSTR remoteDirectory);
+		int CreateDirectory(novac::CString remoteDirectory);
 
 		/**find file in the current ftp folder
 			@return TRUE if exists */
@@ -58,7 +58,7 @@ namespace Communication
 		*@param curDirName current directory name
 		*@return TRUE  - success
 		*/
-		BOOL SetCurDirectory(LPCTSTR curDirName);
+		BOOL SetCurDirectory(novac::CString curDirName);
 
 		/** Remove a folder*/
 		BOOL DeleteFolder(const novac::CString& folder);

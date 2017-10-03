@@ -20,15 +20,13 @@ CFTPCom::~CFTPCom(void)
 //return 2 - ftp address parsing problem
 //return 3 - can not connect to internet
 //return 4 - ftp exception
-int CFTPCom::Connect(LPCTSTR siteName, LPCTSTR userName, LPCTSTR password, BOOL mode)
+int CFTPCom::Connect(novac::CString siteName, novac::CString userName, novac::CString password, BOOL mode)
 {
-
 	INTERNET_PORT  port = 21;
 	DWORD dwServiceType = AFX_INET_SERVICE_FTP;
 	novac::CString strServer;
 	novac::CString strObject;
-	novac::CString urlAddress = _T("ftp://");
-	urlAddress += siteName;	
+	novac::CString urlAddress = novac::CString("ftp://") + siteName;
 	m_FTPSite.Format("%s", siteName);
 
 	// If already connected, then re-connect
@@ -113,7 +111,7 @@ int CFTPCom::Disconnect()
 }
 
 
-int CFTPCom::UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile)
+int CFTPCom::UpdateFile(novac::CString localFile, novac::CString remoteFile)
 {
 	int result = 0;
 	if(m_FtpConnection == NULL){
@@ -129,7 +127,7 @@ int CFTPCom::UpdateFile(LPCTSTR localFile, LPCTSTR remoteFile)
 	result = m_FtpConnection->PutFile(localFile, remoteFile);
 	return result;
 }
-BOOL CFTPCom::DownloadAFile(LPCTSTR remoteFile, LPCTSTR fileFullName)
+BOOL CFTPCom::DownloadAFile(novac::CString remoteFile, novac::CString fileFullName)
 {
 	BOOL result = FALSE;
 	novac::CString msg;
@@ -190,7 +188,7 @@ BOOL CFTPCom::DownloadAFile(LPCTSTR remoteFile, LPCTSTR fileFullName)
 	return result;
 }
 
-int CFTPCom::UploadFile(LPCTSTR localFile, LPCTSTR remoteFile)
+int CFTPCom::UploadFile(novac::CString localFile, novac::CString remoteFile)
 {
 	int result;
 
@@ -227,7 +225,7 @@ int CFTPCom::UploadFile(LPCTSTR localFile, LPCTSTR remoteFile)
 	return result;
 }
 
-int CFTPCom::CreateDirectory(LPCTSTR remoteDirectory)
+int CFTPCom::CreateDirectory(novac::CString remoteDirectory)
 {
 	// Check that we are connected
 	if(m_FtpConnection == NULL){
@@ -239,7 +237,7 @@ int CFTPCom::CreateDirectory(LPCTSTR remoteDirectory)
 	return result;	
 }
 
-BOOL CFTPCom::SetCurDirectory(LPCTSTR curDirName)
+BOOL CFTPCom::SetCurDirectory(novac::CString curDirName)
 {
 	if(m_FtpConnection == NULL){
 		ShowMessage("ERROR: Attempted to set directory using FTP while not connected!");

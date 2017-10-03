@@ -63,6 +63,9 @@ namespace novac
 		/** Finds the first occurrence of the given character, -1 if the character is not found. */
 		int Find(char ch) const;
 
+		/** Finds the first occurrence of the given character starting at the given position, -1 if the character is not found. */
+		int Find(char ch, int pos) const;
+
 		/** Finds the first occurrence of the given string, -1 if the character is not found. */
 		int Find(const char* str) const;
 

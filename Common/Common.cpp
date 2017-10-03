@@ -132,10 +132,10 @@ void ShowMessage(const TCHAR message[]){
 void Common::GetExePath(){
 	TCHAR exeFullPath[MAX_PATH]; 
 	GetModuleFileName(NULL, exeFullPath, MAX_PATH); 
-	m_exePath     = (novac::CString)exeFullPath;
-	m_exeFileName = (novac::CString)exeFullPath; 
+	m_exePath     = novac::CString(exeFullPath);
+	m_exeFileName = novac::CString(exeFullPath); 
 	int position  = m_exePath.ReverseFind('\\'); 
-	int length    = novac::CString::StringLength(m_exePath);
+	int length    = m_exePath.GetLength();
 	m_exePath     = m_exePath.Left(position+1);
 	m_exeFileName = m_exeFileName.Right(length - position - 1);
 }

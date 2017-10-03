@@ -230,6 +230,14 @@ namespace novac
 			REQUIRE(9 == sut.Find('A'));
 		}
 
+		SECTION("Find, with start position - character")
+		{
+			CString sut{ "Mary Had A Little Lamb" };
+			REQUIRE(-1 == sut.Find('q', 3));
+			REQUIRE(6 == sut.Find('a', 3));
+			REQUIRE(-1 == sut.Find('A', 13));
+		}
+
 		SECTION("Find - String")
 		{
 			CString sut{ "Mary Had A Little Lamb" };

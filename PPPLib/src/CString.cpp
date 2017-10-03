@@ -212,6 +212,26 @@ namespace novac
 		}
 	}
 
+	int CString::Find(char ch, int pos) const
+	{
+		if (pos >= m_data.length())
+		{
+			return -1;
+		}
+
+		const char* c_str = m_data.c_str() + pos;
+
+		const char* pt = strchr(c_str, int(ch));
+		if (nullptr == pt)
+		{
+			return -1;
+		}
+		else
+		{
+			return int(pt - m_data.c_str());
+		}
+	}
+
 	int CString::Find(const char* str) const
 	{
 		const char* pt = strstr(m_data.c_str(), str);
