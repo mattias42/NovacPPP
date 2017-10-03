@@ -3,7 +3,9 @@
 #ifndef FLUXSTATISTICS_H
 #define FLUXSTATISTICS_H
 
-#include <afxtempl.h>
+// #include <afxtempl.h>
+#include <PPPLib/CString.h>
+#include <PPPLib/CList.h>
 #include "FluxResult.h"
 
 namespace Flux{
@@ -27,7 +29,7 @@ namespace Flux{
 
 		/** Attaches the supplied list of flux results to the current set
 			of measured data. */
-		void AttachFluxList(const CList <CFluxResult, CFluxResult &> &calculatedFluxes);
+		void AttachFluxList(const novac::CList <CFluxResult, CFluxResult &> &calculatedFluxes);
 		
 		/** Attaches the given flux result to the current set of 
 			measured data */
@@ -35,7 +37,7 @@ namespace Flux{
 		
 		/** Calculates statistics on the statistics we have here and writes 
 			the results to file. */		
-		void WriteFluxStat(const CString &fileName);
+		void WriteFluxStat(const novac::CString &fileName);
 		 
 	private:
 		// ----------------------------------------------------------------------
@@ -47,19 +49,19 @@ namespace Flux{
 			CMeasurementDay();
 			~CMeasurementDay();
 			CDateTime day; // the date of the measurement
-			CList <CFluxResult, CFluxResult&> fluxList;
-			static void GetHeaderLine(CString &str, CList <CString, CString &> &instruments);
-			void GetStatistics(CString &str, CList <CString, CString &> &instruments);
+			novac::CList <CFluxResult, CFluxResult&> fluxList;
+			static void GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
+			void GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
 			CMeasurementDay &operator=(const CMeasurementDay &m);
 		};
 	
 		/** The list of measurement results.
 			This is sorted by the 'day' in increasing order */
-		CList <CMeasurementDay, CMeasurementDay&> m_measurements;
+		novac::CList <CMeasurementDay, CMeasurementDay&> m_measurements;
 
 		/** The list of instruments used. This is updated together with  
 			'm_measurements' when calling 'AttachFlux' */
-		CList <CString, CString &> m_instruments;
+		novac::CList <novac::CString, novac::CString &> m_instruments;
 
 		// ----------------------------------------------------------------------
 		// --------------------- PRIVATE METHODS --------------------------------

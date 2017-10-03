@@ -1460,9 +1460,9 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 
 	// -------------------------------- step 1. -------------------------------------
 	// search through 'evalLogs' for dual-beam measurements from master and from slave
-	auto pos = evalLogs.GetHeadPosition();
-	while(pos != nullptr){
-		const novac::CString &fileNameAndPath = evalLogs.GetNext(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
+	auto logPosition = evalLogs.GetHeadPosition();
+	while(logPosition != nullptr){
+		const novac::CString &fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[g_userSettings.m_mainFitWindow];
 		
 		// to know the start-time of the measurement, we need to 
 		//	extract just the file-name, i.e. remove the path
@@ -1506,9 +1506,9 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 	// -------------------------------- step 2. -------------------------------------
 	// loop through each of the measurements from the heidelberg instruments
 	//	and calculate the wind speed for each measurement
-	pos = heidelbergList.GetHeadPosition();
-	while(pos != nullptr){
-		const novac::CString &fileNameAndPath = heidelbergList.GetNext(pos);
+	auto instrPos = heidelbergList.GetHeadPosition();
+	while(instrPos != nullptr){
+		const novac::CString &fileNameAndPath = heidelbergList.GetNext(instrPos);
 		
 		// to know the start-time of the measurement, we need to 
 		//	extract just the file-name, i.e. remove the path
@@ -1552,9 +1552,9 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 	// -------------------------------- step 3. -------------------------------------
 	// loop through each of the measurements from a master-channel and try to match them with a measurement
 	//	from a slave channel...
-	pos = masterList.GetHeadPosition();
-	while(pos != nullptr){
-		const novac::CString &fileNameAndPath = masterList.GetNext(pos);
+	auto masterPos = masterList.GetHeadPosition();
+	while(masterPos != nullptr){
+		const novac::CString &fileNameAndPath = masterList.GetNext(masterPos);
 		
 		// extract just the file-name, i.e. remove the path
 		fileName = novac::CString(fileNameAndPath);
@@ -1616,14 +1616,13 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs){
 	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> left;
 	novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> right;
-	auto pos1, pos2;
 
 	// If this list consists of only one element, then we're done
 	if(evalLogs.GetCount() <= 1)
 		return;
 
 	// Divide the list into two, and sort each one of them
-	pos1 = evalLogs.GetHeadPosition();
+	auto pos1 = evalLogs.GetHeadPosition();
 	int index = 0;
 	while(pos1 != nullptr){
 		Evaluation::CExtendedScanResult &log = evalLogs.GetNext(pos1);
@@ -1639,10 +1638,10 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
 
 	// Merge the two lists into one, sorted list
 	evalLogs.RemoveAll();
-	pos1 = left.GetHeadPosition();
-	pos2 = right.GetHeadPosition();
-	while(pos1 != nullptr && pos2 != nullptr){
-		Evaluation::CExtendedScanResult &log1 = left.GetAt(pos1);
+	auto pos3 = left.GetHeadPosition();
+	auto pos2 = right.GetHeadPosition();
+	while(pos3 != nullptr && pos2 != nullptr){
+		Evaluation::CExtendedScanResult &log1 = left.GetAt(pos3);
 		Evaluation::CExtendedScanResult &log2 = right.GetAt(pos2);
 		
 		if(log2.m_startTime < log1.m_startTime){
@@ -1650,11 +1649,11 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
 			right.GetNext(pos2);
 		}else{
 			evalLogs.AddTail(log1);
-			left.GetNext(pos1);
+			left.GetNext(pos3);
 		}
 	}
-	while(pos1 != nullptr){
-		evalLogs.AddTail(left.GetNext(pos1));
+	while(pos3 != nullptr){
+		evalLogs.AddTail(left.GetNext(pos3));
 	}
 	while(pos2 != nullptr){
 		evalLogs.AddTail(right.GetNext(pos2));

@@ -56,7 +56,7 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans(){
 }
 
 bool CContinuationOfProcessing::IsPreviouslyIgnored(const novac::CString &pakFileName){
-	POSITION p = m_previouslyIgnoredFiles.GetHeadPosition();
+	auto p = m_previouslyIgnoredFiles.GetHeadPosition();
 	while(p != NULL){
 		novac::CString &fileName = m_previouslyIgnoredFiles.GetNext(p);
 		if(Equals(fileName, pakFileName))

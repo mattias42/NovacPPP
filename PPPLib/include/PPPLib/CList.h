@@ -10,24 +10,22 @@ namespace novac
 	struct POSITION
 	{
 	public:
-		typename std::list<TYPE>::const_iterator m_position;
-
 		POSITION()
 			: m_emptyList(), m_data(m_emptyList)
 		{
-			m_position = m_data.cbegin();
+			m_position = m_data.begin();
 		}
 		
-		POSITION(const std::list<TYPE>& data)
+		POSITION(std::list<TYPE>& data)
 			: m_emptyList(), m_data(data)
 		{
-			m_position = m_data.cbegin();
+			m_position = m_data.begin();
 		}
 
-		POSITION(TYPE* )
+		POSITION(const TYPE* )
 			: m_emptyList(), m_data(m_emptyList)
 		{
-			m_position = m_data.cbegin();
+			m_position = m_data.begin();
 		}
 
 		bool HasNext() const
@@ -42,6 +40,23 @@ namespace novac
 			}
 		}
 
+		TYPE& GetNext()
+		{
+			TYPE& data = *this->m_position;
+			++(this->m_position);
+			return data;
+		}
+
+		TYPE& GetAt() const
+		{
+			return *(this->m_position);
+		}
+
+		void InsertBefore(TYPE item)
+		{
+			m_data.insert(m_position, item);
+		}
+
 		bool operator==(void* data)
 		{
 			return (nullptr == data) ? (!this->HasNext()) : false;
@@ -53,6 +68,62 @@ namespace novac
 		}
 
 	private:
+		typename std::list<TYPE>::iterator m_position;
+		std::list<TYPE> m_emptyList;
+		std::list<TYPE>& m_data;
+	};
+
+	template<class TYPE>
+	struct CONST_POSITION : public POSITION<TYPE>
+	{
+	public:
+		CONST_POSITION()
+			: m_emptyList(), m_data(m_emptyList)
+		{
+			m_position = m_data.begin();
+		}
+
+		CONST_POSITION(const std::list<TYPE>& data)
+			: m_emptyList(), m_data(data)
+		{
+			m_position = m_data.begin();
+		}
+
+		CONST_POSITION(const TYPE*)
+			: m_emptyList(), m_data(m_emptyList)
+		{
+			m_position = m_data.begin();
+		}
+
+		bool HasNext() const
+		{
+			if (m_data.size() == 0)
+			{
+				return false;
+			}
+			else
+			{
+				return m_position != m_data.end();
+			}
+		}
+
+		TYPE& GetAt()
+		{
+			return *(this->m_position);
+		}
+
+		bool operator==(void* data)
+		{
+			return (nullptr == data) ? (!this->HasNext()) : false;
+		}
+
+		bool operator!=(void* data)
+		{
+			return (nullptr == data) ? (this->HasNext()) : true;
+		}
+
+	private:
+		typename std::list<TYPE>::const_iterator m_position;
 		const std::list<TYPE> m_emptyList;
 		const std::list<TYPE>& m_data;
 	};
@@ -61,21 +132,81 @@ namespace novac
 	struct REVERSE_POSITION
 	{
 	public:
-		typename std::list<TYPE>::const_reverse_iterator  m_position;
-
 		REVERSE_POSITION()
+			: m_emptyList(), m_data(m_emptyList)
+		{
+			m_position = m_data.rbegin();
+		}
+
+		REVERSE_POSITION(std::list<TYPE>& data)
+			: m_emptyList(), m_data(data)
+		{
+			m_position = data.rbegin();
+		}
+
+		REVERSE_POSITION(void*)
+			: m_emptyList(), m_data(m_emptyList)
+		{
+			m_position = m_data.rbegin();
+		}
+
+		bool HasPrevious() const
+		{
+			if (m_data.size() == 0)
+			{
+				return false;
+			}
+			else
+			{
+				return m_position != m_data.rend();
+			}
+		}
+
+		TYPE& GetAt()
+		{
+			return *(this->m_position);
+		}
+
+		TYPE& GetPrev()
+		{
+			TYPE& data = *m_position;
+			++(m_position);
+			return data;
+		}
+
+		bool operator==(void* data)
+		{
+			return (nullptr == data) ? (!this->HasPrevious()) : false;
+		}
+
+		bool operator!=(void* data)
+		{
+			return (nullptr == data) ? (this->HasPrevious()) : true;
+		}
+
+	private:
+		typename std::list<TYPE>::reverse_iterator  m_position;
+		std::list<TYPE> m_emptyList;
+		std::list<TYPE>& m_data;
+	};
+
+	template<class TYPE>
+	struct CONST_REVERSE_POSITION
+	{
+	public:
+		CONST_REVERSE_POSITION()
 			: m_emptyList(), m_data(m_emptyList)
 		{
 			m_position = m_data.crbegin();
 		}
 
-		REVERSE_POSITION(const std::list<TYPE>& data)
+		CONST_REVERSE_POSITION(const std::list<TYPE>& data)
 			: m_emptyList(), m_data(data)
 		{
 			m_position = data.crbegin();
 		}
 
-		REVERSE_POSITION(void*)
+		CONST_REVERSE_POSITION(void*)
 			: m_emptyList(), m_data(m_emptyList)
 		{
 			m_position = m_data.crbegin();
@@ -93,6 +224,17 @@ namespace novac
 			}
 		}
 
+		TYPE& GetAt()
+		{
+			return *(this->m_position);
+		}
+
+		const TYPE& GetPrev() const
+		{
+			const TYPE& data = *m_position;
+			++(m_position);
+			return data;
+		}
 		bool operator==(void* data)
 		{
 			return (nullptr == data) ? (!this->HasPrevious()) : false;
@@ -104,6 +246,7 @@ namespace novac
 		}
 
 	private:
+		const typename std::list<TYPE>::const_reverse_iterator  m_position;
 		const std::list<TYPE> m_emptyList;
 		const std::list<TYPE>& m_data;
 	};
@@ -138,9 +281,9 @@ namespace novac
 			return p;
 		}
 
-		POSITION<TYPE> GetHeadPosition() const
+		const POSITION<TYPE> GetHeadPosition() const
 		{
-			POSITION<TYPE> p(m_data);
+			CONST_POSITION<TYPE> p(m_data);
 			return p;
 		}
 
@@ -152,26 +295,22 @@ namespace novac
 
 		ARG_TYPE GetAt(POSITION<TYPE>& p) const
 		{
-			return *(p.m_position);
+			return p.GetAt();
 		}
 
 		ARG_TYPE GetAt(REVERSE_POSITION<TYPE>& p) const
 		{
-			return *(p.m_position);
+			return p.GetAt();
 		}
 
 		ARG_TYPE GetNext(POSITION<TYPE>& p) const
 		{
-			ARG_TYPE data = *p.m_position;
-			++(p.m_position);
-			return data;
+			return p.GetNext();
 		}
 
 		ARG_TYPE GetPrev(REVERSE_POSITION<TYPE>& p) const
 		{
-			ARG_TYPE data = *p.m_position;
-			++(p.m_position);
-			return data;
+			return p.GetPrev();
 		}
 
 		// ---------------------- Operations -----------------------
@@ -189,6 +328,16 @@ namespace novac
 		void AddTail(TYPE item)
 		{
 			m_data.push_back(item);
+		}
+
+		void AddHead(TYPE item)
+		{
+			m_data.push_front(item);
+		}
+
+		void InsertBefore(POSITION<TYPE>& pos, TYPE item)
+		{
+			pos.InsertBefore(item);
 		}
 
 	private:

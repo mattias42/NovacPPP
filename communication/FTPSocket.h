@@ -9,6 +9,7 @@
 #define RESPONSE_LEN 12288
 
 #include <PPPLib/CString.h>
+#include <PPPLib/CList.h>
 
 namespace Communication
 {
@@ -236,7 +237,7 @@ namespace Communication
 		TByteVector m_vDataBuffer;
 
 		/**list to store the ftp codes which indicate the status of last communication */
-		CList<int, int> m_ftpCode;
+		novac::CList<int, int> m_ftpCode;
 	};
 }
 

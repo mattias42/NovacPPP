@@ -82,10 +82,10 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 		userMessage.Format("Could not create temp directory: %s", g_userSettings.m_tempDirectory);
 		ShowMessage(userMessage);
 		return 1;
-	}	
+	}
 	
 	// download the data in this directory
-	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
+	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
 	Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 
 	// wait for all threads to terminate
@@ -107,8 +107,8 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	}
 
 	// copy the data to the output list
-	POSITION p = s_pakFileList.GetHeadPosition();
-	while(p != NULL){
+	auto p = s_pakFileList.GetHeadPosition();
+	while(p != nullptr){
 		pakFileList.AddTail(novac::CString(s_pakFileList.GetNext(p)));
 	}
 
@@ -191,8 +191,8 @@ UINT DownloadDataFromDir(LPVOID pParam){
 	
 	// download each of the files .pak-files found
 	//	or enter the all the sub-directories
-	POSITION p = filesFound.GetHeadPosition();
-	while(p != NULL){
+	auto p = filesFound.GetHeadPosition();
+	while(p != nullptr){
 		CFileInfo &fileInfo = filesFound.GetNext(p);
 
 		if(Equals(fileInfo.m_fileName.Right(4), ".pak")){
@@ -231,7 +231,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 				DownloadDataFromDir(new novac::CString(fileInfo.m_fullFileName + "/"));
 			}else{
 				// start downloading using a new thread
-				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
+				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
 				Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 			}
 		}
@@ -297,8 +297,8 @@ int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDi
 	ftp->Disconnect();
 	
 	// Extract the file-names...
-	POSITION p = filesFound.GetHeadPosition();
-	while(p != NULL){
+	auto p = filesFound.GetHeadPosition();
+	while(p != nullptr){
 		CFileInfo &fileInfo = filesFound.GetNext(p);
 		
 		if(!fileInfo.m_isDirectory){
@@ -401,8 +401,8 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 	ftp->EnterFolder(directoryName);
 
 	// Upload the files
-	POSITION p = fileList.GetHeadPosition();
-	while(p != NULL){
+	auto p = fileList.GetHeadPosition();
+	while(p != nullptr){
 		// Get the local name and path of the file to upload
 		novac::CString &localFile = fileList.GetNext(p);
 		

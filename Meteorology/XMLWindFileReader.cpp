@@ -134,7 +134,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 
 		// Download the files, one at a time
 		auto p = remoteFileList.GetHeadPosition();
-		while(p.HasMore())
+		while(p != nullptr)
 		{
 			novac::CString &name = remoteFileList.GetNext(p);
 			
@@ -196,7 +196,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 	// Now we got a list of files on the local computer. Read them in!
 	auto p = localFileList.GetHeadPosition();
 	int nFilesRead = 0;
-	while(p.HasMore())
+	while(p != nullptr)
 	{
 		localFileName.Format("%s", localFileList.GetNext(p));
 		

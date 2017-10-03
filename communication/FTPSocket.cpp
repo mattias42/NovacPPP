@@ -251,18 +251,18 @@ bool CFTPSocket::SendFileToServer(novac::CString& fileLocalPath)
 	hFile = CreateFile(fileLocalPath,        // open file in local disk
 		GENERIC_READ,              // open for reading 
 		FILE_SHARE_READ,           // share for reading 
-		NULL,                      // no security 
+		nullptr,                      // no security 
 		OPEN_EXISTING,             // existing file only 
 		FILE_ATTRIBUTE_NORMAL,     // normal file 
-		NULL);                     // no attr. template 
+		nullptr);                     // no attr. template 
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		ShowMessage("Could not open file.");   // process error 
 		return false;
 	}
-	fileSize = GetFileSize(hFile, NULL);
-	if (TransmitFile(m_dataSocket, hFile, fileSize, 0, NULL, NULL, TF_DISCONNECT) == FALSE)
+	fileSize = GetFileSize(hFile, nullptr);
+	if (TransmitFile(m_dataSocket, hFile, fileSize, 0, nullptr, nullptr, TF_DISCONNECT) == FALSE)
 	{
 		errorNum = WSAGetLastError();
 		WSACleanup();
@@ -489,7 +489,7 @@ int CFTPSocket::CloseASocket(SOCKET sock)
 	try
 	{
 
-		ret = WSAAsyncSelect(sock, NULL, NULL, FD_CLOSE);
+		ret = WSAAsyncSelect(sock, nullptr, nullptr, FD_CLOSE);
 
 		if (ret == 0)
 		{
@@ -570,7 +570,7 @@ long CFTPSocket::Size(novac::CString& fileName)
 	SendCommand("SIZE", fileName);
 	ReadData();
 	sizeStr = m_serverMsg;
-	MessageBox(NULL, sizeStr, "notice", MB_OK);
+	MessageBox(nullptr, sizeStr, "notice", MB_OK);
 	return fileSize;
 }
 //NOT FOR NOVAC SCANNER FTP SERVER
@@ -671,7 +671,7 @@ int CFTPSocket::DownloadFile(novac::CString remoteFileName, novac::CString local
 		else
 		{
 			fileSize += bytesRecv;
-			WriteFile(m_hDownloadedFile, buf + lastBytesWritten, bytesRecv, &bytesWritten, NULL);
+			WriteFile(m_hDownloadedFile, buf + lastBytesWritten, bytesRecv, &bytesWritten, nullptr);
 			lastBytesWritten = bytesWritten;
 		}
 	} while (bytesRecv != 0);
@@ -701,10 +701,10 @@ bool CFTPSocket::OpenFileHandle(novac::CString& fileName)
 	m_hDownloadedFile = CreateFile(fileName,        // open file in local disk
 		GENERIC_WRITE,              // open for writing 
 		FILE_SHARE_WRITE,           // share for writing 
-		NULL,                      // no security 
+		nullptr,                      // no security 
 		CREATE_ALWAYS,             // Opens the file, if it exists. If the file does not exist, the function creates the file
 		FILE_ATTRIBUTE_NORMAL,     // normal file 
-		NULL);                     // no attr. template 
+		nullptr);                     // no attr. template 
 
 	if (m_hDownloadedFile == INVALID_HANDLE_VALUE)
 	{
@@ -731,8 +731,8 @@ bool CFTPSocket::IsFTPCommandDone()
 	int i;
 	int suc = TRUE;
 
-	POSITION listPos = m_ftpCode.GetHeadPosition();
-	if (listPos == NULL) {
+	auto listPos = m_ftpCode.GetHeadPosition();
+	if (listPos == nullptr) {
 		return false; // no ftp-code received at all...
 	}
 	for (i = 0; i < m_ftpCode.GetCount(); i++)
@@ -807,7 +807,7 @@ bool CFTPSocket::IsDataReady(const SOCKET& socket, long timeout)
 	fd_set socketSet;
 	socketSet.fd_count = 1;
 	socketSet.fd_array[0] = socket;
-	int result = select(0, &socketSet, NULL, &socketSet, &expireTime);
+	int result = select(0, &socketSet, nullptr, &socketSet, &expireTime);
 	if (result == 1)
 		return true;
 	else

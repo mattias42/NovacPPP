@@ -1,4 +1,5 @@
 #include <PPPLib/CList.h>
+#include <PPPLib/CString.h>
 #include "catch.hpp"
 
 namespace novac
@@ -53,6 +54,23 @@ namespace novac
 			REQUIRE(2 == sut.GetAt(p));
 		}
 
+		SECTION("AddHead - increases size")
+		{
+			CList<int> sut;
+			REQUIRE(0 == sut.GetSize());
+			sut.AddHead(2);
+			REQUIRE(1 == sut.GetSize());
+		}
+
+		SECTION("AddHead - appends new element")
+		{
+			CList<int> sut;
+			sut.AddHead(2);
+
+			auto p = sut.GetHeadPosition();
+			REQUIRE(2 == sut.GetAt(p));
+		}
+
 		SECTION("RemoveTail - removes last element")
 		{
 			CList<int> sut;
@@ -68,13 +86,28 @@ namespace novac
 			auto p = sut.GetTailPosition();
 			REQUIRE(4 == sut.GetAt(p));
 		}
+
+		SECTION("InsertBefore - inserts one element before")
+		{
+			CList<int> sut;
+			sut.AddTail(2);
+
+			auto p = sut.GetHeadPosition();
+
+			sut.InsertBefore(p, 3);
+
+			REQUIRE(2 == sut.GetSize());
+
+			auto newHead = sut.GetHeadPosition();
+			REQUIRE(3 == sut.GetAt(newHead));
+		}
 	}
 
 	TEST_CASE("CList iteration behaves as expected", "[CList]")
 	{
 		SECTION("Empty list")
 		{
-			CList<int> sut;
+			CList<CString> sut;
 			int nItems = 0;
 
 			auto p = sut.GetHeadPosition();
@@ -90,12 +123,12 @@ namespace novac
 
 		SECTION("Forward in 5 item list")
 		{
-			CList<int> sut;
-			sut.AddTail(1);
-			sut.AddTail(2);
-			sut.AddTail(3);
-			sut.AddTail(4);
-			sut.AddTail(5);
+			CList<CString> sut;
+			sut.AddTail(CString("anders"));
+			sut.AddTail(CString("berit"));
+			sut.AddTail(CString("calle"));
+			sut.AddTail(CString("dennis"));
+			sut.AddTail(CString("eva"));
 
 			int nItems = 0;
 
@@ -104,7 +137,7 @@ namespace novac
 			{
 				++nItems;
 
-				sut.GetNext(p);
+				auto element = sut.GetNext(p);
 			}
 
 			REQUIRE(5 == nItems);
