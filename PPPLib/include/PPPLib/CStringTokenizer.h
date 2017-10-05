@@ -14,8 +14,10 @@ namespace novac
 		const char* NextToken();
 
 	private:
-		std::string m_data;
-		std::vector<char> m_separators;
+
+		const std::string m_data;
+		std::vector<std::string> m_tokens;
+		int m_curToken = 0;
 	};
 }  // namespace novac
 

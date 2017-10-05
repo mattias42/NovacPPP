@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <PPPLib/CString.h>
+#include <PPPLib/CStringTokenizer.h>
 
 #include "VolcanoInfo.h"
 #include "Common/Common.h"
@@ -316,7 +317,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		}
 		else if (Equals(token, "--" + novac::CString(str_startNow), strlen("--" + novac::CString(str_startNow)))) {
 			g_userSettings.m_startNow = 1;
-			token = tokenizer.extToken();
+			token = tokenizer.NextToken();
 			continue;
 		}
 
