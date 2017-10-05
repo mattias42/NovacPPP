@@ -94,7 +94,7 @@ namespace novac
 
 		// ---------------------- Operations -----------------------
 
-		TYPE operator[](int index) const { return m_data[index]; }
+		const TYPE& operator[](int index) const { return m_data[index]; }
 		TYPE& operator[](int index) { return m_data[index]; }
 
 	private:

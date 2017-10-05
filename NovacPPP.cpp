@@ -9,8 +9,11 @@
 #include "Configuration/UserConfiguration.h"
 #include "Common/EvaluationConfigurationParser.h"
 #include "Common/ProcessingFileReader.h"
+#include "PostProcessing.h"
 
 #include <iostream>
+#include <algorithm>
+#include <thread>
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -18,7 +21,7 @@ extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
 
 
 void LoadConfigurations(int argc, char* argv[]);
-void OnBnClickedCalculateFluxes();
+void OnBnClickedCalculateFluxes(int selectedVolcano = 0);
 UINT CalculateAllFluxes(void* pParam);
 void ParseCommandLineOptions(int argc, char* argv[]);
 
@@ -28,8 +31,10 @@ int main(int argc, char* argv[])
 {
 	try
 	{
+		// Read the configuration files
 		LoadConfigurations(argc, argv);
 
+		// Start calculating the fluxes, this is the old button handler
 		OnBnClickedCalculateFluxes();
 	}
 	catch (std::exception& e)
@@ -78,33 +83,20 @@ void LoadConfigurations(int argc, char* argv[])
 
 	// Get the options from the command line
 	ParseCommandLineOptions(argc, argv);
-
-	// If we are supposed to start the processing automatically, then let's do so
-	if (g_userSettings.m_startNow) {
-		OnBnClickedCalculateFluxes();
-	}
 }
 
 
-void OnBnClickedCalculateFluxes()
+void OnBnClickedCalculateFluxes(int selectedVolcano)
 {
 	// 1. check input!!!
-	int curSel = m_comboAllVolcanoes.GetCurSel();
-	if (curSel < 0) {
-		throw std::exception("You have to choose a volcano!!!");
-	}
 
-	if (m_CheckLocalDirectory.GetCheck() != BST_CHECKED) {
-		g_userSettings.m_LocalDirectory.Format("");
-	}
+// 	if (m_CheckLocalDirectory.GetCheck() != BST_CHECKED) {
+// 		g_userSettings.m_LocalDirectory.Format("");
+// 	}
 
-	if (m_CheckFtp.GetCheck() != BST_CHECKED) {
-		g_userSettings.m_FTPDirectory.Format("");
-	}
-
-	if (m_CheckDatabase.GetCheck() == BST_CHECKED) {
-		throw std::exception("Can not yet search for files on Database server. Sorry!!");
-	}
+// 	if (m_CheckFtp.GetCheck() != BST_CHECKED) {
+// 		g_userSettings.m_FTPDirectory.Format("");
+// 	}
 
 	// 2. check the data
 
@@ -117,24 +109,23 @@ void OnBnClickedCalculateFluxes()
 
 
 	// 3. Open the message window
-	pView = &m_statusDlg;
-	m_statusDlg.Create(IDD_MESSAGEDLG);
-	m_statusDlg.ShowWindow(SW_SHOW);
-	m_statusDlg.GetWindowRect(rect);
-	int w = rect.Width();
-	int h = rect.Height();
-	rect.left = 10; rect.right = rect.left + w;
-	rect.top = 10; rect.bottom = rect.top + h;
-	m_statusDlg.MoveWindow(rect); // move the window to the corner of the screen
+	// pView = &m_statusDlg;
+	// m_statusDlg.Create(IDD_MESSAGEDLG);
+	// m_statusDlg.ShowWindow(SW_SHOW);
+	// m_statusDlg.GetWindowRect(rect);
+	// int w = rect.Width();
+	// int h = rect.Height();
+	// rect.left = 10; rect.right = rect.left + w;
+	// rect.top = 10; rect.bottom = rect.top + h;
+	// m_statusDlg.MoveWindow(rect); // move the window to the corner of the screen
 
-								  // 4. Set the parameters for the post-processing..
-	g_userSettings.m_volcano = this->m_comboAllVolcanoes.GetCurSel();
-	g_userSettings.m_fromDate = CDateTime(this->m_FromYear, this->m_FromMonth, this->m_FromDay, 00, 00, 00);
-	g_userSettings.m_toDate = CDateTime(this->m_ToYear, this->m_ToMonth, this->m_ToDay, 23, 59, 59);
+	// 4. Set the parameters for the post-processing..
+	g_userSettings.m_volcano = selectedVolcano; // this->m_comboAllVolcanoes.GetCurSel();
 
 	// 5. Run
-	CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
-	Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
+	std::thread postProcessingThread( CalculateAllFluxes );
+	// CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+	// Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
 }
 
 
@@ -170,34 +161,8 @@ UINT CalculateAllFluxes(void* pParam) {
 	processingOutputFile.Format("%s\\processing.xml", confCopyDir);
 	setupOutputFile.Format("%s\\setup.xml", confCopyDir);
 
-	// check if the setup-file and the processing file already exists...
-	if (!g_userSettings.m_startNow) {
-		if (IsExistingFile(processingOutputFile) && IsExistingFile(setupOutputFile)) {
-			FileHandler::CProcessingFileReader oldProcessingFileReader;
-			Configuration::CUserConfiguration oldSettings;
-
-			oldProcessingFileReader.ReadProcessingFile(processingOutputFile, oldSettings);
-			if (oldSettings == g_userSettings) {
-				if (Common::AreIdenticalFiles(setupOutputFile, _T(common.m_exePath + "configuration\\setup.xml"))) {
-					int userAnswer = MessageBox(NULL, "Found old processing files in output directory. Is this an continuation of the old run?", "Continue?", MB_YESNO);
-					if (IDYES == userAnswer) {
-						userAnswer = MessageBox(NULL, "Ok. This means that spectrum-files which have already been evaluated will not be evaluated again. Proceed?", "Continue?", MB_YESNO);
-						if (IDYES == userAnswer) {
-							g_userSettings.m_fIsContinuation = true;
-						}
-						else {
-							ShowMessage("-- Exit post processing --");
-							return 1;
-						}
-					}
-				}
-			}
-		}
-	}
-	else {
-		Common::ArchiveFile(setupOutputFile);
-		Common::ArchiveFile(processingOutputFile);
-	}
+	Common::ArchiveFile(setupOutputFile);
+	Common::ArchiveFile(processingOutputFile);
 
 	// Copy the settings that we have read in from the 'configuration' directory
 	//	to the output directory to make it easier for the user to remember 
@@ -235,13 +200,6 @@ UINT CalculateAllFluxes(void* pParam) {
 	// Tell the user that we're done
 	ShowMessage("-- Exit post processing --");
 
-	// If we were to start the processing automatically then also quit it automatically
-	if (g_userSettings.m_startNow) {
-		// exit the application
-		ASSERT(AfxGetApp()->m_pMainWnd != NULL);
-		AfxGetApp()->m_pMainWnd->SendMessage(WM_CLOSE);
-	}
-
 	return 0;
 }
 
@@ -254,8 +212,13 @@ void ParseCommandLineOptions(int argc, char* argv[])
 	novac::CString errorMessage;
 
 	// a local copy of the command line parameters
+	novac::CString commandLine;
+	for (int arg = 1; arg < argc; ++arg)
+	{
+		commandLine = commandLine + " " + novac::CString(argv[arg]);
+	}
 	char *szLine = new char[16384];
-	sprintf(szLine, "%s", this->m_commandLine);
+	sprintf(szLine, "%s", (const char*)commandLine);
 
 	// Go through the received input parameters and set the approprate option
 	novac::CStringTokenizer tokenizer(szLine, seps);
@@ -304,7 +267,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		// the maximum number of threads
 		if (Equals(token, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
 			sscanf(token + strlen(FLAG(str_maxThreadNum)), "%d", &g_userSettings.m_maxThreadNum);
-			g_userSettings.m_maxThreadNum = max(g_userSettings.m_maxThreadNum, 1);
+			g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, unsigned long(1));
 			token = tokenizer.NextToken();
 			continue;
 		}
@@ -330,11 +293,11 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		if (Equals(token, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
 			if (sscanf(token + strlen(FLAG(str_LocalDirectory)), "%s", buffer)) {
 				g_userSettings.m_LocalDirectory.Format("%s", buffer);
-				m_CheckLocalDirectory.SetCheck(1);
+				// m_CheckLocalDirectory.SetCheck(1);
 			}
 			else {
 				g_userSettings.m_LocalDirectory.Format("");
-				m_CheckLocalDirectory.SetCheck(0);
+				// m_CheckLocalDirectory.SetCheck(0);
 			}
 			token = tokenizer.NextToken();
 			continue;
@@ -349,11 +312,11 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		if (Equals(token, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
 			if (sscanf(token + strlen(FLAG(str_FTPDirectory)), "%s", buffer)) {
 				g_userSettings.m_FTPDirectory.Format("%s", buffer);
-				m_CheckFtp.SetCheck(1);
+				// m_CheckFtp.SetCheck(1);
 			}
 			else {
 				g_userSettings.m_FTPDirectory.Format("");
-				m_CheckFtp.SetCheck(0);
+				// m_CheckFtp.SetCheck(0);
 			}
 			token = tokenizer.NextToken();
 			continue;

@@ -14,11 +14,10 @@ CSetupFileReader::~CSetupFileReader(void)
 }
 
 RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Configuration::CNovacPPPConfiguration &setup){
-	CFileException exceFile;
 	novac::CStdioFile file;
 
 	// 1. Open the file
-	if(!file.Open(filename, CFile::modeRead | CFile::typeText, &exceFile)){
+	if(!file.Open(filename, novac::CStdioFile::ModeFlag::modeRead | novac::CStdioFile::ModeFlag::typeText)){
 		return FAIL;
 	}
 	this->m_File = &file;
@@ -190,15 +189,15 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 }
 
 void CSetupFileReader::Parse_SpectrometerModel(const novac::CString &label, SPECTROMETER_MODEL &model){
-	novac::CString str;
+	char buffer[2048];
 
 	while(szToken = NextToken()){
 
 		if(Equals(szToken, label))
 			return;
 
-		sscanf(szToken, "%s", (const char*)str);
-		model = CSpectrometerModel::GetModel(str);
+		sscanf(szToken, "%s", buffer);
+		model = CSpectrometerModel::GetModel(novac::CString(buffer));
 	}
 
 	return;

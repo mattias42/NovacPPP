@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "NovacPPP.h"
 #include "StatusLogFileWriter.h"
 
 // This is the settings for how to do the procesing

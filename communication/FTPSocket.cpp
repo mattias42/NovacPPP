@@ -748,8 +748,8 @@ bool CFTPSocket::IsFTPCommandDone()
 bool CFTPSocket::GetCurrentFTPDirectory(novac::CString& curDirectory)
 {
 	int msgLength, directoryLength;
-	novac::CString seperator1 = _T("\"");
-	novac::CString seperator2 = _T("\"");
+	novac::CString seperator1 = "\"";
+	novac::CString seperator2 = "\"";
 	SendCommand("PWD", "");
 	if (ReadResponse() != 1)
 		return false;

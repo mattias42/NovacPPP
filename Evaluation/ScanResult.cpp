@@ -447,7 +447,7 @@ double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long speci
 	}
 }
 
-const CSpectrumInfo& CScanResult::GetSpectrumInfo(unsigned long index) {
+const CSpectrumInfo& CScanResult::GetSpectrumInfo(unsigned long index) const{
 	return m_specInfo[index];
 }
 

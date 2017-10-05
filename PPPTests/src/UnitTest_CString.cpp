@@ -42,6 +42,12 @@ namespace novac
 		{
 			REQUIRE(original.size() == sut.GetLength());
 		}
+
+		SECTION("GetAt")
+		{
+			REQUIRE('M' == sut.GetAt(0));
+			REQUIRE('l' == sut.GetAt(11));
+		}
 	}
 
 	TEST_CASE("Substrings behaves as expected", "[CString]")

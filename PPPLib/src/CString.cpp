@@ -272,4 +272,16 @@ namespace novac
 	{
 		return CString(str1.ToStdString() + other);
 	}
+
+	char CString::GetAt(int index) const
+	{
+		if (index < 0 || index >= m_data.length())
+		{
+			throw std::invalid_argument("Invalid character retrieved in CString.");
+		}
+		else
+		{
+			return m_data.at(index);
+		}
+	}
 }

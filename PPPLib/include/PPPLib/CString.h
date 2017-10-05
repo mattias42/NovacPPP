@@ -58,6 +58,10 @@ namespace novac
 			@return A CStringT object containing the current token value. */
 		CString Tokenize(const char* delimiters, int& iStart) const;
 
+		/** @return the character at the specified index.
+			@throws invalid_argument if index < 0 or index >= GetLength() */
+		char GetAt(int index) const;
+
 		// ---------------------- Searching -----------------------
 
 		/** Finds the first occurrence of the given character, -1 if the character is not found. */

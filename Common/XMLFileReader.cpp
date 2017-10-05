@@ -1,22 +1,23 @@
 #include "StdAfx.h"
 #include "XMLFileReader.h"
 #include "../Common/Common.h"
+#include <cstdlib>
 
 using namespace FileHandler;
 
 CXMLFileReader::CXMLFileReader(void)
 {
-	this->m_File = NULL;
+	this->m_File = nullptr;
 	this->nLinesRead = 0;
-	this->szToken = NULL;
+	this->szToken = nullptr;
 	this->m_filename.Format("");
 	
-	m_tokenPt = NULL;
+	m_tokenPt = nullptr;
 }
 
 CXMLFileReader::~CXMLFileReader(void)
 {
-	m_tokenPt = NULL;
+	m_tokenPt = nullptr;
 }
 
 void CXMLFileReader::SetFile(novac::CStdioFile *file)
@@ -26,7 +27,7 @@ void CXMLFileReader::SetFile(novac::CStdioFile *file)
 
 char *CXMLFileReader::NextToken(){
 	char separators[] = "<>\t";
-	szToken = NULL;
+	szToken = nullptr;
 
 	if(nLinesRead == 0){
 		// if this is the first call to this function
@@ -45,7 +46,7 @@ char *CXMLFileReader::NextToken(){
 		szLine[0] = 0;
 		while(0 == strlen(szLine)){
 		if(!m_File->ReadString(szLine, 4095))
-			return NULL;
+			return nullptr;
 		}
 
 		szToken = (char*)(LPCSTR)szLine;
@@ -61,13 +62,13 @@ char *CXMLFileReader::NextToken(){
 }
 
 /** Retrieves the value of the given attribute from the current token 
-	@return NULL if this attribute does not exist or the current token is not
+	@return nullptr if this attribute does not exist or the current token is not
 		a valid element */
 const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 	novac::CString toSearchFor;
 
-	if(nLinesRead == 0 || szToken == NULL)
-		return NULL; // we haven't started reading the file yet...
+	if(nLinesRead == 0 || szToken == nullptr)
+		return nullptr; // we haven't started reading the file yet...
 		
 	// make a copy of szToken, so that we can make changes to it...
 	char copyOfToken[4096];
@@ -76,14 +77,14 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 	// search for the attribute in szToken
 	toSearchFor.Format("%s=\"", label);
 	char *pt_start = strstr(copyOfToken, toSearchFor);
-	if(pt_start == NULL)
-		return NULL;
+	if(pt_start == nullptr)
+		return nullptr;
 	pt_start += toSearchFor.GetLength(); // point to the character after the double-quote
 	
 	// search for the ending double-quote
 	char *pt_end = strstr(pt_start, "\"");
-	if(pt_end == NULL)
-		return NULL;
+	if(pt_end == nullptr)
+		return nullptr;
 	*pt_end = '\0'; // make the string end at the position of the double-quote
 	
 	// now we have the value of the attribute	
@@ -113,8 +114,7 @@ int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number){
 		if(Equals(szToken, label))
 		return 1;
 
-	   
-		number = _tstol(szToken);
+		number = std::atol(szToken);
 	}
 
 	return 0;
@@ -126,7 +126,7 @@ int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number)
 		if(Equals(szToken, label))
 		return 1;
 
-		number = _tstof(szToken);
+		number = std::atof(szToken);
 	}
 
 	return 0;
@@ -140,7 +140,7 @@ int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number){
 		return 1;
 
 	   
-		number = _tstoi(szToken);
+		number = std::atoi(szToken);
 	}
 
 	return 0;
@@ -180,7 +180,7 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum){
 
 		char *pt = strstr(szToken, "T");
 
-		if(pt == NULL){
+		if(pt == nullptr){
 			nFields = sscanf(szToken, "%d.%d.%d", &i0, &i1, &i2);
 			datum.year = i0;
 			datum.month = i1;

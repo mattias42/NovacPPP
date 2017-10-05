@@ -256,7 +256,7 @@ namespace Evaluation
 		RETURN_CODE  RemoveMark(unsigned long index, int MARK_FLAG);
 
 		/** Returns a reference to the desired spectrum info-structure */
-		const CSpectrumInfo &GetSpectrumInfo(unsigned long index);
+		const CSpectrumInfo& GetSpectrumInfo(unsigned long index) const;
 
 		/** Returns a reference to the spectrum info-structure of the sky-spectrum used */
 		const CSpectrumInfo &GetSkySpectrumInfo() const;

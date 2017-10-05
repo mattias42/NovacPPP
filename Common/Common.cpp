@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include <algorithm>
+
 // include the global settings
 #include "../VolcanoInfo.h"
 
@@ -13,6 +15,9 @@
 // extern CDialog *pView;
 extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
+
+#undef min
+#undef max
 
 void GetSysTempFolder(novac::CString& folderPath)
 {
@@ -84,11 +89,11 @@ int CreateDirectoryStructure(const novac::CString &path)
 }
 
 int Equals(const novac::CString &str1, const novac::CString &str2){
-	return (0 ==_tcsnicmp(str1, str2, max(strlen(str1), strlen(str2))));
+	return (0 ==_tcsnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
 }
 
 int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters){
-	return (0 ==_tcsnicmp(str1, str2, min(nCharacters, max(strlen(str1), strlen(str2)))));
+	return (0 ==_tcsnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
 }
 
 void UpdateMessage(const novac::CString &message){
@@ -144,7 +149,6 @@ void Common::GetExePath(){
     (lat2, lon2). All latitudes and longitudes should be in degrees. */
 double Common::GPSDistance(double lat1, double lon1, double lat2, double lon2){
 	const double R_Earth	= 6367000; // radius of the earth
-	double distance, a, c;
 	lat1 = lat1*DEGREETORAD;
 	lat2 = lat2*DEGREETORAD;
 	lon1 = lon1*DEGREETORAD;
@@ -156,9 +160,9 @@ double Common::GPSDistance(double lat1, double lon1, double lat2, double lon2){
 	if((dLon == 0) && (dLat == 0))
 		return 0;
 
-	a = pow((sin(dLat/2)),2) + cos(lat1) * cos(lat2) * pow((sin(dLon/2)),2) ;
-	c = 2 * asin(min(1,sqrt(a))); 
-	distance = R_Earth * c;
+	double a = std::pow((std::sin(dLat/2.0)),2.0) + std::cos(lat1) * std::cos(lat2) * std::pow((std::sin(dLon/2.0)),2.0) ;
+	double c = 2 * std::asin(std::min(1.0, std::sqrt(a)));
+	double distance = R_Earth * c;
 
 	return distance;
 } 

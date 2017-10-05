@@ -10,6 +10,9 @@
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
+#undef min
+#undef max
+
 using namespace Geometry;
 
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
@@ -262,7 +265,7 @@ bool CGeometryCalculator::GetPlumeHeight_Fuzzy(const CGPSData source, const CGPS
 
 	// 2a. Make an initial guess of the plume height...
 	if(gps[lowerScanner].m_altitude > 0 && source.m_altitude > 0){
-		guess = min(5000, max(0, source.m_altitude - gps[lowerScanner].m_altitude));
+		guess = std::min(5000.0, std::max(0.0, source.m_altitude - gps[lowerScanner].m_altitude));
 	}
 
 	// ------------------------ HERE FOLLOW THE NEW ITERATION ALGORITHM -------------------
@@ -273,14 +276,14 @@ bool CGeometryCalculator::GetPlumeHeight_Fuzzy(const CGPSData source, const CGPS
 		// Calculate the wind-direction for the current guess of the plume height
 		f1 = GetWindDirection(source, guess,					gps[lowerScanner], compass[lowerScanner], plumeCentre[lowerScanner], coneAngle[lowerScanner], tilt[lowerScanner]);
 		f2 = GetWindDirection(source, guess - heightDifference,	gps[upperScanner], compass[upperScanner], plumeCentre[upperScanner], coneAngle[upperScanner], tilt[upperScanner]);
-		f  = max(f1, f2) - min(f1, f2);
+		f  = std::max(f1, f2) - std::min(f1, f2);
 		if(f > 180.0)
 			f = 360.0 - f;
 
 		// Calculate the wind-direction for a plume height a little bit higher than the current guess of the plume height
 		f1			= GetWindDirection(source, guess + h,					gps[lowerScanner], compass[lowerScanner], plumeCentre[lowerScanner], coneAngle[lowerScanner], tilt[lowerScanner]);
 		f2			= GetWindDirection(source, guess + h - heightDifference,gps[upperScanner], compass[upperScanner], plumeCentre[upperScanner], coneAngle[upperScanner], tilt[upperScanner]);
-		f_plus  = max(f1, f2) - min(f1, f2);
+		f_plus  = std::max(f1, f2) - std::min(f1, f2);
 		if(f_plus > 180.0)
 			f_plus = 360.0 - f_plus;
 
@@ -469,7 +472,7 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 	result.m_plumeAltitudeError *= pow(2.0, timeDifference_Minutes / 30.0);
 
 	// 7c. Remember to add the altitude of the lowest scanner to the plume height to get the total plume altitude
-	result.m_plumeAltitude					+= min(locations[0].m_altitude, locations[1].m_altitude);
+	result.m_plumeAltitude					+= std::min(locations[0].m_altitude, locations[1].m_altitude);
 	double plumeAltitudeRelativeToScanner0	= result.m_plumeAltitude - locations[0].m_altitude;
 
 	// 8. Also store the date the measurements were made and the average-time
@@ -628,8 +631,8 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 		return false;
 
 	// Also try to estimate the error in the plume height measurement
-	double windDirection_plus  = windField.GetWindDirection() + max(windField.GetWindDirectionError(), 5.0);
-	double windDirection_minus = windField.GetWindDirection() - max(windField.GetWindDirectionError(), 5.0);
+	double windDirection_plus  = windField.GetWindDirection() + std::max(windField.GetWindDirectionError(), 5.0);
+	double windDirection_minus = windField.GetWindDirection() - std::max(windField.GetWindDirectionError(), 5.0);
 	
 	// the error in plume height due to the uncertainty in wind direction
 	double plumeHeight_plus_wd  = CGeometryCalculator::GetPlumeHeight(source, windDirection_plus,  scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
