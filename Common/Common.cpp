@@ -3,6 +3,7 @@
 #include "Common.h"
 
 #include <algorithm>
+#include <iostream>
 
 // include the global settings
 #include "../VolcanoInfo.h"
@@ -103,6 +104,7 @@ void UpdateMessage(const novac::CString &message){
     // TODO:
 //	if(pView != NULL)
 //		pView->PostMessage(WM_UPDATE_MESSAGE, (WPARAM)msg, NULL);
+	std::cerr << msg << std::endl;
 }
 
 void ShowMessage(const novac::CString &message){
@@ -115,6 +117,7 @@ void ShowMessage(const novac::CString &message){
     // TODO:
 //	if(pView != NULL)
 //		pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
+
 }
 void ShowMessage(const novac::CString &message,novac::CString connectionID){
 	novac::CString *msg = new novac::CString();
