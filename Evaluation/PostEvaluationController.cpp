@@ -60,7 +60,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 	// ------------------ Read the scan file -----------------------
 	// --- this to make sure that the spectra in the file are ok ---
 	if(SUCCESS != scan->CheckScanFile(&pakFileName)){
-		errorMessage.Format("Could not read recieved pak-file %s. Will not evaulate.", pakFileName);
+		errorMessage.Format("Could not read recieved pak-file %s. Will not evaulate.", (const char*)pakFileName);
 		ShowMessage(errorMessage);
 		delete scan;
 		return 2;
@@ -86,7 +86,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 	//	an old processing...
 	if(g_userSettings.m_fIsContinuation){
 		if(g_continuation.IsPreviouslyIgnored(pakFileName)){
-			errorMessage.Format(" Scan %s has already been evaluated and was ignored. Will proceed to the next scan", pakFileName);
+			errorMessage.Format(" Scan %s has already been evaluated and was ignored. Will proceed to the next scan", (const char*)pakFileName);
 			ShowMessage(errorMessage);
 		
 			delete scan;
@@ -100,7 +100,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 			for(int k = 0; k < 8; ++k){
 				GetArchivingfileName(archivePakFileName, archiveTxtFileName, fitWindowName, pakFileName, modes[k]);
 				if(IsExistingFile(archiveTxtFileName)){
-					errorMessage.Format(" Scan %s has already been evaluated. Will proceed to the next scan", pakFileName);
+					errorMessage.Format(" Scan %s has already been evaluated. Will proceed to the next scan", (const char*)pakFileName);
 					ShowMessage(errorMessage);
 
 					txtFileName->Format(archiveTxtFileName);
@@ -208,12 +208,12 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	string.AppendFormat("\tlong=%.6lf\n",								instrLocation->m_longitude);
 	string.AppendFormat("\talt=%d\n",									instrLocation->m_altitude);
 
-	string.AppendFormat("\tvolcano=%s\n",								instrLocation->m_volcano);
-	string.AppendFormat("\tsite=%s\n",									instrLocation->m_locationName);
+	string.AppendFormat("\tvolcano=%s\n", (const char*)instrLocation->m_volcano);
+	string.AppendFormat("\tsite=%s\n", (const char*)instrLocation->m_locationName);
 //	string.AppendFormat("\tobservatory=%s\n",							m_common.SimplifyString(spectrometer.m_scanner.observatory));
 
-	string.AppendFormat("\tserial=%s\n",								result->GetSerial());
-	string.AppendFormat("\tspectrometer=%s\n",							specModel);
+	string.AppendFormat("\tserial=%s\n", (const char*)result->GetSerial());
+	string.AppendFormat("\tspectrometer=%s\n", (const char*)specModel);
 	string.AppendFormat("\tchannel=%d\n",								window->channel);
 	string.AppendFormat("\tconeangle=%.1lf\n",							instrLocation->m_coneangle);
 	string.AppendFormat("\tinterlacesteps=%d\n",						scan->GetInterlaceSteps());
@@ -274,9 +274,9 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	string.AppendFormat("\twindspeed=%.4lf\n",			windField.GetWindSpeed());
 	string.AppendFormat("\twinddirection=%.4lf\n",		windField.GetWindDirection());
 //	string.AppendFormat("\tplumeheight=%.2lf\n",		windField.GetPlumeHeight());
-	string.AppendFormat("\twindspeedsource=%s\n",		wsSrc);
-	string.AppendFormat("\twinddirectionsource=%s\n",	wdSrc);
-	string.AppendFormat("\tplumeheightsource=%s\n",		phSrc);
+	string.AppendFormat("\twindspeedsource=%s\n",		(const char*)wsSrc);
+	string.AppendFormat("\twinddirectionsource=%s\n",	(const char*)wdSrc);
+	string.AppendFormat("\tplumeheightsource=%s\n",		(const char*)phSrc);
 	if(fabs(instrLocation->m_compass) > 360.0)
 		string.AppendFormat("\tcompasssource=compassreading\n");
 	else
@@ -307,9 +307,9 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	string.AppendFormat("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tcounts_ms\tdelta\tchisquare\texposuretime\tnumspec\t");
 
 	for(itSpecie = 0; itSpecie < window->nRef; ++itSpecie){
-		string.AppendFormat("column(%s)\tcolumnerror(%s)\t",   window->ref[itSpecie].m_specieName, window->ref[itSpecie].m_specieName);
-		string.AppendFormat("shift(%s)\tshifterror(%s)\t",     window->ref[itSpecie].m_specieName, window->ref[itSpecie].m_specieName);
-		string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", window->ref[itSpecie].m_specieName, window->ref[itSpecie].m_specieName);
+		string.AppendFormat("column(%s)\tcolumnerror(%s)\t",   (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
+		string.AppendFormat("shift(%s)\tshifterror(%s)\t",     (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
+		string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
 	}
 	string.AppendFormat("isgoodpoint\toffset\tflag");
 
@@ -405,7 +405,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
-	evalSummaryLog.Format("%s\\%s\\EvaluationSummary_%s.txt", g_userSettings.m_outputDirectory, window->name, result->GetSerial());
+	evalSummaryLog.Format("%s\\%s\\EvaluationSummary_%s.txt", (const char*)g_userSettings.m_outputDirectory, (const char*)window->name, (const char*)result->GetSerial());
 
 	if(!IsExistingFile(evalSummaryLog)){
 		fWriteHeaderLine = true;
@@ -453,7 +453,7 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
-	pakSummaryLog.Format("%s\\PakfileSummary.txt", g_userSettings.m_outputDirectory);
+	pakSummaryLog.Format("%s\\PakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory);
 
 	if(!IsExistingFile(pakSummaryLog)){
 		fWriteHeaderLine = true;
@@ -506,11 +506,11 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	// 0. Make an initial assumption of the file-names
 	int i = 0;
 	while(1){
-		pakFile.Format("%s\\UnknownScans\\%d.pak", g_userSettings.m_outputDirectory, ++i);
+		pakFile.Format("%s\\UnknownScans\\%d.pak", (const char*)g_userSettings.m_outputDirectory, ++i);
 		if(!IsExistingFile(pakFile))
 			break;
 	}
-	txtFile.Format("%s\\UnknownScans\\%d.txt", g_userSettings.m_outputDirectory, i);
+	txtFile.Format("%s\\UnknownScans\\%d.txt", (const char*)g_userSettings.m_outputDirectory, i);
 
 	// 1. Read the first spectrum in the scan
 	if(SUCCESS != reader.ReadSpectrum(temporaryScanFile, 0, tmpSpec))
@@ -528,7 +528,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	}
 
 	// 2. Get the serialNumber of the spectrometer
-	serialNumber.Format("%s", info.m_device);
+	serialNumber.Format("%s", (const char*)info.m_device);
 
 	// 3. Get the time and date when the scan started
 	dateStr.Format("%02d%02d%02d",		info.m_startTime.year % 1000,	info.m_startTime.month, info.m_startTime.day);
@@ -539,13 +539,13 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	// 4. Write the archiving name of the spectrum file
 
 	// 4a. Write the folder name
-	pakFile.Format("%s%s\\%s\\%s\\", g_userSettings.m_outputDirectory, fitWindowName, dateStr2, serialNumber);
-	txtFile.Format("%s", pakFile);
+	pakFile.Format("%s%s\\%s\\%s\\", (const char*)g_userSettings.m_outputDirectory, (const char*)fitWindowName, (const char*)dateStr2, (const char*)serialNumber);
+	txtFile.Format("%s", (const char*)pakFile);
 
 	// 4b. Make sure that the folder exists
 	int ret = CreateDirectoryStructure(pakFile);
 	if(ret){
-		userMessage.Format("Could not create directory for archiving .pak-file: %s", pakFile);
+		userMessage.Format("Could not create directory for archiving .pak-file: %s", (const char*)pakFile);
 		ShowMessage(userMessage);
 		return FAIL;
 	}	
@@ -566,8 +566,8 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	// 4c. Write the name of the archiving file itself
 	if(channel < 128 && channel > MAX_CHANNEL_NUM)
 		channel = channel % 16;
-	pakFile.AppendFormat("%s_%s_%s_%1d_%4s.pak", serialNumber, dateStr, timeStr, channel, modeStr);
-	txtFile.AppendFormat("%s_%s_%s_%1d_%4s.txt", serialNumber, dateStr, timeStr, channel, modeStr);
+	pakFile.AppendFormat("%s_%s_%s_%1d_%4s.pak", (const char*)serialNumber, (const char*)dateStr, (const char*)timeStr, channel, (const char*)modeStr);
+	txtFile.AppendFormat("%s_%s_%s_%1d_%4s.txt", (const char*)serialNumber, (const char*)dateStr, (const char*)timeStr, channel, (const char*)modeStr);
 
 	if(strlen(pakFile) > MAX_PATH)
 		return FAIL;
@@ -634,7 +634,7 @@ int CPostEvaluationController::CheckQualityOfFluxMeasurement(CScanResult *result
 	if(0 == result->CalculateOffset(CMolecule(g_userSettings.m_molecule))){
 		if(0 == result->CalculatePlumeCentre(CMolecule(g_userSettings.m_molecule))){
 			// no plume found!
-			errorMessage.Format(" - Scan %s does not see the plume. Scan ignored.", pakFileName);
+			errorMessage.Format(" - Scan %s does not see the plume. Scan ignored.", (const char*)pakFileName);
 			ShowMessage(errorMessage);
 			return 0;
 		}
@@ -651,7 +651,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 	// Check that the sky-spectrum is ok
 	scan->GetSky(skySpectrum);
 	if(skySpectrum.IsDark()){
-		errorMessage.Format(" - Sky spectrum in scan %s is dark. Will not evaluate scan", scan->GetFileName());
+		errorMessage.Format(" - Sky spectrum in scan %s is dark. Will not evaluate scan", (const char*)scan->GetFileName());
 		ShowMessage(errorMessage);
 		
 		// update the statistics
@@ -662,7 +662,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 
 	if((instrLocation.m_instrumentType == INSTR_GOTHENBURG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_got) ||
 		(instrLocation.m_instrumentType == INSTR_HEIDELBERG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_hei)){
-		errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", scan->GetFileName(), skySpectrum.ExposureTime());
+		errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", (const char*)scan->GetFileName(), skySpectrum.ExposureTime());
 		ShowMessage(errorMessage);
 
 		// update the statistics
@@ -673,7 +673,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 
 	double dynamicRange = skySpectrum.NumSpectra() * CSpectrometerModel::GetMaxIntensity(instrLocation.m_spectrometerModel);
 	if(skySpectrum.MaxValue(fitWindow.fitLow, fitWindow.fitHigh) >= dynamicRange){
-		errorMessage.Format(" - Sky spectrum in scan %s is saturated in fit region. Will not evaluate scan", scan->GetFileName());
+		errorMessage.Format(" - Sky spectrum in scan %s is saturated in fit region. Will not evaluate scan", (const char*)scan->GetFileName());
 		ShowMessage(errorMessage);
 
 		// update the statistics

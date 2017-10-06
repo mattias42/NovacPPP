@@ -185,7 +185,7 @@ void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file){
 		while(pos != m_instrumentStats.end()){
 			CInstrumentStats &instr = (CInstrumentStats &)*(pos++);
 			
-			fprintf(f, "Instrument: %s\n", instr.serial);
+			fprintf(f, "Instrument: %s\n", (const char*)instr.serial);
 			fprintf(f, "\t#Accepted scans: %u\n", instr.acceptedScans);
 			fprintf(f, "\t#Rejected scans:\n");
 			fprintf(f, "\t\t%u due to too long exposure time\n",	instr.tooLongExpTime);

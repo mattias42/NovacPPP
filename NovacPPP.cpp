@@ -19,20 +19,40 @@ extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The setti
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
 
+#undef min
+#undef max
 
-void LoadConfigurations(int argc, char* argv[]);
+// void LoadConfigurations(int argc, char* argv[]);
+void LoadConfigurations();
 void OnBnClickedCalculateFluxes(int selectedVolcano = 0);
 UINT CalculateAllFluxes(void* pParam);
-void ParseCommandLineOptions(int argc, char* argv[]);
-
+// void ParseCommandLineOptions(int argc, char* argv[]);
+void ParseCommandLineOptions(const char* command);
+// int main(int argc, char* argv[]);
+int main(const char* command);
 
 // Main entry point for the application!
-int main(int argc, char* argv[])
+int CALLBACK WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_ HINSTANCE hPrevInstance,
+	_In_ LPSTR     lpCmdLine,
+	_In_ int       nCmdShow
+)
+{
+	auto cmd = GetCommandLine();
+
+	return main(cmd);
+}
+
+int main(const char* command)
 {
 	try
 	{
 		// Read the configuration files
-		LoadConfigurations(argc, argv);
+		LoadConfigurations();
+
+		// Get the options from the command line
+		ParseCommandLineOptions(command);
 
 		// Start calculating the fluxes, this is the old button handler
 		OnBnClickedCalculateFluxes();
@@ -46,7 +66,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-void LoadConfigurations(int argc, char* argv[])
+void LoadConfigurations()
 {
 	// Declaration of variables and objects
 	Common common;
@@ -57,14 +77,14 @@ void LoadConfigurations(int argc, char* argv[])
 
 	//Read configuration from file setup.xml */	
 	common.GetExePath();
-	setupPath.Format("%s\\configuration\\setup.xml", common.m_exePath);
+	setupPath.Format("%s\\configuration\\setup.xml", (const char*)common.m_exePath);
 	if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
 	{
 		throw std::exception("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Read the users options from file processing.xml
-	processingPath.Format("%s\\configuration\\processing.xml", common.m_exePath);
+	processingPath.Format("%s\\configuration\\processing.xml", (const char*)common.m_exePath);
 	if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
 		throw std::exception("Could not read processing.xml. Setup not complete. Please fix and try again");
 	}
@@ -72,17 +92,14 @@ void LoadConfigurations(int argc, char* argv[])
 	// Check if there is a configuration file for every spectrometer serial number
 	bool failed = false;
 	for (int k = 0; k < g_setup.m_instrumentNum; ++k) {
-		evalConfPath.Format("%s\\configuration\\%s.exml", common.m_exePath, g_setup.m_instrument[k].m_serial);
+		evalConfPath.Format("%s\\configuration\\%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
 
 		if (IsExistingFile(evalConfPath))
 			eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
 		else {
-			throw std::exception("Could not find configuration file: " +  evalConfPath);
+			throw std::exception("Could not find configuration file: " + evalConfPath);
 		}
 	}
-
-	// Get the options from the command line
-	ParseCommandLineOptions(argc, argv);
 }
 
 
@@ -123,9 +140,12 @@ void OnBnClickedCalculateFluxes(int selectedVolcano)
 	g_userSettings.m_volcano = selectedVolcano; // this->m_comboAllVolcanoes.GetCurSel();
 
 	// 5. Run
-	std::thread postProcessingThread( CalculateAllFluxes );
-	// CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
-	// Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
+#ifdef _MFC_VER 
+	CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+	Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
+#else
+	std::thread postProcessingThread(CalculateAllFluxes);
+#endif  // _MFC_VER 
 }
 
 
@@ -142,24 +162,24 @@ UINT CalculateAllFluxes(void* pParam) {
 	post.m_exePath.Format(common.m_exePath);
 
 	// set the directory to which we want to copy the settings
-	confCopyDir.Format("%s\\copiedConfiguration\\", g_userSettings.m_outputDirectory);
+	confCopyDir.Format("%s\\copiedConfiguration\\", (const char*)g_userSettings.m_outputDirectory);
 
 	// make sure that the output directory exists
 	if (CreateDirectoryStructure(g_userSettings.m_outputDirectory)) {
-		userMessage.Format("Could not create output directory: %s", g_userSettings.m_outputDirectory);
+		userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
 		ShowMessage(userMessage);
 		ShowMessage("-- Exit post processing --");
 		return 1;
 	}
 	if (CreateDirectoryStructure(confCopyDir)) {
-		userMessage.Format("Could not create directory for copied configuration: %s", confCopyDir);
+		userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
 		ShowMessage(userMessage);
 		ShowMessage("-- Exit post processing --");
 		return 1;
 	}
 	// we want to copy the setup and processing files to the confCopyDir
-	processingOutputFile.Format("%s\\processing.xml", confCopyDir);
-	setupOutputFile.Format("%s\\setup.xml", confCopyDir);
+	processingOutputFile.Format("%s\\processing.xml", (const char*)confCopyDir);
+	setupOutputFile.Format("%s\\setup.xml", (const char*)confCopyDir);
 
 	Common::ArchiveFile(setupOutputFile);
 	Common::ArchiveFile(processingOutputFile);
@@ -204,7 +224,7 @@ UINT CalculateAllFluxes(void* pParam) {
 }
 
 
-void ParseCommandLineOptions(int argc, char* argv[])
+void ParseCommandLineOptions(const char* command)
 {
 	char seps[] = " \t";
 	char *buffer = new char[16384];
@@ -212,13 +232,13 @@ void ParseCommandLineOptions(int argc, char* argv[])
 	novac::CString errorMessage;
 
 	// a local copy of the command line parameters
-	novac::CString commandLine;
-	for (int arg = 1; arg < argc; ++arg)
-	{
-		commandLine = commandLine + " " + novac::CString(argv[arg]);
-	}
+	// novac::CString commandLine;
+	// for (int arg = 1; arg < argc; ++arg)
+	// {
+	// 	commandLine = commandLine + " " + novac::CString(argv[arg]);
+	// }
 	char *szLine = new char[16384];
-	sprintf(szLine, "%s", (const char*)commandLine);
+	sprintf(szLine, "%s", (const char*)command);
 
 	// Go through the received input parameters and set the approprate option
 	novac::CStringTokenizer tokenizer(szLine, seps);
@@ -231,7 +251,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		if (Equals(token, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
 			parameter.Format(token + strlen(FLAG(str_fromDate)));
 			if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
-				errorMessage.Format("Could not parse date: %s", parameter);
+				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}
 			token = tokenizer.NextToken();
@@ -242,7 +262,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		if (Equals(token, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
 			parameter.Format(token + strlen(FLAG(str_toDate)));
 			if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
-				errorMessage.Format("Could not parse date: %s", parameter);
+				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}
 			token = tokenizer.NextToken();
@@ -257,7 +277,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 				g_userSettings.m_volcano = volcano;
 			}
 			else {
-				errorMessage.Format("Could not find volcano: %s", parameter);
+				errorMessage.Format("Could not find volcano: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}
 			token = tokenizer.NextToken();

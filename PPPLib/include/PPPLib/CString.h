@@ -39,6 +39,9 @@ namespace novac
 
 		size_t GetLength() const { return m_data.size(); }
 
+		/** @return 0 if this equals the other string */
+		int Compare(const CString& other) const;
+
 		// --------------------- Formatting -----------------------
 
 		/** Constructs the contents of this string using the common printf formatting. */
@@ -46,6 +49,9 @@ namespace novac
 
 		/** Appends the contents of this string using the common printf formatting. */
 		CString& AppendFormat(const char* format, ...);
+
+		/** Appends the contents of the other string to this. */
+		CString& Append(const CString& other);
 
 		// ---------------------- Extracting substrings -----------------------
 
@@ -100,6 +106,8 @@ namespace novac
 
 		// explicit conversion to std::string
 		std::string ToStdString() const { return std::string{m_data}; }
+
+		const char* c_str() const { return m_data.c_str(); }
 
 	private:
 		std::string m_data;

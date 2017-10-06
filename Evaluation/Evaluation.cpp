@@ -203,7 +203,7 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 			// finally display the fit results for each reference spectrum including their appropriate error
 			for(i = 0; i < m_window.nRef; i++)
 			{
-				m_result.m_ref[i].m_specieName.Format("%s", m_window.ref[i].m_specieName);
+				m_result.m_ref[i].m_specieName.Format("%s", (const char*)m_window.ref[i].m_specieName);
 
 				m_result.m_ref[i].m_column        = (double)ref[i]->GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
 				m_result.m_ref[i].m_columnError   = (double)ref[i]->GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);

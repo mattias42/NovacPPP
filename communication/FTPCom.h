@@ -1,6 +1,6 @@
 #pragma once
 
-// #include <afxinet.h>
+#include <afxinet.h>
 // #include <afxtempl.h>
 
 #include "../FileInfo.h"

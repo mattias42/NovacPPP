@@ -38,19 +38,19 @@ public:
 
 	/** Retrieves the name of the volcano with the given index */
 	void GetVolcanoName(unsigned int index, novac::CString &name);
-	const novac::CString &GetVolcanoName(unsigned int index);
+	const novac::CString GetVolcanoName(unsigned int index);
 
 	/** Retrieves the code of the volcano with the given index */
 	void GetVolcanoCode(unsigned int index, novac::CString &code);
-	const novac::CString &GetVolcanoCode(unsigned int index);
+	const novac::CString GetVolcanoCode(unsigned int index);
 
 	/** Retrieves the location of the volcano */
 	void GetVolcanoLocation(unsigned int index, novac::CString &location);
-	const novac::CString &GetVolcanoLocation(unsigned int index);
+	const novac::CString GetVolcanoLocation(unsigned int index);
 
 	/** Retrieves the simplified name of the volcano with the given index */
 	void GetSimpleVolcanoName(unsigned int index, novac::CString &name);
-	const novac::CString &GetSimpleVolcanoName(unsigned int index);
+	const novac::CString GetSimpleVolcanoName(unsigned int index);
 
 	/** Retrieves the volcano index from a given name (or code) */
 	int GetVolcanoIndex(const novac::CString &name);

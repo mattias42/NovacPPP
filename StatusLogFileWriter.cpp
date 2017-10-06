@@ -78,7 +78,7 @@ void CStatusLogFileWriter::OnWriteMessage(WPARAM wParam, LPARAM lParam){
 	// If we still have space in the databuffer then just print the 
 	//	contents of the string to the buffer and return
 	if(m_bufferSize + newStringLength + 2 < BUFFERSIZE){
-		sprintf(m_dataBuffer + m_bufferSize, "%s\n", *msg);
+		sprintf(m_dataBuffer + m_bufferSize, "%s\n", (const char*)*msg);
 		m_bufferSize += newStringLength + 1;
 		delete msg;
 		return;
@@ -93,11 +93,11 @@ void CStatusLogFileWriter::OnWriteMessage(WPARAM wParam, LPARAM lParam){
 
 
 void CStatusLogFileWriter::OnTimer(WPARAM nIDEvent, LPARAM lp){
-	CString logFile;
+	novac::CString logFile;
 
 	if(m_nTimerCalls == 0){
 		// If the log-file already exists, then move it..
-		logFile.Format("%s\\StatusLog.txt",g_userSettings.m_outputDirectory);
+		logFile.Format("%s\\StatusLog.txt", (const char*)g_userSettings.m_outputDirectory);
 		if(IsExistingFile(logFile)){
 			Common::ArchiveFile(logFile);
 		}
@@ -112,15 +112,15 @@ void CStatusLogFileWriter::OnTimer(WPARAM nIDEvent, LPARAM lp){
 
 /** Flushes the buffer to disk */
 void CStatusLogFileWriter::FlushBuffer(const CString *msg){
-	CString logFile,dateStr,logPath;
+	novac::CString logFile,dateStr,logPath;
 
 	// the directory where to put the log-file
 	Common::GetDateText(dateStr);
-	logPath.Format("%s\\", g_userSettings.m_outputDirectory);
+	logPath.Format("%s\\", (const char*)g_userSettings.m_outputDirectory);
 
 	// make sure that the directory that should contain the log-file exists
 	CreateDirectory(logPath,NULL);
-	logFile.Format("%s\\StatusLog.txt",logPath);
+	logFile.Format("%s\\StatusLog.txt", (const char*)logPath);
 	
 	// Open the file and write the data we have
 	FILE *f = fopen(logFile, "a+");
@@ -130,7 +130,7 @@ void CStatusLogFileWriter::FlushBuffer(const CString *msg){
 		
 		// the the contents of the new string
 		if(msg != NULL){
-			fprintf(f, "%s\n", *msg);
+			fprintf(f, "%s\n", (const char*)*msg);
 		}
 	
 		// always remember to close the file

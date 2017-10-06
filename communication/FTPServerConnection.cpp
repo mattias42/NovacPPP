@@ -74,12 +74,12 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	directory.Format(serverDir.Right(serverDir.GetLength() - indexOfSlash[1] - 1));
 	s_server.Format(subString.Right(subString.GetLength() - indexOfSlash[0] - 1));
 	if(nSlashesFound == 1){
-		directory.Format("%s/", g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
+		directory.Format("%s/", (const char*)g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
 	}
 	
 	// Make sure thath the temporary directory exists
 	if(CreateDirectoryStructure(g_userSettings.m_tempDirectory)){
-		userMessage.Format("Could not create temp directory: %s", g_userSettings.m_tempDirectory);
+		userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
 		ShowMessage(userMessage);
 		return 1;
 	}
@@ -200,9 +200,9 @@ UINT DownloadDataFromDir(LPVOID pParam){
 			if(FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileInfo.m_fileName, start, serial, channel, mode)){
 				if(start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start){
 					// the creation date is between the start and the stop dates. Download the file
-					localFileName.Format("%s\\%s", g_userSettings.m_tempDirectory, fileInfo.m_fileName);
+					localFileName.Format("%s\\%s", (const char*)g_userSettings.m_tempDirectory, (const char*)fileInfo.m_fileName);
 					if(IsExistingFile(localFileName)){
-						userMessage.Format("File %s is already downloaded", localFileName);
+						userMessage.Format("File %s is already downloaded", (const char*)localFileName);
 						ShowMessage(userMessage);
 						
 						AddFileToList(localFileName);
@@ -276,7 +276,7 @@ int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDi
 	directory.Format(serverDir.Right(serverDir.GetLength() - indexOfSlash[1] - 1));
 	server.Format(subString.Right(subString.GetLength() - indexOfSlash[0] - 1));
 	if(nSlashesFound == 1){
-		directory.Format("%s/", g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
+		directory.Format("%s/", (const char*)g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
 	}
 	
 	// create a new connection
@@ -351,7 +351,7 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 
 	// Download the file
 	if(0 == ftp->DownloadAFile(directory, localFileName)){
-		errorMessage.Format("Failed to download remote file %s from FTP server", remoteFileName);
+		errorMessage.Format("Failed to download remote file %s from FTP server", (const char*)remoteFileName);
 		ShowMessage(errorMessage);
 	}
 	
@@ -386,7 +386,7 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 	}
 
 	// Enter the volcano's directory
-	volcanoName.Format("%s", g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
+	volcanoName.Format("%s", (const char*)g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
 	ftp->EnterFolder(volcanoName);
 
 	// Enter the upload-directory
@@ -411,7 +411,7 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 		Common::GetFileName(remoteFile);
 	
 		if(0 == ftp->UploadFile(localFile, remoteFile)){
-			errorMessage.Format("Failed to upload local file %s to FTP server", localFile);
+			errorMessage.Format("Failed to upload local file %s to FTP server", (const char*)localFile);
 			ShowMessage(errorMessage);
 		}
 	}

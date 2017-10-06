@@ -235,25 +235,6 @@ public:
 	    @param fileName - the complete path of the file */
 	static void GetDirectory(novac::CString &fileName);
 
-	/** Check if a process is running.
-	    @param exeName - the name of the executable (e.g. "txzm.exe") 
-	    @param pid - the function will search for processes with a 
-	      process ID higher than 'pid' 
-	    @return - processID of the found process, -1 if no process is found */
-	static int CheckProcessExistance(novac::CString& exeName, int pid = -1);
-
-	/** Get all Process-ID's running with a given executable-name
-	    @param exeName - the name of the executable (e.g. "txzm.exe") 
-	    @param startPid - the function will search for processes with a 
-	      process ID higher than 'pid' 
-	    @param pIDs[1024] - will on successful return be filled with
-	      all pID's found (first empty item will be -1)
-	    @return - number of processID found */
-	static int GetAllProcessIDs(novac::CString& exeName, int pIDs[1024], int startPid = -1);
-	
-		/** Kill a process with the supplied processID.
-	    @return TRUE if the process was killed.*/
-	BOOL WINAPI KillProcess(IN DWORD dwProcessId);
 
 	/** This function sets the name of a given thread. The name
 		is useful for debugging purposes. */
@@ -403,9 +384,6 @@ public:
 	// --------------------------------------------------------------------
 	// --------------------------- STRINGS --------------------------------
 	// --------------------------------------------------------------------
-
-	/** This reformats an UINT from the string table into a CString in a convenient way */
-	const novac::CString &GetString(const UINT uID);
 
 	/** This function takes a string and simplifies it so that it is more easily readable 
 			by a machine. changes made are: 

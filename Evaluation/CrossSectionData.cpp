@@ -113,7 +113,7 @@ int CCrossSectionData::ReadCrossSectionFile(const novac::CString &fileName){
 	if(!fileRef.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile))
 	{
 		novac::CString str;
-		str.Format("ERROR: Cannot open reference file: %s", fileName);
+		str.Format("ERROR: Cannot open reference file: %s", (const char*)fileName);
 		ShowMessage(str);
 		return 1; /* Failed to open the file */
 	}

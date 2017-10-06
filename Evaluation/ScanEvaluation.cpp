@@ -173,7 +173,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 				break;
 			}else{
 				CString errMsg;
-				errMsg.Format("Faulty spectrum found in %s", scan->GetFileName());
+				errMsg.Format("Faulty spectrum found in %s", (const char*)scan->GetFileName());
 				switch(scan->m_lastError){
 					case SpectrumIO::CSpectrumIO::ERROR_CHECKSUM_MISMATCH:
 						errMsg.AppendFormat(", Checksum mismatch. Spectrum ignored"); break;
@@ -224,7 +224,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
 		// e. Check if this spectrum is worth evaluating
 		if(Ignore(current, dark, m_fitLow, m_fitHigh)){
-			message.Format("  - Ignoring spectrum %d in scan %s.", current.ScanIndex(), scan->GetFileName());
+			message.Format("  - Ignoring spectrum %d in scan %s.", current.ScanIndex(), (const char*)scan->GetFileName());
 			ShowMessage(message);
 			continue;
 		}
@@ -239,7 +239,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		// e. Evaluate the spectrum
 		if(eval->Evaluate(current)){
 			message.Format("Failed to evaluate spectrum %d out of %d in scan %s from spectrometer %s.",
-				current.ScanIndex(), current.SpectraPerScan(), scan->GetFileName(), current.m_info.m_device);
+				current.ScanIndex(), current.SpectraPerScan(), (const char*)scan->GetFileName(), (const char*)current.m_info.m_device);
 			ShowMessage(message);
 			success = false;
 		}
@@ -278,7 +278,7 @@ RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const 
 	//		as the second spectrum in the scan.
 	if(darkSettings == NULL || darkSettings->m_darkSpecOption == MEASURE || darkSettings->m_darkSpecOption == MODEL_SOMETIMES){
 		if(0 != scan->GetDark(dark)){
-			message.Format("Could not read dark-spectrum from scan %s", scan->GetFileName());
+			message.Format("Could not read dark-spectrum from scan %s", (const char*)scan->GetFileName());
 			ShowMessage(message);
 			return FAIL;
 		}

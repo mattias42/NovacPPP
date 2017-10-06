@@ -386,8 +386,8 @@ bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, int 
 	int k; // iterator
 
 	// 1. Read the evaluation-logs
-	reader[0].m_evaluationLog.Format("%s", evalLog1);
-	reader[1].m_evaluationLog.Format("%s", evalLog2);
+	reader[0].m_evaluationLog.Format("%s", (const char*)evalLog1);
+	reader[1].m_evaluationLog.Format("%s", (const char*)evalLog2);
 	if(SUCCESS != reader[0].ReadEvaluationLog())
 		return false;
 	if(SUCCESS != reader[1].ReadEvaluationLog())
@@ -611,7 +611,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	source.m_altitude  = (long)g_volcanoes.GetPeakAltitude(volcanoIndex1);
 
 	// 3. Read the evaluation-log
-	reader.m_evaluationLog.Format("%s", evalLog);
+	reader.m_evaluationLog.Format("%s", (const char*)evalLog);
 	if(SUCCESS != reader.ReadEvaluationLog())
 		return false;
 
@@ -647,7 +647,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	
 	#ifdef _DEBUG
 		novac::CString fileName;
-		fileName.Format("%s\\debugGeometrySingleInstr.txt", g_userSettings.m_outputDirectory);
+		fileName.Format("%s\\debugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
 			fprintf(f, "%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], plumeHeight, plumeHeightErr);
@@ -693,7 +693,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 	source.m_altitude  = (long)g_volcanoes.GetPeakAltitude(volcanoIndex1);
 
 	// 3. Read the evaluation-log
-	reader.m_evaluationLog.Format("%s", evalLog);
+	reader.m_evaluationLog.Format("%s", (const char*)evalLog);
 	if(SUCCESS != reader.ReadEvaluationLog())
 		return false;
 
@@ -731,7 +731,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 	
 	#ifdef _DEBUG
 		novac::CString fileName;
-		fileName.Format("%s\\debugGeometrySingleInstr.txt", g_userSettings.m_outputDirectory);
+		fileName.Format("%s\\debugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
 			fprintf(f, "wd\t%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], windDirection, windDirectionErr);

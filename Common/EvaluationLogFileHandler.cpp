@@ -266,7 +266,7 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 
 	m_specieNum = m_evResult.m_speciesNum;
 	for(int k = 0; k < m_specieNum; ++k)
-		m_specie[k].Format("%s", m_evResult.m_ref[k].m_specieName);
+		m_specie[k].Format("%s", (const char*)m_evResult.m_ref[k].m_specieName);
 
 	return;
 }
@@ -961,15 +961,15 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		string.AppendFormat("\tlong=%.6lf\n",								scan.GetLongitude());
 		string.AppendFormat("\talt=%ld\n",									scan.GetAltitude());
 
-		string.AppendFormat("\tvolcano=%s\n",								m_specInfo.m_volcano);
-		string.AppendFormat("\tsite=%s\n",									m_specInfo.m_site);
-		string.AppendFormat("\tobservatory=%s\n",						m_specInfo.m_observatory);
+		string.AppendFormat("\tvolcano=%s\n", (const char*)m_specInfo.m_volcano);
+		string.AppendFormat("\tsite=%s\n", (const char*)m_specInfo.m_site);
+		string.AppendFormat("\tobservatory=%s\n", (const char*)m_specInfo.m_observatory);
 
-		string.AppendFormat("\tserial=%s\n",								scan.GetSerial());
+		string.AppendFormat("\tserial=%s\n", (const char*)scan.GetSerial());
 
 		if(SUCCESS != CSpectrometerModel::ToString(m_specInfo.m_specModel, specModel))
 			specModel.Format("S2000");
-		string.AppendFormat("\tspectrometer=%s\n", specModel.MakeLower());
+		string.AppendFormat("\tspectrometer=%s\n", (const char*)specModel.MakeLower());
 
 		string.AppendFormat("\tchannel=%d\n",							m_specInfo.m_channel);
 		string.AppendFormat("\tconeangle=%.1lf\n",				scan.GetConeAngle());
@@ -1016,9 +1016,9 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		string.AppendFormat("\twindspeed=%.4lf\n",				wind.GetWindSpeed());
 		string.AppendFormat("\twinddirection=%.4lf\n",		wind.GetWindDirection());
 //		string.AppendFormat("\tplumeheight=%.2lf\n",			wind.GetPlumeHeight());
-		string.AppendFormat("\twindspeedsource=%s\n",			wsSrc);
-		string.AppendFormat("\twinddirectionsource=%s\n",	wdSrc);
-		string.AppendFormat("\tplumeheightsource=%s\n",		phSrc);
+		string.AppendFormat("\twindspeedsource=%s\n", (const char*)wsSrc);
+		string.AppendFormat("\twinddirectionsource=%s\n", (const char*)wdSrc);
+		string.AppendFormat("\tplumeheightsource=%s\n", (const char*)phSrc);
 		//if(fabs(spectrometer.m_scanner.compass) > 360.0)
 		//	string.AppendFormat("\tcompasssource=compassreading\n");
 		//else
@@ -1035,10 +1035,10 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		string.AppendFormat("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tdelta\tchisquare\texposuretime\tnumspec\t");
 
 		for(int itSpecie = 0; itSpecie < scan.GetSpecieNum(0); ++itSpecie){
-			specieName.Format("%s", scan.GetSpecieName(0, itSpecie));
-			string.AppendFormat("column(%s)\tcolumnerror(%s)\t",		specieName, specieName);
-			string.AppendFormat("shift(%s)\tshifterror(%s)\t",			specieName, specieName);
-			string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t",	specieName, specieName);
+			specieName.Format("%s", (const char*)scan.GetSpecieName(0, itSpecie));
+			string.AppendFormat("column(%s)\tcolumnerror(%s)\t", (const char*)specieName, (const char*)specieName);
+			string.AppendFormat("shift(%s)\tshifterror(%s)\t", (const char*)specieName, (const char*)specieName);
+			string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", (const char*)specieName, (const char*)specieName);
 		}
 		string.AppendFormat("isgoodpoint\toffset\tflag");
 		string.AppendFormat("\n<spectraldata>\n");
@@ -1088,7 +1088,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
 	string.AppendFormat("%02d:%02d:%02d\t", info->m_stopTime.hour, info->m_stopTime.minute, info->m_stopTime.second);
 
 	// 5 The name of the spectrum
-	string.AppendFormat("%s\t", common.SimplifyString(info->m_name));
+	string.AppendFormat("%s\t", (const char*)common.SimplifyString(info->m_name));
 
 	// 6. The (maximum) saturation ratio of the whole spectrum,
 	//			the (maximum) saturation ratio in the fit-region

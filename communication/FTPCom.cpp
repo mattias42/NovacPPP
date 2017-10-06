@@ -27,7 +27,7 @@ int CFTPCom::Connect(novac::CString siteName, novac::CString userName, novac::CS
 	novac::CString strServer;
 	novac::CString strObject;
 	novac::CString urlAddress = novac::CString("ftp://") + siteName;
-	m_FTPSite.Format("%s", siteName);
+	m_FTPSite.Format("%s", (const char*)siteName);
 
 	// If already connected, then re-connect
 	if (m_FtpConnection != NULL)
@@ -35,11 +35,13 @@ int CFTPCom::Connect(novac::CString siteName, novac::CString userName, novac::CS
 	delete m_FtpConnection;
 	m_FtpConnection = NULL;
 
-	if (!AfxParseURL(siteName, dwServiceType, (novac::CString)siteName, strObject, port))
+	CString c_siteName((const char*)siteName);
+	CString c_strObject((const char*)strObject);
+	if (!AfxParseURL(siteName, dwServiceType, c_siteName, c_strObject, port))
 	{
 		// try adding the "ftp://" protocol		
 
-		if (!AfxParseURL(urlAddress, dwServiceType, (novac::CString)siteName, strObject, port))
+		if (!AfxParseURL(urlAddress, dwServiceType, c_siteName, c_strObject, port))
 		{
 			m_ErrorMsg = "Can not parse  ftp address";
 			ShowMessage(m_ErrorMsg);
@@ -71,7 +73,7 @@ int CFTPCom::Connect(novac::CString siteName, novac::CString userName, novac::CS
 			
 				m_FtpConnection = m_InternetSession->GetFtpConnection(siteName,
 											userName,password,21,mode);
-				m_ErrorMsg.Format("CONNECTED to FTP server: %s", siteName); 
+				m_ErrorMsg.Format("CONNECTED to FTP server: %s", (const char*)siteName);
 				ShowMessage(m_ErrorMsg);
 				return 1;
 			}
@@ -81,7 +83,7 @@ int CFTPCom::Connect(novac::CString siteName, novac::CString userName, novac::CS
 			TCHAR szErr[255];
 			if (pEx->GetErrorMessage(szErr, 255))
 			{
-				m_ErrorMsg.Format("FTP error from connecting %s: %s", m_FTPSite, szErr);
+				m_ErrorMsg.Format("FTP error from connecting %s: %s", (const char*)m_FTPSite, (const char*)szErr);
 				ShowMessage(m_ErrorMsg);
 			}
 			else
@@ -138,7 +140,7 @@ BOOL CFTPCom::DownloadAFile(novac::CString remoteFile, novac::CString fileFullNa
 		return FALSE;
 	}
 
-	msg.Format("Trying to download %s", fileFullName);
+	msg.Format("Trying to download %s", (const char*)fileFullName);
 	ShowMessage(msg);
 
 	try
@@ -150,7 +152,7 @@ BOOL CFTPCom::DownloadAFile(novac::CString remoteFile, novac::CString fileFullNa
 			int ftpError = GetLastError();
 			if(ftpError != 0)
 			{
-				msg.Format("FTP error happened when downloading %s from %s: %d", fileFullName,m_FTPSite,ftpError);
+				msg.Format("FTP error happened when downloading %s from %s: %d", (const char*)fileFullName, (const char*)m_FTPSite, ftpError);
 				ShowMessage(msg);
 				DWORD code;
 				DWORD size_needed = 0;
@@ -162,7 +164,7 @@ BOOL CFTPCom::DownloadAFile(novac::CString remoteFile, novac::CString fileFullNa
 			}
 		}else{
 			// SUCCESS!!
-			msg.Format("Finish downloading %s", fileFullName);
+			msg.Format("Finish downloading %s", (const char*)fileFullName);
 			ShowMessage(msg);
 			return result;
 		}
@@ -173,7 +175,7 @@ BOOL CFTPCom::DownloadAFile(novac::CString remoteFile, novac::CString fileFullNa
 		TCHAR szErr[255];
 		if (pEx->GetErrorMessage(szErr, 255))
 		{
-			m_ErrorMsg.Format("FTP error happened when downloading %s from %s: %s", fileFullName,m_FTPSite,szErr);
+			m_ErrorMsg.Format("FTP error happened when downloading %s from %s: %s", (const char*)fileFullName, (const char*)m_FTPSite, szErr);
 			ShowMessage(m_ErrorMsg);
 		}
 		else
@@ -212,7 +214,7 @@ int CFTPCom::UploadFile(novac::CString localFile, novac::CString remoteFile)
 		TCHAR szErr[255];
 		if (pEx->GetErrorMessage(szErr, 255))
 		{
-			m_ErrorMsg.Format("FTP error happened when uploading %s to %s: %s", localFile,m_FTPSite,szErr);
+			m_ErrorMsg.Format("FTP error happened when uploading %s to %s: %s", (const char*)localFile, (const char*)m_FTPSite, (const char*)szErr);
 			ShowMessage(m_ErrorMsg);
 		}
 		else
@@ -294,22 +296,25 @@ BOOL CFTPCom::EnterFolder(const novac::CString& folder)
 		return FALSE;
 
 	// Get the current directory, return 0 if fail...
-	if(0 == m_FtpConnection->GetCurrentDirectory(strDir))
+	CString c_strDir;
+	if(0 == m_FtpConnection->GetCurrentDirectory(c_strDir))
 		return FALSE;
 
+	strDir = novac::CString(c_strDir);
+
 	// The response we want to have...
-	strFolder.Format("/%s",folder);
+	strFolder.Format("/%s", (const char*)folder);
 
 	// Compare if the returned string is the same as what we want...
 	if(Equals(strDir, strFolder))
 	{
-		msg.Format("Get into folder %s", folder);
+		msg.Format("Get into folder %s", (const char*)folder);
 		ShowMessage(msg);
 		return TRUE;
 	}
 	else
 	{
-		msg.Format("Can not get into folder %s", folder);
+		msg.Format("Can not get into folder %s", (const char*)folder);
 		ShowMessage(msg);
 		return FALSE;
 	}
@@ -339,7 +344,7 @@ void CFTPCom::ReadResponse(CInternetFile* file)
 		if (rd > 0)
 		{
 			str.Format("%s",readBuf);
-			restStr.Append(str);			
+			restStr.Append(str);
 		}
 	} while (rd > 0);
 }

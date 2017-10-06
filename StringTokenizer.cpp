@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <cassert>
 
+#undef min
+#undef max
+
 CStringTokenizer::CStringTokenizer(void)
 {
 	m_stringToInterpret = nullptr;

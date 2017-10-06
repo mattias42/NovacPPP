@@ -36,7 +36,7 @@
 
 // MFC Replacements, copy-paste from https://msdn.microsoft.com/en-us/library/aa383751(VS.85).aspx
 #define CONST const
-typedef unsigned int UINT; 
+typedef unsigned int UINT;
 typedef unsigned long DWORD;
 typedef DWORD LCID;
 typedef int BOOL;
@@ -58,12 +58,12 @@ typedef unsigned char BYTE;
 
 
 // MFC headers, commented out to remove MFC dependency
-// #include <afxwin.h>         // MFC core and standard components
-// #include <afxext.h>         // MFC extensions
-// #include <afxdisp.h>        // MFC Automation classes
-// 
-// #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
-// #ifndef _AFX_NO_AFXCMN_SUPPORT
-// #include <afxcmn.h>			// MFC support for Windows Common Controls
-// #endif // _AFX_NO_AFXCMN_SUPPORT
-// #include <afxdlgs.h>
+#include <afxwin.h>         // MFC core and standard components
+#include <afxext.h>         // MFC extensions
+#include <afxdisp.h>        // MFC Automation classes
+
+#include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
+#ifndef _AFX_NO_AFXCMN_SUPPORT
+#include <afxcmn.h>			// MFC support for Windows Common Controls
+#endif // _AFX_NO_AFXCMN_SUPPORT
+#include <afxdlgs.h>

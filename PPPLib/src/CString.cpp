@@ -71,6 +71,11 @@ namespace novac
 		return *this;
 	}
 
+	CString& CString::Append(const CString& other)
+	{
+		this->m_data = this->m_data + other.m_data;
+		return *this;
+	}
 
 	CString CString::Left(int nChars) const
 	{
@@ -283,5 +288,10 @@ namespace novac
 		{
 			return m_data.at(index);
 		}
+	}
+
+	int CString::Compare(const CString& other) const
+	{
+		return m_data.compare(other.m_data);
 	}
 }

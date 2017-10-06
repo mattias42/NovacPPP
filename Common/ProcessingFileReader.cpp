@@ -6,6 +6,9 @@
 
 extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
 
+#undef min
+#undef max
+
 using namespace FileHandler;
 
 CProcessingFileReader::CProcessingFileReader(void)

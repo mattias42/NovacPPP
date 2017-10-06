@@ -6,6 +6,9 @@
 #include <cstdarg>
 #include <cassert>
 
+#undef min
+#undef max
+
 CSpectrum::CSpectrum(void)
 {
   // reset everything 

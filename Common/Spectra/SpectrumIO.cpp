@@ -2,6 +2,9 @@
 #include "spectrumio.h"
 #include <algorithm>
 
+#undef min
+#undef max
+
 using namespace SpectrumIO;
 
 CSpectrumIO::CSpectrumIO(void)
@@ -17,13 +20,11 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName){
 	novac::CString errorMessage; // a string used for error messages
 	unsigned long specNum = 0;
 	int headerSize;
-
-	unsigned short *p = NULL;
 	
 	FILE *f = fopen(fileName, "rb");
 
 	if(f == NULL){
-		errorMessage.Format("Could not open spectrum file: %s", fileName);
+		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
 		ShowMessage(errorMessage);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return(1);
@@ -74,11 +75,10 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 	unsigned long specNum = 0;
 	int headerSize, nameIndex;
 
-	unsigned short *p = NULL;
 	FILE *f = fopen(fileName, "rb");
 
 	if(f == NULL){
-		errorMessage.Format("Could not open spectrum file: %s", fileName);
+		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
 		ShowMessage(errorMessage);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return(1);
@@ -155,7 +155,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 	FILE *f = fopen(fileName, "rb");
 
 	if(f == NULL){
-		errorMessage.Format("Could not open spectrum file: %s", fileName);
+		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
 		ShowMessage(errorMessage);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return FAIL;
@@ -209,7 +209,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 
 			if(fread(buffer,1,MKZY.size,f) < MKZY.size) //read compressed info
 			{
-				errorMessage.Format("Error EOF! in %s", fileName);
+				errorMessage.Format("Error EOF! in %s", (const char*)fileName);
 				ShowMessage(errorMessage);
 				fclose(f);
 				m_lastError = ERROR_EOF;

@@ -4,6 +4,7 @@
 #include "..\Common\Common.h"
 #include <PPPLib/CStdioFile.h>
 #include <time.h>
+#include "Mswsock.h"
 
 using namespace Communication;
 
@@ -24,7 +25,7 @@ bool CFTPSocket::Login(const novac::CString ftpServerIP, novac::CString userName
 	m_serverParam.userName = userName;
 	m_serverParam.password = pwd;
 
-	m_msg.Format("%s is not accessible, check the connection", ftpServerIP);
+	m_msg.Format("%s is not accessible, check the connection", (const char*)ftpServerIP);
 	if (!Connect(m_controlSocket, m_serverParam.m_serverIP, ftpPort))
 	{
 		ShowMessage(m_msg);
@@ -34,7 +35,7 @@ bool CFTPSocket::Login(const novac::CString ftpServerIP, novac::CString userName
 	SendCommand("PASS", pwd);
 	if (ReadResponse() == 1)
 	{
-		m_msg.Format("%s is connected", ftpServerIP);
+		m_msg.Format("%s is connected", (const char*)ftpServerIP);
 		ShowMessage(m_msg);
 		return true;
 	}
@@ -54,7 +55,7 @@ void CFTPSocket::GetSysType(novac::CString& type)
 {
 	SendCommand("SYST", "");
 	if (ReadResponse() == 1)
-		type.Format("%s", m_serverMsg);
+		type.Format("%s", (const char*)m_serverMsg);
 
 }
 bool CFTPSocket::EnterFolder(novac::CString& folder)
@@ -112,7 +113,7 @@ bool CFTPSocket::EnterPassiveMode()
 		// Connect to the server
 		if (!Connect(m_dataSocket, m_serverParam.m_serverIP, m_serverParam.m_serverDataPort))
 		{
-			m_msg.Format("can not connect to server %s:%d,server msg:%s", m_serverParam.m_serverIP, m_serverParam.m_serverDataPort, m_serverMsg);
+			m_msg.Format("can not connect to server %s:%d,server msg:%s", (const char*)m_serverParam.m_serverIP, m_serverParam.m_serverDataPort, (const char*)m_serverMsg);
 
 			ShowMessage(m_msg);
 			m_serverParam.m_serverDataPort = 0;
@@ -204,12 +205,12 @@ bool CFTPSocket::UploadFile(novac::CString fileLocalPath)
 	result = SendFileToServer(fileLocalPath);
 	if (result)
 	{
-		m_msg.Format("%s has been uploaded to %s", fileName, m_serverParam.m_serverIP);
+		m_msg.Format("%s has been uploaded to %s", (const char*)fileName, (const char*)m_serverParam.m_serverIP);
 		ShowMessage(m_msg);
 	}
 	else
 	{
-		m_msg.Format("%s couldn't be uploaded to %s", fileName, m_serverParam.m_serverIP);
+		m_msg.Format("%s couldn't be uploaded to %s", (const char*)fileName, (const char*)m_serverParam.m_serverIP);
 		ShowMessage(m_msg);
 	}
 	return result;
@@ -229,9 +230,9 @@ int CFTPSocket::SendCommand(novac::CString command, novac::CString commandText)
 	char buf[100];
 	Sleep(100); // Added 2008.06.30 to work with the Axis computer
 	if (commandText.GetLength() == 0)
-		wsprintf(buf, "%s\r\n", command);
+		wsprintf(buf, "%s\r\n", (const char*)command);
 	else
-		wsprintf(buf, "%s %s\r\n", command, commandText);
+		wsprintf(buf, "%s %s\r\n", (const char*)command, (const char*)commandText);
 	int result = send(m_controlSocket, buf, strlen(buf), 0);
 	if (result == SOCKET_ERROR)
 	{
@@ -325,7 +326,7 @@ bool CFTPSocket::ReadData()
 //set the name for m_listFileName
 void CFTPSocket::SetLogFileName(const novac::CString fileName)
 {
-	m_listFileName.Format("%s", fileName);
+	m_listFileName.Format("%s", (const char*)fileName);
 }
 //find a file in ftp server
 bool CFTPSocket::FindFile(novac::CString fileName)
@@ -339,10 +340,10 @@ bool CFTPSocket::FindFile(novac::CString fileName)
 
 	novac::CStdioFile listFile;
 	novac::CFileException fileException;
-	listFileName.Format("%s", m_listFileName);
+	listFileName.Format("%s", (const char*)m_listFileName);
 	if (!listFile.Open(listFileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &fileException))
 	{
-		m_msg.Format("Can not open %s", listFileName);
+		m_msg.Format("Can not open %s", (const char*)listFileName);
 		ShowMessage(m_msg);
 		return false;
 	}
@@ -489,7 +490,7 @@ int CFTPSocket::CloseASocket(SOCKET sock)
 	try
 	{
 
-		ret = WSAAsyncSelect(sock, nullptr, nullptr, FD_CLOSE);
+		ret = WSAAsyncSelect(sock, NULL, NULL, FD_CLOSE);
 
 		if (ret == 0)
 		{
@@ -546,7 +547,7 @@ int CFTPSocket::GetPortNumber()
 	portNumber = serverIPPort[4] * 256 + serverIPPort[5];
 
 	if (portNumber < 0 || portNumber > 65536) {
-		str.Format("Recieved illegal port-number; %s", m_serverMsg);
+		str.Format("Recieved illegal port-number; %s", (const char*)m_serverMsg);
 		ShowMessage(str);
 	}
 
@@ -708,7 +709,7 @@ bool CFTPSocket::OpenFileHandle(novac::CString& fileName)
 
 	if (m_hDownloadedFile == INVALID_HANDLE_VALUE)
 	{
-		m_msg.Format("Can not open file %s", fileName);
+		m_msg.Format("Can not open file %s", (const char*)fileName);
 		ShowMessage(m_msg);   // process error 
 		return false;
 	}
@@ -763,7 +764,7 @@ bool CFTPSocket::GetCurrentFTPDirectory(novac::CString& curDirectory)
 		directoryLength = curDirectory.GetLength();
 		if (directoryLength == msgLength)
 			returnFlag = false;
-		m_msg.Format("Current directory is %s", curDirectory);
+		m_msg.Format("Current directory is %s", (const char*)curDirectory);
 		ShowMessage(m_msg);
 	}
 	return returnFlag;

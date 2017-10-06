@@ -809,7 +809,7 @@ bool CScanResult::IsDirectSunMeasurement() const{
 	// It is here assumed that the measurement is a direct-sun measurment
 	//	if there is at least 1 spectrum with the name 'direct_sun'
 	for(unsigned int k = 5; k < m_specNum; ++k){
-		novac::CString &name = GetName(k);
+		novac::CString name = GetName(k);
 		if(Equals(name, "direct_sun"))
 			return true;
 	}
@@ -824,7 +824,7 @@ bool CScanResult::IsLunarMeasurement() const{
 	// It is here assumed that the measurement is a lunar measurment
 	//	if there is at least 1 spectrum with the name 'lunar'
 	for(unsigned int k = 5; k < m_specNum; ++k){
-		novac::CString &name = GetName(k);
+		novac::CString name = GetName(k);
 		if(Equals(name, "lunar"))
 			++nFound;
 			if(nFound == 5)
@@ -844,7 +844,7 @@ bool CScanResult::IsCompositionMeasurement() const{
 		return false;
 
 	for(unsigned int k = 0; k < m_specNum; ++k){
-		novac::CString &name = GetName(k);
+		novac::CString name = GetName(k);
 		if(Equals(name, "comp")){
 			return true;
 		}

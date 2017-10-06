@@ -31,7 +31,7 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans(){
 	if(g_userSettings.m_fIsContinuation == false)
 		return;
 
-	oldStatusLogfile.Format("%s\\StatusLog.txt", g_userSettings.m_outputDirectory);
+	oldStatusLogfile.Format("%s\\StatusLog.txt", (const char*)g_userSettings.m_outputDirectory);
 	if(!IsExistingFile(oldStatusLogfile))
 		return;
 

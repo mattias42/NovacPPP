@@ -99,7 +99,7 @@ int Equals(const novac::CString &str1, const novac::CString &str2, size_t nChara
 void UpdateMessage(const novac::CString &message){
 	novac::CString *msg = new novac::CString();
 
-	msg->Format("%s", message);
+	msg->Format("%s", (const char*)message);
     // TODO:
 //	if(pView != NULL)
 //		pView->PostMessage(WM_UPDATE_MESSAGE, (WPARAM)msg, NULL);
@@ -110,7 +110,7 @@ void ShowMessage(const novac::CString &message){
 	novac::CString timeTxt;
 	Common commonObj;
 	commonObj.GetDateTimeText(timeTxt);
-	msg->Format("%s -- %s", message , timeTxt);
+	msg->Format("%s -- %s", (const char*)message , (const char*)timeTxt);
 
     // TODO:
 //	if(pView != NULL)
@@ -121,7 +121,7 @@ void ShowMessage(const novac::CString &message,novac::CString connectionID){
 	novac::CString timeTxt;
 	Common commonObj;
 	commonObj.GetDateTimeText(timeTxt);
-	msg->Format("<%s> : %s   -- %s", connectionID,message,timeTxt);
+	msg->Format("<%s> : %s   -- %s", (const char*)connectionID, (const char*)message, (const char*)timeTxt);
 
     // TODO:
     // if(pView != NULL)
@@ -673,16 +673,6 @@ RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double 
 	return SUCCESS;
 }
 
-const novac::CString &Common::GetString(const UINT uID){
-	static int index = 0;
-
-	index += 1;
-	index %= 3;
-
-	m_string[index].LoadString(uID);
-	return m_string[index];
-}
-
 novac::CString &Common::SimplifyString(const novac::CString &in){
 	static novac::CString str;
 
@@ -692,7 +682,7 @@ novac::CString &Common::SimplifyString(const novac::CString &in){
 	// Make a local copy of the string
 	unsigned long L = (unsigned long)strlen(str);
 	char *buffer		= new char[L + 2];
-	sprintf(buffer, "%s", str);
+	sprintf(buffer, "%s", (const char*)str);
 
 	// Check all characters in the string
 	for(unsigned long i = 0; i < L; ++i){
@@ -747,7 +737,7 @@ novac::CString &Common::SimplifyString(const novac::CString &in){
 
 void Common::CleanString(const novac::CString &in, novac::CString &out){
 	char *buffer = new char[strlen(in) + 2];
-	sprintf(buffer, "%s", in); // make a local copy of the input string
+	sprintf(buffer, "%s", (const char*)in); // make a local copy of the input string
 
 	CleanString(buffer, out);
 	delete [] buffer; // clean up after us
@@ -773,7 +763,7 @@ void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool 
 		novac::CList <novac::CString, novac::CString&> right;
 
 		// Make two copies of the list, one of the first half and one of the second half
-		POSITION pos = strings.GetHeadPosition();
+		auto pos = strings.GetHeadPosition();
 		while(it < nStrings / 2){
 			left.AddTail(strings.GetNext(pos));
 			++it;
@@ -797,8 +787,8 @@ void Common::MergeLists(const novac::CList <novac::CString, novac::CString&> &li
 	novac::CString	name1, name2, fullName1, fullName2;
 	int comparison;
 
-	POSITION pos_1 = list1.GetHeadPosition();
-	POSITION pos_2 = list2.GetHeadPosition();
+	auto pos_1 = list1.GetHeadPosition();
+	auto pos_2 = list2.GetHeadPosition();
 
 	// Clear the output-list
 	result.RemoveAll();
@@ -1160,7 +1150,7 @@ bool Common::FindPlume(const double *scanAngles, const double *phi, const double
 			colE[nCol]	= columnErrors[k];
 			angle[nCol]	= scanAngles[k];
 			p[nCol]		= phi[k];
-			minColumn	= min(minColumn, columns[k]);
+			minColumn	= std::min(minColumn, columns[k]);
 			++nCol;
 		}
 	}
@@ -1320,12 +1310,12 @@ bool Common::CalculatePlumeCompleteness(const double *scanAngles, const double *
 	double maxColumn = 0.0;
 	for(int k = 0; k < numPoints; ++k){
 		if(!badEvaluation[k]){
-			maxColumn = max(maxColumn, columns[k] - offset);
+			maxColumn = std::max(maxColumn, columns[k] - offset);
 		}
 	}
 
 	// The completeness
-	plumeProperties.m_completeness = 1.0 - 0.5 * max(avgLeft, avgRight) / maxColumn;
+	plumeProperties.m_completeness = 1.0 - 0.5 * std::max(avgLeft, avgRight) / maxColumn;
 	if(plumeProperties.m_completeness > 1.0)
 		plumeProperties.m_completeness = 1.0;
 
@@ -1342,202 +1332,18 @@ void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &spe
 		return;
 
 	novac::CString fil;
-	fil.Format("%s", fileName.Right((int)strlen(fileName) - index - 1));
+	fil.Format("%s", (const char*)fileName.Right((int)strlen(fileName) - index - 1));
 	fil.MakeUpper();
 
 	for(int i = 0; i < nSpecies; ++i){
 		if(strstr(fil, spc[i])){
-		specie.Format("%s", spc[i]);
+		specie.Format("%s", (const char*)spc[i]);
 		return;
 		}
 	}
 
 	// nothing found
 	return;
-}
-
-
-int Common::CheckProcessExistance(novac::CString& exeName,int pid)
-{
-	int ret;
-	novac::CString processPath;
-	DWORD processid[1024],needed,processcount,i;
-	HANDLE hProcess;
-	HMODULE hModule;
-	char path[MAX_PATH] = "";
-
-	EnumProcesses(processid, sizeof(processid), &needed);
-	processcount=needed/sizeof(DWORD);
-	for (i=0;i<processcount;i++)
-	{
-		hProcess=OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,false,processid[i]);
-		if (hProcess)
-		{
-			EnumProcessModules(hProcess, &hModule, sizeof(hModule), &needed);
-			GetModuleFileNameEx(hProcess, hModule, path, sizeof(path));
-			processPath.Format("%s",path);
-			GetFileName(processPath);
-			ret = processPath.Compare(exeName); //compare exe name and the process name
-			if(ret==0) // names are same
-			{
-				if(pid != -1)
-				{
-					if(processid[i] == pid)  //compare process id
-					{
-						CloseHandle(hProcess);
-						return processid[i];
-					}
-					else
-						continue;
-				}
-				else
-				{
-					//MessageBox(NULL,"find txzm","notice",MB_OK);
-					CloseHandle(hProcess);
-					return processid[i];
-				}
-			}
-		}
-	}
-	CloseHandle(hProcess);
-	
-	//MessageBox(NULL,"CAN NOT find txzm","notice",MB_OK);
-	return -1;
-}
-
-/** Get all Process-ID's running with a given executable-name
-	@param exeName - the name of the executable (e.g. "txzm.exe") 
-	@param startPid - the function will search for processes with a 
-	    process ID higher than 'pid' 
-	@param pIDs[1024] - will on successful return be filled with
-	    all pID's found (first empty item will be -1)
-	@return - number of processID found , -1 if no process is found */
-int Common::GetAllProcessIDs(novac::CString& exeName, int pIDs[1024], int startPid){
-	int nPIDsFound = 0;
-	novac::CString processPath;
-	DWORD processid[1024],needed,processcount,i;
-	HANDLE hProcess;
-	HMODULE hModule;
-	char path[MAX_PATH] = "";
-	memset(pIDs, -1, 1024*sizeof(int)); // set all values to -1
-
-	EnumProcesses(processid, sizeof(processid), &needed);
-	processcount=needed/sizeof(DWORD);
-	for (i = 0; i < processcount; i++)
-	{
-		hProcess=OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,false,processid[i]);
-		if (hProcess)
-		{
-			EnumProcessModules(hProcess, &hModule, sizeof(hModule), &needed);
-			GetModuleFileNameEx(hProcess, hModule, path, sizeof(path));
-			processPath.Format("%s",path);
-			GetFileName(processPath);
-			int ret = processPath.Compare(exeName); //compare exe name and the process name
-			if(ret == 0) // names are same
-			{
-				if((int)processid[i] >= startPid){
-					pIDs[nPIDsFound++] = processid[i];
-				}
-			}
-		}
-	}
-	CloseHandle(hProcess);
-	
-	return nPIDsFound;
-}
-
-BOOL WINAPI Common::KillProcess(IN DWORD dwProcessId)
-{
-	HANDLE hProcess;
-	DWORD dwError;
-	 
-	// first try to obtain handle to the process without the use of any
-	// additional privileges
-	hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessId);
-	if (hProcess == NULL)
-	{
-		if (GetLastError() != ERROR_ACCESS_DENIED)
-			return FALSE;
-
-		OSVERSIONINFO osvi;
-
-		// determine operating system version
-		osvi.dwOSVersionInfoSize = sizeof(osvi);
-		GetVersionEx(&osvi);
-		 
-		// we cannot do anything else if this is not Windows NT
-		if (osvi.dwPlatformId != VER_PLATFORM_WIN32_NT)
-			return SetLastError(ERROR_ACCESS_DENIED), FALSE;
-	 
-		// enable SE_DEBUG_NAME privilege and try again
-		 
-		TOKEN_PRIVILEGES Priv, PrivOld;
-		DWORD cbPriv = sizeof(PrivOld);
-		HANDLE hToken;
-	 
-		// obtain the token of the current thread
-		if (!OpenThreadToken(GetCurrentThread(),
-				TOKEN_QUERY|TOKEN_ADJUST_PRIVILEGES,
-				FALSE, &hToken))
-		{
-			if (GetLastError() != ERROR_NO_TOKEN)
-				return FALSE;
-	 
-			// revert to the process token
-			if (!OpenProcessToken(GetCurrentProcess(),
-					TOKEN_QUERY|TOKEN_ADJUST_PRIVILEGES,
-					&hToken))
-				return FALSE;
-		}
-	 
-		_ASSERTE(ANYSIZE_ARRAY > 0);
-			
-		Priv.PrivilegeCount = 1;
-		Priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-		LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &Priv.Privileges[0].Luid);
-
-		// try to enable the privilege
-		if (!AdjustTokenPrivileges(hToken, FALSE, &Priv, sizeof(Priv),
-				&PrivOld, &cbPriv))
-		{
-			dwError = GetLastError();
-			CloseHandle(hToken);
-			return SetLastError(dwError), FALSE;
-		}
-
-	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
-	{
-		// the SE_DEBUG_NAME privilege is not present in the caller's
-		// token
-		CloseHandle(hToken);
-		return SetLastError(ERROR_ACCESS_DENIED), FALSE;
-	}
-
-	// try to open process handle again
-	hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessId);
-	dwError = GetLastError();
-
-	// restore the original state of the privilege
-	AdjustTokenPrivileges(hToken, FALSE, &PrivOld, sizeof(PrivOld),
-			NULL, NULL);
-	CloseHandle(hToken);
-
-	if (hProcess == NULL)
-		return SetLastError(FALSE), NULL;
-	}
-
-	// terminate the process
-	if (!TerminateProcess(hProcess, (UINT)-1))
-	{
-		dwError = GetLastError();
-		CloseHandle(hProcess);
-		return SetLastError(dwError), FALSE;
-	}
-
-	CloseHandle(hProcess);
-
-	// completed successfully
-	return TRUE;
 }
 
 #define MS_VC_EXCEPTION 0x406d1388 
@@ -1568,8 +1374,8 @@ void Common::SetThreadName(DWORD dwThreadID, LPCTSTR szThreadName){
 void Common::GetFileName(novac::CString& fileName)
 {
 	// look for slashes in the path
-	int position	= max(fileName.ReverseFind('\\'), fileName.ReverseFind('/'));
-	int length		= novac::CString::StringLength(fileName);
+	int position	= std::max(fileName.ReverseFind('\\'), fileName.ReverseFind('/'));
+	int length		= fileName.GetLength();
 	fileName		= fileName.Right(length - position - 1);
 }
 
@@ -1644,7 +1450,7 @@ bool Common::ArchiveFile(const novac::CString &fileName){
     SYSTEMTIME stCreate;
     novac::CString newFileName, errorMsg;
 
-	sprintf(fileToFind, "%s", fileName);
+	sprintf(fileToFind, "%s", (const char*)fileName);
 
 	// Search for the file
 	HANDLE hFile = FindFirstFile(fileToFind, &FindFileData);
@@ -1662,11 +1468,11 @@ bool Common::ArchiveFile(const novac::CString &fileName){
 	// build the new file-name
 	int lastDot = fileName.ReverseFind('.');
 	if(lastDot == -1){
-		newFileName.Format("%s_%04d%02d%02d_%02d%02d", fileName, 
+		newFileName.Format("%s_%04d%02d%02d_%02d%02d", (const char*)fileName,
 			stCreate.wYear, stCreate.wMonth, stCreate.wDay, stCreate.wHour, stCreate.wMinute);
 	}else{
-		newFileName.Format("%s_%04d%02d%02d_%02d%02d%s", fileName.Left(lastDot), 
-			stCreate.wYear, stCreate.wMonth, stCreate.wDay, stCreate.wHour, stCreate.wMinute, fileName.Right(fileName.GetLength() - lastDot));
+		newFileName.Format("%s_%04d%02d%02d_%02d%02d%s", (const char*)fileName.Left(lastDot),
+			stCreate.wYear, stCreate.wMonth, stCreate.wDay, stCreate.wHour, stCreate.wMinute, (const char*)fileName.Right(fileName.GetLength() - lastDot));
 	}
 
 	// move the file

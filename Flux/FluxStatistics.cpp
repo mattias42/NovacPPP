@@ -27,7 +27,7 @@ void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac:
 	// the statistics of the instruments
 	auto p = instruments.GetHeadPosition();
 	while(p != nullptr){
-		str.AppendFormat("\t#MeasFrom_%s", instruments.GetNext(p));
+		str.AppendFormat("\t#MeasFrom_%s", (const char*)instruments.GetNext(p));
 	}
 	str.AppendFormat("\n");
 	

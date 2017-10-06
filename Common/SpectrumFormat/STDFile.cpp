@@ -2,6 +2,9 @@
 #include "stdfile.h"
 #include <algorithm>
 
+#undef min
+#undef max
+
 using namespace SpectrumIO;
 
 CSTDFile::CSTDFile(void)

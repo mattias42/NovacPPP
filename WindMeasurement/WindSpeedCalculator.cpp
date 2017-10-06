@@ -444,8 +444,8 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 	double delay;
 
 	// 1. Read the evaluation-logs
-	reader[0].m_evaluationLog.Format("%s", evalLog1);
-	reader[1].m_evaluationLog.Format("%s", evalLog2);
+	reader[0].m_evaluationLog.Format("%s", (const char*)evalLog1);
+	reader[1].m_evaluationLog.Format("%s", (const char*)evalLog2);
 	if(SUCCESS != reader[0].ReadEvaluationLog())
 		return FAIL;
 	if(SUCCESS != reader[1].ReadEvaluationLog())
@@ -463,7 +463,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 	// 2a. Check the measurement series to make sure that they are the same 
 	//		length and that they can be combined
 	if(reader[0].m_scan[scanIndex[0]].GetEvaluatedNum() != reader[1].m_scan[scanIndex[1]].GetEvaluatedNum()){
-		errorMessage.Format("Cannot correlate series %s and %s. The number of spectra is not same", evalLog1, evalLog2);
+		errorMessage.Format("Cannot correlate series %s and %s. The number of spectra is not same", (const char*)evalLog1, (const char*)evalLog2);
 		ShowMessage(errorMessage);
 		return FAIL;
 	}
@@ -566,7 +566,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 	double delay;
 
 	// 1. Read the evaluation-log
-	reader.m_evaluationLog.Format("%s", evalLog);
+	reader.m_evaluationLog.Format("%s", (const char*)evalLog);
 	if(SUCCESS != reader.ReadEvaluationLog())
 		return FAIL;
 

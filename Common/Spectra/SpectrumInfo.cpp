@@ -45,7 +45,7 @@ CSpectrumInfo::CSpectrumInfo(const CSpectrumInfo &spec){
 	m_compass					= spec.m_compass;
 	m_coneAngle				= spec.m_coneAngle;
 	
-	m_device.Format("%s", spec.m_device);
+	m_device.Format("%s", (const char*)spec.m_device);
 
 	m_exposureTime    = spec.m_exposureTime;
 
@@ -56,10 +56,10 @@ CSpectrumInfo::CSpectrumInfo(const CSpectrumInfo &spec){
 
 	m_interlaceStep		= spec.m_interlaceStep;
 
-	m_name.Format("%s",					spec.m_name);
-	m_volcano.Format("%s",			spec.m_volcano);
-	m_site.Format("%s",					spec.m_site);
-	m_observatory.Format("%s",	spec.m_observatory);
+	m_name.Format("%s", (const char*)spec.m_name);
+	m_volcano.Format("%s", (const char*)spec.m_volcano);
+	m_site.Format("%s", (const char*)spec.m_site);
+	m_observatory.Format("%s", (const char*)spec.m_observatory);
 
 	m_numSpec				= spec.m_numSpec;
 

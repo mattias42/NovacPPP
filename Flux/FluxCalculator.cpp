@@ -50,7 +50,7 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 	// 3. Find the location of this instrument
 	Configuration::CInstrumentLocation instrLocation;
 	if(GetLocation(serial, skyStartTime, instrLocation)){
-		errorMessage.Format("Failed to find location of instrument %s on %04d.%02d.%02d. Could not calculate flux", serial, skyStartTime.year, skyStartTime.month, skyStartTime.day);
+		errorMessage.Format("Failed to find location of instrument %s on %04d.%02d.%02d. Could not calculate flux", (const char*)serial, skyStartTime.year, skyStartTime.month, skyStartTime.day);
 		ShowMessage(errorMessage);
 		return 3;
 	}
@@ -74,12 +74,12 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 	reader->m_evaluationLog.Format(evalLogFileName);
 	reader->ReadEvaluationLog();
 	if(reader->m_scanNum == 0){
-		errorMessage.Format("Recieved evaluation log file (%s) with no scans inside. Cannot calculate flux", evalLogFileName);
+		errorMessage.Format("Recieved evaluation log file (%s) with no scans inside. Cannot calculate flux", (const char*)evalLogFileName);
 		ShowMessage(errorMessage);
 		delete reader;
 		return 2;
 	}else if(reader->m_scanNum > 1){
-		errorMessage.Format("Recieved evaluation log file (%s) with more than one scans inside. Can only calculate flux for the first scan.", evalLogFileName);
+		errorMessage.Format("Recieved evaluation log file (%s) with more than one scans inside. Can only calculate flux for the first scan.", (const char*)evalLogFileName);
 		ShowMessage(errorMessage);
 	}
 	
@@ -187,7 +187,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &
 		}
 	}
 	if(instrumentConf == NULL){
-		errorMessage.Format("Recieved spectrum from not-configured instrument %s. Cannot calculate flux!", serial);
+		errorMessage.Format("Recieved spectrum from not-configured instrument %s. Cannot calculate flux!", (const char*)serial);
 		ShowMessage(errorMessage);
 		return 1;
 	}
@@ -205,7 +205,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &
 		}
 	}
 	if(!foundValidLocation){
-		errorMessage.Format("Recieved spectrum from instrument %s with not configured location. Cannot calculate flux!", serial);
+		errorMessage.Format("Recieved spectrum from instrument %s with not configured location. Cannot calculate flux!", (const char*)serial);
 		ShowMessage(errorMessage);
 		return 1;
 	}
@@ -233,7 +233,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	result->GetSkyStartTime(dateTime);
 	dateStr.Format("%04d-%02d-%02d",				dateTime.year, dateTime.month, dateTime.day);
 	dateStr2.Format("%04d.%02d.%02d",				dateTime.year, dateTime.month, dateTime.day);
-	string.Format("%s\t", dateStr);
+	string.Format("%s\t", (const char*)dateStr);
 	string.AppendFormat("%02d:%02d:%02d\t", dateTime.hour, dateTime.minute, dateTime.second);
 
 	// 2. Output the time the scan stopped
@@ -254,17 +254,17 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	string.AppendFormat("%.3lf\t", fluxResult.m_windField.GetWindDirectionError());
 
 	// 6. Output where we got the wind speed from
-	string.AppendFormat("%s\t",		wsSrc);
+	string.AppendFormat("%s\t", (const char*)wsSrc);
 
 	// 7. Output where we got the wind direction from
-	string.AppendFormat("%s\t",		wdSrc);
+	string.AppendFormat("%s\t", (const char*)wdSrc);
 
 	// 8. Output the plume height that was used for calculating this flux
 	string.AppendFormat("%.1lf\t",  fluxResult.m_plumeHeight.m_plumeAltitude);
 	string.AppendFormat("%.1lf\t",  fluxResult.m_plumeHeight.m_plumeAltitudeError);
 
 	// 9. Output where we got the plume height from 
-	string.AppendFormat("%s\t",		phSrc);
+	string.AppendFormat("%s\t", (const char*)phSrc);
 
 	// 10. Output the compass direction
 	string.AppendFormat("%.2lf\t", fluxResult.m_compass);
@@ -305,12 +305,12 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	// 20. Find the name of the flux-log file to write to
 
 	// 20a. Make the directory
-	serialNumber.Format("%s", result->GetSerial());
-	directory.Format("%s%s\\%s\\", g_userSettings.m_outputDirectory, dateStr2, serialNumber);
+	serialNumber.Format("%s", (const char*)result->GetSerial());
+	directory.Format("%s%s\\%s\\", (const char*)g_userSettings.m_outputDirectory, (const char*)dateStr2, (const char*)serialNumber);
 	if(CreateDirectoryStructure(directory)){
 		Common common;
 		common.GetExePath();
-		directory.Format("%sOutput\\%s", common.m_exePath, dateStr2, serialNumber);
+		directory.Format("%sOutput\\%s", (const char*)common.m_exePath, (const char*)dateStr2, (const char*)serialNumber);
 		if(CreateDirectoryStructure(directory)){
 			errorMessage.Format("Could not create storage directory for flux-data. Please check settings and restart.");
 			ShowMessage(errorMessage);
@@ -320,7 +320,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	}
 
 	// 20b. Get the file-name
-	fluxLogFile.Format("%sFluxLog_%s_%s.txt", directory, serialNumber, dateStr2);
+	fluxLogFile.Format("%sFluxLog_%s_%s.txt", (const char*)directory, (const char*)serialNumber, (const char*)dateStr2);
 
 	// 20c. Check if the file exists
 	if(!IsExistingFile(fluxLogFile)){

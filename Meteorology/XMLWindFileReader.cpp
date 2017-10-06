@@ -36,11 +36,11 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 		novac::CString tmpFileName;
 		tmpFileName.Format(fileName);
 		Common::GetFileName(tmpFileName); // this is the name of the file, without the path...
-		localFileName.Format("%s\\%s", g_userSettings.m_tempDirectory, tmpFileName);
+		localFileName.Format("%s\\%s", (const char*)g_userSettings.m_tempDirectory, (const char*)tmpFileName);
 		
 		// make sure that the tmp-directory exists
 		if(CreateDirectoryStructure(g_userSettings.m_tempDirectory)){
-			userMessage.Format("Could not create temp directory: %s", g_userSettings.m_tempDirectory);
+			userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
 			ShowMessage(userMessage);
 			return 1;
 		}
@@ -51,7 +51,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 			return 1;
 		}
 	}else{
-		localFileName.Format("%s", fileName);
+		localFileName.Format("%s", (const char*)fileName);
 	}
 	
 
@@ -127,7 +127,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 
 		// make sure that the tmp-directory exists
 		if(CreateDirectoryStructure(g_userSettings.m_tempDirectory)){
-			userMessage.Format("Could not create temp directory: %s", g_userSettings.m_tempDirectory);
+			userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
 			ShowMessage(userMessage);
 			return 1;
 		}
@@ -154,13 +154,13 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 				}
 			}
 			
-			localFileName.Format("%s%s", g_userSettings.m_tempDirectory, name);
+			localFileName.Format("%s%s", (const char*)g_userSettings.m_tempDirectory, (const char*)name);
 
 			if(IsExistingFile(localFileName)){
-				userMessage.Format("File %s is already downloaded", localFileName);
+				userMessage.Format("File %s is already downloaded", (const char*)localFileName);
 				ShowMessage(userMessage);
 			}else{
-				remoteFileName.Format("%s%s", ftpDir, name);
+				remoteFileName.Format("%s%s", (const char*)ftpDir, (const char*)name);
 
 				if(ftp->DownloadFileFromFTP(remoteFileName, localFileName, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)){
 					ShowMessage("Failed to download wind file from FTP server");
@@ -186,7 +186,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 		do{
 			// make sure that this is not a directory...
 			if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-				localFileName.Format("%s\\%s", directory, FindFileData.cFileName);
+				localFileName.Format("%s\\%s", (const char*)directory, (const char*)FindFileData.cFileName);
 				localFileList.AddTail(localFileName);	
 			}
 		}while(0 != FindNextFile(hFile, &FindFileData));
@@ -198,7 +198,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 	int nFilesRead = 0;
 	while(p != nullptr)
 	{
-		localFileName.Format("%s", localFileList.GetNext(p));
+		localFileName.Format("%s", (const char*)localFileList.GetNext(p));
 		
 		// make sure that this file falls in the appropriate date-range
 		if(dateFrom != NULL){
@@ -316,11 +316,11 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
 			
 			// check the reasonability of the values
 			if(winddirection < -360.0 || winddirection > 360.0){
-				userMessage.Format("Received wind-field file with invalid wind direction (%lf degrees) in file %s", winddirection, m_filename);
+				userMessage.Format("Received wind-field file with invalid wind direction (%lf degrees) in file %s", winddirection, (const char*)m_filename);
 				ShowMessage(userMessage);
 			}
 			if(windspeed < 0.0 || windspeed > 50.0){
-				userMessage.Format("Received wind-field file with invalid wind speed (%lf m/s) in file %s", windspeed, m_filename);
+				userMessage.Format("Received wind-field file with invalid wind speed (%lf m/s) in file %s", windspeed, (const char*)m_filename);
 				ShowMessage(userMessage);
 			}
 

@@ -31,7 +31,7 @@ const CInstrumentConfiguration *CNovacPPPConfiguration::GetInstrument(const nova
 	}
 
 	// nothing found
-	errorMessage.Format("Recieved spectrum from not-configured instrument %s. Cannot Evaluate!", serial);
+	errorMessage.Format("Recieved spectrum from not-configured instrument %s. Cannot Evaluate!", (const char*)serial);
 	ShowMessage(errorMessage);
 
 	return NULL;
@@ -64,7 +64,7 @@ int CNovacPPPConfiguration::GetInstrumentLocation(const novac::CString &serial, 
 		}
 	}
 	if(!foundValidLocation){
-		errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured location on %04d.%02d.%02d. Cannot Evaluate!", serial, day.year, day.month, day.day);
+		errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured location on %04d.%02d.%02d. Cannot Evaluate!", (const char*)serial, day.year, day.month, day.day);
 		ShowMessage(errorMessage);
 		return 1;
 	}
@@ -119,9 +119,9 @@ int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int chann
 	}
 	if(!foundValidEvaluation){
 		if(windowName.GetLength() >= 1){
-			errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window \"%s\" on %04d.%02d.%02d. Cannot Evaluate!", serial, windowName, dateAndTime.year, dateAndTime.month, dateAndTime.day);
+			errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window \"%s\" on %04d.%02d.%02d. Cannot Evaluate!", (const char*)serial, (const char*)windowName, dateAndTime.year, dateAndTime.month, dateAndTime.day);
 		}else{
-			errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window on %04d.%02d.%02d. Cannot Evaluate!", serial, dateAndTime.year, dateAndTime.month, dateAndTime.day);
+			errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window on %04d.%02d.%02d. Cannot Evaluate!", (const char*)serial, dateAndTime.year, dateAndTime.month, dateAndTime.day);
 		}
 		ShowMessage(errorMessage);
 		return 1;

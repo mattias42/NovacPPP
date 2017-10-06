@@ -28,6 +28,21 @@ namespace novac
 			m_position = m_data.begin();
 		}
 
+		POSITION(const POSITION& other)
+			: m_emptyList(), m_data(other.m_data)
+		{
+			m_position = other.m_position;
+		}
+
+		POSITION& operator=(const POSITION& other)
+		{
+			this->m_data = other.m_data;
+			this->m_position = other.m_position;
+
+			return *this;
+		}
+
+
 		bool HasNext() const
 		{
 			if (m_data.size() == 0)

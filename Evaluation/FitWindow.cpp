@@ -26,7 +26,7 @@ CFitWindow &CFitWindow::operator =(const CFitWindow &w2){
 	this->shiftSky        = w2.shiftSky;
 	this->interlaceStep   = w2.interlaceStep;
 
-	this->name.Format("%s", w2.name);
+	this->name.Format("%s", (const char*)w2.name);
 
 	this->nRef            = w2.nRef;
 	this->polyOrder       = w2.polyOrder;

@@ -8,6 +8,9 @@
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
+#undef min
+#undef max
+
 using namespace Geometry;
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user

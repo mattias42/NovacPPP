@@ -50,6 +50,25 @@ namespace novac
 		}
 	}
 
+	TEST_CASE("Comparison behaves as expected", "[CString]")
+	{
+		SECTION("Equal strings")
+		{
+			CString sut{ "apa" };
+
+			REQUIRE(0 == sut.Compare(sut));
+		}
+
+		SECTION("Not equal strings")
+		{
+			CString apa{"apa"};
+			CString banan{"banan"};
+
+			REQUIRE(1 == banan.Compare(apa));
+			REQUIRE(-1 == apa.Compare(banan));
+		}
+	}
+
 	TEST_CASE("Substrings behaves as expected", "[CString]")
 	{
 		std::string original = "Mary had a little lamb";
@@ -116,7 +135,7 @@ namespace novac
 			REQUIRE(sut.ToStdString() == original);
 		}
 
-		SECTION("String - CString")
+		SECTION("String - CString cast to char* ")
 		{
 			CString copy{ original }; // this will have the same contents as the original
 
@@ -151,6 +170,18 @@ namespace novac
 			sut.AppendFormat("%s", (const char*)cSecond);
 
 			REQUIRE(sut.ToStdString() == first + second);
+		}
+	}
+
+	TEST_CASE("Append behaves as expected", "[CString]")
+	{
+		CString first = "Twinkle, twinkle little star";
+		CString second = "Mary had a little lamb";
+
+		SECTION("String - char array")
+		{
+			first.Append(second);
+			REQUIRE(first.ToStdString() == "Twinkle, twinkle little starMary had a little lamb");
 		}
 	}
 

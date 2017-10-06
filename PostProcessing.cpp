@@ -149,12 +149,12 @@ void CPostProcessing::DoPostProcessing_Flux(){
 	CalculateFluxes(evalLogFiles);
 	
 	// 7. Write the statistics
-	statFileName.Format("%s\\ProcessingStatistics.txt", g_userSettings.m_outputDirectory);
+	statFileName.Format("%s\\ProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory);
 	Common::ArchiveFile(statFileName);
 	g_processingStats.WriteStatToFile(statFileName);
 	
 	// 8. Also write the wind field that we have created to file
-	windFileName.Format("%s\\GeneratedWindField.wxml", g_userSettings.m_outputDirectory);	
+	windFileName.Format("%s\\GeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory);
 	Common::ArchiveFile(windFileName);
 	m_windDataBase.WriteToFile(windFileName);
 	
@@ -164,13 +164,12 @@ void CPostProcessing::DoPostProcessing_Flux(){
 	}
 	
 	// ------------ Clean up -----------
-	auto p = geometryResults.GetTailPosition();
 	while(geometryResults.GetSize() != 0)
 	{
+		auto p = geometryResults.GetTailPosition();
 		Geometry::CGeometryResult *g = geometryResults.GetAt(p);
 		delete g;
 		geometryResults.RemoveTail();
-		p = geometryResults.GetTailPosition();
 	}
 }
 
@@ -227,7 +226,7 @@ void CPostProcessing::DoPostProcessing_Strat(){
 	ShowMessage("Calculation Done");
 	
 	// 7. Write the statistics
-	statFileName.Format("%s\\ProcessingStatistics.txt", g_userSettings.m_outputDirectory);
+	statFileName.Format("%s\\ProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory);
 	Common::ArchiveFile(statFileName);
 	g_processingStats.WriteStatToFile(statFileName);	
 }
@@ -250,7 +249,7 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 	WIN32_FIND_DATA FindFileData;
 	char fileToFind[MAX_PATH];
 
-	userMessage.Format("Searching for .pak - files in directory %s", path);
+	userMessage.Format("Searching for .pak - files in directory %s", (const char*)path);
 	ShowMessage(userMessage);
 
 	// ------------------------------------ OPTION 1 -----------------------------------------
@@ -264,7 +263,7 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 
 		if(hFile != INVALID_HANDLE_VALUE){
 			do{
-				fileName.Format("%s\\%s", path, FindFileData.cFileName);
+				fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
 
 				if(Equals(FindFileData.cFileName, ".") || Equals(FindFileData.cFileName, ".."))
 					continue;
@@ -313,7 +312,7 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 		return; // no files found
 
 	do{
-		fileName.Format("%s\\%s", path, FindFileData.cFileName);
+		fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
 
 		// if this is a incomplete scan, then don't process it.
 		if(strstr(FindFileData.cFileName, "Incomplete"))
@@ -413,7 +412,7 @@ void CPostProcessing::EvaluateScans(const novac::CList <novac::CString, novac::C
 	ShowMessage(messageToUser);
 }
 
-UINT EvaluateOneScan(LPVOID pParam){
+UINT EvaluateOneScan(LPVOID /*pParam*/){
 	// increase the count of how many threads are running
 	++nThreadsRunning;
 
@@ -445,7 +444,7 @@ UINT EvaluateOneScan(LPVOID pParam){
 		AddResultToList(fileName, evalLog, scanProperties[g_userSettings.m_mainFitWindow]);
 		
 		// Tell the user what is happening
-		messageToUser.Format(" + Inserted scan %s into list of evaluation logs", evalLog[g_userSettings.m_mainFitWindow]);
+		messageToUser.Format(" + Inserted scan %s into list of evaluation logs", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
 		ShowMessage(messageToUser);
 	}
 	
@@ -521,7 +520,7 @@ int CPostProcessing::CheckSettings(){
 	for(j = 0; j < g_setup.m_instrumentNum; ++j){
 		for(k = j + 1; k < g_setup.m_instrumentNum; ++k){
 			if(Equals(g_setup.m_instrument[j].m_serial, g_setup.m_instrument[k].m_serial)){
-				errorMessage.Format("The instrument %s is defined twice in setup.xml. If the instrument has two locations then define the instrument once but with two locations. Exiting post processsing.", g_setup.m_instrument[k].m_serial);
+				errorMessage.Format("The instrument %s is defined twice in setup.xml. If the instrument has two locations then define the instrument once but with two locations. Exiting post processsing.", (const char*)g_setup.m_instrument[k].m_serial);
 				MessageBox(nullptr, errorMessage, "Error in setup.xml", MB_OK);
 				return 1;
 			}
@@ -539,15 +538,15 @@ int CPostProcessing::CheckSettings(){
 			switch(ret){
 				case 0: break; // this is fine
 				case 1: 
-					errorMessage.Format("No fit window defined for %s. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("No fit window defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 2:
-					errorMessage.Format("Invalid time range found for fit window defined for %s. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("Invalid time range found for fit window defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 3:
-					errorMessage.Format("At least two fit windows defined for %s have overlapping time ranges. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("At least two fit windows defined for %s have overlapping time ranges. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 			}
@@ -565,15 +564,15 @@ int CPostProcessing::CheckSettings(){
 			switch(ret){
 				case 0: break; // this is fine
 				case 1: 
-					errorMessage.Format("No location defined for %s. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("No location defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 2:
-					errorMessage.Format("Invalid time range found for location defined for %s. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("Invalid time range found for location defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 3:
-					errorMessage.Format("At least two location defined for %s have overlapping time ranges. Exiting", g_setup.m_instrument[j].m_serial);
+					errorMessage.Format("At least two location defined for %s have overlapping time ranges. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
 					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 			}
@@ -607,11 +606,11 @@ int CPostProcessing::PrepareEvaluation(){
 			for(int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex){
 				if(!IsExistingFile(window.ref[referenceIndex].m_path)){
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%s\\configuration\\%s", m_exePath, window.ref[referenceIndex].m_path);
+					fileName.Format("%s\\configuration\\%s", (const char*)m_exePath, (const char*)window.ref[referenceIndex].m_path);
 						if(IsExistingFile(fileName)){
 							window.ref[referenceIndex].m_path.Format(fileName);
 						}else{
-							errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path);
+							errorMessage.Format("Cannot read reference file %s", (const char*)window.ref[referenceIndex].m_path);
 							ShowMessage(errorMessage);
 							failure = true;
 							continue;
@@ -620,7 +619,7 @@ int CPostProcessing::PrepareEvaluation(){
 
 				// Read in the cross section
 				if(window.ref[referenceIndex].ReadCrossSectionDataFromFile()){
-					errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path);
+					errorMessage.Format("Failed to read cross section file: %s", (const char*)window.ref[referenceIndex].m_path);
 					ShowMessage(errorMessage);
 					failure = true;
 					continue;
@@ -647,19 +646,19 @@ int CPostProcessing::PrepareEvaluation(){
 			if(window.fraunhoferRef.m_path.GetLength() > 4){
 				if(!IsExistingFile(window.fraunhoferRef.m_path)){
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%s\\configuration\\%s", m_exePath, window.fraunhoferRef.m_path);
-						if(IsExistingFile(fileName)){
-							window.fraunhoferRef.m_path.Format(fileName);
-						}else{
-							errorMessage.Format("Cannot read reference file %s", window.fraunhoferRef.m_path);
-							ShowMessage(errorMessage);
-							failure = true;
-							continue;
-						}
+					fileName.Format("%s\\configuration\\%s", (const char*)m_exePath, (const char*)window.fraunhoferRef.m_path);
+					if(IsExistingFile(fileName)){
+						window.fraunhoferRef.m_path.Format(fileName);
+					}else{
+						errorMessage.Format("Cannot read reference file %s", (const char*)window.fraunhoferRef.m_path);
+						ShowMessage(errorMessage);
+						failure = true;
+						continue;
+					}
 				}
 
 				if(window.fraunhoferRef.ReadCrossSectionDataFromFile()){
-					errorMessage.Format("Failed to read fraunhofer-reference file: %s", window.fraunhoferRef.m_path);
+					errorMessage.Format("Failed to read fraunhofer-reference file: %s", (const char*)window.fraunhoferRef.m_path);
 					ShowMessage(errorMessage);
 					failure = true;
 					continue;
@@ -697,18 +696,18 @@ int CPostProcessing::ReadWindField(){
 
 		// If the user has given a file-name, then try to use that one
 		if(g_userSettings.m_windFieldFile.GetLength() > 3){
-			messageToUser.Format("Reading wind field from file: %s", g_userSettings.m_windFieldFile);
+			messageToUser.Format("Reading wind field from file: %s", (const char*)g_userSettings.m_windFieldFile);
 			ShowMessage(messageToUser);
 			
 			if(reader.ReadWindFile(g_userSettings.m_windFieldFile, m_windDataBase)){
-				messageToUser.Format("Failed to parse wind field file: %s", g_userSettings.m_windFieldFile);
+				messageToUser.Format("Failed to parse wind field file: %s", (const char*)g_userSettings.m_windFieldFile);
 				ShowMessage(messageToUser);
 				return 1;
 			}else{
-				messageToUser.Format("Parsed %s containing %d wind data items", g_userSettings.m_windFieldFile, m_windDataBase.GetDataBaseSize());
+				messageToUser.Format("Parsed %s containing %d wind data items", (const char*)g_userSettings.m_windFieldFile, m_windDataBase.GetDataBaseSize());
 				ShowMessage(messageToUser);
 			
-				name1.Format("%sParsedWindField.wxml", common.m_exePath);
+				name1.Format("%sParsedWindField.wxml", (const char*)common.m_exePath);
 				m_windDataBase.WriteToFile(name1);
 				return 0;
 			}
@@ -720,17 +719,17 @@ int CPostProcessing::ReadWindField(){
 			g_volcanoes.GetVolcanoCode(g_userSettings.m_volcano, name3);
 
 			// Get the path to the executable, so that we know where to start looking
-			path1.Format("%s\\configuration\\%s.wxml", common.m_exePath, name1);
-			path2.Format("%s\\configuration\\%s.wxml", common.m_exePath, name2);
-			path3.Format("%s\\configuration\\%s.wxml", common.m_exePath, name3);
+			path1.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name1);
+			path2.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name2);
+			path3.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name3);
 
 			// check which of the files exists
 			if(IsExistingFile(path1)){
-				messageToUser.Format("Reading wind field from file: %s", path1);
+				messageToUser.Format("Reading wind field from file: %s", (const char*)path1);
 				ShowMessage(messageToUser);
 				
 				if(reader.ReadWindFile(path1, m_windDataBase)){
-					messageToUser.Format("Failed to parse wind field file: %s", path1);
+					messageToUser.Format("Failed to parse wind field file: %s", (const char*)path1);
 					ShowMessage(messageToUser);
 					return 1;
 				}else{
@@ -738,29 +737,29 @@ int CPostProcessing::ReadWindField(){
 				}
 				
 			}else if(IsExistingFile(path2)){
-				messageToUser.Format("Reading wind field from file: %s", path2);
+				messageToUser.Format("Reading wind field from file: %s", (const char*)path2);
 				ShowMessage(messageToUser);
 
 				if(reader.ReadWindFile(path2, m_windDataBase)){
-					messageToUser.Format("Failed to parse wind field file: %s", path2);
+					messageToUser.Format("Failed to parse wind field file: %s", (const char*)path2);
 					ShowMessage(messageToUser);
 					return 1;
 				}else{
 					return 0;
 				}
 			}else if(IsExistingFile(path3)){
-				messageToUser.Format("Reading wind field from file: %s", path3);
+				messageToUser.Format("Reading wind field from file: %s", (const char*)path3);
 				ShowMessage(messageToUser);
 
 				if(reader.ReadWindFile(path3, m_windDataBase)){
-					messageToUser.Format("Failed to parse wind field file: %s", path3);
+					messageToUser.Format("Failed to parse wind field file: %s", (const char*)path3);
 					ShowMessage(messageToUser);
 					return 1;
 				}else{
 					return 0;
 				}	
 			}else{
-				messageToUser.Format("Cannot find wind field file. Attempted to read: %s, %s and %s", path1, path2, path3);
+				messageToUser.Format("Cannot find wind field file. Attempted to read: %s, %s and %s", (const char*)path1, (const char*)path2, (const char*)path3);
 				ShowMessage(messageToUser);
 				return 1;
 			}
@@ -942,7 +941,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 					geometryResults.AddTail(result);
 					
 					messageToUser.Format(" + Calculated a plume altitude of %.0lf ± %.0lf meters and wind direction of %.0lf ± %.0lf degrees by combining measurements from %s and %s",
-						result->m_plumeAltitude, result->m_plumeAltitudeError, result->m_windDirection, result->m_windDirectionError, serial1, serial2);
+						result->m_plumeAltitude, result->m_plumeAltitudeError, result->m_windDirection, result->m_windDirectionError, (const char*)serial1, (const char*)serial2);
 					ShowMessage(messageToUser);
 					
 					successfullyCombined = true;
@@ -990,7 +989,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 				
 				// tell the user			
 				messageToUser.Format(" + Calculated a wind direction of %.0lf ± %.0lf degrees from a scan by instrument %s",
-					result->m_windDirection, result->m_windDirectionError, serial1);
+					result->m_windDirection, result->m_windDirectionError, (const char*)serial1);
 				ShowMessage(messageToUser);
 			}else{
 				delete result;
@@ -1024,7 +1023,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 	@return - true if so large changes are made that the geometries would need to
 		be re-calculated. Otherwise false.
 	*/	
-bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs, const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
+bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& /*evalLogs*/, const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& /*geometryResults*/){
 
 	ShowMessage("Applying ACDC corrections - This is not yet implemented!!");
 
@@ -1067,7 +1066,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 
 		// if the completeness is too low then ignore this scan.
 		if(plume.m_completeness < (g_userSettings.m_completenessLimitFlux + 0.01)){
-			messageToUser.Format(" - Scan %s has completeness = %.2lf which is less than limit of %.2lf. Rejected!", evalLog, plume.m_completeness, g_userSettings.m_completenessLimitFlux);
+			messageToUser.Format(" - Scan %s has completeness = %.2lf which is less than limit of %.2lf. Rejected!", (const char*)evalLog, plume.m_completeness, g_userSettings.m_completenessLimitFlux);
 			ShowMessage(messageToUser);
 			continue;
 		}
@@ -1083,7 +1082,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 		m_plumeDataBase.GetPlumeHeight(scanStartTime, plumeHeight);
 
 		// tell the user
-		messageToUser.Format("Calculating flux for measurement %s", evalLog);
+		messageToUser.Format("Calculating flux for measurement %s", (const char*)evalLog);
 		ShowMessage(messageToUser);
 
 		// Calculate the flux. This also takes care of writing
@@ -1116,7 +1115,7 @@ void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult,
 	now.SetToNow();
 		
 	// the name and path of the final flux-log file
-	fluxLogFile.Format("%s\\FluxLog.xml", g_userSettings.m_outputDirectory);
+	fluxLogFile.Format("%s\\FluxLog.xml", (const char*)g_userSettings.m_outputDirectory);
 
 	// Check if there's already a file like this, then archive it...
 	Common::ArchiveFile(fluxLogFile);
@@ -1214,7 +1213,7 @@ void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult,
 	fclose(f);
 	
 	// ------------- we also need an xslt - file to display the output -----------------
-	styleFile.Format("%s\\fluxresult.xsl", g_userSettings.m_outputDirectory);
+	styleFile.Format("%s\\fluxresult.xsl", (const char*)g_userSettings.m_outputDirectory);
 
 	// Try to open the file
 	f = fopen(styleFile, "w");
@@ -1256,7 +1255,7 @@ void CPostProcessing::WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult,
 	now.SetToNow();
 		
 	// the name and path of the final flux-log file
-	fluxLogFile.Format("%s\\FluxLog.txt", g_userSettings.m_outputDirectory);
+	fluxLogFile.Format("%s\\FluxLog.txt", (const char*)g_userSettings.m_outputDirectory);
 
 	// Try to open the file
 	if(IsExistingFile(fluxLogFile)){
@@ -1358,7 +1357,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const novac::CList <Geomet
 
 	FILE *f = nullptr;
 	novac::CString geomLogFile;
-	geomLogFile.Format("%s\\GeometryLog.txt", g_userSettings.m_outputDirectory);
+	geomLogFile.Format("%s\\GeometryLog.txt", (const char*)g_userSettings.m_outputDirectory);
 
 	if(IsExistingFile(geomLogFile)){
 		f = fopen(geomLogFile, "a");
@@ -1499,7 +1498,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 	ShowMessage(userMessage);
 	
 	// Create the dual-beam log-file
-	windLogFile.Format("%s\\DualBeamLog.txt", g_userSettings.m_outputDirectory);
+	windLogFile.Format("%s\\DualBeamLog.txt", (const char*)g_userSettings.m_outputDirectory);
 	calculator.WriteWindSpeedLogHeader(windLogFile);
 	
 
@@ -1544,7 +1543,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 			}
 			ShowMessage(userMessage);
 		}else{
-			userMessage.Format("Failed to calculate wind speed from measurement: %s", fileName);
+			userMessage.Format("Failed to calculate wind speed from measurement: %s", (const char*)fileName);
 			ShowMessage(userMessage);					
 		}
 	}
@@ -1604,7 +1603,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 					ShowMessage(userMessage);
 
 				}else{
-					userMessage.Format("Failed to calculate wind speed from measurement: %s", fileName);
+					userMessage.Format("Failed to calculate wind speed from measurement: %s", (const char*)fileName);
 					ShowMessage(userMessage);					
 				}
 			}
@@ -1673,15 +1672,15 @@ void CPostProcessing::UploadResultsToFTP(){
 	novac::CList <novac::CString, novac::CString&> fileList;
 	
 	// 1. the geometry log file
-	fileName.Format("%s\\GeometryLog.txt", g_userSettings.m_outputDirectory);
+	fileName.Format("%s\\GeometryLog.txt", (const char*)g_userSettings.m_outputDirectory);
 	fileList.AddTail(fileName);
 
 	// 2. the generated wind field
-	fileName.Format("%s\\GeneratedWindField.wxml", g_userSettings.m_outputDirectory);
+	fileName.Format("%s\\GeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory);
 	fileList.AddTail(fileName);
 
 	// 3. the generated flux log
-	fileName.Format("%s\\FluxLog.txt", g_userSettings.m_outputDirectory);
+	fileName.Format("%s\\FluxLog.txt", (const char*)g_userSettings.m_outputDirectory);
 	fileList.AddTail(fileName);
 
 	// upload the files

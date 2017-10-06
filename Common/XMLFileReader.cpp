@@ -39,14 +39,16 @@ char *CXMLFileReader::NextToken(){
 		return m_tokenPt;
 	}else{
 		// this is not the first call to this function
-		if(m_tokenPt = strtok(szToken, separators)){
+		m_tokenPt = strtok(szToken, separators);
+		if(nullptr != m_tokenPt){
 			return m_tokenPt;
 		}
 
 		szLine[0] = 0;
 		while(0 == strlen(szLine)){
-		if(!m_File->ReadString(szLine, 4095))
-			return nullptr;
+			if(!m_File->ReadString(szLine, 4095)){
+				return nullptr;
+			}
 		}
 
 		szToken = (char*)(LPCSTR)szLine;
@@ -55,7 +57,7 @@ char *CXMLFileReader::NextToken(){
 		++nLinesRead;
 	}
 	
-	if(strlen(m_tokenPt) < 2)
+	if(nullptr == m_tokenPt || strlen(m_tokenPt) < 2)
 		return NextToken();
 	else
 		return m_tokenPt;
@@ -75,7 +77,7 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 	sprintf(copyOfToken, "%s", szToken);
 
 	// search for the attribute in szToken
-	toSearchFor.Format("%s=\"", label);
+	toSearchFor.Format("%s=\"", (const char*)label);
 	char *pt_start = strstr(copyOfToken, toSearchFor);
 	if(pt_start == nullptr)
 		return nullptr;
