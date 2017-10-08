@@ -112,7 +112,8 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
 	// This is for timing of the evaluation. this is not supported on all hardware thus the boolean...
 	__int64 lpFrequency, timingStart, timingStop;
-	BOOL useHighResolutionCounter = QueryPerformanceFrequency((LARGE_INTEGER*)&lpFrequency);
+	// TODO: ImplementMe
+	// BOOL useHighResolutionCounter = QueryPerformanceFrequency((LARGE_INTEGER*)&lpFrequency);
 	
 	// ----------- Get the sky spectrum --------------
 	// Get the sky and dark spectra and divide them by the number of 
@@ -232,8 +233,9 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		current.Sub(dark);
 
 		// this is for timing only...
-		if(useHighResolutionCounter)
-			QueryPerformanceCounter((LARGE_INTEGER*)&timingStart);
+		// TODO: ImplementMe
+		//if(useHighResolutionCounter)
+		//	QueryPerformanceCounter((LARGE_INTEGER*)&timingStart);
 
 		// e. Evaluate the spectrum
 		if(eval->Evaluate(current)){
@@ -244,12 +246,13 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		}
 
 		// timing...
-		if(useHighResolutionCounter){
-			QueryPerformanceCounter((LARGE_INTEGER*)&timingStop);
+		// TODO: ImplementMe
+		//if(useHighResolutionCounter){
+		//	QueryPerformanceCounter((LARGE_INTEGER*)&timingStop);
 
-			// insert the successful evaluation into the statistics object
-			g_processingStats.InsertEvaluatedSpectrum((double)((timingStop - timingStart) * 1000 / lpFrequency));
-		}
+		//	// insert the successful evaluation into the statistics object
+		//	g_processingStats.InsertEvaluatedSpectrum((double)((timingStop - timingStart) * 1000 / lpFrequency));
+		//}
 
 		// e. Save the evaluation result
 		m_result->AppendResult(eval->GetEvaluationResult(), current.m_info);
@@ -482,7 +485,8 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
 			// If we don't recognize the sky-spectrum format
 			errorMsg.Format("Unknown format for sky spectrum. Please use .pak or .std");
 			ShowMessage(errorMsg);
-			MessageBox(NULL, errorMsg, "Error", MB_OK);
+			// TODO: ImplementMe
+			//MessageBox(NULL, errorMsg, "Error", MB_OK);
 			return FAIL;
 		}
 	}

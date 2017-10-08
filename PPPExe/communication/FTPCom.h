@@ -1,8 +1,5 @@
 #pragma once
 
-// #include <afxinet.h>
-// #include <afxtempl.h>
-
 #include "../stdafx.h"
 #include "../FileInfo.h"
 #include <PPPLib/CString.h>
@@ -71,12 +68,12 @@ namespace Communication
 		BOOL GotoTopDirectory();
 
 		/** read response from the ftp server*/
-		void ReadResponse(CInternetFile* file);
+//		void ReadResponse(CInternetFile* file);
 
 	private:
 
-		CInternetSession* m_InternetSession;
-		CFtpConnection* m_FtpConnection;
+		//CInternetSession* m_InternetSession;
+		//CFtpConnection* m_FtpConnection;
 		novac::CString m_FTPSite;
 
 		novac::CString m_ErrorMsg;

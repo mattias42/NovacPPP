@@ -18,6 +18,11 @@ extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 #undef min
 #undef max
 
+void GetSysTempFolder(novac::CString& folderPath)
+{
+	folderPath = novac::CString(Poco::Path::temp());
+}
+
 bool IsExistingFile(const novac::CString &fileName) {
 	Poco::File file(fileName.c_str());
 	return file.exists();

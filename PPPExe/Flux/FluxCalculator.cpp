@@ -313,7 +313,8 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 		if(CreateDirectoryStructure(directory)){
 			errorMessage.Format("Could not create storage directory for flux-data. Please check settings and restart.");
 			ShowMessage(errorMessage);
-			MessageBox(NULL, errorMessage, "Serious Error", MB_OK);
+			// TODO: ImplementMe
+			//MessageBox(NULL, errorMessage, "Serious Error", MB_OK);
 			return FAIL;
 		}
 	}

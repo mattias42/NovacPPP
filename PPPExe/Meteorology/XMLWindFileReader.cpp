@@ -6,6 +6,8 @@
 // we need to be able to download data from the FTP-server
 #include "../Communication/FTPServerConnection.h"
 
+#include <Poco/Glob.h>
+
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
 using namespace FileHandler;
@@ -171,25 +173,22 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 		}
 	}else{
 		// If the directory is on the local computer, then this is how to check the files
-		HANDLE hFile;
-		WIN32_FIND_DATA FindFileData;
 		char fileToFind[MAX_PATH];
+		sprintf(fileToFind, "%s/*.wxml", (const char*)directory);
 
-		sprintf(fileToFind, "%s\\*.wxml", (const char*)directory);
+		// Search for the files
+		std::set<std::string> filesFound;
+		Poco::Glob::glob(fileToFind, filesFound);
 
-		// Search for the file
-		hFile = FindFirstFile(fileToFind, &FindFileData);
-
-		if(hFile == INVALID_HANDLE_VALUE)
+		if(filesFound.size() == 0)
+		{
 			return 1;
-		do{
-			// make sure that this is not a directory...
-			if(!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-				localFileName.Format("%s\\%s", (const char*)directory, (const char*)FindFileData.cFileName);
-				localFileList.AddTail(localFileName);	
-			}
-		}while(0 != FindNextFile(hFile, &FindFileData));
-		FindClose(hFile);
+		}
+
+		for(const std::string& fName : filesFound) {
+			localFileName.Format("%s\\%s", (const char*)directory, fName.c_str());
+			localFileList.AddTail(localFileName);	
+		}
 	}
 
 	// Now we got a list of files on the local computer. Read them in!

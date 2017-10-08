@@ -21,11 +21,7 @@
 #include "../Fit/DOASVector.h"
 #include "../Fit/NonlinearParameterFunction.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
+
 // use the MathFit namesapce, since all fit objects are contained in this namespace
 using namespace MathFit;
 // also use the Evaluation namespace, since all datastructures for saving the results are contained there
@@ -68,7 +64,7 @@ CEvaluation::~CEvaluation()
 	@return 0 if all is ok.
 	@return 1 if any error occured, or if the window is not defined. */
 int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
-	CString message;
+	novac::CString message;
 	int fitLow, fitHigh; // the limits for the DOAS fit
 	int i; // iterator
 
@@ -258,7 +254,7 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 	@return 0 if the fit succeeds and the shift & squeeze could be determined
 	@return 1 if any error occured. */
 int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double &shiftError, double &squeeze, double &squeezeError){
-	CString message;
+	novac::CString message;
 	int i;
 	CVector vMeas;
 	CVector yValues;
@@ -505,7 +501,7 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 //			}
 //			fclose(f);
 //
-//			CString fileName;
+//			novac::CString fileName;
 //			for(i = 0; i < window.nRef; ++i){
 //				fileName.Format("C:\\temp\\reference_%d.txt", i);
 //				f = fopen(fileName, "w");

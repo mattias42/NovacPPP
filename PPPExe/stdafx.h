@@ -45,6 +45,7 @@ typedef char CHAR;
 typedef CONST CHAR *LPCSTR;
 typedef LPCSTR LPCTSTR;
 typedef void* PVOID;
+typedef void* LPVOID;
 typedef PVOID HANDLE;
 typedef unsigned int UINT;
 typedef unsigned char BYTE;

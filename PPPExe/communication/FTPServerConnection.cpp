@@ -20,7 +20,7 @@ extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
 
 using namespace Communication;
 
-UINT DownloadDataFromDir(LPVOID pParam);
+UINT DownloadDataFromDir(void* pParam);
 
 CFTPServerConnection::CFTPServerConnection(void)
 {
@@ -84,11 +84,12 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	}
 	
 	// download the data in this directory
-	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
-	// Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
+	// TODO: ImplementMe
+	//CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
+	//// Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 
-	// wait for all threads to terminate
-	Sleep(500);
+	//// wait for all threads to terminate
+	//Sleep(500);
 	clock_t cStart = clock();
 	while(nFTPThreadsRunning > 0){
 		if(++nRounds % 10 == 0){
@@ -102,7 +103,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 			ShowMessage(userMessage);
 		}
 
-		Sleep(100);
+		// Sleep(100);
 	}
 
 	// copy the data to the output list
@@ -129,7 +130,7 @@ void AddFileToList(const novac::CString &fileName){
 /** Downloads all the data-files from the directory that the 
 	connection 'm_ftp' is in at the moment 
 	@return 0 on success, otherwise non-zero */
-UINT DownloadDataFromDir(LPVOID pParam){
+UINT DownloadDataFromDir(void* pParam){
 	// the directory to search in
 	novac::CString *directory = (novac::CString *)pParam;
 
@@ -142,7 +143,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 
 	// if there are too many threads running, then wait for a while
 	while(nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum){
-		Sleep(500);
+		// TODO: ImplementMe	Sleep(500);
 	}
 	novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 	singleLockThread.Lock();
@@ -230,7 +231,8 @@ UINT DownloadDataFromDir(LPVOID pParam){
 				DownloadDataFromDir(new novac::CString(fileInfo.m_fullFileName + "/"));
 			}else{
 				// start downloading using a new thread
-				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
+				// TODO: ImplementMe
+				// CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
 				//Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 			}
 		}

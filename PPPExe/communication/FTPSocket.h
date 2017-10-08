@@ -13,9 +13,12 @@
 
 namespace Communication
 {
-
 	typedef std::vector<char> TByteVector;
 
+	// TODO: ImplementMe
+	struct SOCKET { };
+
+	// TODO: ImplementMe
 	class CFTPSocket
 	{
 	public:
@@ -215,7 +218,8 @@ namespace Communication
 		ftpParameter m_serverParam;
 
 		/**file handle to the file to be downloaded*/
-		HANDLE m_hDownloadedFile;
+		// TODO: ImplementMe
+		// HANDLE m_hDownloadedFile;
 
 		/** file to store the file list of the FTP server */
 		novac::CString m_listFileName;

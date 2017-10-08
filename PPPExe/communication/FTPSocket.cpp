@@ -2,6 +2,7 @@
 #include "..\Common\Common.h"
 #include <PPPLib/CStdioFile.h>
 #include <time.h>
+#include "../stdafx.h"
 //#include "Mswsock.h"
 
 using namespace Communication;
@@ -45,9 +46,10 @@ bool CFTPSocket::Login(const novac::CString ftpServerIP, novac::CString userName
 }
 void CFTPSocket::GetFileName(novac::CString& filePath)
 {
-	int position = filePath.ReverseFind('\\');
-	int length = filePath.GetLength();
-	filePath = filePath.Right(length - position - 1);
+	// TODO: ImplementMe
+	//int position = filePath.ReverseFind('\\');
+	//int length = filePath.GetLength();
+	//filePath = filePath.Right(length - position - 1);
 }
 void CFTPSocket::GetSysType(novac::CString& type)
 {
@@ -90,7 +92,8 @@ bool CFTPSocket::EnterPassiveMode()
 		// Send the command to enter passive mode
 		SendCommand("PASV", "");
 		round++;
-		Sleep(600);
+		// TODO: ImplementMe
+		// Sleep(600);
 
 		// Read the response from the server
 		if (-1 == ReadResponse())
@@ -225,101 +228,106 @@ bool CFTPSocket::DeleteFTPFile(novac::CString fileName)
 }
 int CFTPSocket::SendCommand(novac::CString command, novac::CString commandText)
 {
-	char buf[100];
-	Sleep(100); // Added 2008.06.30 to work with the Axis computer
-	if (commandText.GetLength() == 0)
-		wsprintf(buf, "%s\r\n", (const char*)command);
-	else
-		wsprintf(buf, "%s %s\r\n", (const char*)command, (const char*)commandText);
-	int result = send(m_controlSocket, buf, strlen(buf), 0);
-	if (result == SOCKET_ERROR)
-	{
-		result = WSAGetLastError();
-		WSACleanup();
-	}
-	//	ShowMessage(command); //for test
-	result = 0;
-	return result;
+	// TODO: ImplementMe
+	//char buf[100];
+	//Sleep(100); // Added 2008.06.30 to work with the Axis computer
+	//if (commandText.GetLength() == 0)
+	//	wsprintf(buf, "%s\r\n", (const char*)command);
+	//else
+	//	wsprintf(buf, "%s %s\r\n", (const char*)command, (const char*)commandText);
+	//int result = send(m_controlSocket, buf, strlen(buf), 0);
+	//if (result == SOCKET_ERROR)
+	//{
+	//	result = WSAGetLastError();
+	//	WSACleanup();
+	//}
+	////	ShowMessage(command); //for test
+	//result = 0;
+	//return result;
+	return 0;
 }
 
 bool CFTPSocket::SendFileToServer(novac::CString& fileLocalPath)
 {
-	long fileSize;
-	HANDLE hFile;
-	int errorNum = 0;
-	hFile = CreateFile(fileLocalPath,        // open file in local disk
-		GENERIC_READ,              // open for reading 
-		FILE_SHARE_READ,           // share for reading 
-		nullptr,                      // no security 
-		OPEN_EXISTING,             // existing file only 
-		FILE_ATTRIBUTE_NORMAL,     // normal file 
-		nullptr);                     // no attr. template 
+	// TODO: ImplementMe
+	//long fileSize;
+	//HANDLE hFile;
+	//int errorNum = 0;
+	//hFile = CreateFile(fileLocalPath,        // open file in local disk
+	//	GENERIC_READ,              // open for reading 
+	//	FILE_SHARE_READ,           // share for reading 
+	//	nullptr,                      // no security 
+	//	OPEN_EXISTING,             // existing file only 
+	//	FILE_ATTRIBUTE_NORMAL,     // normal file 
+	//	nullptr);                     // no attr. template 
 
-	if (hFile == INVALID_HANDLE_VALUE)
-	{
-		ShowMessage("Could not open file.");   // process error 
-		return false;
-	}
-	fileSize = GetFileSize(hFile, nullptr);
-	if (TransmitFile(m_dataSocket, hFile, fileSize, 0, nullptr, nullptr, TF_DISCONNECT) == FALSE)
-	{
-		errorNum = WSAGetLastError();
-		WSACleanup();
-		ShowMessage("Cannot upload file");
-		return false;
-	}
+	//if (hFile == INVALID_HANDLE_VALUE)
+	//{
+	//	ShowMessage("Could not open file.");   // process error 
+	//	return false;
+	//}
+	//fileSize = GetFileSize(hFile, nullptr);
+	//if (TransmitFile(m_dataSocket, hFile, fileSize, 0, nullptr, nullptr, TF_DISCONNECT) == FALSE)
+	//{
+	//	errorNum = WSAGetLastError();
+	//	WSACleanup();
+	//	ShowMessage("Cannot upload file");
+	//	return false;
+	//}
 	return true;
 
 }
 bool CFTPSocket::ReadData()
 {
-#define LOCAL_BUF_SIZE 1024
-
-	int bytesRecv = 0;
-	long errorNum = 0;
-	long byteSum = 0;
-	time_t startTime, stopTime;
-	int count = 0;
-
-	TByteVector vLocalBuf(LOCAL_BUF_SIZE);
-	Sleep(50);
-	time(&startTime);
-	do
-	{
-		if (IsDataReady(m_dataSocket, 10))
-			bytesRecv = recv(m_dataSocket, &(*(vLocalBuf.begin())), LOCAL_BUF_SIZE, 0);
-		else
-		{
-			ShowMessage("Read data timeout");
-			return false;
-		}
-		StoreReceivedBytes(vLocalBuf, bytesRecv);
-		byteSum += bytesRecv;
-		count++;
-		time(&stopTime);
-		if ((stopTime - startTime >= m_timeout) && (byteSum <= 0))
-		{
-			m_msg.Format("ReadData error num: %d", errorNum);
-			ShowMessage(m_msg);
-			return false;
-		}
-	} while ((bytesRecv != 0));
-
-	m_msg.Format("data is %d bytes", byteSum);
-	ShowMessage(m_msg);
-	m_msg.Format("read data cycle: %d in %d seconds", count, stopTime - startTime);
-	ShowMessage(m_msg);
-	if (errorNum == 0)
-	{
-		WriteVectorFile(m_listFileName, m_vDataBuffer, m_vDataBuffer.size());
-		return true;
-	}
-	else
-	{
-		m_msg.Format("ReadData error num: %d", errorNum);
-		ShowMessage(m_msg);
-		return false;
-	}
+	// TODO: ImplementMe
+//#define LOCAL_BUF_SIZE 1024
+//
+//	int bytesRecv = 0;
+//	long errorNum = 0;
+//	long byteSum = 0;
+//	time_t startTime, stopTime;
+//	int count = 0;
+//
+//	TByteVector vLocalBuf(LOCAL_BUF_SIZE);
+//	Sleep(50);
+//	time(&startTime);
+//	do
+//	{
+//		if (IsDataReady(m_dataSocket, 10))
+//			bytesRecv = recv(m_dataSocket, &(*(vLocalBuf.begin())), LOCAL_BUF_SIZE, 0);
+//		else
+//		{
+//			ShowMessage("Read data timeout");
+//			return false;
+//		}
+//		StoreReceivedBytes(vLocalBuf, bytesRecv);
+//		byteSum += bytesRecv;
+//		count++;
+//		time(&stopTime);
+//		if ((stopTime - startTime >= m_timeout) && (byteSum <= 0))
+//		{
+//			m_msg.Format("ReadData error num: %d", errorNum);
+//			ShowMessage(m_msg);
+//			return false;
+//		}
+//	} while ((bytesRecv != 0));
+//
+//	m_msg.Format("data is %d bytes", byteSum);
+//	ShowMessage(m_msg);
+//	m_msg.Format("read data cycle: %d in %d seconds", count, stopTime - startTime);
+//	ShowMessage(m_msg);
+//	if (errorNum == 0)
+//	{
+//		WriteVectorFile(m_listFileName, m_vDataBuffer, m_vDataBuffer.size());
+//		return true;
+//	}
+//	else
+//	{
+//		m_msg.Format("ReadData error num: %d", errorNum);
+//		ShowMessage(m_msg);
+//		return false;
+//	}
+	return false;
 }
 //set the name for m_listFileName
 void CFTPSocket::SetLogFileName(const novac::CString fileName)
@@ -385,91 +393,95 @@ void CFTPSocket::StoreReceivedBytes(const TByteVector& vBuffer, long receivedByt
 }
 int CFTPSocket::ReadResponse()
 {
-	int bytesRecv = SOCKET_ERROR;
-	long errorNum = 0;
-	int count = 0;
-	time_t startTime, stopTime;
-	memset(m_receiveBuf, 0, RESPONSE_LEN);
-	time(&startTime);
-	do
-	{
-		Sleep(100);
-		if (IsDataReady(m_controlSocket, 10))
-			bytesRecv = recv(m_controlSocket, m_receiveBuf, RESPONSE_LEN, 0);
-		else
-		{
-			ShowMessage("Read data timeout");
-			return -1;
-		}
+	// TODO: ImplementMe
+	//int bytesRecv = SOCKET_ERROR;
+	//long errorNum = 0;
+	//int count = 0;
+	//time_t startTime, stopTime;
+	//memset(m_receiveBuf, 0, RESPONSE_LEN);
+	//time(&startTime);
+	//do
+	//{
+	//	Sleep(100);
+	//	if (IsDataReady(m_controlSocket, 10))
+	//		bytesRecv = recv(m_controlSocket, m_receiveBuf, RESPONSE_LEN, 0);
+	//	else
+	//	{
+	//		ShowMessage("Read data timeout");
+	//		return -1;
+	//	}
 
-		if (bytesRecv < 0)
-		{
-			errorNum = WSAGetLastError();
-			if (errorNum == WSAETIMEDOUT || errorNum == WSAENOTCONN || errorNum == WSAENETRESET || errorNum == WSAESHUTDOWN)
-			{
-				m_msg.Format("error num in ReadResponse %d", errorNum);
-				ShowMessage(m_msg);
-				return errorNum;
-			}
-		}
-		else
-			break;
+	//	if (bytesRecv < 0)
+	//	{
+	//		errorNum = WSAGetLastError();
+	//		if (errorNum == WSAETIMEDOUT || errorNum == WSAENOTCONN || errorNum == WSAENETRESET || errorNum == WSAESHUTDOWN)
+	//		{
+	//			m_msg.Format("error num in ReadResponse %d", errorNum);
+	//			ShowMessage(m_msg);
+	//			return errorNum;
+	//		}
+	//	}
+	//	else
+	//		break;
 
-		count++;
-		time(&stopTime);
-		if (stopTime - startTime >= m_timeout)
-		{
-			ShowMessage("Read data timeout");
-			return -1;
-		}
-	} while (bytesRecv != 0);
+	//	count++;
+	//	time(&stopTime);
+	//	if (stopTime - startTime >= m_timeout)
+	//	{
+	//		ShowMessage("Read data timeout");
+	//		return -1;
+	//	}
+	//} while (bytesRecv != 0);
 
-	m_serverMsg.Format("%s", m_receiveBuf);
-	//msg.Format("%s",m_receiveBuf);
-	if (errorNum == 0)
-		return 1;
-	else
-	{
-		m_msg.Format("Read response Timeout.");
-		ShowMessage(m_msg);
-		return -1;
-	}
+	//m_serverMsg.Format("%s", m_receiveBuf);
+	////msg.Format("%s",m_receiveBuf);
+	//if (errorNum == 0)
+	//	return 1;
+	//else
+	//{
+	//	m_msg.Format("Read response Timeout.");
+	//	ShowMessage(m_msg);
+	//	return -1;
+	//}
+
+	return 1;
 }
 
 bool CFTPSocket::Connect(SOCKET& usedSocket, char* serverIP, int serverPort)
 {
+	// TODO: ImplementMe
 	// Initialize Winsock.
-	WSADATA wsaData;
-	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (iResult != NO_ERROR)
-		ShowMessage(_T("Error at WSAStartup()"));
+	//WSADATA wsaData;
+	//int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	//if (iResult != NO_ERROR)
+	//	ShowMessage(_T("Error at WSAStartup()"));
 
-	// Create a socket.
-	usedSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	//// Create a socket.
+	//usedSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (usedSocket == INVALID_SOCKET)
-	{
-		m_msg.Format("Error at socket(): %ld", WSAGetLastError());
-		ShowMessage(m_msg);
-		WSACleanup();
-		return false;
-	}
-	// Bind the socket.
-	sockaddr_in service;
+	//if (usedSocket == INVALID_SOCKET)
+	//{
+	//	m_msg.Format("Error at socket(): %ld", WSAGetLastError());
+	//	ShowMessage(m_msg);
+	//	WSACleanup();
+	//	return false;
+	//}
+	//// Bind the socket.
+	//sockaddr_in service;
 
-	service.sin_family = AF_INET;
-	service.sin_addr.s_addr = inet_addr(serverIP);
-	service.sin_port = htons(serverPort);
+	//service.sin_family = AF_INET;
+	//service.sin_addr.s_addr = inet_addr(serverIP);
+	//service.sin_port = htons(serverPort);
 
-	// Connect to server.
-	if (connect(usedSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
-	{
-		ShowMessage(_T("Failed to connect."));
-		iResult = WSAGetLastError();
-		WSACleanup();
+	//// Connect to server.
+	//if (connect(usedSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
+	//{
+	//	ShowMessage(_T("Failed to connect."));
+	//	iResult = WSAGetLastError();
+	//	WSACleanup();
 
-		return false;
-	}
+	//	return false;
+	//}
 	return true;
 }
 int CFTPSocket::CloseASocket(SOCKET sock)
@@ -481,38 +493,40 @@ int CFTPSocket::CloseASocket(SOCKET sock)
    4. Call closesocket.
 
 	*/
-	int ret;
-	int reply = -1;
-	char buf[1024];
-	int bytesRecv = 0;
-	try
-	{
 
-		ret = WSAAsyncSelect(sock, NULL, NULL, FD_CLOSE);
+	// TODO: ImplementMe
+	//int ret;
+	//int reply = -1;
+	//char buf[1024];
+	//int bytesRecv = 0;
+	//try
+	//{
 
-		if (ret == 0)
-		{
-			reply = shutdown(sock, 1);
+	//	ret = WSAAsyncSelect(sock, NULL, NULL, FD_CLOSE);
 
-			do
-			{
-				bytesRecv = recv(sock, buf, 1024, 0);
-				break;
-			} while (bytesRecv != 0);
-			closesocket(sock);
-		}
-		else
-		{
-			shutdown(sock, 1);
-			reply = closesocket(sock);
-		}
-	}
-	catch (std::exception& pEx)
-	{
-		ShowMessage("Disconnect exception");
-	}
-	return reply;
+	//	if (ret == 0)
+	//	{
+	//		reply = shutdown(sock, 1);
 
+	//		do
+	//		{
+	//			bytesRecv = recv(sock, buf, 1024, 0);
+	//			break;
+	//		} while (bytesRecv != 0);
+	//		closesocket(sock);
+	//	}
+	//	else
+	//	{
+	//		shutdown(sock, 1);
+	//		reply = closesocket(sock);
+	//	}
+	//}
+	//catch (std::exception& pEx)
+	//{
+	//	ShowMessage("Disconnect exception");
+	//}
+	//return reply;
+	return 0;
 }
 int CFTPSocket::Disconnect()
 {
@@ -569,7 +583,7 @@ long CFTPSocket::Size(novac::CString& fileName)
 	SendCommand("SIZE", fileName);
 	ReadData();
 	sizeStr = m_serverMsg;
-	MessageBox(nullptr, sizeStr, "notice", MB_OK);
+//	MessageBox(nullptr, sizeStr, "notice", MB_OK);
 	return fileSize;
 }
 //NOT FOR NOVAC SCANNER FTP SERVER
@@ -633,84 +647,86 @@ int CFTPSocket::JudgeFTPCode(int code)
 
 int CFTPSocket::DownloadFile(novac::CString remoteFileName, novac::CString localFileName)
 {
-#define DOWNLOAD_BUF_SIZE 4096
-	time_t startTime, stopTime;
-	long fileSize = 0;
-	float fileKBytes;
-	char buf[DOWNLOAD_BUF_SIZE];
-	DWORD bytesWritten;
-	int bytesRecv;
-	long errorNum;
-	DWORD lastBytesWritten;
-	// check file existence in remote ftp server  - to be done
-	if (!OpenFileHandle(localFileName))
-		return -1;
-
-	//receive file parts
-	time(&startTime);
-	SendCommand("TYPE", "I");
-
-	if (!EnterPassiveMode())
-		return 0;
-
-	SendCommand("RETR", remoteFileName);
-	//check file existence
-	ReadResponse();
-	if (!IsFTPCommandDone())
-		return 0;
-	lastBytesWritten = 0;
-	do
-	{
-		bytesRecv = recv(m_dataSocket, buf, DOWNLOAD_BUF_SIZE, 0);
-
-		if (bytesRecv < 0)
-		{
-			errorNum = WSAGetLastError();
-		}
-		else
-		{
-			fileSize += bytesRecv;
-			WriteFile(m_hDownloadedFile, buf + lastBytesWritten, bytesRecv, &bytesWritten, nullptr);
-			lastBytesWritten = bytesWritten;
-		}
-	} while (bytesRecv != 0);
-
-	CloseHandle(m_hDownloadedFile);  //close the downloaded file handle so that it can be used.
-	if (bytesRecv == SOCKET_ERROR)
-	{
-		m_msg.Format("recv failed: %d ", WSAGetLastError());
-		ShowMessage(m_msg);  // for test
-		CloseHandle(m_hDownloadedFile);
-		return -1;
-	}
-	//show time duration
-	time(&stopTime);
-	fileKBytes = (float)(fileSize / 1024.0);
-	if (stopTime - startTime != 0)
-	{
-		m_msg.Format("%f kBytes File is downloaded in %d seconds, speed is %f KBytes/sec", fileKBytes,
-			stopTime - startTime, fileKBytes / (stopTime - startTime));
-		ShowMessage(m_msg);
-	}
+	// TODO: ImplementMe
+//#define DOWNLOAD_BUF_SIZE 4096
+//	time_t startTime, stopTime;
+//	long fileSize = 0;
+//	float fileKBytes;
+//	char buf[DOWNLOAD_BUF_SIZE];
+//	DWORD bytesWritten;
+//	int bytesRecv;
+//	long errorNum;
+//	DWORD lastBytesWritten;
+//	// check file existence in remote ftp server  - to be done
+//	if (!OpenFileHandle(localFileName))
+//		return -1;
+//
+//	//receive file parts
+//	time(&startTime);
+//	SendCommand("TYPE", "I");
+//
+//	if (!EnterPassiveMode())
+//		return 0;
+//
+//	SendCommand("RETR", remoteFileName);
+//	//check file existence
+//	ReadResponse();
+//	if (!IsFTPCommandDone())
+//		return 0;
+//	lastBytesWritten = 0;
+//	do
+//	{
+//		bytesRecv = recv(m_dataSocket, buf, DOWNLOAD_BUF_SIZE, 0);
+//
+//		if (bytesRecv < 0)
+//		{
+//			errorNum = WSAGetLastError();
+//		}
+//		else
+//		{
+//			fileSize += bytesRecv;
+//			WriteFile(m_hDownloadedFile, buf + lastBytesWritten, bytesRecv, &bytesWritten, nullptr);
+//			lastBytesWritten = bytesWritten;
+//		}
+//	} while (bytesRecv != 0);
+//
+//	CloseHandle(m_hDownloadedFile);  //close the downloaded file handle so that it can be used.
+//	if (bytesRecv == SOCKET_ERROR)
+//	{
+//		m_msg.Format("recv failed: %d ", WSAGetLastError());
+//		ShowMessage(m_msg);  // for test
+//		CloseHandle(m_hDownloadedFile);
+//		return -1;
+//	}
+//	//show time duration
+//	time(&stopTime);
+//	fileKBytes = (float)(fileSize / 1024.0);
+//	if (stopTime - startTime != 0)
+//	{
+//		m_msg.Format("%f kBytes File is downloaded in %d seconds, speed is %f KBytes/sec", fileKBytes,
+//			stopTime - startTime, fileKBytes / (stopTime - startTime));
+//		ShowMessage(m_msg);
+//	}
 	return 1;
 }
 bool CFTPSocket::OpenFileHandle(novac::CString& fileName)
 {
-	int errorNum = 0;
-	m_hDownloadedFile = CreateFile(fileName,        // open file in local disk
-		GENERIC_WRITE,              // open for writing 
-		FILE_SHARE_WRITE,           // share for writing 
-		nullptr,                      // no security 
-		CREATE_ALWAYS,             // Opens the file, if it exists. If the file does not exist, the function creates the file
-		FILE_ATTRIBUTE_NORMAL,     // normal file 
-		nullptr);                     // no attr. template 
+	// TODO: ImplementMe
+	//int errorNum = 0;
+	//m_hDownloadedFile = CreateFile(fileName,        // open file in local disk
+	//	GENERIC_WRITE,              // open for writing 
+	//	FILE_SHARE_WRITE,           // share for writing 
+	//	nullptr,                      // no security 
+	//	CREATE_ALWAYS,             // Opens the file, if it exists. If the file does not exist, the function creates the file
+	//	FILE_ATTRIBUTE_NORMAL,     // normal file 
+	//	nullptr);                     // no attr. template 
 
-	if (m_hDownloadedFile == INVALID_HANDLE_VALUE)
-	{
-		m_msg.Format("Can not open file %s", (const char*)fileName);
-		ShowMessage(m_msg);   // process error 
-		return false;
-	}
+	//if (m_hDownloadedFile == INVALID_HANDLE_VALUE)
+	//{
+	//	m_msg.Format("Can not open file %s", (const char*)fileName);
+	//	ShowMessage(m_msg);   // process error 
+	//	return false;
+	//}
 	return true;
 }
 bool CFTPSocket::SetCurrentFTPDirectory(novac::CString& directory)
@@ -800,15 +816,16 @@ bool CFTPSocket::CreateFTPDirectory(novac::CString& parentDirectory, novac::CStr
 }
 bool CFTPSocket::IsDataReady(const SOCKET& socket, long timeout)
 {
-	timeval expireTime;
-	expireTime.tv_sec = timeout;
-	expireTime.tv_usec = 0;
-	fd_set socketSet;
-	socketSet.fd_count = 1;
-	socketSet.fd_array[0] = socket;
-	int result = select(0, &socketSet, nullptr, &socketSet, &expireTime);
-	if (result == 1)
-		return true;
-	else
+	// TODO: ImplementMe
+	//timeval expireTime;
+	//expireTime.tv_sec = timeout;
+	//expireTime.tv_usec = 0;
+	//fd_set socketSet;
+	//socketSet.fd_count = 1;
+	//socketSet.fd_array[0] = socket;
+	//int result = select(0, &socketSet, nullptr, &socketSet, &expireTime);
+	//if (result == 1)
+	//	return true;
+	//else
 		return false;
 }

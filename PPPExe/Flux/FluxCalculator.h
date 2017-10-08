@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../resource.h"
-
 #include "FluxResult.h"
 
 #include "../Evaluation/ScanResult.h"

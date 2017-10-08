@@ -241,101 +241,103 @@ void CPostProcessing::DoPostProcessing_Geometry(){
 }
 
 void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CList <novac::CString, novac::CString&> &fileList){
-	int channel;
-	CDateTime startTime;
-	novac::CString serial, fileName, userMessage;
-	MEASUREMENT_MODE mode;
-	HANDLE hFile;
-	WIN32_FIND_DATA FindFileData;
-	char fileToFind[MAX_PATH];
+	// TODO: ImplementMe
 
-	userMessage.Format("Searching for .pak - files in directory %s", (const char*)path);
-	ShowMessage(userMessage);
+	//int channel;
+	//CDateTime startTime;
+	//novac::CString serial, fileName, userMessage;
+	//MEASUREMENT_MODE mode;
+	//HANDLE hFile;
+	//WIN32_FIND_DATA FindFileData;
+	//char fileToFind[MAX_PATH];
 
-	// ------------------------------------ OPTION 1 -----------------------------------------
-	// ------ If we want to search for sub-directories, then search for all directories... ---
-	// ---------------------------------------------------------------------------------------
-	if(g_userSettings.m_includeSubDirectories_Local){
-		sprintf(fileToFind, "%s\\*", (const char*)path);
+	//userMessage.Format("Searching for .pak - files in directory %s", (const char*)path);
+	//ShowMessage(userMessage);
 
-		// Search for the file
-		hFile = FindFirstFile(fileToFind, &FindFileData);
+	//// ------------------------------------ OPTION 1 -----------------------------------------
+	//// ------ If we want to search for sub-directories, then search for all directories... ---
+	//// ---------------------------------------------------------------------------------------
+	//if(g_userSettings.m_includeSubDirectories_Local){
+	//	sprintf(fileToFind, "%s\\*", (const char*)path);
 
-		if(hFile != INVALID_HANDLE_VALUE){
-			do{
-				fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
+	//	// Search for the file
+	//	hFile = FindFirstFile(fileToFind, &FindFileData);
 
-				if(Equals(FindFileData.cFileName, ".") || Equals(FindFileData.cFileName, ".."))
-					continue;
+	//	if(hFile != INVALID_HANDLE_VALUE){
+	//		do{
+	//			fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
 
-				// if this is a directory...
-				if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-					CheckForSpectraInDir(fileName, fileList);
-				}else{
-					// if this is a .pak - file
-					if(Equals(fileName.Right(4), ".pak")){
-						// if this is a incomplete scan, then don't process it.
-						if(strstr(FindFileData.cFileName, "Incomplete"))
-							continue;
+	//			if(Equals(FindFileData.cFileName, ".") || Equals(FindFileData.cFileName, ".."))
+	//				continue;
 
-						if(Equals(FindFileData.cFileName, "Upload.pak"))
-							continue; // don't add upload.pak, it's never complete...
+	//			// if this is a directory...
+	//			if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
+	//				CheckForSpectraInDir(fileName, fileList);
+	//			}else{
+	//				// if this is a .pak - file
+	//				if(Equals(fileName.Right(4), ".pak")){
+	//					// if this is a incomplete scan, then don't process it.
+	//					if(strstr(FindFileData.cFileName, "Incomplete"))
+	//						continue;
 
-						// check that this file is in the time-interval that we should evaluate spectra...
-						FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(FindFileData.cFileName, startTime, serial, channel, mode);
+	//					if(Equals(FindFileData.cFileName, "Upload.pak"))
+	//						continue; // don't add upload.pak, it's never complete...
 
-						if(startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
-							continue;
+	//					// check that this file is in the time-interval that we should evaluate spectra...
+	//					FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(FindFileData.cFileName, startTime, serial, channel, mode);
 
-						// We've passed all the tests for the .pak-file.
-						// Append the found file to the list of files to split and evaluate...
-						fileList.AddTail(fileName);
-					}
-				}
-			}while(0 != FindNextFile(hFile, &FindFileData));
+	//					if(startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
+	//						continue;
 
-			FindClose(hFile);
-			return;
-		}
-	}
-	
-	// ------------------------------------ OPTION 2 -----------------------------------------
-	// --------------------- Find all .pak-files in the specified directory ------------------
-	// ---------------------------------------------------------------------------------------
+	//					// We've passed all the tests for the .pak-file.
+	//					// Append the found file to the list of files to split and evaluate...
+	//					fileList.AddTail(fileName);
+	//				}
+	//			}
+	//		}while(0 != FindNextFile(hFile, &FindFileData));
 
-	sprintf(fileToFind, "%s\\*.pak", (const char*)path);
+	//		FindClose(hFile);
+	//		return;
+	//	}
+	//}
+	//
+	//// ------------------------------------ OPTION 2 -----------------------------------------
+	//// --------------------- Find all .pak-files in the specified directory ------------------
+	//// ---------------------------------------------------------------------------------------
 
-	// Search for the file
-	hFile = FindFirstFile(fileToFind, &FindFileData);
+	//sprintf(fileToFind, "%s\\*.pak", (const char*)path);
 
-	if(hFile == INVALID_HANDLE_VALUE)
-		return; // no files found
+	//// Search for the file
+	//hFile = FindFirstFile(fileToFind, &FindFileData);
 
-	do{
-		fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
+	//if(hFile == INVALID_HANDLE_VALUE)
+	//	return; // no files found
 
-		// if this is a incomplete scan, then don't process it.
-		if(strstr(FindFileData.cFileName, "Incomplete"))
-			continue;
+	//do{
+	//	fileName.Format("%s\\%s", (const char*)path, (const char*)FindFileData.cFileName);
 
-		if(Equals(FindFileData.cFileName, "Upload.pak"))
-			continue; // don't add upload.pak, it's never complete...
+	//	// if this is a incomplete scan, then don't process it.
+	//	if(strstr(FindFileData.cFileName, "Incomplete"))
+	//		continue;
 
-		// check that this file is in the time-interval that we should evaluate spectra...
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(FindFileData.cFileName, startTime, serial, channel, mode);
+	//	if(Equals(FindFileData.cFileName, "Upload.pak"))
+	//		continue; // don't add upload.pak, it's never complete...
 
-		if(startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
-			continue;
-		
-		// We've passed all the tests for the .pak-file.
-		// Append the found file to the list of files to split and evaluate...
-		fileList.AddTail(fileName);
+	//	// check that this file is in the time-interval that we should evaluate spectra...
+	//	FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(FindFileData.cFileName, startTime, serial, channel, mode);
 
-	}while(0 != FindNextFile(hFile, &FindFileData));
+	//	if(startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
+	//		continue;
+	//	
+	//	// We've passed all the tests for the .pak-file.
+	//	// Append the found file to the list of files to split and evaluate...
+	//	fileList.AddTail(fileName);
 
-	FindClose(hFile);
+	//}while(0 != FindNextFile(hFile, &FindFileData));
 
-	return;
+	//FindClose(hFile);
+
+	//return;
 }
 
 /** Scans through the given FTP-server in search for .pak-files
@@ -364,7 +366,8 @@ void CPostProcessing::CheckForSpectraOnFTPServer(novac::CList <novac::CString, n
 	}
 }
 
-CWinThread **evalThreads = nullptr;
+// TODO: ImplementMe
+//CWinThread **evalThreads = nullptr;
 volatile int nThreadsRunning;
 volatile unsigned long s_nFilesProcessed, s_nFilesToProcess;
 const novac::CList <novac::CString, novac::CString &> *s_pakFileList;
@@ -396,17 +399,18 @@ void CPostProcessing::EvaluateScans(const novac::CList <novac::CString, novac::C
 	ShowMessage(messageToUser);
 
 	// start the threads
-	evalThreads			= (CWinThread **)calloc(g_userSettings.m_maxThreadNum, sizeof(CWinThread *));
-	nThreadsRunning		= 0;
-	for(unsigned int k = 0; k < g_userSettings.m_maxThreadNum; ++k){
-		evalThreads[k] = AfxBeginThread(EvaluateOneScan, nullptr, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
-		//Common::SetThreadName(evalThreads[k]->m_nThreadID, "EvaluateOneScan");
-	}
+	// TODO: ImplementMe
+	//evalThreads			= (CWinThread **)calloc(g_userSettings.m_maxThreadNum, sizeof(CWinThread *));
+	//nThreadsRunning		= 0;
+	//for(unsigned int k = 0; k < g_userSettings.m_maxThreadNum; ++k){
+	//	evalThreads[k] = AfxBeginThread(EvaluateOneScan, nullptr, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+	//	//Common::SetThreadName(evalThreads[k]->m_nThreadID, "EvaluateOneScan");
+	//}
 
-	// make sure that all threads have time to finish before we say that we're ready
-	while(nThreadsRunning > 0){
-		Sleep(500);
-	}
+	//// make sure that all threads have time to finish before we say that we're ready
+	//while(nThreadsRunning > 0){
+	//	Sleep(500);
+	//}
 
 	messageToUser.Format("All %ld scans evaluated.", s_nFilesToProcess);
 	ShowMessage(messageToUser);
@@ -520,8 +524,9 @@ int CPostProcessing::CheckSettings(){
 	for(j = 0; j < g_setup.m_instrumentNum; ++j){
 		for(k = j + 1; k < g_setup.m_instrumentNum; ++k){
 			if(Equals(g_setup.m_instrument[j].m_serial, g_setup.m_instrument[k].m_serial)){
+				// TODO: ImplementMe
 				errorMessage.Format("The instrument %s is defined twice in setup.xml. If the instrument has two locations then define the instrument once but with two locations. Exiting post processsing.", (const char*)g_setup.m_instrument[k].m_serial);
-				MessageBox(nullptr, errorMessage, "Error in setup.xml", MB_OK);
+				//MessageBox(nullptr, errorMessage, "Error in setup.xml", MB_OK);
 				return 1;
 			}
 		}
@@ -539,15 +544,18 @@ int CPostProcessing::CheckSettings(){
 				case 0: break; // this is fine
 				case 1: 
 					errorMessage.Format("No fit window defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 2:
 					errorMessage.Format("Invalid time range found for fit window defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 3:
 					errorMessage.Format("At least two fit windows defined for %s have overlapping time ranges. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 			}
 		}
@@ -565,15 +573,18 @@ int CPostProcessing::CheckSettings(){
 				case 0: break; // this is fine
 				case 1: 
 					errorMessage.Format("No location defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 2:
 					errorMessage.Format("Invalid time range found for location defined for %s. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 				case 3:
 					errorMessage.Format("At least two location defined for %s have overlapping time ranges. Exiting", (const char*)g_setup.m_instrument[j].m_serial);
-					MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
+					// TODO: ImplementMe
+					//MessageBox(nullptr, errorMessage, "Error in settings", MB_OK);
 					return 1;
 			}
 		}
@@ -1101,7 +1112,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 	// Also write the statistics for the flux
 	ShowMessage("Writing flux statistics");
 	stat.AttachFluxList(calculatedFluxes);
-	stat.WriteFluxStat(_T(g_userSettings.m_outputDirectory + "\\FluxStatistics.txt"));
+	stat.WriteFluxStat(g_userSettings.m_outputDirectory + "\\FluxStatistics.txt");
 	
 	// clean up...
 	delete fluxCalc;

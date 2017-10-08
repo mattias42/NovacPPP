@@ -37,14 +37,10 @@ set(NPP_COMMON
     ${CMAKE_CURRENT_LIST_DIR}/Common/GPSData.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/ProcessingFileReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/ProcessingFileReader.h
-    ${CMAKE_CURRENT_LIST_DIR}/Common/SimpleWindFileReader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Common/SimpleWindFileReader.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/SpectrometerModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/SpectrometerModel.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/Version.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/Version.h
-    ${CMAKE_CURRENT_LIST_DIR}/Common/WindFieldRecord.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Common/WindFieldRecord.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/XMLFileReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/XMLFileReader.h
 )

@@ -32,11 +32,8 @@
 #pragma warning(push)
 #pragma warning(disable:4244)
 
-#if WIN32
-# ifndef BSPLINE_DLL_
-#  define BSPLINE_DLL_
-# endif
-#endif /* WIN32 */
+#ifndef BSPLINE_DLL_
+#define BSPLINE_DLL_
 
 #include "BSpline.h"
 #include "BandedMatrix.h"
@@ -798,4 +795,7 @@ const T *BSpline<T>::curve (int *nx)
     return spline.begin();
 }
 
+#endif  // BSPLINE_DLL_
+
 #pragma warning(pop)
+

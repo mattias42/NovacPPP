@@ -75,8 +75,9 @@ void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtend
 	novac::CString fileName;
 
 	// remove the old stratospheric output-file
-	fileName.Format("%s\\Stratosphere.txt", (const char*)g_userSettings.m_outputDirectory);
-	DeleteFile(fileName);
+	// TODO: ImplementMe
+	//fileName.Format("%s\\Stratosphere.txt", (const char*)g_userSettings.m_outputDirectory);
+	//DeleteFile(fileName);
 
 
 	// make the list of measurements
