@@ -39,7 +39,7 @@ void GetSysTempFolder(novac::CString& folderPath);
     @param - The filename (including path) to the file.
     @return 0 if the file does not exist.
     @return 1 if the file exist. */
-int IsExistingFile(const novac::CString &fileName);
+bool IsExistingFile(const novac::CString &fileName);
 
 /** Creates a directory structure according to the given path.
 		@return 0 on success. */

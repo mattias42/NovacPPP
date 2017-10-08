@@ -109,6 +109,8 @@ namespace novac
 
 		const char* c_str() const { return m_data.c_str(); }
 
+		const std::string std_str() const { return std::string(m_data); }
+
 	private:
 		std::string m_data;
 	};

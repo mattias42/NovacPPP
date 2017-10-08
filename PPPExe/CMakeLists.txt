@@ -235,8 +235,13 @@ add_executable(NovacPPP
     ${NPP_WINDMEASUREMENT}
 )
 
-target_include_directories(NovacPPP PRIVATE ${PppLib_INCLUDE_DIRS})
+target_include_directories(NovacPPP PRIVATE 
+    ${PppLib_INCLUDE_DIRS}
+    ${PocoNet_DIR}
+    ${PocoFoundation_DIR})
 
+target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
+    
 # TODO: Also include /sdl and /WX
 target_compile_options(NovacPPP PUBLIC /W3)
 

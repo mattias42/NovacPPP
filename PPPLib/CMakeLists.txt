@@ -20,4 +20,4 @@ add_library(PPPLib
 
 target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
 
-target_compile_options(PPPLib PUBLIC /W4 /WX /sdl)
+target_compile_options(PPPLib PRIVATE /W4 /WX /sdl)
