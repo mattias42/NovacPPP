@@ -235,12 +235,12 @@ namespace MathFit
 
       ~BandedMatrixRow () {}
 
-      BandedMatrix<T>::element_type & operator[] (int j)
+      typename BandedMatrix<T>::element_type & operator[] (int j)
       {
 	  return const_cast<BandedMatrix<T> &>(bm).element (i, j);
       }
 
-      const BandedMatrix<T>::element_type & operator[] (int j) const
+	  typename const BandedMatrix<T>::element_type & operator[] (int j) const
       {
 	  return bm.element (i, j);
       }

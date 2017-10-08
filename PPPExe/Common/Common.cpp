@@ -15,6 +15,9 @@
 // extern CDialog *pView;
 extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
+extern std::string s_exePath;
+extern std::string s_exeFileName;
+
 #undef min
 #undef max
 
@@ -38,7 +41,8 @@ int CreateDirectoryStructure(const novac::CString &path)
 	}
 	else {
 		return 1; // error
-	}}
+	}
+}
 
 int Equals(const novac::CString &str1, const novac::CString &str2) {
 	return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
@@ -88,15 +92,10 @@ void ShowMessage(const char message[]) {
 	ShowMessage(msg);
 }
 
-void Common::GetExePath() {
-	//	char exeFullPath[MAX_PATH]; 
-	//	GetModuleFileName(NULL, exeFullPath, MAX_PATH); 
-	//	m_exePath     = novac::CString(exeFullPath);
-	//	m_exeFileName = novac::CString(exeFullPath); 
-	//	int position  = m_exePath.ReverseFind('\\'); 
-	//	int length    = m_exePath.GetLength();
-	//	m_exePath     = m_exePath.Left(position+1);
-	//	m_exeFileName = m_exeFileName.Right(length - position - 1);
+Common::Common()
+	:m_exePath(s_exePath), m_exeFileName(s_exeFileName)
+{
+
 }
 
 /** Calculate the distance (in meters) between the two points (lat1, lon1) and
@@ -1293,7 +1292,7 @@ bool Common::ArchiveFile(const novac::CString &fileName) {
 	// Search for the file
 	Poco::File oldFile(fileName.std_str());
 
-	if(!oldFile.exists()) {
+	if (!oldFile.exists()) {
 		return false; // file does not exist
 	}
 

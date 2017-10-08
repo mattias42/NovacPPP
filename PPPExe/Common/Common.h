@@ -200,6 +200,8 @@ enum SKY_OPTION {
 class Common{
 
 public:
+	Common();
+
 	// --------------------------------------------------------------------
 	// ------------------------- FILE -------------------------------------
 	// --------------------------------------------------------------------
@@ -233,16 +235,13 @@ public:
 	    @param fileName - the complete path of the file */
 	static void GetDirectory(novac::CString &fileName);
 
+	/** m_exePath will be set to the path where the application resides,
+		This is set once at application startup and should never be changed. */
+	const novac::CString m_exePath;
 
-	/** Retrieves the current path, and the filename of the program. 
-	    Result is stored in 'm_exePath', and 'm_exeFileName' */
-	void GetExePath();
-
-	/** m_exePath will be set to the current path after a call to 'GetExePath()' */
-	novac::CString   m_exePath;
-
-	/** m_exeFileName will be set to the filename of the program after a call to 'GetExeFileName()' */
-	novac::CString   m_exeFileName;
+	/** m_exeFileName will be set to the filename of the program.
+		This is set once at application startup and should never be changed. */
+	const novac::CString m_exeFileName;
 
 	// --------------------------------------------------------------------
 	// ---------------------- DATE & TIME ---------------------------------

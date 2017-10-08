@@ -701,7 +701,6 @@ int CPostProcessing::ReadWindField(){
 	novac::CString name1, name2, name3, path1, path2, path3, messageToUser;
 	Common common;
 	FileHandler::CXMLWindFileReader reader;
-	common.GetExePath();
 
 	if(g_userSettings.m_windFieldFileOption == 0){
 

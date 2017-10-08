@@ -200,6 +200,7 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/MeteorologySource.h
     ${CMAKE_CURRENT_LIST_DIR}/Molecule.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Molecule.h
+    ${CMAKE_CURRENT_LIST_DIR}/NovacPPP.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.h
     ${CMAKE_CURRENT_LIST_DIR}/PlumeInScanProperty.cpp

@@ -45,6 +45,8 @@
 
 #include <assert.h>
 
+namespace MathFit
+{
 template <class T>
 class Matrix : public BandedMatrix<T>
 {
@@ -279,11 +281,11 @@ inline double BSplineBase<T>::Beta (int m)
  * of x data points in this BSplineBase, create a BSpline
  * object which contains the smoothed curve for the y array.
  */
-template <class T>
-BSpline<T>* BSplineBase<T>::apply (const T *y)
-{
-    return new BSpline<T> (*this, y);
-}
+//template <class T>
+//BSpline<T>* BSplineBase<T>::apply (const T *y)
+//{
+//    return new BSpline<T> (*this, y);
+//}
 
 /*
  * Evaluate the closed basis function at node m for value x,
@@ -389,7 +391,7 @@ double BSplineBase<T>::qDelta (int m1, int m2)
 		return 0.0;
 	
     double q = 0;
-    for (int m = max (m1-2,0); m < min (m1+2, M); ++m)
+    for (int m = std::max (m1-2,0); m < std::min (m1+2, M); ++m)
 		q += qparts[K-1][m2-m1][m-m1+2];
     return q * alpha;
 }
@@ -472,7 +474,7 @@ void BSplineBase<T>::addP ()
 		
 		// Loop over the upper triangle of nonzero basis functions,
 		// and add in the products on each side of the diagonal.
-		for (m = max(0, mx-1); m <= min(M, mx+2); ++m)
+		for (m = std::max(0, mx-1); m <= std::min(M, mx+2); ++m)
 		{
 			//float pn;
 			//float pm = Basis (m, x);
@@ -482,7 +484,7 @@ void BSplineBase<T>::addP ()
 			double pm = Basis (m, x);
 			double sum = pm * pm;
 			P[m][m] += sum;
-			for (n = m+1; n <= min(M, mx+2); ++n)
+			for (n = m+1; n <= std::min(M, mx+2); ++n)
 			{
 				pn = Basis (n, x);
 				sum = pm * pn;
@@ -604,7 +606,7 @@ const T* BSplineBase<T>::nodes (int *nn)
 		*nn = base->Nodes.size();
 	
     assert (base->Nodes.size() == (unsigned)(M+1));
-    return base->Nodes.begin();
+    return base->Nodes.data();
 }
 
 template <class T> std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
@@ -694,7 +696,7 @@ bool BSpline<T>::solve (const T *y)
 		T yj = y[j] - mean;
 		mx = (int)((xj - xmin) / DX);
 		
-		for (m = max(0,mx-1); m <= min(mx+2,M); ++m)
+		for (m = std::max(0,mx-1); m <= std::min(mx+2,M); ++m)
 		{
 			B[m] += yj * Basis (m, xj);
 		}
@@ -748,7 +750,7 @@ T BSpline<T>::evaluate (T x)
     if (OK)
     {
 		int n = (int)((x - xmin)/DX);
-		for (int i = max(0,n-1); i <= min(M,n+2); ++i)
+		for (int i = std::max(0,n-1); i <= std::min(M,n+2); ++i)
 		{
 			y += s->A[i] * Basis (i, x);
 		}
@@ -764,7 +766,7 @@ T BSpline<T>::slope (T x)
     if (OK)
     {
 		int n = (int)((x - xmin)/DX);
-		for (int i = max(0,n-1); i <= min(M,n+2); ++i)
+		for (int i = std::max(0,n-1); i <= std::min(M,n+2); ++i)
 		{
 			dy += s->A[i] * DBasis (i, x);
 		}
@@ -792,7 +794,8 @@ const T *BSpline<T>::curve (int *nx)
 	
     if (nx)
 		*nx = spline.size();
-    return spline.begin();
+    return spline.data();
+}
 }
 
 #endif  // BSPLINE_DLL_
