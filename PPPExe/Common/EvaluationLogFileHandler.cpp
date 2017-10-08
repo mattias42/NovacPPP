@@ -71,29 +71,29 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 
 	char* szToken = (char*)(LPCSTR)str;
 	int curCol = -1;
-	char elevation[]    = _T("elevation");
-	char scanAngle[]    = _T("scanangle");
-	char obsAngle[]			= _T("observationangle");
-	char azimuth[]			= _T("azimuth");
-	char column[]       = _T("column");
-	char columnError[]  = _T("columnerror");
-	char intensity[]    = _T("intensity");	// peak intensity
-	char fitIntensity[] = _T("intens(fitregion)"); // fit-region intensity
-	char fitIntensity2[]= _T("fitintensity"); // fit-region intensity
-	char peakSat[]			= _T("specsaturation");	// maximum saturation ratio of the whole spectrum
-	char fitSat[]				= _T("fitsaturation");	// maximum saturation ratio in the fit region
-	char delta[]        = _T("delta");
-	char chiSquare[]    = _T("chisquare");
-	char shift[]        = _T("shift");
-	char shiftError[]   = _T("shifterror");
-	char squeeze[]      = _T("squeeze");
-	char squeezeError[] = _T("squeezeerror");
-	char exposureTime[] = _T("exposuretime");
-	char numSpec[]      = _T("numSpec");
-	char offset[]       = _T("offset");
-	char starttime[]    = _T("starttime");
-	char stoptime[]			= _T("stoptime");
-	char nameStr[]			= _T("name");
+	char elevation[]    = "elevation";
+	char scanAngle[]    = "scanangle";
+	char obsAngle[]			= "observationangle";
+	char azimuth[]			= "azimuth";
+	char column[]       = "column";
+	char columnError[]  = "columnerror";
+	char intensity[]    = "intensity";	// peak intensity
+	char fitIntensity[] = "intens(fitregion)"; // fit-region intensity
+	char fitIntensity2[]= "fitintensity"; // fit-region intensity
+	char peakSat[]			= "specsaturation";	// maximum saturation ratio of the whole spectrum
+	char fitSat[]				= "fitsaturation";	// maximum saturation ratio in the fit region
+	char delta[]        = "delta";
+	char chiSquare[]    = "chisquare";
+	char shift[]        = "shift";
+	char shiftError[]   = "shifterror";
+	char squeeze[]      = "squeeze";
+	char squeezeError[] = "squeezeerror";
+	char exposureTime[] = "exposuretime";
+	char numSpec[]      = "numSpec";
+	char offset[]       = "offset";
+	char starttime[]    = "starttime";
+	char stoptime[]			= "stoptime";
+	char nameStr[]			= "name";
 
 	while(szToken = strtok(szToken, "\t")){
 		++curCol;
@@ -271,11 +271,11 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 }
 
 RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
-	char  expTimeStr[]        = _T("exposuretime");         // this string only exists in the header line.
-	char  scanInformation[]   = _T("<scaninformation>");    // this string only exists in the scan-information section before the scan-data
-	char  fluxInformation[]   = _T("<fluxinfo>");           // this string only exists in the flux-information section before the scan-data
-	char  spectralData[]      = _T("<spectraldata>");
-	char  endofSpectralData[] = _T("</spectraldata>");
+	char  expTimeStr[]        = "exposuretime";         // this string only exists in the header line.
+	char  scanInformation[]   = "<scaninformation>";    // this string only exists in the scan-information section before the scan-data
+	char  fluxInformation[]   = "<fluxinfo>";           // this string only exists in the flux-information section before the scan-data
+	char  spectralData[]      = "<spectraldata>";
+	char  endofSpectralData[] = "</spectraldata>";
 	novac::CString str;
 	char szLine[8192];
 	int measNr = 0;
@@ -607,7 +607,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 /** Makes a quick scan through the evaluation-log 
 	to count the number of scans in it */
 long CEvaluationLogFileHandler::CountScansInFile(){
-	char  expTimeStr[] = _T("exposuretime"); // this string only exists in the header line.
+	char  expTimeStr[] = "exposuretime"; // this string only exists in the header line.
 	char szLine[8192];
 	long  nScans = 0;
 

@@ -102,7 +102,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 /** Performs the evaluation using the supplied evaluator 
 	@return the number of spectra evaluated */
 long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluation *eval, const Configuration::CDarkSettings *darkSettings){
-	CString message;	// used for ShowMessage messages
+	novac::CString message;	// used for ShowMessage messages
 	int	index = 0;		// keeping track of the index of the current spectrum into the .pak-file
 	double highestColumn = 0.0;	// the highest column-value in the evaluation
 	bool success = true;
@@ -171,7 +171,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 				// at the end of the file, quit the 'while' loop
 				break;
 			}else{
-				CString errMsg;
+				novac::CString errMsg;
 				errMsg.Format("Faulty spectrum found in %s", (const char*)scan->GetFileName());
 				switch(scan->m_lastError){
 					case SpectrumIO::CSpectrumIO::ERROR_CHECKSUM_MISMATCH:
@@ -269,7 +269,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
 
 RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings){
-	CString message;
+	novac::CString message;
 	CSpectrum offset, darkCurrent, offset_dc;
 	bool offsetCorrectDC = true; // this is true if the dark current spectrum should be offset corrected
 
@@ -418,7 +418,7 @@ RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const 
 
 /** This returns the sky spectrum that is to be used in the fitting. */
 RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky){
-	CString errorMsg;
+	novac::CString errorMsg;
 
 	// If the sky spectrum is the first spectrum in the scan
 	if(g_userSettings.m_skyOption == SKY_SCAN){
@@ -516,7 +516,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 	int k;
 	CSpectrum spec, sky, dark;
 	int specieNum = 0;
-	CString message;
+	novac::CString message;
 	CEvaluation *eval2 = NULL;
 	CFitWindow fitWindow2;
 
@@ -611,7 +611,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan){
 	double shift, shiftError, squeeze, squeezeError;
 	CSpectrum sky, spectrum, dark;
-	CString message;
+	novac::CString message;
 	double fitIntensity, fitSaturation, maxInt;
 	double bestSaturation = -1.0;
 	int curIndex = 0;

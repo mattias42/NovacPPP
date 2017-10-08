@@ -2,7 +2,7 @@
 
 #ifndef WINDFIELDRECORD_H
 #define WINDFIELDRECORD_H
-#include <afxtempl.h>
+// #include <afxtempl.h>
 
 #include "Common.h"
 #include "WindField.h"

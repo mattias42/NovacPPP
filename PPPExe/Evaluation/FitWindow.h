@@ -2,6 +2,7 @@
 
 #include "ReferenceFile.h"
 #include "../Common/Common.h"
+#include "../stdafx.h"
 
 namespace Evaluation
 {

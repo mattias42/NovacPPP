@@ -3,7 +3,7 @@
 #include "WindFieldRecord.h"
 
 // Include synchronization classes
-#include <afxmt.h>
+// #include <afxmt.h>
 
 namespace FileHandler{
 	class CSimpleWindFileReader

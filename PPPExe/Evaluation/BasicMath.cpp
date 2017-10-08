@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "../resource.h"
+//#include "../resource.h"
 #include "BasicMath.h"
 //#include "MFCTools.h"
 //#include "MathHistory.h"

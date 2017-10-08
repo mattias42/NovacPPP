@@ -1,8 +1,9 @@
 #pragma once
 
-#include <afxinet.h>
+// #include <afxinet.h>
 // #include <afxtempl.h>
 
+#include "../stdafx.h"
 #include "../FileInfo.h"
 #include <PPPLib/CString.h>
 #include <PPPLib/CList.h>

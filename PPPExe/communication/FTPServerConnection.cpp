@@ -85,7 +85,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	
 	// download the data in this directory
 	CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
-	Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
+	// Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 
 	// wait for all threads to terminate
 	Sleep(500);
@@ -231,7 +231,7 @@ UINT DownloadDataFromDir(LPVOID pParam){
 			}else{
 				// start downloading using a new thread
 				CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
-				Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
+				//Common::SetThreadName(downloadThread->m_nThreadID, "DownloadDataFromDir");
 			}
 		}
 	}

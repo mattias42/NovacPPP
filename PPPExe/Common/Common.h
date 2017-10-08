@@ -62,7 +62,7 @@ int Equals(const novac::CString &str1, const novac::CString &str2, size_t nChara
 
 /** Shows a message in the message box list in the main window */
 void ShowMessage(const novac::CString &message);
-void ShowMessage(const TCHAR message[]);
+void ShowMessage(const char message[]);
 void ShowMessage(const novac::CString &message,novac::CString connectionID);
 
 /** Update the top line of list box */
@@ -221,8 +221,6 @@ public:
 	// ------------------------ SYSTEM FUNCTIONS  -------------------------
 	// --------------------------------------------------------------------
 
-	static bool FormatErrorCode(DWORD error, novac::CString &string);
-
 	// --------------------------------------------------------------------
 	// ------------------------- PATH -------------------------------------
 	// --------------------------------------------------------------------
@@ -236,10 +234,6 @@ public:
 	static void GetDirectory(novac::CString &fileName);
 
 
-	/** This function sets the name of a given thread. The name
-		is useful for debugging purposes. */
-	static void SetThreadName(DWORD dwThreadID, LPCTSTR szThreadName);
-
 	/** Retrieves the current path, and the filename of the program. 
 	    Result is stored in 'm_exePath', and 'm_exeFileName' */
 	void GetExePath();
@@ -249,17 +243,6 @@ public:
 
 	/** m_exeFileName will be set to the filename of the program after a call to 'GetExeFileName()' */
 	novac::CString   m_exeFileName;
-
-	/** Opens a dialog window and lets the user browse for a file */
-	bool BrowseForFile(TCHAR *filter, novac::CString &fileName);
-
-	/** Opens a dialog window and lets the user browse for a filename to save to */
-	bool BrowseForFile_SaveAs(TCHAR *filter, novac::CString &fileName);
-
-	/** Opens a dialog window and lets the user browse for a directory.
-			@return true if all is ok,
-			@return false otherwise */
-	bool BrowseForDirectory(novac::CString &folderName);
 
 	// --------------------------------------------------------------------
 	// ---------------------- DATE & TIME ---------------------------------

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <time.h>
 
 // include the global settings
 #include "../VolcanoInfo.h"
@@ -18,81 +19,75 @@ extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 #undef min
 #undef max
 
-void GetSysTempFolder(novac::CString& folderPath)
-{
-	TCHAR buffer[MAX_PATH];
-	GetTempPath(MAX_PATH, buffer);
-	folderPath.Format("%s", buffer);
-}
 
 int IsExistingFile(const novac::CString &fileName){
-	WIN32_FIND_DATA FindFileData;
-	char fileToFind[MAX_PATH];
-
-	sprintf(fileToFind, "%s", (const char*)fileName);
-
-	// Search for the file
-	HANDLE hFile = FindFirstFile(fileToFind, &FindFileData);
-
-	if(hFile == INVALID_HANDLE_VALUE)
-		return 0; // file not found
-
-	FindClose(hFile);
-
-	return 1; // file found
+//	WIN32_FIND_DATA FindFileData;
+//	char fileToFind[MAX_PATH];
+//
+//	sprintf(fileToFind, "%s", (const char*)fileName);
+//
+//	// Search for the file
+//	HANDLE hFile = FindFirstFile(fileToFind, &FindFileData);
+//
+//	if(hFile == INVALID_HANDLE_VALUE)
+//		return 0; // file not found
+//
+//	FindClose(hFile);
+//
+//	return 1; // file found
 }
 
 int CreateDirectoryStructure(const novac::CString &path)
 {
-	char buffer [1024]; // buffer is a local copy of 'path'
-	memset(buffer, 0, 1024*sizeof(char));
-	if(strlen(path) > 1023)
-		return 1;
-
-	char pathSeparator = '\\';
-
-	int ret;
-
-	memcpy(buffer, path, _tcslen(path));
-
-	// add a finishing backslash if it does not exist already
-	if(buffer[strlen(buffer)-1] != pathSeparator)
-		buffer[strlen(buffer)] = pathSeparator;
-
-	char *pt = strchr(buffer, pathSeparator);
-
-	while(pt != NULL){
-		pt[0] = 0;
-		if((strlen(buffer) == 2) && (':' == buffer[1])){
-			// do nothing, don't create C: !!
-		}else{
-			ret = CreateDirectory(buffer, NULL);
-			if(!ret){
-				int error = GetLastError();
-				if(error != ERROR_FILE_EXISTS && error != ERROR_ALREADY_EXISTS){
-					novac::CString message;
-					message.Format("Debug: Could not create output directory: %s", buffer);
-					ShowMessage(message); // tell the user about our problems...
-					return 1;
-				}
-			}
-		}
-		pt[0] = pathSeparator;
-		if(*(pt+1) == pathSeparator)
-			pt = strchr(pt+2, pathSeparator);
-		else
-			pt = strchr(pt+1, pathSeparator);
-	}
-
-	return 0;
+//	char buffer [1024]; // buffer is a local copy of 'path'
+//	memset(buffer, 0, 1024*sizeof(char));
+//	if(strlen(path) > 1023)
+//		return 1;
+//
+//	char pathSeparator = '\\';
+//
+//	int ret;
+//
+//	memcpy(buffer, path, _tcslen(path));
+//
+//	// add a finishing backslash if it does not exist already
+//	if(buffer[strlen(buffer)-1] != pathSeparator)
+//		buffer[strlen(buffer)] = pathSeparator;
+//
+//	char *pt = strchr(buffer, pathSeparator);
+//
+//	while(pt != NULL){
+//		pt[0] = 0;
+//		if((strlen(buffer) == 2) && (':' == buffer[1])){
+//			// do nothing, don't create C: !!
+//		}else{
+//			ret = CreateDirectory(buffer, NULL);
+//			if(!ret){
+//				int error = GetLastError();
+//				if(error != ERROR_FILE_EXISTS && error != ERROR_ALREADY_EXISTS){
+//					novac::CString message;
+//					message.Format("Debug: Could not create output directory: %s", buffer);
+//					ShowMessage(message); // tell the user about our problems...
+//					return 1;
+//				}
+//			}
+//		}
+//		pt[0] = pathSeparator;
+//		if(*(pt+1) == pathSeparator)
+//			pt = strchr(pt+2, pathSeparator);
+//		else
+//			pt = strchr(pt+1, pathSeparator);
+//	}
+//
+//	return 0;
 }
 
 int Equals(const novac::CString &str1, const novac::CString &str2){
-	return (0 ==_tcsnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
+	return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
 }
 
 int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters){
-	return (0 ==_tcsnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
+	return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
 }
 
 void UpdateMessage(const novac::CString &message){
@@ -129,21 +124,21 @@ void ShowMessage(const novac::CString &message,novac::CString connectionID){
 	// 	pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
 }
 
-void ShowMessage(const TCHAR message[]){
+void ShowMessage(const char message[]){
 	novac::CString msg;
 	msg.Format("%s", message);
 	ShowMessage(msg);
 }
 
 void Common::GetExePath(){
-	TCHAR exeFullPath[MAX_PATH]; 
-	GetModuleFileName(NULL, exeFullPath, MAX_PATH); 
-	m_exePath     = novac::CString(exeFullPath);
-	m_exeFileName = novac::CString(exeFullPath); 
-	int position  = m_exePath.ReverseFind('\\'); 
-	int length    = m_exePath.GetLength();
-	m_exePath     = m_exePath.Left(position+1);
-	m_exeFileName = m_exeFileName.Right(length - position - 1);
+//	char exeFullPath[MAX_PATH]; 
+//	GetModuleFileName(NULL, exeFullPath, MAX_PATH); 
+//	m_exePath     = novac::CString(exeFullPath);
+//	m_exeFileName = novac::CString(exeFullPath); 
+//	int position  = m_exePath.ReverseFind('\\'); 
+//	int length    = m_exePath.GetLength();
+//	m_exePath     = m_exePath.Left(position+1);
+//	m_exeFileName = m_exeFileName.Right(length - position - 1);
 }
 
 /** Calculate the distance (in meters) between the two points (lat1, lon1) and
@@ -226,98 +221,6 @@ void Common::CalculateDestination(double lat1, double lon1, double dist, double 
 
 int IsSerialNumber(const novac::CString &serialNumber){
 	return (strlen(serialNumber) > 0);
-}
-
-// open a browser window and let the user search for a file
-bool Common::BrowseForFile(TCHAR *filter, novac::CString &fileName){
-	TCHAR szFile[4096];
-	sprintf(szFile, "%s", (const char*)fileName);
-
-	OPENFILENAME ofn;       // common dialog box structure
-	// Initialize OPENFILENAME
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
-	ofn.hInstance = AfxGetInstanceHandle();
-	ofn.lpstrFile = szFile;
-	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = filter;
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER ;
-
-	if (GetOpenFileName(&ofn) == TRUE){
-		fileName.Format(szFile);
-		return true;
-	}
-	fileName.Format("");
-	return false;
-}
-
-// open a browser window and let the user search for a file
-bool Common::BrowseForFile_SaveAs(TCHAR *filter, novac::CString &fileName){
-	TCHAR szFile[4096];
-	sprintf(szFile, "%s", (const char*)fileName);
-
-	OPENFILENAME ofn;       // common dialog box structure
-	// Initialize OPENFILENAME
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
-	ofn.hInstance = AfxGetInstanceHandle();
-	ofn.lpstrFile = szFile;
-	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = filter;
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_EXPLORER ;
-
-	if (GetSaveFileName(&ofn) == TRUE){
-		fileName.Format(szFile);
-		return true;
-	}
-	fileName.Format("");
-	return false;
-}
-
-bool Common::BrowseForDirectory(novac::CString &folderName){
-	BROWSEINFO bi;
-	char tmp_FolderName[MAX_PATH ];       // temporary buffer for folder name
-	char title[] = "Select Directory";
-
-	// Initialize BROWSEINFO
-	ZeroMemory(&bi, sizeof(BROWSEINFO));
-	bi.hwndOwner      = NULL;
-	bi.pidlRoot       = NULL;
-	bi.pszDisplayName = tmp_FolderName;
-	bi.lpszTitle      = title;
-	bi.ulFlags        = BIF_USENEWUI | BIF_VALIDATE | BIF_RETURNONLYFSDIRS;
-
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if(NULL != pidl){
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		if ( SHGetPathFromIDList ( pidl, path ) )
-		{
-			folderName.Format("%s", path);
-		}
-
-		// free memory used
-		IMalloc * imalloc = 0;
-		if ( SUCCEEDED( SHGetMalloc ( &imalloc )) )
-		{
-			imalloc->Free ( pidl );
-			imalloc->Release ( );
-		}
-		return true;
-	}else{
-		/* Error */
-		return false;
-	}
 }
 
 /* pretty prints the current date into the string 'txt' */
@@ -1347,27 +1250,6 @@ void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &spe
 	return;
 }
 
-#define MS_VC_EXCEPTION 0x406d1388 
-typedef struct tagTHREADNAME_INFO { 
-	DWORD dwType; // must be 0x1000 
-	LPCSTR szName; // pointer to name (in same addr space) 
-	DWORD dwThreadID; // thread ID (-1 caller thread) 
-	DWORD dwFlags; // reserved for future use, most be zero 
-} THREADNAME_INFO;
-
-void Common::SetThreadName(DWORD dwThreadID, LPCTSTR szThreadName){ 
-	THREADNAME_INFO info; 
-	info.dwType = 0x1000; 
-	info.szName = szThreadName; 
-	info.dwThreadID = dwThreadID; 
-	info.dwFlags = 0; 
-	__try { 
-		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info);
-	} 
-	__except (EXCEPTION_CONTINUE_EXECUTION){ 
-	} 
-} 
-
 
 
 /** Take out the exe name from a long path 
@@ -1390,18 +1272,17 @@ void Common::GetDirectory(novac::CString &fileName){
 
 long Common::RetrieveFileSize(novac::CString& fileName)
 {
-	TRY
-	{
-		CFile file(fileName,CFile::modeRead| CFile::shareDenyNone);
-		long fileLength = (long)file.GetLength();
-		file.Close();
-		return fileLength;
-	}
-	CATCH(CFileException, ex)
-	{
-		return 0; // could not get file
-	}
-	END_CATCH;
+//	try
+//	{
+//		CFile file(fileName,CFile::modeRead| CFile::shareDenyNone);
+//		long fileLength = (long)file.GetLength();
+//		file.Close();
+//		return fileLength;
+//	}
+//	catch(CFileException, ex)
+//	{
+//		return 0; // could not get file
+//	}
 }
 
 
@@ -1481,54 +1362,6 @@ bool Common::ArchiveFile(const novac::CString &fileName){
 		return false;
 
 	return true;
-}
-
-bool Common::FormatErrorCode(DWORD error, novac::CString &string){
-	/* from System Error Codes */
-	switch(error){
-		case ERROR_FILE_NOT_FOUND:
-		string.Format("File not found"); return true;
-		case ERROR_PATH_NOT_FOUND:
-		string.Format("Path not found"); return true;
-		case ERROR_TOO_MANY_OPEN_FILES:
-		string.Format("Too many open files"); return true;
-		case ERROR_ACCESS_DENIED:
-		string.Format("Access denied"); return true;
-		case ERROR_NOT_ENOUGH_MEMORY:
-		string.Format("Not enough memory"); return true;
-		case ERROR_OUTOFMEMORY:
-		string.Format("Out of memory"); return true;
-		case ERROR_WRITE_PROTECT:
-		string.Format("The media is write protected"); return true;
-		case ERROR_SEEK:
-		string.Format("The drive cannot locate a specific area or track on the disk."); return true;
-		case ERROR_WRITE_FAULT:
-		string.Format("The system cannot write to the specified device"); return true;
-		case ERROR_READ_FAULT:
-		string.Format("The system cannot read from the specified device"); return true;
-		case ERROR_HANDLE_DISK_FULL:
-		case ERROR_DISK_FULL:
-		string.Format("The disk is full"); return true;
-		case ERROR_CANNOT_MAKE:
-		string.Format("The directory or file cannot be created"); return true;
-		case ERROR_BUFFER_OVERFLOW:
-		string.Format("The file name is too long"); return true;
-		case ERROR_INVALID_NAME: 
-		string.Format("The filename, directory name, or volume label syntax is incorrect"); return true;
-		case ERROR_DIRECTORY:
-		string.Format("The directory name is invalid"); return true;
-		case ERROR_DISK_TOO_FRAGMENTED:
-		string.Format("The volume is too fragmented to complete this operation"); return true;
-		case ERROR_ARITHMETIC_OVERFLOW:
-		string.Format("Arithmetic result exceeded 32 bits"); return true;
-		case ERROR_ALREADY_EXISTS:
-		string.Format("The file already exists"); return true;
-		case ERROR_SHARING_VIOLATION:
-			string.Format("Cannot access the file, it is used by another process"); return true;
-
-	}
-
-	return false;
 }
 
 int Common::GetInterlaceSteps(int channel, int &interlaceSteps){

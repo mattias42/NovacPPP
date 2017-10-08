@@ -4,9 +4,6 @@
 #include <PPPLib/CSingleLock.h>
 #include <PPPLib/CCriticalSection.h>
 
-// Include synchronization classes
-// #include <afxmt.h>
-
 using namespace std;
 
 // The global database of volcanoes

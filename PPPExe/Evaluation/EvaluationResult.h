@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Afxtempl.h>
+// #include <Afxtempl.h>
 
 #include "../Common/Common.h"
 #include "ReferenceFitResult.h"

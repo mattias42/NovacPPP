@@ -28,7 +28,7 @@ namespace Evaluation
 
 		/** if pView != NULL then after the evaluation of a spectrum, a 'WM_EVAL_SUCCESS'
 			message will be sent to pView. */
-		CWnd *pView;
+		// CWnd *pView;
 
 		/** The evaluation results from the last scan evaluated */
 		CScanResult *m_result;

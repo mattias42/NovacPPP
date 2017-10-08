@@ -15,7 +15,7 @@
 #include "FitWindow.h"
 #include "CrossSectionData.h"
 
-#include "../FIT\Vector.h"	// Added by ClassView
+#include "../Fit/Vector.h"
 
 #include "../Common/Spectra/Spectrum.h"
 #include "../Fit/ReferenceSpectrumFunction.h"

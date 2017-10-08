@@ -400,7 +400,7 @@ void CPostProcessing::EvaluateScans(const novac::CList <novac::CString, novac::C
 	nThreadsRunning		= 0;
 	for(unsigned int k = 0; k < g_userSettings.m_maxThreadNum; ++k){
 		evalThreads[k] = AfxBeginThread(EvaluateOneScan, nullptr, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
-		Common::SetThreadName(evalThreads[k]->m_nThreadID, "EvaluateOneScan");
+		//Common::SetThreadName(evalThreads[k]->m_nThreadID, "EvaluateOneScan");
 	}
 
 	// make sure that all threads have time to finish before we say that we're ready
