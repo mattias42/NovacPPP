@@ -4,6 +4,7 @@
 #include <PPPLib/CStdioFile.h>
 
 using namespace FileHandler;
+using namespace novac;
 
 CSetupFileReader::CSetupFileReader(void)
 {
@@ -30,7 +31,7 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Conf
 			continue;
 		
 		//* Look for the xml tag 'instrument' and use Parse_Instrument and Parse_Location to read serial number and location to object 'setup' */
-		if(Equals(szToken, "instrument", 9)){
+		if(novac::Equals(szToken, "instrument", 9)){
 			this->Parse_Instrument(setup.m_instrument[setup.m_instrumentNum]);
 			setup.m_instrumentNum++;
 			continue;
@@ -48,15 +49,15 @@ void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration 
 	// Parse the file
 	while(szToken = NextToken()){
 
-		if(Equals(szToken, "/instrument", 11)){
+		if(novac::Equals(szToken, "/instrument", 11)){
 			return;
 		}
 
-		if(Equals(szToken, "serial", 6)){
+		if(novac::Equals(szToken, "serial", 6)){
 			Parse_StringItem("/serial", instr.m_serial);
 			continue;
 		}
-		if(Equals(szToken, "location", 8)){
+		if(novac::Equals(szToken, "location", 8)){
 			Parse_Location(instr.m_location);
 		}
 	}
@@ -69,17 +70,17 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
 	// Parse the other 
 	while(szToken = NextToken()){
 
-		if(Equals(szToken, "/location", 8)){
+		if(novac::Equals(szToken, "/location", 8)){
 			 // insert the information that we have into the array and return.
 			loc.InsertLocation(location);
 			return;
 		}
 
-		if(Equals(szToken, "name", 4)){
+		if(novac::Equals(szToken, "name", 4)){
 			Parse_StringItem("/name", location.m_locationName);
 			continue;
 		}
-		if(Equals(szToken, "latitude", 8)){
+		if(novac::Equals(szToken, "latitude", 8)){
 			Parse_FloatItem("/latitude", location.m_latitude);
 			continue;
 		}

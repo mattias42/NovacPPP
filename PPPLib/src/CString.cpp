@@ -5,7 +5,7 @@
 #include <functional> 
 #include <cctype>
 #include <locale>
-
+#include <vector>
 
 namespace novac
 {
@@ -294,4 +294,97 @@ namespace novac
 	{
 		return m_data.compare(other.m_data);
 	}
+
+	void CleanString(const CString &in, CString &out) {
+		std::vector<char> buffer(strlen(in) + 2);
+		
+		for (int it = 0; it < in.GetLength(); ++it)
+		{
+			buffer[it] = in.GetAt(it);
+		}
+		CleanString(buffer.data(), out);
+	}
+
+	void CleanString(const char *in, CString &out) {
+		out.Format("");
+		for (unsigned int it = 0; it < strlen(in); ++it) {
+			if ((unsigned char)in[it] >= 32) {
+				out.AppendFormat("%c", in[it]);
+			}
+		}
+	}
+
+	CString SimplifyString(const CString& in) {
+		static CString str;
+
+		// Clean the string for non-printable characters
+		CleanString(in, str);
+
+		// Make a local copy of the string
+		unsigned long L = (unsigned long)strlen(str);
+		char *buffer = new char[L + 2];
+		for (unsigned int it = 0; it < L; ++it) {
+			buffer[it] = str.GetAt(it);
+		}
+
+		// Check all characters in the string
+		for (unsigned long i = 0; i < L; ++i) {
+			// 1. Replace spaces, commas and dots with underscores
+			if (buffer[i] == ' ' || buffer[i] == ',' || buffer[i] == '.') {
+				buffer[i] = '_';
+				continue;
+			}
+
+			// 2. Convert the character to lower-case
+			buffer[i] = char(tolower(buffer[i]));
+
+			// 3. Remove paranthesis...
+			if (buffer[i] == '(' || buffer[i] == '[' || buffer[i] == '{' || buffer[i] == ')' || buffer[i] == ']' || buffer[i] == '}') {
+				for (unsigned long j = i; j < L - 1; ++j) {
+					buffer[j] = buffer[j + 1];
+				}
+				buffer[L - 1] = '\0';
+				--L;
+				i = i - 1;
+				continue;
+			}
+
+			// 4. Check if there's any accent on the character
+			if ((unsigned char)buffer[i] <= 127) {
+				continue;
+			}
+
+			char c = buffer[i];
+
+			if (c == 'á' || c == 'à' || c == 'â' || c == 'ä' || c == 'å')
+				buffer[i] = 'a';
+			else if (c == 'ç' || c == 'c')
+				buffer[i] = 'c';
+			else if (c == 'é' || c == 'è' || c == 'ê' || c == 'ë')
+				buffer[i] = 'e';
+			else if (c == 'í' || c == 'ì' || c == 'î' || c == 'ï')
+				buffer[i] = 'i';
+			else if (c == 'ó' || c == 'ò' || c == 'ô' || c == 'ö')
+				buffer[i] = 'o';
+			else if (c == 'ú' || c == 'ù' || c == 'ü' || c == 'û')
+				buffer[i] = 'u';
+			else if (c == 'ñ')
+				buffer[i] = 'n';
+		}
+
+		// copy the buffer to a CString
+		str.Format("%s", buffer);
+
+		delete[] buffer;
+		return str;
+	}
+
+	int Equals(const CString &str1, const CString &str2) {
+		return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
+	}
+
+	int Equals(const CString &str1, const CString &str2, size_t nCharacters) {
+		return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
+	}
+
 }

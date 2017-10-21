@@ -1,6 +1,7 @@
 #include "evaluationconfigurationparser.h"
 
 using namespace FileHandler;
+using namespace novac;
 
 CEvaluationConfigurationParser::CEvaluationConfigurationParser(void)
 {
@@ -32,11 +33,11 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 		continue;
 		
 
-		if(Equals(szToken, "serial", 6)){
+		if(novac::Equals(szToken, "serial", 6)){
 			this->Parse_StringItem("/serial", settings->m_serial);
 			continue;
 		}
-		if(Equals(szToken, "fitWindow", 9)){
+		if(novac::Equals(szToken, "fitWindow", 9)){
 			Evaluation::CFitWindow tmpWindow;
 			CDateTime validFrom, validTo;
 			
@@ -47,7 +48,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 			settings->InsertFitWindow(tmpWindow, &validFrom, &validTo);
 		}
 		
-		if(Equals(szToken, "DarkCorrection", 14)){
+		if(novac::Equals(szToken, "DarkCorrection", 14)){
 			Configuration::CDarkSettings dSettings;
 			CDateTime validFrom, validTo;
 			

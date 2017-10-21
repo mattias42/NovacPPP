@@ -1,8 +1,5 @@
 #include "FTPServerConnection.h"
 
-// Include synchronization classes
-// #include <afxmt.h>
-
 #include "../Common/Common.h"
 #include "../Common/EvaluationLogFileHandler.h"
 
@@ -10,13 +7,17 @@
 #include "../Configuration/UserConfiguration.h"
 
 // This is the global list of volcanoes
-#include "../VolcanoInfo.h"
+#include <PPPLib/VolcanoInfo.h>
 
 #include <PPPLib/CCriticalSection.h>
 #include <PPPLib/CSingleLock.h>
+#include <PPPLib/CFtpUtils.h>
+#include <Poco/Net/FTPClientSession.h>
+
+#include <fstream>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
+extern novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 
 using namespace Communication;
 
@@ -40,14 +41,14 @@ volatile int nFTPThreadsRunning = 0;
 volatile double nMbytesDownloaded = 0.0;
 double nSecondsPassed = 0.0;
 
-/** Downloads .pak - files from the given FTP-server 
+/** Downloads .pak - files from the given FTP-server
 
 	@return 0 on successful connection and completion of the list
 		otherwise non-zero
 */
 int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, const novac::CString &username,
-	const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList){
-	
+	const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList) {
+
 	novac::CString userMessage;
 	unsigned int nRounds = 0;
 
@@ -61,28 +62,29 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	novac::CString directory;
 	int indexOfSlash[128];
 	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
-	if(serverDir.Find("ftp://") != -1){
+	if (serverDir.Find("ftp://") != -1) {
 		indexOfSlash[0] = 5;
-	}else{
+	}
+	else {
 		indexOfSlash[0] = 0;
 	}
-	while(-1 != (indexOfSlash[nSlashesFound + 1] = serverDir.Find('/', indexOfSlash[nSlashesFound] + 1))){
+	while (-1 != (indexOfSlash[nSlashesFound + 1] = serverDir.Find('/', indexOfSlash[nSlashesFound] + 1))) {
 		++nSlashesFound;
 	}
 	subString.Format(serverDir.Left(indexOfSlash[1]));
 	directory.Format(serverDir.Right(serverDir.GetLength() - indexOfSlash[1] - 1));
 	s_server.Format(subString.Right(subString.GetLength() - indexOfSlash[0] - 1));
-	if(nSlashesFound == 1){
+	if (nSlashesFound == 1) {
 		directory.Format("%s/", (const char*)g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
 	}
-	
+
 	// Make sure thath the temporary directory exists
-	if(CreateDirectoryStructure(g_userSettings.m_tempDirectory)){
+	if (CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
 		userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
 		ShowMessage(userMessage);
 		return 1;
 	}
-	
+
 	// download the data in this directory
 	// TODO: ImplementMe
 	//CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(directory), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
@@ -91,13 +93,14 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 	//// wait for all threads to terminate
 	//Sleep(500);
 	clock_t cStart = clock();
-	while(nFTPThreadsRunning > 0){
-		if(++nRounds % 10 == 0){
+	while (nFTPThreadsRunning > 0) {
+		if (++nRounds % 10 == 0) {
 			nSecondsPassed = (double)(clock() - cStart) / CLOCKS_PER_SEC;
 
-			if(nSecondsPassed < 100.0 * nMbytesDownloaded){
+			if (nSecondsPassed < 100.0 * nMbytesDownloaded) {
 				userMessage.Format("  %.0lf MBytes downloaded (<=> %.2lf MBytes/second)", nMbytesDownloaded, nMbytesDownloaded / nSecondsPassed);
-			}else{
+			}
+			else {
 				userMessage.Format("  %.0lf MBytes downloaded (<=> %.2lf kBytes/second)", nMbytesDownloaded, 1024 * nMbytesDownloaded / nSecondsPassed);
 			}
 			ShowMessage(userMessage);
@@ -108,7 +111,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 
 	// copy the data to the output list
 	auto p = s_pakFileList.GetHeadPosition();
-	while(p != nullptr){
+	while (p != nullptr) {
 		pakFileList.AddTail(novac::CString(s_pakFileList.GetNext(p)));
 	}
 
@@ -118,19 +121,19 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 // this function takes care of adding filenames to the list
 //	in a synchronized way so that no two threads access
 //	the list at the same time...
-void AddFileToList(const novac::CString &fileName){
+void AddFileToList(const novac::CString &fileName) {
 	novac::CSingleLock singleLock(&s_pakFileListCritSect);
 	singleLock.Lock();
-	if(singleLock.IsLocked()){
+	if (singleLock.IsLocked()) {
 		s_pakFileList.AddTail(novac::CString(fileName));
 	}
 	singleLock.Unlock();
 }
 
-/** Downloads all the data-files from the directory that the 
-	connection 'm_ftp' is in at the moment 
+/** Downloads all the data-files from the directory that the
+	connection 'm_ftp' is in at the moment
 	@return 0 on success, otherwise non-zero */
-UINT DownloadDataFromDir(void* pParam){
+UINT DownloadDataFromDir(void* pParam) {
 	// the directory to search in
 	novac::CString *directory = (novac::CString *)pParam;
 
@@ -142,12 +145,12 @@ UINT DownloadDataFromDir(void* pParam){
 	MEASUREMENT_MODE mode;
 
 	// if there are too many threads running, then wait for a while
-	while(nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum){
+	while (nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum) {
 		// TODO: ImplementMe	Sleep(500);
 	}
 	novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 	singleLockThread.Lock();
-	if(singleLockThread.IsLocked()){
+	if (singleLockThread.IsLocked()) {
 		++nFTPThreadsRunning;
 	}
 	singleLockThread.Unlock();
@@ -159,11 +162,11 @@ UINT DownloadDataFromDir(void* pParam){
 	CFTPCom *ftp = new CFTPCom();
 
 	// connect to the server
-	if(ftp->Connect(s_server, s_username, s_password, TRUE) != 1){
+	if (ftp->Connect(s_server, s_username, s_password, TRUE) != 1) {
 
 		novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 		singleLockThread.Lock();
-		if(singleLockThread.IsLocked()){
+		if (singleLockThread.IsLocked()) {
 			--nFTPThreadsRunning;
 		}
 		singleLockThread.Unlock();
@@ -174,12 +177,12 @@ UINT DownloadDataFromDir(void* pParam){
 	}
 
 	// Search for files in the specified directory
-	if(ftp->GetFileList(*directory, filesFound)){
+	if (ftp->GetFileList(*directory, filesFound)) {
 		ftp->Disconnect();
 
 		novac::CSingleLock singleLockThread(&s_ThreadNumCritSect);
 		singleLockThread.Lock();
-		if(singleLockThread.IsLocked()){
+		if (singleLockThread.IsLocked()) {
 			--nFTPThreadsRunning;
 		}
 		singleLockThread.Unlock();
@@ -187,49 +190,52 @@ UINT DownloadDataFromDir(void* pParam){
 		delete directory;
 		return 1;
 	}
-	
-	
+
+
 	// download each of the files .pak-files found
 	//	or enter the all the sub-directories
 	auto p = filesFound.GetHeadPosition();
-	while(p != nullptr){
+	while (p != nullptr) {
 		CFileInfo &fileInfo = filesFound.GetNext(p);
 
-		if(Equals(fileInfo.m_fileName.Right(4), ".pak")){
+		if (Equals(fileInfo.m_fileName.Right(4), ".pak")) {
 			// if this is a .pak-file then check the date when it was created
-			if(FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileInfo.m_fileName, start, serial, channel, mode)){
-				if(start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start){
+			if (FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileInfo.m_fileName, start, serial, channel, mode)) {
+				if (start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start) {
 					// the creation date is between the start and the stop dates. Download the file
 					localFileName.Format("%s\\%s", (const char*)g_userSettings.m_tempDirectory, (const char*)fileInfo.m_fileName);
-					if(IsExistingFile(localFileName)){
+					if (IsExistingFile(localFileName)) {
 						userMessage.Format("File %s is already downloaded", (const char*)localFileName);
 						ShowMessage(userMessage);
-						
+
 						AddFileToList(localFileName);
-					}else{
-						
+					}
+					else {
+
 						// download the file
-						if(ftp->DownloadAFile(fileInfo.m_fullFileName, localFileName)){
-							nMbytesDownloaded	+= fileInfo.m_fileSize / 1048576.0;
+						if (ftp->DownloadAFile(fileInfo.m_fullFileName, localFileName)) {
+							nMbytesDownloaded += fileInfo.m_fileSize / 1048576.0;
 
 							AddFileToList(localFileName);
 						}
 					}
 				}
 			}
-		}else if(g_userSettings.m_includeSubDirectories_FTP && fileInfo.m_isDirectory){
+		}
+		else if (g_userSettings.m_includeSubDirectories_FTP && fileInfo.m_isDirectory) {
 			int year, month, day;
 			CDateTime date;
 			int nNumbers = sscanf(fileInfo.m_fileName, "%d.%d.%d", &year, &month, &day);
-			if(nNumbers == 3){
+			if (nNumbers == 3) {
 				date = CDateTime(year, month, day, 0, 0, 0);
-				if(date < g_userSettings.m_fromDate)
+				if (date < g_userSettings.m_fromDate)
 					continue;
 			}
-			if(nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum){
+			if (nFTPThreadsRunning >= (int)g_userSettings.m_maxThreadNum) {
 				// start downloading using the same thread as we're running in
 				DownloadDataFromDir(new novac::CString(fileInfo.m_fullFileName + "/"));
-			}else{
+			}
+			else {
 				// start downloading using a new thread
 				// TODO: ImplementMe
 				// CWinThread *downloadThread = AfxBeginThread(DownloadDataFromDir, new novac::CString(fileInfo.m_fullFileName + "/"), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, nullptr);
@@ -240,82 +246,65 @@ UINT DownloadDataFromDir(void* pParam){
 
 	// remember to close the connection before returning
 	ftp->Disconnect();
-	
+
 	// clean up	
 	delete directory;
 
 	novac::CSingleLock singleLockThread2(&s_ThreadNumCritSect);
 	singleLockThread2.Lock();
-	if(singleLockThread2.IsLocked()){
+	if (singleLockThread2.IsLocked()) {
 		--nFTPThreadsRunning;
 	}
 	singleLockThread2.Unlock();
-	
+
 	return 0;
 }
 
 /** Retrieves the list of files in a given directory on the FTP-server
 	@return 0 on successful connection and completion of the download
 */
-int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, novac::CList <novac::CString, novac::CString&> &fileList, const novac::CString &username, const novac::CString &password){
-
-	novac::CList <CFileInfo, CFileInfo &> filesFound;
-
+int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, novac::CList <novac::CString, novac::CString&> &fileList, const novac::CString &username, const novac::CString &password) {
 	// Extract the name of the server and each of the sub-directories specified
-	novac::CString subString, directory, server;
-	int indexOfSlash[128];
-	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
-	if(serverDir.Find("ftp://") != -1){
-		indexOfSlash[0] = 5;
-	}else{
-		indexOfSlash[0] = 0;
-	}
-	while(-1 != (indexOfSlash[nSlashesFound + 1] = serverDir.Find('/', indexOfSlash[nSlashesFound] + 1))){
-		++nSlashesFound;
-	}
-	subString.Format(serverDir.Left(indexOfSlash[1]));
-	directory.Format(serverDir.Right(serverDir.GetLength() - indexOfSlash[1] - 1));
-	server.Format(subString.Right(subString.GetLength() - indexOfSlash[0] - 1));
-	if(nSlashesFound == 1){
-		directory.Format("%s/", (const char*)g_volcanoes.GetSimpleVolcanoName(g_userSettings.m_volcano));
-	}
-	
+	std::string server, directory;
+	novac::CFtpUtils ftpUtil{g_volcanoes, g_userSettings.m_volcano};
+	ftpUtil.SplitPathIntoServerAndDirectory(serverDir, server, directory);
+
 	// create a new connection
-	CFTPCom *ftp = new CFTPCom();
+	Poco::Net::FTPClientSession ftp;
 
 	// connect to the server
-	if(ftp->Connect(server, username, password, TRUE) != 1){
-		delete ftp;
+	ftp.open(server, 22, username.std_str(), password.std_str());
+	if(!ftp.isOpen()){
 		return 1; // failed to connect!
 	}
 
 	// Search for files in the specified directory
-	if(ftp->GetFileList(directory, filesFound)){
-		ftp->Disconnect();
-		delete ftp;
-		return 1;
+	std::istream& fileListStream = ftp.beginList(serverDir.std_str());
+	std::string fileName;
+	while(fileListStream >> fileName)
+	{
+		fileList.AddTail(fileName);
 	}
-	ftp->Disconnect();
-	
+	ftp.endList();
+
 	// Extract the file-names...
-	auto p = filesFound.GetHeadPosition();
-	while(p != nullptr){
-		CFileInfo &fileInfo = filesFound.GetNext(p);
-		
-		if(!fileInfo.m_isDirectory){
-			fileList.AddTail(fileInfo.m_fileName);
-		}
-	}	
-	
-	delete ftp;
+	//auto p = filesFound.GetHeadPosition();
+	//while (p != nullptr) {
+	//	CFileInfo &fileInfo = filesFound.GetNext(p);
+
+	//	if (!fileInfo.m_isDirectory) {
+	//		fileList.AddTail(fileInfo.m_fileName);
+	//	}
+	//}
+
 	return 0;
 }
 
-/** Downloads a single file from the given FTP-server 
+/** Downloads a single file from the given FTP-server
 	@return 0 on successful connection and completion of the download
 */
 int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
-	const novac::CString &username, const novac::CString &password){
+	const novac::CString &username, const novac::CString &password) {
 	CDateTime now;
 	novac::CString errorMessage;
 
@@ -328,12 +317,13 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 	novac::CString directory;
 	int indexOfSlash[128];
 	int nSlashesFound = 0; // the number of slashes found in the 'serverDir' - path
-	if(remoteFileName.Find("ftp://") != -1){
+	if (remoteFileName.Find("ftp://") != -1) {
 		indexOfSlash[0] = 5;
-	}else{
+	}
+	else {
 		indexOfSlash[0] = 0;
 	}
-	while(-1 != (indexOfSlash[nSlashesFound + 1] = remoteFileName.Find('/', indexOfSlash[nSlashesFound] + 1))){
+	while (-1 != (indexOfSlash[nSlashesFound + 1] = remoteFileName.Find('/', indexOfSlash[nSlashesFound] + 1))) {
 		++nSlashesFound;
 	}
 	subString.Format(remoteFileName.Left(indexOfSlash[1]));
@@ -344,29 +334,29 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 	CFTPCom *ftp = new CFTPCom();
 
 	// connect to the server
-	if(ftp->Connect(s_server, s_username, s_password, TRUE) != 1){
+	if (ftp->Connect(s_server, s_username, s_password, TRUE) != 1) {
 		ShowMessage("Failed to connect to FTP server");
 		delete ftp;
 		return 1; // failed to connect!
 	}
 
 	// Download the file
-	if(0 == ftp->DownloadAFile(directory, localFileName)){
+	if (0 == ftp->DownloadAFile(directory, localFileName)) {
 		errorMessage.Format("Failed to download remote file %s from FTP server", (const char*)remoteFileName);
 		ShowMessage(errorMessage);
 	}
-	
+
 	// disconnect
 	ftp->Disconnect();
 	delete ftp;
 	return 0;
 }
 
-/** Uploads result-files to the given FTP-server 
+/** Uploads result-files to the given FTP-server
 	@return 0 on success otherwise non-zero
 */
-int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username, 
-						const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList){
+int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username,
+	const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList) {
 	CDateTime now;
 
 	// Extract the name of the server and the login
@@ -380,7 +370,7 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 	CFTPCom *ftp = new CFTPCom();
 
 	// connect to the server
-	if(ftp->Connect(s_server, s_username, s_password, TRUE) != 1){
+	if (ftp->Connect(s_server, s_username, s_password, TRUE) != 1) {
 		ShowMessage("Failed to connect to FTP server");
 		delete ftp;
 		return 1; // failed to connect!
@@ -393,7 +383,7 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 	// Enter the upload-directory
 	now.SetToNow();
 	directoryName.Format("PostProcessed_BETA_%04d%02d%02d", now.year, now.month, now.day);
-	if(0 == ftp->CreateDirectory(directoryName)){
+	if (0 == ftp->CreateDirectory(directoryName)) {
 		ShowMessage("Failed to create directory on FTP server");
 		ftp->Disconnect();
 		delete ftp;
@@ -403,20 +393,20 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
 
 	// Upload the files
 	auto p = fileList.GetHeadPosition();
-	while(p != nullptr){
+	while (p != nullptr) {
 		// Get the local name and path of the file to upload
 		novac::CString &localFile = fileList.GetNext(p);
-		
+
 		// Get the file-name to upload the file to...
 		remoteFile.Format(localFile);
 		Common::GetFileName(remoteFile);
-	
-		if(0 == ftp->UploadFile(localFile, remoteFile)){
+
+		if (0 == ftp->UploadFile(localFile, remoteFile)) {
 			errorMessage.Format("Failed to upload local file %s to FTP server", (const char*)localFile);
 			ShowMessage(errorMessage);
 		}
 	}
-	
+
 	// disconnect
 	ftp->Disconnect();
 	delete ftp;

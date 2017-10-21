@@ -1,11 +1,11 @@
 #include "ScanResult.h"
-#include "../VolcanoInfo.h"
+#include <PPPLib/VolcanoInfo.h>
 
 #include "../Geometry/GeometryCalculator.h"
 
 using namespace Evaluation;
 
-extern CVolcanoInfo					g_volcanoes;	// <-- A list of all known volcanoes
+extern novac::CVolcanoInfo g_volcanoes;	// <-- A list of all known volcanoes
 
 CScanResult::CScanResult(void)
 {

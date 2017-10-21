@@ -1,19 +1,16 @@
-#pragma once
-
 #ifndef FTPSERVER_DATADOWNLOAD_H
 #define FTPSERVER_DATADOWNLOAD_H
 
-// #include <afxtempl.h>
-
 #include "FTPCom.h"
 
-namespace Communication{
+namespace Communication {
 	class CFTPServerConnection
 	{
 	public:
-		CFTPServerConnection(void);
-		~CFTPServerConnection(void);
-		
+		CFTPServerConnection();
+
+		~CFTPServerConnection();
+
 		// -----------------------------------------------------------
 		// ---------------------- PUBLIC DATA ------------------------
 		// -----------------------------------------------------------
@@ -23,13 +20,13 @@ namespace Communication{
 		// --------------------- PUBLIC METHODS ----------------------
 		// -----------------------------------------------------------
 
-		/** Downloads .pak - files from the given FTP-server 
+		/** Downloads .pak - files from the given FTP-server
 			@return 0 on successful connection and completion of the list
 		*/
 		int DownloadDataFromFTP(const novac::CString &server, const novac::CString &username,
 			const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList);
 
-		/** Downloads a single file from the given FTP-server 
+		/** Downloads a single file from the given FTP-server
 			@return 0 on successful connection and completion of the download
 		*/
 		int DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
@@ -41,18 +38,18 @@ namespace Communication{
 		int DownloadFileListFromFTP(const novac::CString &serverDir, novac::CList <novac::CString, novac::CString&> &fileList,
 			const novac::CString &username, const novac::CString &password);
 
-		/** Uploads result-files to the given FTP-server 
+		/** Uploads result-files to the given FTP-server
 			@return 0 on success otherwise non-zero
 		*/
-		int UploadResults(const novac::CString &server, const novac::CString &username, 
+		int UploadResults(const novac::CString &server, const novac::CString &username,
 			const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList);
 
-private:
+	private:
 		// -----------------------------------------------------------
 		// ---------------------- PRIVATE DATA -----------------------
 		// -----------------------------------------------------------
-		
-	
+
+
 		// -----------------------------------------------------------
 		// --------------------- PRIVATE METHODS ---------------------
 		// -----------------------------------------------------------

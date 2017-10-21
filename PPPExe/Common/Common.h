@@ -51,14 +51,7 @@ int CreateDirectoryStructure(const novac::CString &path);
     @return 0 if the string is <b>not</b> a valid serial number. */
 int IsSerialNumber(const novac::CString &serialNumber);
 
-/** Compares two strings without regard to case.
-    @return 1 if the strings are equal. @return 0 if the strings are not equal. */
-int Equals(const novac::CString &str1, const novac::CString &str2);
 
-/** Compares at most 'nCharacters' of two strings without regard to case.
-    @param nCharacters - The number of characters to compare
-    @return 1 if the strings are equal. @return 0 if the strings are not equal. */
-int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters);
 
 /** Shows a message in the message box list in the main window */
 void ShowMessage(const novac::CString &message);
@@ -235,6 +228,9 @@ public:
 	    @param fileName - the complete path of the file */
 	static void GetDirectory(novac::CString &fileName);
 
+	/** Copies the file to the new file location */
+	static void CopyFile(const novac::CString& oldName, const novac::CString& newName);
+
 	/** m_exePath will be set to the path where the application resides,
 		This is set once at application startup and should never be changed. */
 	const novac::CString m_exePath;
@@ -367,17 +363,7 @@ public:
 	// --------------------------- STRINGS --------------------------------
 	// --------------------------------------------------------------------
 
-	/** This function takes a string and simplifies it so that it is more easily readable 
-			by a machine. changes made are: 
-			1 - Spaces are replaced with '_' (underscore)
-			2 - All characters are converted to lower-case
-			3 - accents are removed ('ó' -> 'o') */
-	novac::CString &SimplifyString(const novac::CString &in);
 
-	/** This function takes a string and removes any 'special' (ASCII code < 32) 
-			characters in it */
-	static void CleanString(const novac::CString &in, novac::CString &out);
-	static void CleanString(const char *in, novac::CString &out);
 
 	/** Sorts a list of strings in either ascending or descending order.
 			The algorithm is based on MergeSort (~O(NlogN)). */

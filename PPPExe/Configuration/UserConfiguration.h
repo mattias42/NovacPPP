@@ -15,7 +15,7 @@ namespace Configuration{
 	*/
 
 #define ENDTAG(x) ("/" + novac::CString(x))
-#define FLAG(x)	("--" + novac::CString(x) + "=")
+#define FLAG(x) ("--" + novac::CString(x) + "=")
 
 	class CUserConfiguration
 	{

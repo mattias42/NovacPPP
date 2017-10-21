@@ -93,7 +93,7 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 
 		/** Look in the buffer */
 		// 1. Clean the spectrum name from special characters...
-		Common::CleanString(MKZY.name, specName);
+		novac::CleanString(MKZY.name, specName);
 		specName.Trim(" \t");
 		size_t size1 = strlen(specName);
 		for(nameIndex = 0; nameIndex < numSpecNames; ++nameIndex){

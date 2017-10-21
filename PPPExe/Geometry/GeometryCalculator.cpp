@@ -2,7 +2,7 @@
 
 #include "../Common/Common.h"
 
-#include "../VolcanoInfo.h"
+#include <PPPLib/VolcanoInfo.h>
 
 #include "../Common/EvaluationLogFileHandler.h"
 
@@ -14,8 +14,8 @@
 
 using namespace Geometry;
 
-extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern novac::CVolcanoInfo					g_volcanoes;   // <-- A list of all known volcanoes
+extern Configuration::CUserConfiguration	g_userSettings;// <-- The settings of the user
 
 CGeometryCalculator::CGeometryCalculator(void)
 {

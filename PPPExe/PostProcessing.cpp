@@ -33,7 +33,7 @@
 #include "WindMeasurement/WindSpeedCalculator.h"
 
 #include "Meteorology/XMLWindFileReader.h"
-#include "VolcanoInfo.h"
+#include <PPPLib/VolcanoInfo.h>
 
 // we want to make some statistics on the processing
 #include "PostProcessingStatistics.h"
@@ -44,9 +44,9 @@
 #include <PPPLib/CCriticalSection.h>
 #include <PPPLib/CSingleLock.h>
 
-extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
+extern Configuration::CNovacPPPConfiguration		g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
+extern novac::CVolcanoInfo							g_volcanoes;   // <-- A list of all known volcanoes
 CPostProcessingStatistics							g_processingStats; // <-- The statistics of the processing itself
 
 
@@ -617,7 +617,7 @@ int CPostProcessing::PrepareEvaluation(){
 			for(int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex){
 				if(!IsExistingFile(window.ref[referenceIndex].m_path)){
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%s\\configuration\\%s", (const char*)m_exePath, (const char*)window.ref[referenceIndex].m_path);
+					fileName.Format("%sconfiguration\\%s", (const char*)m_exePath, (const char*)window.ref[referenceIndex].m_path);
 						if(IsExistingFile(fileName)){
 							window.ref[referenceIndex].m_path.Format(fileName);
 						}else{
@@ -657,7 +657,7 @@ int CPostProcessing::PrepareEvaluation(){
 			if(window.fraunhoferRef.m_path.GetLength() > 4){
 				if(!IsExistingFile(window.fraunhoferRef.m_path)){
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%s\\configuration\\%s", (const char*)m_exePath, (const char*)window.fraunhoferRef.m_path);
+					fileName.Format("%sconfiguration\\%s", (const char*)m_exePath, (const char*)window.fraunhoferRef.m_path);
 					if(IsExistingFile(fileName)){
 						window.fraunhoferRef.m_path.Format(fileName);
 					}else{
@@ -729,9 +729,9 @@ int CPostProcessing::ReadWindField(){
 			g_volcanoes.GetVolcanoCode(g_userSettings.m_volcano, name3);
 
 			// Get the path to the executable, so that we know where to start looking
-			path1.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name1);
-			path2.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name2);
-			path3.Format("%s\\configuration\\%s.wxml", (const char*)common.m_exePath, (const char*)name3);
+			path1.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name1);
+			path2.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name2);
+			path3.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name3);
 
 			// check which of the files exists
 			if(IsExistingFile(path1)){

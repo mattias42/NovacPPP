@@ -49,8 +49,6 @@ set(NPP_COMMUNICATION
     ${CMAKE_CURRENT_LIST_DIR}/communication/FTPCom.h
     ${CMAKE_CURRENT_LIST_DIR}/communication/FTPServerConnection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/communication/FTPServerConnection.h
-    ${CMAKE_CURRENT_LIST_DIR}/communication/FTPSocket.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/communication/FTPSocket.h
 )
 
 set(NPP_CONFIGURATION
@@ -215,8 +213,6 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/StatusLogFileWriter.h
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.h
-    ${CMAKE_CURRENT_LIST_DIR}/VolcanoInfo.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/VolcanoInfo.h
 
     ${NPP_COMMON_SPECTRA}
     ${NPP_COMMON_SPECTRUM_FORMAT}
@@ -243,8 +239,8 @@ target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
 target_compile_options(NovacPPP PUBLIC /W3)
 
 #Organize the files into folders, for ease of use
-source_group("Common/Spectra"               FILES ${NPP_COMMON_SPECTRA})
-source_group("Common/SpectrumFormat"        FILES ${NPP_COMMON_SPECTRUM_FORMAT})
+source_group("Common\\Spectra"              FILES ${NPP_COMMON_SPECTRA})
+source_group("Common\\SpectrumFormat"       FILES ${NPP_COMMON_SPECTRUM_FORMAT})
 source_group("Common"                       FILES ${NPP_COMMON})
 source_group("Communication"                FILES ${NPP_COMMUNICATION})
 source_group("Configuration"                FILES ${NPP_CONFIGURATION})

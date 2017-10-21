@@ -9,11 +9,11 @@
 #include <Poco/DateTime.h>
 
 // include the global settings
-#include "../VolcanoInfo.h"
+#include <PPPLib/VolcanoInfo.h>
 
 // TODO: Re-enable the pView at some later time
 // extern CDialog *pView;
-extern CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
+extern novac::CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
 extern std::string s_exePath;
 extern std::string s_exeFileName;
@@ -44,13 +44,6 @@ int CreateDirectoryStructure(const novac::CString &path)
 	}
 }
 
-int Equals(const novac::CString &str1, const novac::CString &str2) {
-	return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
-}
-
-int Equals(const novac::CString &str1, const novac::CString &str2, size_t nCharacters) {
-	return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
-}
 
 void UpdateMessage(const novac::CString &message) {
 	novac::CString *msg = new novac::CString();
@@ -147,7 +140,9 @@ double Common::GPSBearing(double lat1, double lon1, double lat2, double lon2)
 	/*  	tmpAngle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
 
 	if (tmpAngle < 0)
+	{
 		tmpAngle = TWO_PI + tmpAngle;
+	}
 
 	tmpAngle = RADTODEGREE*tmpAngle;
 	return tmpAngle;
@@ -535,83 +530,6 @@ RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double 
 	return SUCCESS;
 }
 
-novac::CString &Common::SimplifyString(const novac::CString &in) {
-	static novac::CString str;
-
-	// Clean the string for non-printable characters
-	CleanString(in, str);
-
-	// Make a local copy of the string
-	unsigned long L = (unsigned long)strlen(str);
-	char *buffer = new char[L + 2];
-	sprintf(buffer, "%s", (const char*)str);
-
-	// Check all characters in the string
-	for (unsigned long i = 0; i < L; ++i) {
-		// 1. Replace spaces, commas and dots with underscores
-		if (buffer[i] == ' ' || buffer[i] == ',' || buffer[i] == '.') {
-			buffer[i] = '_';
-			continue;
-		}
-
-		// 2. Convert the character to lower-case
-		buffer[i] = tolower(buffer[i]);
-
-		// 3. Remove paranthesis...
-		if (buffer[i] == '(' || buffer[i] == '[' || buffer[i] == '{' || buffer[i] == ')' || buffer[i] == ']' || buffer[i] == '}') {
-			for (unsigned long j = i; j < L - 1; ++j) {
-				buffer[j] = buffer[j + 1];
-			}
-			buffer[L - 1] = '\0';
-			--L;
-			i = i - 1;
-			continue;
-		}
-
-		// 4. Check if there's any accent on the character
-		if ((unsigned char)buffer[i] <= 127)
-			continue;
-
-		char c = buffer[i];
-
-		if (c == 'á' || c == 'à' || c == 'â' || c == 'ä' || c == 'å')
-			buffer[i] = 'a';
-		else if (c == 'ç' || c == 'c')
-			buffer[i] = 'c';
-		else if (c == 'é' || c == 'è' || c == 'ê' || c == 'ë')
-			buffer[i] = 'e';
-		else if (c == 'í' || c == 'ì' || c == 'î' || c == 'ï')
-			buffer[i] = 'i';
-		else if (c == 'ó' || c == 'ò' || c == 'ô' || c == 'ö')
-			buffer[i] = 'o';
-		else if (c == 'ú' || c == 'ù' || c == 'ü' || c == 'û')
-			buffer[i] = 'u';
-		else if (c == 'ñ')
-			buffer[i] = 'n';
-	}
-
-	// copy the buffer to a novac::CString
-	str.Format("%s", buffer);
-
-	delete[] buffer;
-	return str;
-}
-
-void Common::CleanString(const novac::CString &in, novac::CString &out) {
-	char *buffer = new char[strlen(in) + 2];
-	sprintf(buffer, "%s", (const char*)in); // make a local copy of the input string
-
-	CleanString(buffer, out);
-	delete[] buffer; // clean up after us
-}
-
-void Common::CleanString(const char *in, novac::CString &out) {
-	out.Format("");
-	for (unsigned int it = 0; it < strlen(in); ++it) {
-		if ((unsigned char)in[it] >= 32)
-			out.AppendFormat("%c", in[it]);
-	}
-}
 
 /** Sorts a list of strings in either ascending or descending order */
 void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool files, bool ascending) {
@@ -1236,7 +1154,16 @@ void Common::GetFileName(novac::CString& fileName)
 void Common::GetDirectory(novac::CString &fileName) {
 	int position = fileName.ReverseFind('\\');
 	if (position >= 0)
+	{
 		fileName = fileName.Left(position + 1);
+	}
+}
+
+void Common::CopyFile(const novac::CString& oldName, const novac::CString& newName)
+{
+	Poco::File oldFile(oldName.std_str());
+
+	oldFile.copyTo(newName.std_str());
 }
 
 long Common::RetrieveFileSize(novac::CString& fileName)

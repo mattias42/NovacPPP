@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <PPPLib/CString.h>
 #include <PPPLib/CStringTokenizer.h>
+#include <PPPLib/VolcanoInfo.h>
 
-#include "VolcanoInfo.h"
 #include "Common/Common.h"
 #include "SetupFileReader.h"
 #include "Configuration/NovacPPPConfiguration.h"
@@ -18,7 +18,8 @@
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-extern CVolcanoInfo									g_volcanoes;   // <-- A list of all known volcanoes
+
+novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 
 std::string s_exePath;
 std::string s_exeFileName;
@@ -29,7 +30,7 @@ std::string s_exeFileName;
 // void LoadConfigurations(int argc, char* argv[]);
 void LoadConfigurations();
 void OnBnClickedCalculateFluxes(int selectedVolcano = 0);
-UINT CalculateAllFluxes(void* pParam);
+void CalculateAllFluxes();
 void ParseCommandLineOptions(int argc, char* argv[]);
 int main(int argc, char* argv[])
 {
@@ -68,14 +69,14 @@ void LoadConfigurations()
 	FileHandler::CProcessingFileReader processing_reader;
 
 	//Read configuration from file setup.xml */	
-	setupPath.Format("%s\\configuration\\setup.xml", (const char*)common.m_exePath);
+	setupPath.Format("%sconfiguration\\setup.xml", (const char*)common.m_exePath);
 	if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
 	{
 		throw std::exception("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Read the users options from file processing.xml
-	processingPath.Format("%s\\configuration\\processing.xml", (const char*)common.m_exePath);
+	processingPath.Format("%sconfiguration\\processing.xml", (const char*)common.m_exePath);
 	if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
 		throw std::exception("Could not read processing.xml. Setup not complete. Please fix and try again");
 	}
@@ -83,7 +84,7 @@ void LoadConfigurations()
 	// Check if there is a configuration file for every spectrometer serial number
 	bool failed = false;
 	for (int k = 0; k < g_setup.m_instrumentNum; ++k) {
-		evalConfPath.Format("%s\\configuration\\%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
+		evalConfPath.Format("%sconfiguration\\%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
 
 		if (IsExistingFile(evalConfPath))
 			eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
@@ -135,13 +136,13 @@ void OnBnClickedCalculateFluxes(int selectedVolcano)
 	CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 	Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
 #else
-	// TODO: ImplementMe
-	// std::thread postProcessingThread(CalculateAllFluxes);
+	std::thread postProcessingThread(CalculateAllFluxes);
+	postProcessingThread.join();
 #endif  // _MFC_VER 
 }
 
 
-UINT CalculateAllFluxes(void* pParam) {
+void CalculateAllFluxes() {
 	CPostProcessing post;
 	novac::CString userMessage, processingOutputFile, setupOutputFile;
 	novac::CString confCopyDir, serial;
@@ -160,13 +161,13 @@ UINT CalculateAllFluxes(void* pParam) {
 		userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
 		ShowMessage(userMessage);
 		ShowMessage("-- Exit post processing --");
-		return 1;
+		return;
 	}
 	if (CreateDirectoryStructure(confCopyDir)) {
 		userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
 		ShowMessage(userMessage);
 		ShowMessage("-- Exit post processing --");
-		return 1;
+		return;
 	}
 	// we want to copy the setup and processing files to the confCopyDir
 	processingOutputFile.Format("%s\\processing.xml", (const char*)confCopyDir);
@@ -179,13 +180,12 @@ UINT CalculateAllFluxes(void* pParam) {
 	//	to the output directory to make it easier for the user to remember 
 	//	what has been done...
 	writer.WriteProcessingFile(processingOutputFile, g_userSettings);
-	// TODO: ImplementMe
-	// CopyFile(common.m_exePath + "configuration\\setup.xml", setupOutputFile, FALSE);
+
+	Common::CopyFile(common.m_exePath + "configuration\\setup.xml", setupOutputFile);
 	for (k = 0; k < g_setup.m_instrumentNum; ++k) {
 		serial.Format(g_setup.m_instrument[k].m_serial);
 
-		// TODO: ImplementMe
-		// CopyFile(common.m_exePath + "configuration\\" + serial + ".exml", confCopyDir + serial + ".exml", FALSE);
+		Common::CopyFile(common.m_exePath + "configuration\\" + serial + ".exml", confCopyDir + serial + ".exml");
 	}
 
 	// Do the post-processing
@@ -213,32 +213,29 @@ UINT CalculateAllFluxes(void* pParam) {
 	// Tell the user that we're done
 	ShowMessage("-- Exit post processing --");
 
-	return 0;
+	return;
 }
 
 
 void ParseCommandLineOptions(int argc, char* argv[])
 {
 	char seps[] = " \t";
-	char *buffer = new char[16384];
+	std::vector<char> buffer(16384, 0);
 	novac::CString parameter;
 	novac::CString errorMessage;
 
 	// a local copy of the command line parameters
-	 novac::CString commandLine;
-	 for (int arg = 1; arg < argc; ++arg)
-	 {
-	 	commandLine = commandLine + " " + novac::CString(argv[arg]);
-	 }
-
-	char *szLine = new char[16384];
-	sprintf(szLine, "%s", (const char*)commandLine);
+	novac::CString commandLine;
+	for (int arg = 1; arg < argc; ++arg)
+	{
+		commandLine = commandLine + " " + novac::CString(argv[arg]);
+	}
 
 	// Go through the received input parameters and set the approprate option
-	novac::CStringTokenizer tokenizer(szLine, seps);
+	novac::CStringTokenizer tokenizer(commandLine.c_str(), seps);
 	const char *token = tokenizer.NextToken();
 
-	while (NULL != token)
+	while (nullptr != token)
 	{
 
 		// The first date which we should analyze data from
@@ -305,8 +302,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			continue;
 		}
 		if (Equals(token, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
-			if (sscanf(token + strlen(FLAG(str_LocalDirectory)), "%s", buffer)) {
-				g_userSettings.m_LocalDirectory.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data())) {
+				g_userSettings.m_LocalDirectory.Format("%s", buffer.data());
 				// m_CheckLocalDirectory.SetCheck(1);
 			}
 			else {
@@ -324,8 +321,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
-			if (sscanf(token + strlen(FLAG(str_FTPDirectory)), "%s", buffer)) {
-				g_userSettings.m_FTPDirectory.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data())) {
+				g_userSettings.m_FTPDirectory.Format("%s", buffer.data());
 				// m_CheckFtp.SetCheck(1);
 			}
 			else {
@@ -336,15 +333,15 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername)))) {
-			if (sscanf(token + strlen(FLAG(str_FTPUsername)), "%s", buffer)) {
-				g_userSettings.m_FTPUsername.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_FTPUsername)), "%s", buffer.data())) {
+				g_userSettings.m_FTPUsername.Format("%s", buffer.data());
 			}
 			token = tokenizer.NextToken();
 			continue;
 		}
 		if (Equals(token, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword)))) {
-			if (sscanf(token + strlen(FLAG(str_FTPPassword)), "%s", buffer)) {
-				g_userSettings.m_FTPPassword.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_FTPPassword)), "%s", buffer.data())) {
+				g_userSettings.m_FTPPassword.Format("%s", buffer.data());
 			}
 			token = tokenizer.NextToken();
 			continue;
@@ -359,8 +356,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 		// The output directory
 		if (Equals(token, FLAG(str_outputDirectory), strlen(FLAG(str_outputDirectory)))) {
-			if (sscanf(token + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer)) {
-				g_userSettings.m_outputDirectory.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data())) {
+				g_userSettings.m_outputDirectory.Format("%s", buffer.data());
 				// make sure that this ends with a trailing '\'
 				if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '\\') {
 					g_userSettings.m_outputDirectory.AppendFormat("\\");
@@ -372,8 +369,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 		// The temporary directory
 		if (Equals(token, FLAG(str_tempDirectory), strlen(FLAG(str_tempDirectory)))) {
-			if (sscanf(token + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer)) {
-				g_userSettings.m_tempDirectory.Format("%s", buffer);
+			if (sscanf(token + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data())) {
+				g_userSettings.m_tempDirectory.Format("%s", buffer.data());
 				// make sure that this ends with a trailing '\'
 				if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '\\') {
 					g_userSettings.m_tempDirectory.AppendFormat("\\");
@@ -386,8 +383,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		// The windField file
 		int N = (int)strlen(FLAG(str_windFieldFile));
 		if (Equals(token, FLAG(str_windFieldFile), N)) {
-			if (sscanf(token + N, "%s", buffer)) {
-				g_userSettings.m_windFieldFile.Format("%s", buffer);
+			if (sscanf(token + N, "%s", buffer.data())) {
+				g_userSettings.m_windFieldFile.Format("%s", buffer.data());
 			}
 			token = tokenizer.NextToken();
 			continue;
@@ -402,14 +399,14 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 		// the molecule
 		if (Equals(token, FLAG(str_molecule), strlen(FLAG(str_molecule)))) {
-			if (sscanf(token + strlen(FLAG(str_molecule)), "%s", buffer)) {
-				if (Equals(buffer, "BrO")) {
+			if (sscanf(token + strlen(FLAG(str_molecule)), "%s", buffer.data())) {
+				if (novac::Equals(buffer.data(), "BrO")) {
 					g_userSettings.m_molecule = MOLEC_BRO;
 				}
-				else if (Equals(buffer, "NO2")) {
+				else if (novac::Equals(buffer.data(), "NO2")) {
 					g_userSettings.m_molecule = MOLEC_NO2;
 				}
-				else if (Equals(buffer, "O3")) {
+				else if (novac::Equals(buffer.data(), "O3")) {
 					g_userSettings.m_molecule = MOLEC_O3;
 				}
 				else {

@@ -12,6 +12,7 @@ extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of
 
 using namespace FileHandler;
 using namespace Meteorology;
+using namespace novac;
 
 CXMLWindFileReader::CXMLWindFileReader(void)
 {
@@ -71,14 +72,14 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 			continue;
 
 		// If this is a wind-field item then parse this. 
-		if(Equals(szToken, "windfield", 9)){
+		if(novac::Equals(szToken, "windfield", 9)){
 			Parse_WindField(dataBase);
 			continue;
 		}
 
 		// if this is the beginning of the wind-section,  extract the name of the 
 		//	database
-		if(Equals(szToken, "Wind", 4)){
+		if(novac::Equals(szToken, "Wind", 4)){
 			const char *volcanoName = GetAttributeValue("volcano");
 			if(volcanoName != NULL){
 				dataBase.m_dataBaseName.Format("%s", volcanoName);

@@ -1,5 +1,6 @@
-#include <PPPLib/CString.h>
 #include "catch.hpp"
+
+#include <PPPLib/CString.h>
 
 namespace novac
 {
@@ -61,8 +62,8 @@ namespace novac
 
 		SECTION("Not equal strings")
 		{
-			CString apa{"apa"};
-			CString banan{"banan"};
+			CString apa{ "apa" };
+			CString banan{ "banan" };
 
 			REQUIRE(1 == banan.Compare(apa));
 			REQUIRE(-1 == apa.Compare(banan));
@@ -306,7 +307,7 @@ namespace novac
 			CString str("%First Second#Third");
 			CString resToken;
 			int curPos;
-			CString expected[] = {CString("First"), CString("Second"), CString("Third")};
+			CString expected[] = { CString("First"), CString("Second"), CString("Third") };
 
 			int iteration = 0;
 			resToken = str.Tokenize("% #", curPos);
@@ -315,6 +316,29 @@ namespace novac
 				REQUIRE(resToken == expected[iteration]);
 				resToken = str.Tokenize("% #", curPos);
 			};
+		}
+	}
+
+	TEST_CASE("Equals behaves as expected", "[CString]")
+	{
+		SECTION("Empty Strings")
+		{
+			REQUIRE(1 == Equals("", ""));
+		}
+
+		SECTION("Equal Strings")
+		{
+			REQUIRE(1 == Equals("apa", "apa"));
+		}
+
+		SECTION("Strings with common start")
+		{
+			REQUIRE(0 == Equals("apa2", "apa"));
+		}
+
+		SECTION("Strings with different case are equal")
+		{
+			REQUIRE(1 == Equals("APA", "apa"));
 		}
 	}
 }

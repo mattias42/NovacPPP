@@ -8,7 +8,6 @@ namespace novac
 	class CString
 	{
 	public:
-
 		// ---------------------- Construction -----------------------
 		CString();
 
@@ -60,7 +59,7 @@ namespace novac
 		CString Right(int nChars) const;
 		CString Right(size_t nChars) const;
 
-		/** Finds the next token in a target string 
+		/** Finds the next token in a target string
 			@return A CStringT object containing the current token value. */
 		CString Tokenize(const char* delimiters, int& iStart) const;
 
@@ -105,7 +104,7 @@ namespace novac
 		operator const char*() const { return m_data.c_str(); }
 
 		// explicit conversion to std::string
-		std::string ToStdString() const { return std::string{m_data}; }
+		std::string ToStdString() const { return std::string{ m_data }; }
 
 		const char* c_str() const { return m_data.c_str(); }
 
@@ -120,6 +119,28 @@ namespace novac
 	CString operator+(const CString& str1, const char* other);
 	CString operator+(const CString& str1, std::string other);
 
-}
+	// -------------------- Common utility functions for handling CString:s --------------------
+
+	/** This function takes a string and removes any 'special' (ASCII code < 32)
+		characters in it */
+	void CleanString(const CString &in, CString &out);
+	void CleanString(const char *in, CString &out);
+
+	/** This function takes a string and simplifies it so that it is more easily readable
+		by a machine. changes made are:
+		1 - Spaces are replaced with '_' (underscore)
+		2 - All characters are converted to lower-case
+		3 - accents are removed ('ó' -> 'o') */
+	CString SimplifyString(const CString& in);
+
+	/** Compares two strings without regard to case.
+		@return 1 if the strings are equal. @return 0 if the strings are not equal. */
+	int Equals(const CString &str1, const CString &str2);
+
+	/** Compares at most 'nCharacters' of two strings without regard to case.
+		@param nCharacters - The number of characters to compare
+		@return 1 if the strings are equal. @return 0 if the strings are not equal. */
+	int Equals(const CString &str1, const CString &str2, size_t nCharacters);
+}  // namespace novac
 
 #endif // !NOVAC_PPPLIB_CSTRING_H
