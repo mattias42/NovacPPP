@@ -326,6 +326,7 @@ namespace novac
 		for (unsigned int it = 0; it < L; ++it) {
 			buffer[it] = str.GetAt(it);
 		}
+		buffer[L] = 0;
 
 		// Check all characters in the string
 		for (unsigned long i = 0; i < L; ++i) {

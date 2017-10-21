@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
+<NovacPostProcessing>
+	<MaxThreadNum>2</MaxThreadNum>
+	<StartNow>0</StartNow>
+	<outputdirectory>C:\NOVAC\novacP3\Piton de la Fournaise\OutputFeb2017UTC\</outputdirectory>
+	<tempdirectory>C:\NOVAC\novacP3\Piton de la Fournaise\Temp\</tempdirectory>
+	<mode>Flux</mode>
+	<molecule>SO2</molecule>
+	<Volcano>0303-02=</Volcano>
+	<FromDate>2017.01.29</FromDate>
+	<ToDate>2017.03.01</ToDate>
+	<LocalDirectory></LocalDirectory>
+	<IncludeSubDirs_Local>1</IncludeSubDirs_Local>
+	<FTPDirectory>ftp://129.16.35.206/piton_de_la_fournaise/</FTPDirectory>
+	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
+	<FTPUsername>novacUser</FTPUsername>
+	<FTPPassword>iht-1inks.</FTPPassword>
+	<UploadResults>0</UploadResults>
+	<WindFieldFile>C:\NOVAC\novacP3\Piton de la Fournaise\WindMeteoFrance\wind_pdf_2017_meteoFrance_UTC_novac.wxml</WindFieldFile>
+	<WindFileOption>0</WindFileOption>
+	<PlumeAltitudeFile>S2000</PlumeAltitudeFile>
+	<GeometryCalc>
+		<completenessLimit>0.50</completenessLimit>
+		<validTime>3600</validTime>
+		<maxStartTimeDifference>900</maxStartTimeDifference>
+		<minInstrumentDistance>100</minInstrumentDistance>
+		<maxInstrumentDistance>20000</maxInstrumentDistance>
+		<maxPlumeAltitudeError>1000.00</maxPlumeAltitudeError>
+		<maxWindDirectionError>20.00</maxWindDirectionError>
+	</GeometryCalc>
+	<DualBeam>
+		<useMaximumTestLength>1</useMaximumTestLength>
+		<maxWindSpeedError>10.00</maxWindSpeedError>
+		<validTime>7200</validTime>
+	</DualBeam>
+	<FitWindows>
+		<item>SO2</item>
+		<main>SO2</main>
+	</FitWindows>
+	<SkySpectrum>
+		<option>SCAN</option>
+	</SkySpectrum>
+	<Discarding>
+		<completenessLimit>0.75</completenessLimit>
+		<minimumSaturationInFitRegion>0.05</minimumSaturationInFitRegion>
+		<MaxExpTime_Got>1000</MaxExpTime_Got>
+		<MaxExpTime_Hei>4000</MaxExpTime_Hei>
+	</Discarding>
+</NovacPostProcessing>

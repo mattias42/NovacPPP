@@ -234,7 +234,7 @@ target_include_directories(NovacPPP PRIVATE
     ${PocoFoundation_DIR})
 
 target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
-    
+
 # TODO: Also include /sdl and /WX
 target_compile_options(NovacPPP PUBLIC /W3)
 

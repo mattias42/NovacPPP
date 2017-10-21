@@ -1,14 +1,23 @@
 #ifndef NOVAC_PPPLIB_CFTP_UTILS_H
 #define NOVAC_PPPLIB_CFTP_UTILS_H
 
+#include <fstream>
 #include <PPPLib/CString.h>
 #include <PPPLib/VolcanoInfo.h>
 
 namespace novac
 {
+	struct CFileInfo
+	{
+		std::string fileName;
+		bool isDirectory;
+	};
+
 	class CFtpUtils
 	{
 	public:
+		CFtpUtils();
+
 		CFtpUtils(const CVolcanoInfo& volcanoes, int currentVolcano)
 			: m_volcanoes(volcanoes), m_currentVolcano(currentVolcano)
 		{
@@ -18,8 +27,15 @@ namespace novac
 				component (ftp://127.0.0.1/) and the directory component (some/directory/path/) */
 		void SplitPathIntoServerAndDirectory(const novac::CString& fullServerPath, std::string& server, std::string& directory);
 
+		/** Reads file list info item from the provided string, parses the data and fills in the provided CFileInfo item
+			@return true if the parse was successful. */
+		bool ReadFtpDirectoryListing(const std::string& item, CFileInfo& result) const;
+
+		/**  @return true if the provided string is a typical unix-file permission listing */
+		bool IsFilePermissions(const std::string& item) const;
+
 	private:
-		const CVolcanoInfo& m_volcanoes;
+		const CVolcanoInfo m_volcanoes;
 		const int m_currentVolcano;
 	};
 }  // namespace novac
