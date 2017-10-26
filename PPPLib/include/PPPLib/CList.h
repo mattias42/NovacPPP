@@ -110,6 +110,18 @@ namespace novac
 			m_position = m_data.begin();
 		}
 
+		CONST_POSITION(const CONST_POSITION& other)
+			: m_emptyList(), m_data(other.m_data)
+		{
+			m_position = other.m_position;
+		}
+
+		POSITION& operator=(const TYPE*)
+		{
+			this->m_position = m_data.end();
+			return *this;
+		}
+
 		bool HasNext() const
 		{
 			if (m_data.size() == 0)
@@ -122,9 +134,16 @@ namespace novac
 			}
 		}
 
-		TYPE& GetAt()
+		const TYPE& GetAt() const
 		{
 			return *(this->m_position);
+		}
+
+		const TYPE& GetNext()
+		{
+			const TYPE& data = *this->m_position;
+			++(this->m_position);
+			return data;
 		}
 
 		bool operator==(void* data)
@@ -296,7 +315,7 @@ namespace novac
 			return p;
 		}
 
-		const POSITION<TYPE> GetHeadPosition() const
+		const CONST_POSITION<TYPE> GetHeadPosition() const
 		{
 			CONST_POSITION<TYPE> p(m_data);
 			return p;
@@ -318,12 +337,27 @@ namespace novac
 			return p.GetAt();
 		}
 
+		const ARG_TYPE GetAt(CONST_POSITION<TYPE>& p) const
+		{
+			return p.GetAt();
+		}
+
 		ARG_TYPE GetNext(POSITION<TYPE>& p) const
 		{
 			return p.GetNext();
 		}
 
+		const ARG_TYPE GetNext(CONST_POSITION<TYPE>& p) const
+		{
+			return p.GetNext();
+		}
+
 		ARG_TYPE GetPrev(REVERSE_POSITION<TYPE>& p) const
+		{
+			return p.GetPrev();
+		}
+
+		ARG_TYPE GetPrev(CONST_REVERSE_POSITION<TYPE>& p) const
 		{
 			return p.GetPrev();
 		}

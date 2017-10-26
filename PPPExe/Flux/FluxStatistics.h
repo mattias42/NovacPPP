@@ -29,7 +29,7 @@ namespace Flux{
 
 		/** Attaches the supplied list of flux results to the current set
 			of measured data. */
-		void AttachFluxList(const novac::CList <CFluxResult, CFluxResult &> &calculatedFluxes);
+		void AttachFluxList(novac::CList<CFluxResult, CFluxResult&>& calculatedFluxes);
 		
 		/** Attaches the given flux result to the current set of 
 			measured data */
@@ -49,7 +49,7 @@ namespace Flux{
 			CMeasurementDay();
 			~CMeasurementDay();
 			novac::CDateTime day; // the date of the measurement
-			novac::CList <CFluxResult, CFluxResult&> fluxList;
+			novac::CList <CFluxResult> fluxList;
 			static void GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
 			void GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
 			CMeasurementDay &operator=(const CMeasurementDay &m);

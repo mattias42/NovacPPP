@@ -442,28 +442,6 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 		squeeze             = (double)solarSpec->GetModelParameter(CReferenceSpectrumFunction::SQUEEZE);
 		squeezeError        = (double)solarSpec->GetModelParameterError(CReferenceSpectrumFunction::SQUEEZE);
 
-#ifdef _DEBUG
-		for(i = 0; i < m_window.nRef; ++i){
-			double rcolumn              = (double)ref[i]->GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
-			double rcolumnError         = (double)ref[i]->GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
-			double rshift               = (double)ref[i]->GetModelParameter(CReferenceSpectrumFunction::SHIFT);
-			double rshiftError          = (double)ref[i]->GetModelParameterError(CReferenceSpectrumFunction::SHIFT);
-			double rsqueeze             = (double)ref[i]->GetModelParameter(CReferenceSpectrumFunction::SQUEEZE);
-			double rsqueezeError        = (double)ref[i]->GetModelParameterError(CReferenceSpectrumFunction::SQUEEZE);
-		}
-		
-		FILE *f1 = fopen("C:\\Temp\\Meas.txt", "w");
-		FILE *f2 = fopen("C:\\Temp\\Fref.txt", "w");
-		FILE *f3 = fopen("C:\\Temp\\Ref.txt", "w");
-		for(i = 0; i < m_window.specLength; ++i){
-			fprintf(f1, "%lf\n", measArray[i]);
-			fprintf(f2, "%lf\n", localSolarSpectrumData.GetAt(i));
-			fprintf(f3, "%lf\n", m_window.ref[0].m_data->GetAt(i));
-		}
-		fclose(f1); fclose(f2); fclose(f3);
-		
-#endif
-
 		// clean up the evaluation
 		free(measArray);
 		delete solarSpec;
@@ -487,30 +465,6 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 
 			message.Format("A Fit Exception has occured. Are the reference files OK?");
 			ShowMessage(message);
-
-//#ifdef _DEBUG
-//			FILE *f = fopen("C:\\temp\\solarSpectrum.txt", "w");
-//			for(int it = 1; it < specLen; ++it){
-//				fprintf(f, "%lf\n", localSolarSpectrumData.GetAt(it));
-//			}
-//			fclose(f);
-//
-//			f = fopen("C:\\temp\\measuredSpectrum.txt", "w");
-//			for(int it = 1; it < specLen; ++it){
-//				fprintf(f, "%lf\n", measArray[it]);
-//			}
-//			fclose(f);
-//
-//			novac::CString fileName;
-//			for(i = 0; i < window.nRef; ++i){
-//				fileName.Format("C:\\temp\\reference_%d.txt", i);
-//				f = fopen(fileName, "w");
-//				for(int it = 1; it < specLen; ++it){
-//					fprintf(f, "%lf\t%lf\n", window.ref[i].m_data->GetWavelengthAt(it), window.ref[i].m_data->GetAt(it));
-//				}
-//				fclose(f);
-//			}
-//#endif
 
 			// clean up the evaluation
 			free(measArray);

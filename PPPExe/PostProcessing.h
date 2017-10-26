@@ -111,7 +111,7 @@ protected:
 			with the path's and filenames of each evaluation log 
 			file generated and the properties of each scan.
 		*/
-	void EvaluateScans(const novac::CList <novac::CString, novac::CString &> &pakFileList,
+	void EvaluateScans(novac::CList <novac::CString, novac::CString &> &pakFileList,
 		novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles);
 	
 	/** Runs through the supplied list of evaluation - logs and performs
@@ -123,19 +123,19 @@ protected:
 		@param geometryResults - will on successfull return be filled with the
 			calculated plume heights and wind-directions.
 		*/
-	void CalculateGeometries(const novac::CList <Evaluation::CExtendedScanResult,
+	void CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult,
 		Evaluation::CExtendedScanResult &> &evalLogs, novac::CList <Geometry::CGeometryResult*,
 		Geometry::CGeometryResult*> &geometryResults);
 
 	/** Writes each of the calculated geometry results to the GeometryLog file */
 	void WriteCalculatedGeometriesToFile(
-		const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
+		novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
 	
 	/** Inserts the calculated geometry results into the databases.
 		The wind directions will be inserted into m_windDataBase
 		The plume altitudes will be inserted into m_plumeDataBase */
 	void InsertCalculatedGeometriesIntoDataBase(
-		const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
+		novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
 
 
 	/** Runs through the supplied list of evaluation - logs and performs
@@ -150,8 +150,8 @@ protected:
 			be re-calculated. Otherwise false.
 		*/	
 	bool ApplyACDCCorrections(
-		const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs,
-		const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
+		novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs,
+		novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
 
 
 	/** This calculates the wind speeds from the dual-beam measurements that has been made
@@ -161,7 +161,7 @@ protected:
 		The plume heights are taken from the database 'm_plumeDataBase' and the 
 			results are written to the database 'm_windDataBase'
 	*/
-	void CalculateDualBeamWindSpeeds(const novac::CList <Evaluation::CExtendedScanResult,
+	void CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult,
 		Evaluation::CExtendedScanResult &> &evalLogs);
 
 	/** Runs through the supplied list of evaluation-results and 
@@ -173,7 +173,7 @@ protected:
 		The wind speeds and wind directions will be taken from 'm_windDataBase'
 		The plume heigths will be taken from 'm_plumeDataBase'
 		*/
-	void CalculateFluxes(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs);
+	void CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs);
 	
 	
 	/** Sorts the evaluation logs in order of increasing time 
@@ -181,8 +181,8 @@ protected:
 	void SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs);
 
 	/** Writes the calculated fluxes to the flux result file */
-	void WriteFluxResult_XML(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
-	void WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
+	void WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
+	void WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
 	
 	/** Takes care of uploading the result files to the FTP server */
 	void UploadResultsToFTP();

@@ -365,7 +365,7 @@ volatile unsigned long s_nFilesToProcess;
 	@param evalLogs - will on successful return be filled with the path's and
 		filenames of each evaluation log file generated.
 	*/
-void CPostProcessing::EvaluateScans(const novac::CList<novac::CString, novac::CString &>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evalLogFiles) {
+void CPostProcessing::EvaluateScans(novac::CList<novac::CString, novac::CString &>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evalLogFiles) {
 	s_nFilesToProcess = (long)pakFileList.GetCount();
 	novac::CString messageToUser;
 
@@ -791,7 +791,7 @@ int CPostProcessing::PreparePlumeHeights() {
 	@param geometryResults - will on successfull return be filled with the
 		calculated plume heights and wind-directions.
 	*/
-void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
+void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
 	novac::CString serial1, serial2, messageToUser;
 	novac::CDateTime startTime1, startTime2;
 	MEASUREMENT_MODE measMode1, measMode2;
@@ -822,15 +822,17 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 		}
 
 		// if this scan does not see a large enough portion of the plume, then ignore it...
-		if (plume1.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit)
+		if (plume1.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
 			continue;
+		}
 
 		//  Get the information about evaluation log file #1
 		novac::CFileUtils::GetInfoFromFileName(evalLog1, startTime1, serial1, channel, measMode1);
 
 		// If this is not a flux-measurement, then there's no use in trying to use it...
-		if (measMode1 != MODE_FLUX)
+		if (measMode1 != MODE_FLUX) {
 			continue;
+		}
 
 		// try to combine this evaluation-log file with every other eval-log
 		//  use the fact that the list of eval-logs is sorted by increasing start-time
@@ -846,8 +848,9 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 			++nFilesChecked2; // for debugging...
 
 			// if this scan does not see a large enough portion of the plume, then ignore it...
-			if (plume2.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit)
+			if (plume2.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
 				continue;
+			}
 
 			//  Get the information about evaluation log file # 2
 			novac::CFileUtils::GetInfoFromFileName(evalLog2, startTime2, serial2, channel, measMode2);
@@ -861,8 +864,9 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 			}
 
 			// If this is not a flux-measurement, then there's no use in trying to use it...
-			if (measMode2 != MODE_FLUX)
+			if (measMode2 != MODE_FLUX) {
 				continue;
+			}
 
 			// the serials must be different (i.e. the two measurements must be
 			//  from two different instruments)
@@ -995,7 +999,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 	@return - true if so large changes are made that the geometries would need to
 		be re-calculated. Otherwise false.
 	*/
-bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& /*evalLogs*/, const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& /*geometryResults*/) {
+bool CPostProcessing::ApplyACDCCorrections(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& /*evalLogs*/, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& /*geometryResults*/) {
 
 	ShowMessage("Applying ACDC corrections - This is not yet implemented!!");
 
@@ -1013,7 +1017,7 @@ bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExte
 		taken from the calculations - a default plume height equal to the
 		altitude of the summit of the volcano will be used.
 	*/
-void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles) {
+void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles) {
 	novac::CDateTime scanStartTime;
 	novac::CString serial, messageToUser;
 	Geometry::CPlumeHeight plumeHeight; // the altitude of the plume, in meters above sea level
@@ -1025,7 +1029,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 	novac::CList <Flux::CFluxResult, Flux::CFluxResult &> calculatedFluxes;
 
 	// Initiate the flux-calculator
-	Flux::CFluxCalculator *fluxCalc = new Flux::CFluxCalculator();
+	Flux::CFluxCalculator fluxCalc;
 
 	// Loop through the list of evaluation log files. For each of them, find
 	//	the best available wind-speed, wind-direction and plume height and
@@ -1060,7 +1064,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 		// Calculate the flux. This also takes care of writing
 		//	the results to file
 		Flux::CFluxResult fluxResult;
-		if (0 == fluxCalc->CalculateFlux(evalLog, m_windDataBase, plumeHeight, fluxResult)) {
+		if (0 == fluxCalc.CalculateFlux(evalLog, m_windDataBase, plumeHeight, fluxResult)) {
 			calculatedFluxes.AddTail(fluxResult);
 		}
 	}
@@ -1074,12 +1078,9 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 	ShowMessage("Writing flux statistics");
 	stat.AttachFluxList(calculatedFluxes);
 	stat.WriteFluxStat(g_userSettings.m_outputDirectory + "\\FluxStatistics.txt");
-
-	// clean up...
-	delete fluxCalc;
 }
 
-void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
+void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
 	novac::CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
 	novac::CDateTime now;
 
@@ -1222,7 +1223,7 @@ void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult,
 	fclose(f);
 }
 
-void CPostProcessing::WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
+void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
 	novac::CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
 	novac::CDateTime now;
 
@@ -1329,7 +1330,7 @@ void CPostProcessing::WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult,
 	fclose(f);
 }
 
-void CPostProcessing::WriteCalculatedGeometriesToFile(const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
+void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
 	if (geometryResults.GetCount() == 0)
 		return; // nothing to write...
 
@@ -1384,7 +1385,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const novac::CList <Geomet
 }
 
 // 5. Insert the calculated geometries into the plume height database
-void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
+void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
 	Meteorology::CWindField windField;
 	novac::CDateTime validFrom, validTo;
 	Configuration::CInstrumentLocation location;
@@ -1421,7 +1422,7 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const novac::CList 
 	The plume heights are taken from the database 'm_plumeDataBase' and the results are written
 	to the database 'm_windDataBase'
 */
-void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs) {
+void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs) {
 	novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
 	novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
 	novac::CList <novac::CString, novac::CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis

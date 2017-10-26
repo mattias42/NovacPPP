@@ -19,7 +19,7 @@ CFluxStatistics::CMeasurementDay &CFluxStatistics::CMeasurementDay::operator =(c
 	return *this;
 }
 
-void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments){
+void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString&> &instruments){
 	// the statistics of the fluxes
 	str.Format("Date\tAverageFlux(kg/s)\tMedianFlux(kg/s)\tStdFlux(kg/s)\tnMeasurements");
 	
@@ -72,7 +72,7 @@ void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac:
 		nMeasurementsFromThisInstrument = 0;
 		auto p = fluxList.GetHeadPosition();
 		while(p != nullptr){
-			CFluxResult &flux = fluxList.GetNext(p);
+			const CFluxResult &flux = fluxList.GetNext(p);
 			if(Equals(flux.m_instrument, serial)){
 				++nMeasurementsFromThisInstrument;
 			}
@@ -107,7 +107,7 @@ void CFluxStatistics::Clear(){
 
 /** Attaches the supplied list of flux results to the current set
 	of measured data. */
-void CFluxStatistics::AttachFluxList(const novac::CList <CFluxResult, CFluxResult &> &calculatedFluxes){
+void CFluxStatistics::AttachFluxList(novac::CList <CFluxResult, CFluxResult&>& calculatedFluxes){
 	auto p = calculatedFluxes.GetHeadPosition();
 	while(p != nullptr){
 		AttachFlux(calculatedFluxes.GetNext(p));

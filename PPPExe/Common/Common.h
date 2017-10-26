@@ -337,7 +337,7 @@ public:
 
 	/** Sorts a list of strings in either ascending or descending order.
 			The algorithm is based on MergeSort (~O(NlogN)). */
-	static void Sort(novac::CList <novac::CString, novac::CString&> &strings, bool files, bool ascending = true);
+	static void Sort(novac::CList <novac::CString> &strings, bool files, bool ascending = true);
 private:
 	novac::CString m_string[3];
 	
@@ -346,7 +346,7 @@ private:
 
 	/** Merges the two lists 'list1' and 'list2' in a sorted way and stores
 			the result in the output-list 'result' */
-	static void MergeLists(const novac::CList <novac::CString, novac::CString&> &list1, const novac::CList <novac::CString, novac::CString&> &list2, novac::CList <novac::CString, novac::CString&> &result, bool files, bool ascending = true);
+	static void MergeLists(const novac::CList <novac::CString> &list1, const novac::CList <novac::CString> &list2, novac::CList <novac::CString> &result, bool files, bool ascending = true);
 public:
 
 	// --------------------------------------------------------------------

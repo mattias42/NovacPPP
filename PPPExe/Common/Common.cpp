@@ -435,7 +435,7 @@ RETURN_CODE Common::GetSunPosition(const novac::CDateTime &gmtTime, double lat, 
 
 
 /** Sorts a list of strings in either ascending or descending order */
-void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool files, bool ascending) {
+void Common::Sort(novac::CList <novac::CString> &strings, bool files, bool ascending) {
 	unsigned long nStrings = (unsigned long)strings.GetCount(); // number of elements
 	unsigned long it = 0; // <-- iterator
 
@@ -443,8 +443,8 @@ void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool 
 		return; // <-- We're actually already done
 	}
 	else {
-		novac::CList <novac::CString, novac::CString&> left;
-		novac::CList <novac::CString, novac::CString&> right;
+		novac::CList <novac::CString> left;
+		novac::CList <novac::CString> right;
 
 		// Make two copies of the list, one of the first half and one of the second half
 		auto pos = strings.GetHeadPosition();
@@ -467,7 +467,7 @@ void Common::Sort(novac::CList <novac::CString, novac::CString&> &strings, bool 
 
 /** Merges the two lists 'list1' and 'list2' in a sorted way and stores
 		the result in the output-list 'result' */
-void Common::MergeLists(const novac::CList <novac::CString, novac::CString&> &list1, const novac::CList <novac::CString, novac::CString&> &list2, novac::CList <novac::CString, novac::CString&> &result, bool files, bool ascending) {
+void Common::MergeLists(const novac::CList <novac::CString> &list1, const novac::CList <novac::CString> &list2, novac::CList <novac::CString> &result, bool files, bool ascending) {
 	novac::CString	name1, name2, fullName1, fullName2;
 	int comparison;
 

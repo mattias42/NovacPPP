@@ -135,7 +135,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 
 	// Open the file
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL)
+	if(f == nullptr)
 		return FAIL;
 
 	// Write the header

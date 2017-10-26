@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
 <NovacPostProcessing>
-	<MaxThreadNum>4</MaxThreadNum>
+	<MaxThreadNum>1</MaxThreadNum>
 	<StartNow>0</StartNow>
 	<outputdirectory>C:\NOVAC\novacP3\Piton de la Fournaise\OutputFeb2017UTC\</outputdirectory>
 	<tempdirectory>C:\NOVAC\novacP3\Piton de la Fournaise\Temp\</tempdirectory>
