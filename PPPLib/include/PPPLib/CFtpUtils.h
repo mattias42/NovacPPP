@@ -9,8 +9,17 @@ namespace novac
 {
 	struct CFileInfo
 	{
-		std::string fileName;
-		bool isDirectory;
+		// The file name (or name of the directory)
+		std::string fileName = "";
+
+		// True if this is a directory
+		bool isDirectory = false;
+
+		// The size of the file. Zero if this is a directory
+		size_t fileSize = 0U;
+
+		// The path to this file or directory (the parent items)
+		std::string path = "";
 	};
 
 	class CFtpUtils

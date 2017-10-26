@@ -8,16 +8,8 @@
 
 #include <PPPLib/CString.h>
 #include <PPPLib/CList.h>
-
-// #define _CRTDBG_MAP_ALLOC
-// #include <stdlib.h>
-// #include <crtdbg.h>
-// 
-// #include <math.h>
-// 
-// #include <afxtempl.h>
-
-#include "DateTime.h"
+#include <PPPLib/Measurement.h>
+#include <PPPLib/DateTime.h>
 
 #include "../Geometry/PlumeHeight.h"
 #include "../Meteorology/WindField.h"
@@ -77,18 +69,6 @@ enum	DARK_MODEL_OPTION { MEASURED, USER_SUPPLIED };
 // The list of instrument types available
 const enum INSTRUMENT_TYPE {INSTR_GOTHENBURG, INSTR_HEIDELBERG};
 
-// The various kinds of measurement modes that we have
-const enum MEASUREMENT_MODE {
-	MODE_UNKNOWN, 
-	MODE_FLUX, 
-	MODE_WINDSPEED, 
-	MODE_STRATOSPHERE, 
-	MODE_DIRECT_SUN, 
-	MODE_COMPOSITION, 
-	MODE_LUNAR, 
-	MODE_TROPOSPHERE, 
-	MODE_MAXDOAS
-};
 
 // The options for how to do the post-processing
 const enum PROCESSING_MODE{
@@ -298,21 +278,6 @@ public:
 			If nDays is negative, the date will be decreased instead. */
 	static RETURN_CODE IncreaseDate(unsigned short date[3], int nDays);
 
-	/** Takes a given year and month and returns the number of days in that month. 
-			The month ranges from 1 to 12. Any illegal values in the month will return 0. */
-	static int	DaysInMonth(int year, int month);
-
-	/** Takes a given date and calculates the day of the year. 
-			An illegal day will return 0. */
-	static int	DayNr(const unsigned short day[3]);
-
-	/** Takes a given date and calculates the day of the year. 
-			An illegal day will return 0. */
-	static int	DayNr(const CDateTime &day);
-
-	/** Returns the Julian Day corresponding to the given date and time of day. */
-	static double JulianDay(const CDateTime &utcTime);
-
 	// --------------------------------------------------------------------
 	// -------------------- SUN - FUNCTIONS -------------------------------
 	// --------------------------------------------------------------------
@@ -321,7 +286,7 @@ public:
 			for the site specified by (lat, lon) and for the time given in gmtTime. 
 			Note that the returned angles are in degrees and that the specified
 			time _must_ be GMT-time. */
-	static RETURN_CODE GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ);
+	static RETURN_CODE GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ);
 
 	/** ???? 
 		D  is the JulianDay counted from the 1st of January 2000 @ midnight

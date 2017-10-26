@@ -112,13 +112,13 @@ CWindField::CWindField(void)
 	this->m_windSpeedSource		= MET_DEFAULT;
 	this->m_windSpeedError		= 10.0;
 	
-	m_validFrom = CDateTime(2005,10,01,00,00,00);
-	m_validTo	= CDateTime(9999,12,31,23,59,59);
+	m_validFrom = novac::CDateTime(2005,10,01,00,00,00);
+	m_validTo	= novac::CDateTime(9999,12,31,23,59,59);
 	
 	m_location = CGPSData(0.0, 0.0, 0.0);
 }
 
-CWindField::CWindField(double windSpeed, MET_SOURCE windSpeedSrc, double windDir, MET_SOURCE windDirSrc, const CDateTime &validFrom, const CDateTime &validTo, double lat, double lon, double alt){
+CWindField::CWindField(double windSpeed, MET_SOURCE windSpeedSrc, double windDir, MET_SOURCE windDirSrc, const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double lat, double lon, double alt){
 	this->m_windSpeed				= windSpeed;
 	this->m_windSpeedSource			= windSpeedSrc;
 	this->m_windDirection			= windDir;
@@ -133,7 +133,7 @@ CWindField::CWindField(double windSpeed, MET_SOURCE windSpeedSrc, double windDir
 	this->m_windDirectionError = 0.0;
 }
 
-CWindField::CWindField(double windSpeed, double windSpeedErr, MET_SOURCE windSpeedSrc, double windDir, double windDirErr, MET_SOURCE windDirSrc, const CDateTime &validFrom, const CDateTime &validTo, double lat, double lon, double alt){
+CWindField::CWindField(double windSpeed, double windSpeedErr, MET_SOURCE windSpeedSrc, double windDir, double windDirErr, MET_SOURCE windDirSrc, const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double lat, double lon, double alt){
 	this->m_windSpeed				= windSpeed;
 	this->m_windSpeedSource			= windSpeedSrc;
 	this->m_windSpeedError			= windSpeedErr;
@@ -186,7 +186,7 @@ void CWindField::SetWindDirection(double wd, MET_SOURCE source){
 }
 
 /** Sets the time and/or date the wind-field is valid for */
-void CWindField::SetValidTimeFrame(const CDateTime &from, const CDateTime &to){
+void CWindField::SetValidTimeFrame(const novac::CDateTime &from, const novac::CDateTime &to){
 	this->m_validFrom	= from;
 	this->m_validTo		= to;
 }
@@ -243,7 +243,7 @@ void CWindField::SetWindDirectionError(double err){
 }
 
 /** Gets the time and date for which this wind-field is valid */
-void CWindField::GetValidTimeFrame(CDateTime &from, CDateTime &to) const{
+void CWindField::GetValidTimeFrame(novac::CDateTime &from, novac::CDateTime &to) const{
 	from = this->m_validFrom;
 	to	 = this->m_validTo;
 }

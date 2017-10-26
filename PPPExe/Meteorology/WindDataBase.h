@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "WindField.h"
-#include "../Common/DateTime.h"
+#include <PPPLib/DateTime.h>
 #include "../Common/Common.h"
 
 
@@ -60,7 +60,7 @@ namespace Meteorology{
 				about the wind field at the requested time and location.
 			@return true if the wind field could be retrieved, otherwise false.
 		 */
-		bool GetWindField(const CDateTime &time, const CGPSData &location, INTERPOLATION_METHOD method, CWindField &windField) const;
+		bool GetWindField(const novac::CDateTime &time, const CGPSData &location, INTERPOLATION_METHOD method, CWindField &windField) const;
 
 		/** Inserts a wind field into the database */
 		void InsertWindField(const CWindField &windField);
@@ -75,7 +75,7 @@ namespace Meteorology{
 				If location is NULL then the wind-direction is assumed to be valid everywhere.
 				The altitude in 'location ' will be ignored.
 		*/
-		void InsertWindDirection(const CDateTime &validFrom, const CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location);
+		void InsertWindDirection(const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location);
 
 		/** Inserts a wind-speed into the database. 
 			@param validFrom - the time from which the wind-direction is judged to be ok
@@ -87,7 +87,7 @@ namespace Meteorology{
 				If location is NULL then the wind-speed is assumed to be valid everywhere.
 				The altitude in 'location ' will be ignored.
 		*/
-		void InsertWindSpeed(const CDateTime &validFrom, const CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location);
+		void InsertWindSpeed(const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location);
 		
 		/** Writes the contents of this database to file. 
 			@return 0 on success. */
@@ -133,8 +133,8 @@ namespace Meteorology{
 			CWindInTime(const CWindInTime &w);
 			CWindInTime &operator=(const CWindInTime &w);
 			~CWindInTime();
-			CDateTime	validFrom;  // this wind-data is valid from this day and time
-			CDateTime	validTo;	// this wind-data is valid until this day and time
+			novac::CDateTime	validFrom;  // this wind-data is valid from this day and time
+			novac::CDateTime	validTo;	// this wind-data is valid until this day and time
 			std::list <CWindData> windData; // the list of wind-datas
 		};
 		
@@ -185,9 +185,9 @@ namespace Meteorology{
 
 		/** The implementations of the different (spatial) interpolation methods.
 		*/
-		bool GetWindField_Exact(const CDateTime &time, const CGPSData &location, CWindField &windField) const;
-		bool GetWindField_Nearest(const CDateTime &time, const CGPSData &location, CWindField &windField) const;
-		bool GetWindField_Bilinear(const CDateTime &time, const CGPSData &location, CWindField &windField) const;
+		bool GetWindField_Exact(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const;
+		bool GetWindField_Nearest(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const;
+		bool GetWindField_Bilinear(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const;
 		
 		
 	};

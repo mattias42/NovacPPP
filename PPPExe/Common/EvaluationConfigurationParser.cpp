@@ -39,7 +39,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 		}
 		if(novac::Equals(szToken, "fitWindow", 9)){
 			Evaluation::CFitWindow tmpWindow;
-			CDateTime validFrom, validTo;
+			novac::CDateTime validFrom, validTo;
 			
 			// Parse the fit window
 			Parse_FitWindow(tmpWindow, validFrom, validTo);
@@ -50,7 +50,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 		
 		if(novac::Equals(szToken, "DarkCorrection", 14)){
 			Configuration::CDarkSettings dSettings;
-			CDateTime validFrom, validTo;
+			novac::CDateTime validFrom, validTo;
 			
 			// Parse the fit window
 			Parse_DarkCorrection(dSettings, validFrom, validTo);
@@ -69,7 +69,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 	novac::CString indent, str; 
 	Evaluation::CFitWindow window;
 	Configuration::CDarkSettings dSettings;
-	CDateTime from, to;
+	novac::CDateTime from, to;
 
 	// open the file
 	FILE *f = fopen(fileName, "w");
@@ -203,7 +203,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 }
 
 /** Reads a 'fitWindow' section */
-int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo){
+int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo){
 	window.Clear();
 
 	// parse the file
@@ -401,7 +401,7 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 }
 
 /** Reads a 'dark-correction' section */
-int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo){
+int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo){
 	dSettings.Clear();
 	novac::CString str;
 

@@ -103,12 +103,11 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 	@param dateTo - if not null then only file which contain a wind field before (and including)
 		the date 'dateTo' will be read in.
 	@return 0 on success */
-int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const CDateTime *dateFrom, const CDateTime *dateTo){
-	novac::CFileException exceFile;
+int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const novac::CDateTime *dateFrom, const novac::CDateTime *dateTo){
 	novac::CStdioFile file;
 	int curWindow = 0;
 	novac::CString localFileName, remoteFileName, userMessage, ftpDir;
-	novac::CList <novac::CString, novac::CString &> remoteFileList; // the list of wind field files
+	std::vector<std::string> remoteFileList; // the list of wind field files
 	novac::CList <novac::CString, novac::CString &> localFileList; // the list of files on the local computer
 
 	if(Equals(directory.Left(6), "ftp://")){
@@ -135,10 +134,9 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 		}
 
 		// Download the files, one at a time
-		auto p = remoteFileList.GetHeadPosition();
-		while(p != nullptr)
+		for(std::string item : remoteFileList)
 		{
-			novac::CString &name = remoteFileList.GetNext(p);
+			novac::CString name(item);
 			
 			// only download .wxml files
 			if(!Equals(name.Right(5), ".wxml"))
@@ -149,8 +147,8 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 			int rpos = name.ReverseFind('_');
 			if(rpos > 0 && ((name.GetLength() - rpos) == 14)){
 				novac::CString dateStr(name.Right(13).Left(8));
-				CDateTime t;
-				if(CDateTime::ParseDate(dateStr, t)){
+				novac::CDateTime t;
+				if(novac::CDateTime::ParseDate(dateStr, t)){
 					if(t < g_userSettings.m_fromDate || t > g_userSettings.m_toDate)
 						continue;
 				}
@@ -226,7 +224,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
 	novac::CString sourceStr, userMessage;
 	Meteorology::CWindField w;
-	CDateTime validFrom, validTo;
+	novac::CDateTime validFrom, validTo;
 	double latitude = 0.0;
 	double longitude = 0.0;
 	double altitude = 0.0;

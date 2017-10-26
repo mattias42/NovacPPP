@@ -88,7 +88,7 @@ int CSpectrum::Add(const CSpectrum &spec){
   m_length = spec.m_length;
   m_info.m_numSpec += spec.m_info.m_numSpec;
 
-  CDateTime localCopy = spec.m_info.m_startTime;
+  novac::CDateTime localCopy = spec.m_info.m_startTime;
   if(localCopy < m_info.m_startTime)
     m_info.m_startTime = localCopy;
 
@@ -227,8 +227,8 @@ void CSpectrum::Clear(){
   m_info.m_gps.m_altitude = 0;
   m_info.m_gps.m_latitude = m_info.m_gps.m_longitude = 0;
   // Time
-  m_info.m_startTime = CDateTime();
-  m_info.m_stopTime = CDateTime();
+  m_info.m_startTime = novac::CDateTime();
+  m_info.m_stopTime = novac::CDateTime();
 }
 
 int	CSpectrum::Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const{

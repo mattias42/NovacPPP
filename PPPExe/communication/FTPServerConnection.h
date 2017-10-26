@@ -1,7 +1,9 @@
 #ifndef FTPSERVER_DATADOWNLOAD_H
 #define FTPSERVER_DATADOWNLOAD_H
 
-#include "FTPCom.h"
+#include <vector>
+#include <PPPLib/CList.h>
+#include <PPPLib/CString.h>
 
 namespace Communication {
 	class CFTPServerConnection
@@ -32,10 +34,10 @@ namespace Communication {
 		int DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
 			const novac::CString &username, const novac::CString &password);
 
-		/** Retrieves the list of files in a given directory on the FTP-server
+		/** Retrieves the list of files (but no directories) in a given directory on the FTP-server
 			@return 0 on successful connection and completion of the download
 		*/
-		int DownloadFileListFromFTP(const novac::CString &serverDir, novac::CList <novac::CString, novac::CString&> &fileList,
+		int DownloadFileListFromFTP(const novac::CString &serverDir, std::vector<std::string>& fileList,
 			const novac::CString &username, const novac::CString &password);
 
 		/** Uploads result-files to the given FTP-server

@@ -40,7 +40,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 	clock_t cStart, cFinish;
 	novac::CString errorMessage, message, serialNumber;
 	Meteorology::CWindField windField;
-	CDateTime startTime;
+	novac::CDateTime startTime;
 	SpectrumIO::CSpectrumIO reader;
 	CSpectrum skySpectrum;
 	Configuration::CInstrumentLocation instrLocation;
@@ -182,7 +182,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	long itSpectrum, itSpecie; // iterators
 	novac::CString pakFile, txtFile, specModel, evalSummaryLog;
 	novac::CString wsSrc, wdSrc, phSrc;
-	CDateTime dateTime;
+	novac::CDateTime dateTime;
 
 	// get the file-name that we want to have	
 	GetArchivingfileName(pakFile, txtFile, window->name, scan->GetFileName(), result->GetMeasurementMode());
@@ -582,7 +582,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 */
 int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, Evaluation::CFitWindow &window){
 	CSpectrum skySpec;
-	CDateTime day, evalValidFrom, evalValidTo;
+	novac::CDateTime day, evalValidFrom, evalValidTo;
 	Configuration::CInstrumentConfiguration *instrumentConf = NULL;
 	Configuration::CInstrumentLocation singleLocation;
 	novac::CString serialNumber, errorMessage;

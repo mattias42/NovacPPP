@@ -27,8 +27,6 @@ set(NPP_COMMON
     ${CMAKE_CURRENT_LIST_DIR}/Common/ASCII.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/Common.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/Common.h
-    ${CMAKE_CURRENT_LIST_DIR}/Common/DateTime.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Common/DateTime.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/EvaluationConfigurationParser.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/EvaluationConfigurationParser.h
     ${CMAKE_CURRENT_LIST_DIR}/Common/EvaluationLogFileHandler.cpp
@@ -45,8 +43,6 @@ set(NPP_COMMON
     ${CMAKE_CURRENT_LIST_DIR}/Common/XMLFileReader.h
 )
 set(NPP_COMMUNICATION
-    ${CMAKE_CURRENT_LIST_DIR}/communication/FTPCom.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/communication/FTPCom.h
     ${CMAKE_CURRENT_LIST_DIR}/communication/FTPServerConnection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/communication/FTPServerConnection.h
 )

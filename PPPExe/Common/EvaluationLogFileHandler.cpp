@@ -912,7 +912,7 @@ void CEvaluationLogFileHandler::SortScans(){
 
 /** Returns true if the scans are already ordered */
 bool	CEvaluationLogFileHandler::IsSorted(){
-	CDateTime time1, time2;
+	novac::CDateTime time1, time2;
 
 	for(int k = 0; k < m_scanNum - 1; ++k){
 		// Get the start-times
@@ -936,7 +936,7 @@ bool	CEvaluationLogFileHandler::IsSorted(){
 RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString fileName){
 	novac::CString string, specieName;
 	novac::CString wsSrc, wdSrc, phSrc, specModel;
-	CDateTime startTime;
+	novac::CDateTime startTime;
 
 	// 1. Test if the file already exists, if so then return false
 	if(IsExistingFile(fileName))
@@ -1143,7 +1143,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
 	return SUCCESS;
 }
 
-/** Sorts the CDateTime-objects in the given array.
+/** Sorts the novac::CDateTime-objects in the given array.
 		Algorithm based on MergeSort (~O(NlogN)) */
 void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
 	unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
@@ -1185,7 +1185,7 @@ void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation:
 /** Merges the two arrays in a sorted way and stores the
 		result in the output-array 'result' */
 void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending){
-	CDateTime	time1, time2;
+	novac::CDateTime	time1, time2;
 	unsigned long it1 = 0; // iterator for array1
 	unsigned long it2 = 0; // iterator for array2
 	unsigned long itr = 0; // iterator for result
@@ -1244,7 +1244,7 @@ void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluatio
 		Quite efficient for small arrays since the elements does not have to be copied
 			and thus uses very little memory */
 void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
-	CDateTime time1, time2;
+	novac::CDateTime time1, time2;
 	bool change;
 	unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
 
@@ -1272,90 +1272,3 @@ void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evalu
 	return;
 }
 
-/** Takes the filename of an evaluation log and extracts the 
-		Serial-number of the spectrometer, the date the scan was performed
-		and the start-time of the scan from the filename. */
-bool FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(const novac::CString fileName, CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode){
-	novac::CString name, sDate, sTime, resToken;
-	int iDate, iTime;
-	int curPos = 0;
-
-	// make a local copy of the filename
-	name.Format(fileName);
-
-	// remove the name of the path
-	Common::GetFileName(name);
-
-	// Tokenize the file-name using the underscores as separators
-
-	// The first part is the serial-number of the spectrometer
-	resToken = name.Tokenize("_", curPos);
-	if(resToken == "")
-		return false;
-	serial.Format(resToken);
-
-	if(curPos == -1)
-		return false;
-
-	// The second part is the date
-	resToken = name.Tokenize("_", curPos);
-	if(resToken == "")
-		return false;
-	sscanf(resToken, "%d", &iDate);
-	start.year  = (unsigned char)(iDate /10000);
-	start.month = (unsigned char)((iDate - start.year*10000) / 100);
-	start.day   = (unsigned char) (iDate % 100);
-	start.year  += 2000;
-
-	if(curPos == -1)
-		return false;
-
-	// The third part is the time
-	resToken = name.Tokenize("_", curPos);
-	if(resToken == "")
-		return false;
-	sscanf(resToken, "%d", &iTime);
-	start.hour    = (unsigned char)(iTime /100);
-	start.minute  = (unsigned char)((iTime - start.hour*100));
-	start.second  = 0;
-
-	if(curPos == -1)
-		return false;
-
-	// The fourth part is the channel
-	resToken = name.Tokenize("_", curPos);
-	if(resToken == "")
-		return false;
-	sscanf(resToken, "%d", &channel);
-
-	if(curPos == -1)
-		return false;
-
-	// The fifth part is the measurement mode. This is however not always available...
-	resToken = name.Tokenize("_", curPos);
-	if(resToken == "")
-		return false;
-	if(Equals(resToken, "flux", 4)){
-		mode = MODE_FLUX;
-	}else if(Equals(resToken, "wind", 4)){
-		mode = MODE_WINDSPEED;
-	}else if(Equals(resToken, "stra", 4)){
-		mode = MODE_STRATOSPHERE;
-	}else if(Equals(resToken, "dsun", 4)){
-		mode = MODE_DIRECT_SUN;
-	}else if(Equals(resToken, "comp", 4)){
-		mode = MODE_COMPOSITION;
-	}else if(Equals(resToken, "luna", 4)){
-		mode = MODE_LUNAR;
-	}else if(Equals(resToken, "trop", 4)){
-		mode = MODE_TROPOSPHERE;
-	}else if(Equals(resToken, "maxd", 4)){
-		mode = MODE_MAXDOAS;
-	}else if(Equals(resToken, "unkn", 4)){
-		mode = MODE_UNKNOWN;
-	}else{
-		mode = MODE_UNKNOWN;
-	}
-
-	return true;
-}

@@ -8,18 +8,24 @@ set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib h
 add_library(PPPLib
 	${PppLib_INCLUDE_DIRS}/PPPLib/CArray.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CCriticalSection.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CFtpUtils.h 
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CFileUtils.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CFtpUtils.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CList.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CSingleLock.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CStdioFile.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CString.h
 	${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/DateTime.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
 	${CMAKE_CURRENT_LIST_DIR}/src/CStdioFile.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/DateTime.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
     )
 

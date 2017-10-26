@@ -34,6 +34,7 @@
 
 #include "Meteorology/XMLWindFileReader.h"
 #include <PPPLib/VolcanoInfo.h>
+#include <PPPLib/CFileUtils.h>
 
 // we want to make some statistics on the processing
 #include "PostProcessingStatistics.h"
@@ -244,7 +245,7 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 	// TODO: ImplementMe
 
 	//int channel;
-	//CDateTime startTime;
+	//novac::CDateTime startTime;
 	//novac::CString serial, fileName, userMessage;
 	//MEASUREMENT_MODE mode;
 	//HANDLE hFile;
@@ -503,7 +504,7 @@ void AddResultToList(const novac::CString &pakFileName, const novac::CString (&e
 			newResult.m_evalLogFile[fitWindowIndex].Format(evalLog[fitWindowIndex]);
 			newResult.m_fitWindowName[fitWindowIndex].Format(g_userSettings.m_fitWindowsToUse[fitWindowIndex]);
 		}
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(evalLog[0], newResult.m_startTime, serial, channel, mode);
+		novac::CFileUtils::GetInfoFromFileName(evalLog[0], newResult.m_startTime, serial, channel, mode);
 		newResult.m_scanProperties = scanProperties;
 
 		// store the name of the evaluation-log file generated
@@ -518,7 +519,7 @@ void AddResultToList(const novac::CString &pakFileName, const novac::CString (&e
 int CPostProcessing::CheckSettings(){
 	unsigned int j, k; //iterators
 	novac::CString errorMessage;
-	CDateTime now;
+	novac::CDateTime now;
 
 	// Check that no instrument is duplicated in the list of instruments...
 	for(j = 0; j < g_setup.m_instrumentNum; ++j){
@@ -596,7 +597,7 @@ int CPostProcessing::CheckSettings(){
 }
 
 int CPostProcessing::PrepareEvaluation(){
-	CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
+	novac::CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
 	novac::CString errorMessage, fileName;
 
 	// this is true if we failed to prepare the evaluation...
@@ -797,8 +798,8 @@ int CPostProcessing::PreparePlumeHeights(){
 	Geometry::CPlumeHeight plumeHeight;
 	plumeHeight.m_plumeAltitude			= g_volcanoes.GetPeakAltitude(g_userSettings.m_volcano);
 	plumeHeight.m_plumeAltitudeSource	= Meteorology::MET_DEFAULT;
-	plumeHeight.m_validFrom				= CDateTime(0,0,0,0,0,0);
-	plumeHeight.m_validTo				= CDateTime(9999,12,31,23,59,59);
+	plumeHeight.m_validFrom				= novac::CDateTime(0,0,0,0,0,0);
+	plumeHeight.m_validTo				= novac::CDateTime(9999,12,31,23,59,59);
 	
 	// the estimated plume height is half of the altitude difference between the highest
 	//	instrument for this volcano and the volcano altitude
@@ -837,7 +838,7 @@ int CPostProcessing::PreparePlumeHeights(){
 	*/
 void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
 	novac::CString serial1, serial2, messageToUser;
-	CDateTime startTime1, startTime2;
+	novac::CDateTime startTime1, startTime2;
 	MEASUREMENT_MODE measMode1, measMode2;
 	int channel;
 	unsigned long nFilesChecked1 = 0; // this is for debugging purposes...
@@ -870,7 +871,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 			continue;
 
 		//  Get the information about evaluation log file #1
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(evalLog1, startTime1, serial1, channel, measMode1);
+		novac::CFileUtils::GetInfoFromFileName(evalLog1, startTime1, serial1, channel, measMode1);
 		
 		// If this is not a flux-measurement, then there's no use in trying to use it...
 		if(measMode1 != MODE_FLUX)
@@ -894,11 +895,11 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 				continue;
 
 			//  Get the information about evaluation log file # 2
-			FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(evalLog2, startTime2, serial2, channel, measMode2);
+			novac::CFileUtils::GetInfoFromFileName(evalLog2, startTime2, serial2, channel, measMode2);
 			
 			// The time elapsed between the two measurements must not be more than 
 			//	the user defined time-limit (in seconds)
-			double timeDifference = fabs(CDateTime::Difference(startTime1, startTime2));
+			double timeDifference = fabs(novac::CDateTime::Difference(startTime1, startTime2));
 			if(timeDifference > g_userSettings.m_calcGeometry_MaxTimeDifference){
 				pos2 = nullptr;
 				continue;
@@ -982,7 +983,7 @@ void CPostProcessing::CalculateGeometries(const novac::CList <Evaluation::CExten
 			auto gp = geometryResults.GetTailPosition();
 			while(gp != nullptr){
 				const Geometry::CGeometryResult *oldResult = geometryResults.GetPrev(gp);
-				if(fabs(CDateTime::Difference(oldResult->m_averageStartTime, startTime1)) < g_userSettings.m_calcGeometryValidTime){
+				if(fabs(novac::CDateTime::Difference(oldResult->m_averageStartTime, startTime1)) < g_userSettings.m_calcGeometryValidTime){
 					if((oldResult->m_plumeAltitudeError < plumeHeight.m_plumeAltitudeError) && (oldResult->m_plumeAltitude > NOT_A_NUMBER)){
 						plumeHeight.m_plumeAltitude			= oldResult->m_plumeAltitude;
 						plumeHeight.m_plumeAltitudeError	= oldResult->m_plumeAltitudeError;
@@ -1052,7 +1053,7 @@ bool CPostProcessing::ApplyACDCCorrections(const novac::CList <Evaluation::CExte
 		altitude of the summit of the volcano will be used.
 	*/
 void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles){
-	CDateTime scanStartTime;
+	novac::CDateTime scanStartTime;
 	novac::CString serial, messageToUser;
 	Geometry::CPlumeHeight plumeHeight; // the altitude of the plume, in meters above sea level
 	MEASUREMENT_MODE measMode;
@@ -1082,7 +1083,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 		}
 
 		// Extract the date and time of day when the measurement was made
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(evalLog, scanStartTime, serial, channel, measMode);
+		novac::CFileUtils::GetInfoFromFileName(evalLog, scanStartTime, serial, channel, measMode);
 		
 		// If this is not a flux-measurement, then there's no point in calculating any flux for it
 		if(measMode != MODE_FLUX)
@@ -1119,7 +1120,7 @@ void CPostProcessing::CalculateFluxes(const novac::CList <Evaluation::CExtendedS
 
 void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
 	novac::CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
-	CDateTime now;
+	novac::CDateTime now;
 
 	// get the current time
 	now.SetToNow();
@@ -1259,7 +1260,7 @@ void CPostProcessing::WriteFluxResult_XML(const novac::CList <Flux::CFluxResult,
 
 void CPostProcessing::WriteFluxResult_Txt(const novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes){
 	novac::CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
-	CDateTime now;
+	novac::CDateTime now;
 
 	// get the current time
 	now.SetToNow();
@@ -1416,7 +1417,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(const novac::CList <Geomet
 // 5. Insert the calculated geometries into the plume height database
 void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults){
 	Meteorology::CWindField windField;
-	CDateTime validFrom, validTo;
+	novac::CDateTime validFrom, validTo;
 	Configuration::CInstrumentLocation location;
 
 	auto pos = geometryResults.GetHeadPosition();
@@ -1433,9 +1434,9 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(const novac::CList 
 			g_setup.GetInstrumentLocation(result->m_instr1, result->m_averageStartTime, location);
 		
 			// get the time-interval that the measurement is valid for
-			validFrom = CDateTime(result->m_averageStartTime);
+			validFrom = novac::CDateTime(result->m_averageStartTime);
 			validFrom.Decrement(g_userSettings.m_calcGeometryValidTime);
-			validTo   = CDateTime(result->m_averageStartTime);
+			validTo   = novac::CDateTime(result->m_averageStartTime);
 			validTo.Increment(g_userSettings.m_calcGeometryValidTime);
 		
 			// insert the wind-direction into the wind database
@@ -1455,11 +1456,11 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 	novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
 	novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
 	novac::CList <novac::CString, novac::CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis
-	CDateTime validFrom, validTo;
+	novac::CDateTime validFrom, validTo;
 	
 	novac::CString serial, serial2, fileName, fileName2, nonsenseString;
 	novac::CString userMessage, windLogFile;
-	CDateTime startTime, startTime2;
+	novac::CDateTime startTime, startTime2;
 	int channel, channel2, nWindMeasFound = 0;
 	MEASUREMENT_MODE meas_mode, meas_mode2;
 	Configuration::CInstrumentLocation location;
@@ -1478,7 +1479,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
 		
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
+		novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
 		
 		if(meas_mode == MODE_WINDSPEED){
 			++nWindMeasFound;
@@ -1523,7 +1524,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 		//	extract just the file-name, i.e. remove the path
 		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
+		novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
 		
 		// Get the plume height at the time of the measurement
 		m_plumeDataBase.GetPlumeHeight(startTime, plumeHeight);
@@ -1569,7 +1570,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 		fileName = novac::CString(fileNameAndPath);
 		Common::GetFileName(fileName);
 		
-		FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
+		novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
 		
 		// now check if we can match this one with a file in the slave-channel
 		auto pos2 = slaveList.GetHeadPosition();
@@ -1580,7 +1581,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(const novac::CList <Evaluation
 			fileName2 = novac::CString(fileNameAndPath2);
 			Common::GetFileName(fileName2);
 			
-			FileHandler::CEvaluationLogFileHandler::GetInfoFromFileName(fileName2, startTime2, serial2, channel2, meas_mode2);
+			novac::CFileUtils::GetInfoFromFileName(fileName2, startTime2, serial2, channel2, meas_mode2);
 			
 			if(Equals(serial, serial2) && (startTime == startTime2)){
 				// we have found a match!!!

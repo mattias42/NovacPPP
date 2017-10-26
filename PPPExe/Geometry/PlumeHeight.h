@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Common/DateTime.h"
 #include "../Common/GPSData.h"
 #include "../Meteorology/WindField.h"
 
@@ -36,8 +35,8 @@ namespace Geometry{
 		Meteorology::MET_SOURCE		m_plumeAltitudeSource;
 
 		/** The time range over which this information of the plume is valid */
-		CDateTime	m_validFrom;
-		CDateTime	m_validTo;
+		novac::CDateTime	m_validFrom;
+		novac::CDateTime	m_validTo;
 	
 	};
 }

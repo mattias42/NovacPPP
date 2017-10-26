@@ -126,16 +126,16 @@ namespace SpectrumIO
 				@return 1 - ...*/
 		int ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spec = NULL, char *headerBuffer = NULL, int headerBufferSize = 0);
 
-		/** Converts a time from unsigned long to CDateTime */
-		void ParseTime(const unsigned long t, CDateTime &time) const;
+		/** Converts a time from unsigned long to novac::CDateTime */
+		void ParseTime(const unsigned long t, novac::CDateTime &time) const;
 
-		/** Converts a time from CDateTime to unsigned long */
-		void WriteTime(unsigned long &t, const CDateTime &time) const;
+		/** Converts a time from novac::CDateTime to unsigned long */
+		void WriteTime(unsigned long &t, const novac::CDateTime &time) const;
 
-		/** Converts a date from unsigned long to CDateTime */
-		void ParseDate(const unsigned long d, CDateTime &day) const;
+		/** Converts a date from unsigned long to novac::CDateTime */
+		void ParseDate(const unsigned long d, novac::CDateTime &day) const;
 
-		/** Converts a date from CDateTime to unsigned long */
-		void WriteDate(unsigned long &d, const CDateTime &day) const;
+		/** Converts a date from novac::CDateTime to unsigned long */
+		void WriteDate(unsigned long &d, const novac::CDateTime &day) const;
 	};
 }

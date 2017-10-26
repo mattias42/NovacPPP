@@ -21,23 +21,23 @@ void CDarkCorrectionConfiguration::Clear(){
 	
 	m_darkSettings.SetAtGrow(0, new CDarkSettings());
 
-	m_validFrom.SetAtGrow(0, new CDateTime(0,0,0,0,0,0));
-	m_validTo.SetAtGrow(0, new CDateTime(9999, 12, 31, 23, 59, 59));	
+	m_validFrom.SetAtGrow(0, new novac::CDateTime(0,0,0,0,0,0));
+	m_validTo.SetAtGrow(0, new novac::CDateTime(9999, 12, 31, 23, 59, 59));	
 }
 
 /** Inserts a new set of settings for correcting dark spectra into the configuration for this spectrometer.
 	@param dSettings - dark-current correction settings 
 	@param validFrom - the time from which this settings is valid, NULL if valid since the beginning of time
 	@param validTo - the time to which this settings is valid, NULL if valid until the end of time */
-void CDarkCorrectionConfiguration::InsertDarkCurrentCorrectionSettings(const CDarkSettings &dSettings, const CDateTime *validFrom, const CDateTime *validTo){
+void CDarkCorrectionConfiguration::InsertDarkCurrentCorrectionSettings(const CDarkSettings &dSettings, const novac::CDateTime *validFrom, const novac::CDateTime *validTo){
 
 	// make a copy of the settings
 	CDarkSettings *newSettings = new CDarkSettings();
 	*newSettings = dSettings;
 	
 	// Get the time-range for which this window is valid
-	CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);
-	CDateTime *toTime = new CDateTime(9999, 12, 31, 23, 59, 59);
+	novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
+	novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
 	if(validFrom != NULL){
 		*fromTime = *validFrom;
 	}
@@ -62,12 +62,12 @@ void CDarkCorrectionConfiguration::InsertDarkCurrentCorrectionSettings(const CDa
 	@param time - the time when we want to know the settings for how the 
 		dark current should be corrected
 	@return 0 if sucessful, otherwise 1 */
-int CDarkCorrectionConfiguration::GetDarkSettings(CDarkSettings &dSettings, const CDateTime &time) const{
+int CDarkCorrectionConfiguration::GetDarkSettings(CDarkSettings &dSettings, const novac::CDateTime &time) const{
 	int length = (int)m_darkSettings.GetCount();
 
 	for(int k = 0; k < length; ++k){
-		CDateTime *from = m_validFrom.GetAt(k);
-		CDateTime *to = m_validTo.GetAt(k);
+		novac::CDateTime *from = m_validFrom.GetAt(k);
+		novac::CDateTime *to = m_validTo.GetAt(k);
 		if((*from < time || *from == time) && time < *to){
 			dSettings = *m_darkSettings.GetAt(k);
 			return 0;
@@ -86,7 +86,7 @@ int CDarkCorrectionConfiguration::GetDarkSettings(CDarkSettings &dSettings, cons
 	@param validFrom - the time from which this fit-window is valid
 	@param validTo - the time to which this fit-window is valid
 	@return 0 if sucessful, otherwise 1 */
-int CDarkCorrectionConfiguration::GetDarkSettings(int index, CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo) const{
+int CDarkCorrectionConfiguration::GetDarkSettings(int index, CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo) const{
 	if(index < 0 || index >= m_darkSettings.GetSize())
 		return 1;
 

@@ -73,6 +73,9 @@ namespace novac
 		result.fileName = fileName;
 
 		result.isDirectory = (parts[0].at(0) == 'd');
+
+		result.fileSize = std::atol(parts[4].c_str());
+
 		return true;
 	}
 

@@ -82,6 +82,14 @@ namespace novac
 		return Left((size_t)(nChars));
 	}
 
+	std::string Right(const std::string& input, size_t nChars) {
+		return input.substr(input.size() - nChars, nChars);
+	}
+
+	std::string Left(const std::string& input, size_t nChars) {
+		return input.substr(0, nChars);
+	}
+
 	CString CString::Left(size_t nChars) const
 	{
 		if (nChars >= m_data.size())
@@ -113,7 +121,7 @@ namespace novac
 
 	CString CString::Tokenize(const char* tokenDelimiters, int& iStart) const
 	{
-		if (iStart >= m_data.size())
+		if (iStart >= m_data.size() || iStart < 0)
 		{
 			return CString("");
 		}
@@ -134,11 +142,15 @@ namespace novac
 
 			if (strStart >= m_data.size() || foundPos >= m_data.size())
 			{
-				return CString("");
+				iStart = -1;
+				return CString(m_data.substr(strStart, foundPos));
 			}
 		}
 
-		// 2. extract the string
+		// 2. update the position
+		iStart = (int)foundPos;
+
+		// 3. extract the string
 		return CString(m_data.substr(strStart, foundPos));
 	}
 

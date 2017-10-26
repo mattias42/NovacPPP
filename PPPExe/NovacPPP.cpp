@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <thread>
 #include <Poco/Path.h>
+#include <Poco/Logger.h>
+#include <Poco/ConsoleChannel.h>
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -40,6 +42,10 @@ int main(int argc, char* argv[])
 
 		s_exePath = executable.parent().toString();
 		s_exeFileName = executable.getFileName();
+
+		// Setup the logging
+		Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
+		Poco::Logger& log = Poco::Logger::get("NovacPPP");
 
 		// Read the configuration files
 		LoadConfigurations();
@@ -241,7 +247,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		// The first date which we should analyze data from
 		if (Equals(token, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
 			parameter.Format(token + strlen(FLAG(str_fromDate)));
-			if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
+			if (!novac::CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
 				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}
@@ -252,7 +258,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		// The last date which we should analyze data from
 		if (Equals(token, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
 			parameter.Format(token + strlen(FLAG(str_toDate)));
-			if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
+			if (!novac::CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
 				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}

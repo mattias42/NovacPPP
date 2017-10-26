@@ -381,7 +381,7 @@ bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, int 
 	CGPSData source;
 	CPlumeInScanProperty plume[2];
 	Common common;
-	CDateTime startTime[2];
+	novac::CDateTime startTime[2];
 	int k; // iterator
 
 	// 1. Read the evaluation-logs
@@ -409,10 +409,10 @@ bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, int 
 	return CalculateGeometry(plume[0], startTime[0], plume[1], startTime[1], locations, result);
 }
 
-bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, const CDateTime &startTime1, const CPlumeInScanProperty &plume2, const CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
+bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, const novac::CDateTime &startTime1, const CPlumeInScanProperty &plume2, const novac::CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result){
 	CGPSData source;
 	Common common;
-	CDateTime startTime[2];
+	novac::CDateTime startTime[2];
 	double plumeCentre_perturbated[2];
 	int k; // iterator
 
@@ -467,7 +467,7 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 									fabs(wd_perp[3] - result.m_windDirection)) / 4;
 
 	// 7b. Also scale the altitude error with the time difference between the two scans
-	double timeDifference_Minutes = fabs(CDateTime::Difference(startTime[0], startTime[1])) / 60.0;
+	double timeDifference_Minutes = fabs(novac::CDateTime::Difference(startTime[0], startTime[1])) / 60.0;
 	result.m_plumeAltitudeError *= pow(2.0, timeDifference_Minutes / 30.0);
 
 	// 7c. Remember to add the altitude of the lowest scanner to the plume height to get the total plume altitude
@@ -475,7 +475,7 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 	double plumeAltitudeRelativeToScanner0	= result.m_plumeAltitude - locations[0].m_altitude;
 
 	// 8. Also store the date the measurements were made and the average-time
-	double timeDifference = CDateTime::Difference(startTime1, startTime2);
+	double timeDifference = novac::CDateTime::Difference(startTime1, startTime2);
 	if(timeDifference < 0){
 		result.m_averageStartTime = startTime1;
 		result.m_averageStartTime.Increment((int)fabs(timeDifference) / 2);

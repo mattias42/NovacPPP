@@ -7,12 +7,12 @@
 #include <Poco/File.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/DateTime.h>
+#include <Poco/Message.h>
+#include <Poco/Logger.h>
 
 // include the global settings
 #include <PPPLib/VolcanoInfo.h>
 
-// TODO: Re-enable the pView at some later time
-// extern CDialog *pView;
 extern novac::CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
 extern std::string s_exePath;
@@ -46,37 +46,21 @@ int CreateDirectoryStructure(const novac::CString &path)
 
 
 void UpdateMessage(const novac::CString &message) {
-	novac::CString *msg = new novac::CString();
-
-	msg->Format("%s", (const char*)message);
-	// TODO:
-//	if(pView != NULL)
-//		pView->PostMessage(WM_UPDATE_MESSAGE, (WPARAM)msg, NULL);
-	std::cerr << msg << std::endl;
+	Poco::Logger& log = Poco::Logger::get("NovacPPP");
+	log.information(message.std_str());
 }
 
 void ShowMessage(const novac::CString &message) {
-	novac::CString *msg = new novac::CString();
-	novac::CString timeTxt;
-	Common commonObj;
-	commonObj.GetDateTimeText(timeTxt);
-	msg->Format("%s -- %s", (const char*)message, (const char*)timeTxt);
-
-	// TODO:
-//	if(pView != NULL)
-//		pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
-
+	Poco::Logger& log = Poco::Logger::get("NovacPPP");
+	log.information(message.std_str());
 }
 void ShowMessage(const novac::CString &message, novac::CString connectionID) {
-	novac::CString *msg = new novac::CString();
-	novac::CString timeTxt;
-	Common commonObj;
-	commonObj.GetDateTimeText(timeTxt);
-	msg->Format("<%s> : %s   -- %s", (const char*)connectionID, (const char*)message, (const char*)timeTxt);
+	novac::CString msg;
 
-	// TODO:
-	// if(pView != NULL)
-	// 	pView->PostMessage(WM_SHOW_MESSAGE, (WPARAM)msg, NULL);
+	msg.Format("<%s> : %s", (const char*)connectionID, (const char*)message);
+
+	Poco::Logger& log = Poco::Logger::get("NovacPPP");
+	log.information(msg.std_str());
 }
 
 void ShowMessage(const char message[]) {
@@ -323,7 +307,7 @@ RETURN_CODE Common::DecreaseDate(unsigned short date[3], int nDays) {
 	// Check for illegal dates
 	if (date[1] < 1 || date[1] > 12)
 		return FAIL;
-	if (date[2] < 1 || date[2] > DaysInMonth(date[0], date[1]))
+	if (date[2] < 1 || date[2] > novac::DaysInMonth(date[0], date[1]))
 		return FAIL;
 
 	// If we should not change the date, return without doing anything
@@ -350,7 +334,7 @@ RETURN_CODE Common::DecreaseDate(unsigned short date[3], int nDays) {
 			*month += 12;
 		}
 
-		*day += DaysInMonth(*year, *month);
+		*day += novac::DaysInMonth(*year, *month);
 	}
 	// Check the month 
 	while (*month < 1) {
@@ -367,7 +351,7 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 	// Check for illegal dates
 	if (date[1] < 1 || date[1] > 12)
 		return FAIL;
-	if (date[2] < 1 || date[2] > DaysInMonth(date[0], date[1]))
+	if (date[2] < 1 || date[2] > novac::DaysInMonth(date[0], date[1]))
 		return FAIL;
 
 	// If we should not change the date, return without doing anything
@@ -386,8 +370,8 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 	*day += nDays;
 
 	// Check the day of the month
-	while (*day > DaysInMonth(*year, *month)) { // <-- if we've passed to the next month
-		*day -= DaysInMonth(*year, *month);
+	while (*day > novac::DaysInMonth(*year, *month)) { // <-- if we've passed to the next month
+		*day -= novac::DaysInMonth(*year, *month);
 		++*month; // go the next month
 
 		while (*month > 12) { // <-- if we've passed to the next year
@@ -404,108 +388,15 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 	return SUCCESS;
 }
 
-/** Takes a given year and month and returns the number of days in that month. */
-int	Common::DaysInMonth(int year, int month) {
-	static const int nDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-	// detect non-existing months.
-	if (month < 1 || month > 12)
-		return 0;
-
-	// If the month is not february, then it's easy!!!
-	if (month != 2)
-		return nDays[month - 1];
-
-	// If february, then check for leap-years
-	if (year % 4 != 0)
-		return 28; // not a leap-year
-
-	if (year % 400 == 0) // every year dividable by 400 is a leap-year
-		return 29;
-
-	if (year % 100 == 0) // years diviable by 4 and by 100 are not leap-years
-		return 28;
-	else
-		return 29;		// years dividable by 4 and not by 100 are leap-years
-}
-
-/** Takes a given date and calculates the day of the year. */
-int	Common::DayNr(const unsigned short day[3]) {
-	CDateTime d;
-	d.year = day[2];
-	d.month = (unsigned char)day[1];
-	d.day = (unsigned char)day[0];
-	return DayNr(d);
-}
-
-/** Takes a given date and calculates the day of the year. */
-int	Common::DayNr(const CDateTime &day) {
-	// Check errors in input
-	if (day.month <= 0 || day.month > 12 || day.day < 1 || day.day > DaysInMonth(day.year, day.month))
-		return 0;
-
-	int dayNr = day.day; // the daynumber
-
-	int m = day.month;
-	while (m > 1) {
-		dayNr += DaysInMonth(day.year, m - 1);
-		--m;
-	}
-
-	return dayNr;
-}
-
-/** Returns the Julian Day. */
-double Common::JulianDay(const CDateTime &utcTime) {
-	int N, J, b;
-	double Hd, H, JD;
-
-	if (utcTime.year < 1901 || utcTime.year > 2100 || utcTime.month < 1 || utcTime.month > 12 || utcTime.day < 1 || utcTime.day > 31)
-		return 0.0;
-	if (utcTime.hour < 0 || utcTime.hour > 23 || utcTime.minute < 0 || utcTime.minute > 59 || utcTime.second < 0 || utcTime.second > 59)
-		return 0.0;
-
-	N = 4713 + utcTime.year - 1;
-	J = N * 365 + N / 4 - 10 - 3;
-
-	if (N % 4 == 1 || N % 4 == 2 || N % 4 == 3)
-		++J;
-
-	switch (utcTime.month)
-	{
-	case(1):  b = utcTime.day - 1;		break;
-	case(2):  b = utcTime.day + 30;	break;
-	case(3):  b = utcTime.day + 58;	break;
-	case(4):  b = utcTime.day + 89;	break;
-	case(5):  b = utcTime.day + 119;	break;
-	case(6):  b = utcTime.day + 150;	break;
-	case(7):  b = utcTime.day + 180;	break;
-	case(8):  b = utcTime.day + 211;	break;
-	case(9):  b = utcTime.day + 242;	break;
-	case(10): b = utcTime.day + 272;	break;
-	case(11): b = utcTime.day + 303;	break;
-	case(12): b = utcTime.day + 333;	break;
-	}
-	if (utcTime.year % 4 == 0)
-		++b;
-
-	H = (double)(J + b);
-
-	Hd = (utcTime.hour - 12.0) / 24.0 + utcTime.minute / (60.0*24.0) + utcTime.second / (3600.0*24.0);						/*CONVERSION HORAR TO DECIMAL SYSTEM*/
-
-	JD = J + Hd + b;
-	return JD;
-}
-
 /** Retrieves the solar zenith angle (SZA) and the solar azimuth angle (SAZ)
 		for the site specified by (lat, lon) and for the time given in gmtTime.
 		Note that the returned angles are in degrees and that the specified
 		time _must_ be GMT-time. */
-RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
+RETURN_CODE Common::GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
 	SZA = SAZ = 0; // reset the numbers
 
 	// Get the julian day
-	double D = JulianDay(gmtTime) - 2451545.0;
+	double D = novac::JulianDay(gmtTime) - 2451545.0;
 
 	// Get the Equatorial coordinates...
 	double	RA; //	the right ascension (deg)

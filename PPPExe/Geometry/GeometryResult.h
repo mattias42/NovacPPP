@@ -1,5 +1,5 @@
 #pragma once
-#include "../Common/DateTime.h"
+#include <PPPLib/DateTime.h>
 #include "../MeteorologySource.h"
 
 namespace Geometry{
@@ -23,7 +23,7 @@ namespace Geometry{
 		/** The average of the starting-time of the
 				two scans that were combined to generate the result
 				(seconds since midnight, UTC) */
-		CDateTime m_averageStartTime;
+		novac::CDateTime m_averageStartTime;
 
 		/** The difference in start-time between the two
 			scans that were combined to make this measurement.

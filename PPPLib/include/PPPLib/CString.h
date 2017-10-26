@@ -141,6 +141,11 @@ namespace novac
 		@param nCharacters - The number of characters to compare
 		@return 1 if the strings are equal. @return 0 if the strings are not equal. */
 	int Equals(const CString &str1, const CString &str2, size_t nCharacters);
+
+	/** Helper util for extracting the right-most or left-most characters in a std::string */
+	std::string Right(const std::string& input, size_t nChars);
+	std::string Left(const std::string& input, size_t nChars);
+
 }  // namespace novac
 
 #endif // !NOVAC_PPPLIB_CSTRING_H

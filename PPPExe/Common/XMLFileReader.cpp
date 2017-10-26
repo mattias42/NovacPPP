@@ -165,7 +165,7 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE 
 	return 0;
 }
 /** General parsing of a date */
-int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum){
+int CXMLFileReader::Parse_Date(const novac::CString &label, novac::CDateTime &datum){
 	int nFields = 0;
 
 	while(szToken = NextToken()){
@@ -198,7 +198,7 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum){
 		
 		if(nFields == 0){
 			// if the normal parsing didn't work, then try also to parse functional expressions...
-			CDateTime::ParseDate(szToken, datum);
+			novac::CDateTime::ParseDate(szToken, datum);
 		}
 	}
 

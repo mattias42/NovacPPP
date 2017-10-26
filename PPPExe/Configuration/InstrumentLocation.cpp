@@ -20,8 +20,8 @@ void CInstrumentLocation::Clear(){
 	this->m_locationName.Format("");
 	this->m_longitude = 0.0;
 	this->m_tilt      = 0.0;
-	this->m_validFrom = CDateTime(0000, 00, 00, 0, 0, 0);
-	this->m_validTo   = CDateTime(9999, 12, 31, 23, 59, 59);
+	this->m_validFrom = novac::CDateTime(0000, 00, 00, 0, 0, 0);
+	this->m_validTo   = novac::CDateTime(9999, 12, 31, 23, 59, 59);
 	this->m_volcano.Format("");
 	this->m_instrumentType = INSTR_GOTHENBURG;
 	this->m_spectrometerModel = S2000;

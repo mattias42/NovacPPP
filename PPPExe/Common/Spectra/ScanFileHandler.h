@@ -39,10 +39,10 @@ namespace FileHandler
 		unsigned char m_channel;
 
 		/** The time (UMT) when the measurement started */
-		CDateTime m_startTime;
+		novac::CDateTime m_startTime;
 
 		/** The time (UMT) when the measurement was finished */
-		CDateTime m_stopTime;
+		novac::CDateTime m_stopTime;
 
 		/** If any error occurs in the reading of the file, this int is set to
 			any of the errors defined int 'SpectrumIO.h. */

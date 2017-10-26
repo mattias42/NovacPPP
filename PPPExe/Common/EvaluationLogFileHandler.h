@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "../Evaluation/ScanResult.h"
-//#include "../Evaluation/EvaluationResult.h"
 #include <PPPLib/CString.h>
 #include <PPPLib/CArray.h>
 
@@ -43,11 +42,6 @@ namespace FileHandler
 				@param string - will on return be filled with the output line to be written to the evaluation-log.
 				@return SUCCESS - always */
 		static RETURN_CODE FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString &string);
-
-		/** Takes the filename of an evaluation log and extracts the 
-				Serial-number of the spectrometer, the date the scan was performed
-				and the start-time of the scan from the filename. */
-		static bool GetInfoFromFileName(const novac::CString fileName, CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode);
 
 		// ------------------- PUBLIC DATA -------------------------
 

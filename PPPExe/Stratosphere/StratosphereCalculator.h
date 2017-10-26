@@ -37,7 +37,7 @@ namespace Stratosphere{
 		public:
 			CZenithMeasurement();
 			~CZenithMeasurement();
-			CDateTime time;	// the time of the measurement
+			novac::CDateTime time;	// the time of the measurement
 			double column; // Sn
 			double AMF; // the calculated air mass factor at the time of measurement
 			CZenithMeasurement &operator=(const CZenithMeasurement &z);
@@ -47,7 +47,7 @@ namespace Stratosphere{
 		public:
 			CMeasurementDay();
 			~CMeasurementDay();
-			CDateTime day; // the date of the measurement
+			novac::CDateTime day; // the date of the measurement
 			std::list <CZenithMeasurement> measList;
 			CMeasurementDay &operator=(const CMeasurementDay &m);
 		};
@@ -69,7 +69,7 @@ namespace Stratosphere{
 		
 		/** Retrieves the Air Mass Factor for a zenith measuremnt performed
 			at the given location and at the given time of day (UTC). */
-		double GetAMF_ZenithMeasurement(const CGPSData &location, const CDateTime &gmtTime);
+		double GetAMF_ZenithMeasurement(const CGPSData &location, const novac::CDateTime &gmtTime);
 	
 		/** Calculates the VCD for a given measurement day
 			@param VCD - will on return be the calculated VCD 

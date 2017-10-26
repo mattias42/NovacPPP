@@ -41,8 +41,8 @@ CWindDataBase::CWindData::~CWindData(){
 
 // ----------- THE SUB-CLASS CWindInTime --------------
 CWindDataBase::CWindInTime::CWindInTime(){
-	this->validFrom = CDateTime(0,0,0,0,0,0);
-	this->validTo	= CDateTime(9999,12,31,23,59,59);
+	this->validFrom = novac::CDateTime(0,0,0,0,0,0);
+	this->validTo	= novac::CDateTime(9999,12,31,23,59,59);
 }
 CWindDataBase::CWindInTime::CWindInTime(const CWindInTime &w){
 	this->validFrom = w.validFrom;
@@ -86,7 +86,7 @@ CWindDataBase::~CWindDataBase(void)
 		about the wind field at the requested time and location.
 	@return true if the wind field could be retrieved, otherwise false.
 	*/
-bool CWindDataBase::GetWindField(const CDateTime &time, const CGPSData &location, INTERPOLATION_METHOD method, CWindField &windField) const{
+bool CWindDataBase::GetWindField(const novac::CDateTime &time, const CGPSData &location, INTERPOLATION_METHOD method, CWindField &windField) const{
 	if(INTERP_EXACT == method){
 		return GetWindField_Exact(time, location, windField);
 	}else if(INTERP_NEAREST_NEIGHBOUR == method){
@@ -101,7 +101,7 @@ bool CWindDataBase::GetWindField(const CDateTime &time, const CGPSData &location
 /** Inserts a wind field into the database */
 void CWindDataBase::InsertWindField(const CWindField &windField){
 	bool foundMatchingTimeFrame = false;
-	CDateTime startTime, endTime;
+	novac::CDateTime startTime, endTime;
 	CGPSData position;
 
 	// Get the time-frame from the wind-field
@@ -159,7 +159,7 @@ void CWindDataBase::InsertWindField(const CWindField &windField){
 }
 
 /** Inserts a wind-direction into the database */
-void CWindDataBase::InsertWindDirection(const CDateTime &validFrom, const CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location){
+void CWindDataBase::InsertWindDirection(const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double wd, double wd_err, MET_SOURCE wd_src, const CGPSData *location){
 	CWindField windField;
 
 	if(location != NULL){
@@ -172,7 +172,7 @@ void CWindDataBase::InsertWindDirection(const CDateTime &validFrom, const CDateT
 }
 
 /** Inserts a wind-direction into the database */
-void CWindDataBase::InsertWindSpeed(const CDateTime &validFrom, const CDateTime &validTo, double ws, double ws_err, MET_SOURCE ws_src, const CGPSData *location){
+void CWindDataBase::InsertWindSpeed(const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double ws, double ws_err, MET_SOURCE ws_src, const CGPSData *location){
 	CWindField windField;
 
 	if(location != NULL){
@@ -188,7 +188,7 @@ void CWindDataBase::InsertWindSpeed(const CDateTime &validFrom, const CDateTime 
 	@return 0 on success. */
 int CWindDataBase::WriteToFile(const novac::CString &fileName) const{
 	novac::CString indent, sourceStr; 
-	CDateTime from, to;
+	novac::CDateTime from, to;
 
 	// open the file
 	FILE *f = fopen(fileName, "w");
@@ -214,8 +214,8 @@ int CWindDataBase::WriteToFile(const novac::CString &fileName) const{
 		// make sure that there's at least one item in this list...
 		std::list<CWindData>::const_iterator wPos = time.windData.begin();
 		if(wPos != time.windData.end()){
-			const CDateTime &from	= time.validFrom;
-			const CDateTime &to		= time.validTo;
+			const novac::CDateTime &from	= time.validFrom;
+			const novac::CDateTime &to		= time.validTo;
 			const CWindData &data	= (const CWindData &)*(wPos);
 
 			if(data.wd == NOT_A_NUMBER){
@@ -296,12 +296,12 @@ int CWindDataBase::InsertLocation(const CGPSData &gps){
 }
 
 
-bool CWindDataBase::GetWindField_Exact(const CDateTime &time, const CGPSData &location, CWindField &windField) const{
+bool CWindDataBase::GetWindField_Exact(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const{
 	int bestWs_Quality = -1; // the best quality data of wind-speed that we found
 	int bestWd_Quality = -1; // the best quality data of wind-speed that we found
-	CWindField tempWindField = CWindField(NOT_A_NUMBER, MET_NONE, NOT_A_NUMBER, MET_NONE, CDateTime(), CDateTime(9999,12,31,23,59,59), location.m_latitude, location.m_longitude, location.m_altitude);
-	CDateTime validFrom = CDateTime(0,0,0,0,0,0);
-	CDateTime validTo   = CDateTime(9999,12,31,23,59,59);
+	CWindField tempWindField = CWindField(NOT_A_NUMBER, MET_NONE, NOT_A_NUMBER, MET_NONE, novac::CDateTime(), novac::CDateTime(9999,12,31,23,59,59), location.m_latitude, location.m_longitude, location.m_altitude);
+	novac::CDateTime validFrom = novac::CDateTime(0,0,0,0,0,0);
+	novac::CDateTime validTo   = novac::CDateTime(9999,12,31,23,59,59);
 	int ws_Average = 0; // how many data-points is the wind-speed an average of...
 	int wd_Average = 0; // how many data-points is the wind-direction an average of...
 
@@ -415,7 +415,7 @@ bool CWindDataBase::GetWindField_Exact(const CDateTime &time, const CGPSData &lo
 }
 
 // This function takes the wind-field in the nearest datapoint in the database
-bool CWindDataBase::GetWindField_Nearest(const CDateTime &time, const CGPSData &location, CWindField &windField) const{
+bool CWindDataBase::GetWindField_Nearest(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const{
 	double smallestDistance = 1e99; // the smallest distance from a point in the database to 'location'
 	int closestPoint = -1; // the index of the closest location
 	
@@ -442,7 +442,7 @@ bool CWindDataBase::GetWindField_Nearest(const CDateTime &time, const CGPSData &
 // This function calculates the wind-field as a bi-linear interpolation of
 //	the wind-field in the nearest four datapoints in the database
 //	This assumes that the grid is regular
-bool CWindDataBase::GetWindField_Bilinear(const CDateTime &time, const CGPSData &location, CWindField &windField) const{
+bool CWindDataBase::GetWindField_Bilinear(const novac::CDateTime &time, const CGPSData &location, CWindField &windField) const{
 
 	//// First make a reasonability check to make sure that the database is ok with this
 	//if(time.windData.GetCount() < 4)

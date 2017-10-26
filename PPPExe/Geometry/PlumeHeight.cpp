@@ -8,8 +8,8 @@ CPlumeHeight::CPlumeHeight(void){
 	this->m_plumeAltitudeError = 1000.0;
 	this->m_plumeAltitudeSource = Meteorology::MET_DEFAULT;
 	
-	m_validFrom = CDateTime(0,0,0,0,0,0);
-	m_validTo = CDateTime(9999,12,31,23,59,59);
+	m_validFrom = novac::CDateTime(0,0,0,0,0,0);
+	m_validTo = novac::CDateTime(9999,12,31,23,59,59);
 }
 
 /** Default destructor */

@@ -50,7 +50,7 @@ namespace FileHandler{
 		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned int &value);
 		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned long &value);
 		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const double &value);
-		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const CDateTime &value);
+		void PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const novac::CDateTime &value);
 
 	};
 }
