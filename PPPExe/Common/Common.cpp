@@ -69,6 +69,18 @@ void ShowMessage(const char message[]) {
 	ShowMessage(msg);
 }
 
+void ShowError(const novac::CString &message)
+{
+	Poco::Logger& log = Poco::Logger::get("NovacPPP");
+	log.fatal(message.std_str());
+}
+void ShowError(const char message[])
+{
+	novac::CString msg;
+	msg.Format("%s", message);
+	ShowError(msg);
+}
+
 Common::Common()
 	:m_exePath(s_exePath), m_exeFileName(s_exeFileName)
 {

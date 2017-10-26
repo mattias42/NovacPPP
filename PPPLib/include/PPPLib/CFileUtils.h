@@ -22,6 +22,10 @@ namespace novac
 			Serial-number of the spectrometer, the date the scan was performed
 			and the start-time of the scan from the filename. */
 		static bool GetInfoFromFileName(const novac::CString fileName, novac::CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode);
+
+		/** Judges if the provided .pak file is a complete file from the file name only. 
+			@return true if the file is from an incomplete scan */
+		static bool IsIncompleteFile(const novac::CString& fileName);
 	};
 }  // namespace novac
 

@@ -45,10 +45,15 @@ int IsSerialNumber(const novac::CString &serialNumber);
 
 
 
-/** Shows a message in the message box list in the main window */
+/** Appends an information / warning message to the logs */
 void ShowMessage(const novac::CString &message);
 void ShowMessage(const char message[]);
 void ShowMessage(const novac::CString &message,novac::CString connectionID);
+
+/** Appends an error message to the logs */
+void ShowError(const novac::CString &message);
+void ShowError(const char message[]);
+
 
 /** Update the top line of list box */
 void UpdateMessage(const novac::CString &message);
