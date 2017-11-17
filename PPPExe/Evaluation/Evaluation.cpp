@@ -420,23 +420,20 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 		cFirstFit.FinishMinimize();
 
 		// get the basic fit results
-		long stepNum				= (long)cFirstFit.GetFitSteps();
-		double chiSquare			= (double)cFirstFit.GetChiSquare();
-		unsigned long speciesNum	= (unsigned long)m_window.nRef;
+		//long stepNum				= (long)cFirstFit.GetFitSteps();
+		// double chiSquare			= (double)cFirstFit.GetChiSquare();
+		// unsigned long speciesNum	= (unsigned long)m_window.nRef;
 
 		//// get residuum vector and expand it to a DOAS vector object. Do NOT assign the vector data to the new object!
 		//// display some statistical stuff about the residual data
 		CDOASVector vResiduum;
 		vResiduum.Attach(cFirstFit.GetResiduum(), false);
-		//m_residual.SetSize(vResiduum.GetSize());
-		//m_residual.Zero();
-		//m_residual.Add(vResiduum);
 
 		m_result.m_delta = (double)vResiduum.Delta();
 
 		// finally get the fit-result
-		double column       = (double)solarSpec->GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
-		double columnError  = (double)solarSpec->GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
+		// double column       = (double)solarSpec->GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
+		// double columnError  = (double)solarSpec->GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
 		shift               = (double)solarSpec->GetModelParameter(CReferenceSpectrumFunction::SHIFT);
 		shiftError          = (double)solarSpec->GetModelParameterError(CReferenceSpectrumFunction::SHIFT);
 		squeeze             = (double)solarSpec->GetModelParameter(CReferenceSpectrumFunction::SQUEEZE);
@@ -539,7 +536,7 @@ void CEvaluation::PrepareSpectra_HP_Div(double *skyArray, double *measArray, con
 //	LowPassBinomial(measArray,window.specLength, 5);
 }
 
-void CEvaluation::PrepareSpectra_HP_Sub(double *skyArray, double *measArray, const CFitWindow &window){
+void CEvaluation::PrepareSpectra_HP_Sub(double* /*skyArray*/, double *measArray, const CFitWindow &window){
 
 	// 1. remove any remaining offset in the measured spectrum
 	RemoveOffset(measArray, window.specLength, window.UV);
@@ -551,7 +548,7 @@ void CEvaluation::PrepareSpectra_HP_Sub(double *skyArray, double *measArray, con
 	Log(measArray,window.specLength);
 }
 
-void CEvaluation::PrepareSpectra_Poly(double *skyArray, double *measArray, const CFitWindow &window){
+void CEvaluation::PrepareSpectra_Poly(double* /*skyArray*/, double *measArray, const CFitWindow &window){
 
 	// 1. remove any remaining offset in the measured spectrum
 	RemoveOffset(measArray, window.specLength, window.UV);

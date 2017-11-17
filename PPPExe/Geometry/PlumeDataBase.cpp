@@ -202,7 +202,7 @@ void CPlumeDataBase::InsertPlumeHeight(const CGeometryResult &geomResult){
 
 /** Writes the contents of this database to file. 
 	@return 0 on success. */
-int CPlumeDataBase::WriteToFile(const novac::CString &fileName) const{
+int CPlumeDataBase::WriteToFile(const novac::CString& /*fileName*/) const{
 
 	return 1;
 }

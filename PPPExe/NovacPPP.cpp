@@ -88,7 +88,6 @@ void LoadConfigurations()
 	}
 
 	// Check if there is a configuration file for every spectrometer serial number
-	bool failed = false;
 	for (int k = 0; k < g_setup.m_instrumentNum; ++k) {
 		evalConfPath.Format("%sconfiguration\\%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
 

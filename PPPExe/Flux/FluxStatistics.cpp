@@ -36,7 +36,6 @@ void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac:
 void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments){
 	double average, median, std;
 	long nMeasurements	= (long)this->fluxList.GetCount();
-	long nInstruments	= (long)instruments.GetCount();
 	double *data		= new double[nMeasurements];
 	double *sortedData	= new double[nMeasurements];
 	int nMeasurementsFromThisInstrument = 0;

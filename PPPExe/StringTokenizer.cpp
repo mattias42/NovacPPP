@@ -70,7 +70,6 @@ const char *CStringTokenizer::NextToken(){
 	}
 
 	size_t from = m_stringPos;
-	size_t to	 = 0;
 
 	// find the next quotation mark (this is nullptr if none found)
 	size_t nextQuote = m_strLen;

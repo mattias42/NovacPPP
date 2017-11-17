@@ -574,7 +574,6 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, Evaluation::CFitWindow &window) {
 	CSpectrum skySpec;
 	novac::CDateTime day, evalValidFrom, evalValidTo;
-	Configuration::CInstrumentConfiguration *instrumentConf = nullptr;
 	Configuration::CInstrumentLocation singleLocation;
 	novac::CString serialNumber, errorMessage;
 
@@ -604,7 +603,6 @@ int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHan
 int CPostEvaluationController::GetDarkCurrentSettings(FileHandler::CScanFileHandler *scan, Configuration::CDarkSettings &settings) {
 	CSpectrum skySpec;
 	novac::CString serialNumber, errorMessage;
-	Configuration::CInstrumentConfiguration *instrumentConf = nullptr;
 
 	// Get the sky-spectrum. Read out serial-number and start-time from this
 	scan->GetSky(skySpec);

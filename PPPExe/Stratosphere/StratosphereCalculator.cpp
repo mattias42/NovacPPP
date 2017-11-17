@@ -158,7 +158,6 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
 /** Inserts the results in the supplied measurement day structure
 	into the appropriate place in the list of measurements */
 void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &mday){
-	bool found = false;
 	novac::CDateTime measDate	= novac::CDateTime(mday.day.year, mday.day.month, mday.day.day, 0, 0, 0);
 	CMeasurementDay r;
 	r = mday; // make a local copy of the results

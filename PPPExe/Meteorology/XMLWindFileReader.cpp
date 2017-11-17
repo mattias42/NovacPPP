@@ -29,7 +29,6 @@ CXMLWindFileReader::~CXMLWindFileReader(void)
 int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology::CWindDataBase &dataBase){
 	novac::CFileException exceFile;
 	novac::CStdioFile file;
-	int curWindow = 0;
 	novac::CString localFileName, userMessage;
 
 	// 0. If the file is on the server, then download it first
@@ -106,7 +105,6 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 	@return 0 on success */
 int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const novac::CDateTime *dateFrom, const novac::CDateTime *dateTo){
 	novac::CStdioFile file;
-	int curWindow = 0;
 	novac::CString localFileName, remoteFileName, userMessage, ftpDir;
 	std::vector<std::string> remoteFileList; // the list of wind field files
 	novac::CList <novac::CString, novac::CString &> localFileList; // the list of files on the local computer

@@ -20,7 +20,6 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 	novac::CFileException exceFile;
 	novac::CStdioFile file;
 	Evaluation::CFitWindow tmpWindow;
-	int curWindow = 0;
 
 	// 1. Open the file
 	if(!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)){
@@ -154,7 +153,6 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 	}
 
 	// ------ loop through each of the dark-current settings and write them to file --------
-	unsigned long nSettings = darkSettings->GetSettingsNum();
 	for(unsigned int k = 0; k < nWindows; ++k){
 		darkSettings->GetDarkSettings(k, dSettings, from, to);
 		

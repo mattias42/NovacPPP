@@ -11,7 +11,7 @@ CColumnCorrection::~CColumnCorrection(void)
 }
 
 
-double CColumnCorrection::GetCorrectionFactor(CORRECTION correction, double *parameters, long nParameters){
+double CColumnCorrection::GetCorrectionFactor(CORRECTION correction, double *parameters, long /*nParameters*/){
 	double correctionFactor;
 
 	if(correction == TEMPERATURE_SLF_VER1){

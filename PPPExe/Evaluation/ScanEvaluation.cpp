@@ -112,11 +112,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 	// variables for storing the sky, dark and the measured spectra
 	CSpectrum sky, dark, current;
 
-	// This is for timing of the evaluation. this is not supported on all hardware thus the boolean...
-	std::int64_t lpFrequency, timingStart, timingStop;
-	// TODO: ImplementMe
-	// BOOL useHighResolutionCounter = QueryPerformanceFrequency((LARGE_INTEGER*)&lpFrequency);
-	
 	// ----------- Get the sky spectrum --------------
 	// Get the sky and dark spectra and divide them by the number of 
 	//     co-added spectra in it
@@ -234,11 +229,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		// f. The spectrum is ok, remove the dark.
 		current.Sub(dark);
 
-		// this is for timing only...
-		// TODO: ImplementMe
-		//if(useHighResolutionCounter)
-		//	QueryPerformanceCounter((LARGE_INTEGER*)&timingStart);
-
 		// e. Evaluate the spectrum
 		if(eval->Evaluate(current)){
 			message.Format("Failed to evaluate spectrum %d out of %d in scan %s from spectrometer %s.",
@@ -246,15 +236,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 			ShowMessage(message);
 			success = false;
 		}
-
-		// timing...
-		// TODO: ImplementMe
-		//if(useHighResolutionCounter){
-		//	QueryPerformanceCounter((LARGE_INTEGER*)&timingStop);
-
-		//	// insert the successful evaluation into the statistics object
-		//	g_processingStats.InsertEvaluatedSpectrum((double)((timingStop - timingStart) * 1000 / lpFrequency));
-		//}
 
 		// e. Save the evaluation result
 		m_result->AppendResult(eval->GetEvaluationResult(), current.m_info);
@@ -633,7 +614,6 @@ CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWi
 	if(sky.NumSpectra() > 0){
 		fitSaturation	= fitIntensity / (sky.NumSpectra() * maxInt);
 	}else{
-		int numSpec		= (int)floor(sky.MaxValue() / maxInt); // a guess for the number of co-adds
 		fitSaturation = fitIntensity / (maxInt * sky.NumSpectra());
 	}
 	if(fitSaturation < 0.9 && fitSaturation > 0.1){
@@ -649,7 +629,6 @@ CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWi
 		if(spectrum.NumSpectra() > 0){
 			fitSaturation	= fitIntensity / (spectrum.NumSpectra() * maxInt);
 		}else{
-			int numSpec		= (int)floor(spectrum.MaxValue() / maxInt); // a guess for the number of co-adds
 			fitSaturation = fitIntensity / (maxInt * spectrum.NumSpectra());
 		}
 

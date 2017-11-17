@@ -87,7 +87,7 @@ CWindSpeedCalculator::~CWindSpeedCalculator(void)
 }
 
 RETURN_CODE CWindSpeedCalculator::CalculateDelay(
-	double &delay, 
+	double& /*delay*/, 
 	const CMeasurementSeries *upWindSerie,
 	const CMeasurementSeries *downWindSerie,
 	const CWindSpeedMeasSettings &settings){
@@ -506,7 +506,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 		ShowMessage("Failed to correlate time-series, no windspeed could be derived");
 
 		// Tell the world that we've tried to make a correlation calculation but failed
-		Evaluation::CScanResult &scan = reader[0].m_scan[scanIndex[0]];
+		// Evaluation::CScanResult &scan = reader[0].m_scan[scanIndex[0]];
 		//scan.GetDate(0, date);
 
 		// Clean up and return
@@ -522,9 +522,9 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 		ShowMessage("Failed to correlate time-series, no windspeed could be derived");
 
 		// Tell the world that we've tried to make a correlation calculation but failed
-		Evaluation::CScanResult &scan = reader[0].m_scan[scanIndex[0]];
-		//scan.GetDate(0, date);
-//		PostWindMeasurementResult(0, 0, 0, m_startTime, stopTime, scan.GetSerial());
+		// Evaluation::CScanResult &scan = reader[0].m_scan[scanIndex[0]];
+		// scan.GetDate(0, date);
+		// PostWindMeasurementResult(0, 0, 0, m_startTime, stopTime, scan.GetSerial());
 
 		// Clean up and return
 		delete series[0];		delete series[1];

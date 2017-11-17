@@ -123,7 +123,6 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 	FLUX_QUALITY_FLAG windFieldQuality		= FLUX_QUALITY_GREEN;
 	FLUX_QUALITY_FLAG plumeHeightQuality	= FLUX_QUALITY_GREEN;
 	FLUX_QUALITY_FLAG completenessQuality	= FLUX_QUALITY_GREEN;
-	FLUX_QUALITY_FLAG scanQuality			= FLUX_QUALITY_GREEN;
 	
 	switch(windField.GetWindSpeedSource()){
 		case Meteorology::MET_DEFAULT:				windFieldQuality = FLUX_QUALITY_RED; break;

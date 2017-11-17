@@ -997,7 +997,6 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		}else if(scan.GetInstrumentType() == INSTR_HEIDELBERG){
 			string.AppendFormat("\tinstrumenttype=heidelberg\n");
 		}
-		double maxIntensity = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
 
 		// Finally, the version of the file and the version of the program
 		string.AppendFormat("\tversion=2.0\n");
