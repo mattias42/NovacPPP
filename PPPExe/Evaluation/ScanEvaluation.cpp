@@ -107,7 +107,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 	novac::CString message;	// used for ShowMessage messages
 	int	index = 0;		// keeping track of the index of the current spectrum into the .pak-file
 	double highestColumn = 0.0;	// the highest column-value in the evaluation
-	bool success = true;
 
 	// variables for storing the sky, dark and the measured spectra
 	CSpectrum sky, dark, current;
@@ -155,8 +154,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
 	// Evaluate all the spectra in the scan.
 	while(1){
-		success = true; // assume that we will succeed in evaluating this spectrum
-
 		// remember which spectrum we're at
 		int	spectrumIndex = current.ScanIndex();
 
@@ -234,7 +231,6 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 			message.Format("Failed to evaluate spectrum %d out of %d in scan %s from spectrometer %s.",
 				current.ScanIndex(), current.SpectraPerScan(), (const char*)scan->GetFileName(), (const char*)current.m_info.m_device);
 			ShowMessage(message);
-			success = false;
 		}
 
 		// e. Save the evaluation result

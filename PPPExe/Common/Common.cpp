@@ -668,7 +668,11 @@ double Common::CalculateFlux_ConeFormula(const double *scanAngle, const double *
 		flux += partialFlux;
 	}
 
-	delete[] alpha, scd, columnCorrection, x, y;
+	delete[] alpha;
+	delete[] scd;
+	delete[] columnCorrection;
+	delete[] x;
+	delete[] y;
 
 	return fabs(flux);
 }
@@ -765,7 +769,12 @@ double Common::CalculateFlux_HeidelbergFormula(const double *scanAngle1, const d
 
 	}
 	//HD constants are to be deleted as well
-	delete[] scd, columnCorrection, x, y, elev, azim;
+	delete[] scd;
+	delete[] columnCorrection;
+	delete[] x;
+	delete[] y;
+	delete[] elev;
+	delete[] azim;
 
 	return fabs(flux);
 }

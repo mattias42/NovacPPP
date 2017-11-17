@@ -186,17 +186,17 @@ void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file){
 			CInstrumentStats &instr = (CInstrumentStats &)*(pos++);
 			
 			fprintf(f, "Instrument: %s\n", (const char*)instr.serial);
-			fprintf(f, "\t#Accepted scans: %u\n", instr.acceptedScans);
+			fprintf(f, "\t#Accepted scans: %lu\n", instr.acceptedScans);
 			fprintf(f, "\t#Rejected scans:\n");
-			fprintf(f, "\t\t%u due to too long exposure time\n",	instr.tooLongExpTime);
-			fprintf(f, "\t\t%u due to saturated sky spectrum\n",	instr.saturatedSkySpecNum);
-			fprintf(f, "\t\t%u due to too dark sky spectrum\n",		instr.darkSkySpecNum);
-			fprintf(f, "\t\t%u due to no plume seen\n",				instr.noPlumeNum);
-			fprintf(f, "\t\t%u due to too low completeness\n",		instr.lowCompletenessNum);		
+			fprintf(f, "\t\t%lu due to too long exposure time\n",	instr.tooLongExpTime);
+			fprintf(f, "\t\t%lu due to saturated sky spectrum\n",	instr.saturatedSkySpecNum);
+			fprintf(f, "\t\t%lu due to too dark sky spectrum\n",	instr.darkSkySpecNum);
+			fprintf(f, "\t\t%lu due to no plume seen\n",			instr.noPlumeNum);
+			fprintf(f, "\t\t%lu due to too low completeness\n",		instr.lowCompletenessNum);		
 		}
 		
 		// The timings...
-		fprintf(f, "Total Number of Spectra evaluated: %u\n", nSpectraEvaluated);
+		fprintf(f, "Total Number of Spectra evaluated: %lu\n", nSpectraEvaluated);
 		fprintf(f, "Total Time spent on evaluating spectra: %.2lf [s] ( %.2lf mseconds / spectrum)\n", timeSpentOnEvaluations/1000.0, timeSpentOnEvaluations / (double)nSpectraEvaluated);
 
 		// remember to close the file

@@ -12,9 +12,9 @@
 #include "Vector.h"
 #include "Matrix.h"
 
-#if _MSC_VER > 1000
+#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER > 1000
+#endif
 
 namespace MathFit
 {

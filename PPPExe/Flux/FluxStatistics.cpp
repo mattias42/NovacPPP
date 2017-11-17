@@ -182,7 +182,7 @@ void CFluxStatistics::WriteFluxStat(const novac::CString &fileName){
 
 		// write the header line
 		CMeasurementDay::GetHeaderLine(str, this->m_instruments);
-		fprintf(f, str);
+		fprintf(f, "%s", str);
 	}
 
 	// For each day in the list of measurement days, calculate the average flux
@@ -193,7 +193,7 @@ void CFluxStatistics::WriteFluxStat(const novac::CString &fileName){
 		
 		measDay.GetStatistics(str, this->m_instruments);
 		
-		fprintf(f, str);			
+		fprintf(f, "%s", str);			
 	}
 
 

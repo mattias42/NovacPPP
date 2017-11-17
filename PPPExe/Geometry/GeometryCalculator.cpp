@@ -472,7 +472,7 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 
 	// 7c. Remember to add the altitude of the lowest scanner to the plume height to get the total plume altitude
 	result.m_plumeAltitude					+= std::min(locations[0].m_altitude, locations[1].m_altitude);
-	double plumeAltitudeRelativeToScanner0	= result.m_plumeAltitude - locations[0].m_altitude;
+	// double plumeAltitudeRelativeToScanner0	= result.m_plumeAltitude - locations[0].m_altitude;
 
 	// 8. Also store the date the measurements were made and the average-time
 	double timeDifference = novac::CDateTime::Difference(startTime1, startTime2);

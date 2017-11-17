@@ -62,7 +62,7 @@ double CWindSpeedCalculator::CMeasurementSeries::SampleInterval(){
 }
 
 CWindSpeedCalculator::CMeasurementSeries::~CMeasurementSeries(){
-	if(length != NULL){
+	if(length != 0){
 		delete[] column;
 		delete[] time;
 	}
@@ -229,7 +229,7 @@ RETURN_CODE CWindSpeedCalculator::LowPassFilter(const CMeasurementSeries *series
 	memset(tmpTime, 0, newLength * sizeof(double));
 
 	// 7. Do the filtering...
-	for(int k = 1; k < nIterations + 1; ++k){
+	for(int k = 1; k < (int)nIterations + 1; ++k){
 		// 7a. The coefficient in the binomial - expansion
 		double coefficient = factorial[nIterations - 1] / (factorial[nIterations - k] * factorial[k - 1]);
 		coeffSum	+= coefficient;	
@@ -281,7 +281,7 @@ RETURN_CODE CWindSpeedCalculator::FindBestCorrelation(
 	int left	= 0;
 
 	// 1. Start shifting
-	while((left+shortLength) < (int)longLength && left < (int)maximumShift ){
+	while((int)(left+shortLength) < (int)longLength && left < (int)maximumShift ){
 		double C = correlation(shortVector, longVector + left, shortLength);
 		if(C > highestCorr){
 			highestCorr = C;
@@ -327,7 +327,10 @@ double CWindSpeedCalculator::correlation(const double *x, const double *y, long 
 }
 
 void CWindSpeedCalculator::InitializeArrays(){
-	delete[]	shift, corr, used, delays;
+	delete[] shift;
+	delete[] corr;
+	delete[] used;
+	delete[] delays;
 	shift				= new double[m_length];
 	corr				= new double[m_length];
 	used				= new double[m_length];

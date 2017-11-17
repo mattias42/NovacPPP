@@ -37,7 +37,6 @@ CPostEvaluationController::~CPostEvaluationController(void)
 
 /** This function takes care of the evaluation of one scan.	*/
 int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, const novac::CString &fitWindowName, novac::CString *txtFileName, CPlumeInScanProperty *plumeProperties) {
-	clock_t cStart, cFinish;
 	novac::CString errorMessage, message, serialNumber;
 	Meteorology::CWindField windField;
 	novac::CDateTime startTime;
@@ -50,9 +49,6 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 	// The CScanFileHandler is a structure for reading the 
 	//		spectral information from the scan-file
 	CScanFileHandler scan;
-
-	// clock the time it takes to treat one scan
-	cStart = clock();
 
 	/** ------------- The process to evaluate a scan --------------- */
 
@@ -157,11 +153,9 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 		m_lastResult->GetCalculatedPlumeProperties(*plumeProperties);
 	}
 
-	// 16. Calculate the time spent in this function
-	cFinish = clock();
-
 	// 18. Clean up
-	delete m_lastResult;	m_lastResult = nullptr;
+	delete m_lastResult;
+	m_lastResult = nullptr;
 
 	return 0;
 }
@@ -242,7 +236,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	// 0a. Write the additional scan-information to the evaluation log
 	FILE *f = fopen(txtFile, "w");
 	if (f != nullptr) {
-		fprintf(f, string);
+		fprintf(f, "%s", string);
 		fprintf(f, "\n");
 	}
 
@@ -305,7 +299,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 	// 1a. Write the header to the log file
 	if (f != nullptr) {
-		fprintf(f, string);
+		fprintf(f, "%s", string);
 		fprintf(f, "\n<spectraldata>\n");
 	}
 
@@ -352,16 +346,16 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	// 2b. Write it all to the evaluation log file
 	if (f != nullptr) {
 		if (strlen(string1) > 0) {
-			fprintf(f, string1); fprintf(f, "\n");
+			fprintf(f, "%s", string1); fprintf(f, "\n");
 		}
 		if (strlen(string2) > 0) {
-			fprintf(f, string2); fprintf(f, "\n");
+			fprintf(f, "%s", string2); fprintf(f, "\n");
 		}
 		if (strlen(string3) > 0) {
-			fprintf(f, string3); fprintf(f, "\n");
+			fprintf(f, "%s", string3); fprintf(f, "\n");
 		}
 		if (strlen(string4) > 0) {
-			fprintf(f, string4); fprintf(f, "\n");
+			fprintf(f, "%s", string4); fprintf(f, "\n");
 		}
 	}
 
@@ -377,7 +371,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 		// 3b. Write it all to the evaluation log file
 		if (f != nullptr) {
-			fprintf(f, string);
+			fprintf(f, "%s", string);
 			fprintf(f, "\n");
 		}
 	}

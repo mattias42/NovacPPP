@@ -9,11 +9,10 @@
 
 #include "ParamFunction.h"
 
-#if _MSC_VER > 1000
+#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER > 1000
-
 #pragma warning (push, 3)
+#endif
 
 namespace MathFit
 {
@@ -350,5 +349,8 @@ namespace MathFit
 	};
 }
 
+#ifdef _MSC_VER
 #pragma warning (pop)
+#endif
+
 #endif

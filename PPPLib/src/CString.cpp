@@ -122,7 +122,7 @@ namespace novac
 
 	CString CString::Tokenize(const char* tokenDelimiters, int& iStart) const
 	{
-		if (iStart >= m_data.size() || iStart < 0)
+		if ((unsigned int)iStart >= m_data.size())
 		{
 			return CString("");
 		}
@@ -232,7 +232,7 @@ namespace novac
 
 	int CString::Find(char ch, int pos) const
 	{
-		if (pos >= m_data.length())
+		if ((unsigned int)pos >= m_data.length())
 		{
 			return -1;
 		}
@@ -293,7 +293,7 @@ namespace novac
 
 	char CString::GetAt(int index) const
 	{
-		if (index < 0 || index >= m_data.length())
+		if (index < 0 || (unsigned int)index >= m_data.length())
 		{
 			throw std::invalid_argument("Invalid character retrieved in CString.");
 		}
@@ -311,7 +311,7 @@ namespace novac
 	void CleanString(const CString &in, CString &out) {
 		std::vector<char> buffer(strlen(in) + 2);
 		
-		for (int it = 0; it < in.GetLength(); ++it)
+		for (unsigned int it = 0; it < in.GetLength(); ++it)
 		{
 			buffer[it] = in.GetAt(it);
 		}

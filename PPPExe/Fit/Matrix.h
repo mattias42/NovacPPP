@@ -9,7 +9,9 @@
 #if !defined(MATRIX_H_010908)
 #define MATRIX_H_010908
 
+#ifdef _MSC_VER
 #pragma warning (push, 3)
+#endif
 
 #undef max
 #undef min
@@ -1674,5 +1676,8 @@ namespace MathFit
 	};
 }
 
+#ifdef _MSC_VER
 #pragma warning (pop)
+#endif
+
 #endif

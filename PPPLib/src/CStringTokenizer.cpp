@@ -45,7 +45,7 @@ namespace novac
 
 	const char* CStringTokenizer::NextToken()
 	{
-		if (m_curToken >= m_tokens.size())
+		if ((unsigned int)m_curToken >= m_tokens.size())
 		{
 			return nullptr;
 		}

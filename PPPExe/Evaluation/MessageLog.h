@@ -33,9 +33,7 @@ public:
 	 */
 	CMessageLog(const char* szObjectName, const char* szModule = NULL, const int iLineNo = -1)
 	{
-		char* szObjName = (char*)szObjectName;
-		if(!szObjectName)
-			szObjName = "none";
+		const char* szObjName = (nullptr == szObjectName) ? "none" : szObjectName;
 
 		if(szModule)
 		{

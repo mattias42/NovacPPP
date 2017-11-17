@@ -282,7 +282,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 		// the maximum number of threads
 		if (Equals(token, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
-			sscanf(token + strlen(FLAG(str_maxThreadNum)), "%d", &g_userSettings.m_maxThreadNum);
+			sscanf(token + strlen(FLAG(str_maxThreadNum)), "%ld", &g_userSettings.m_maxThreadNum);
 			g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, (unsigned long)1);
 			token = tokenizer.NextToken();
 			continue;

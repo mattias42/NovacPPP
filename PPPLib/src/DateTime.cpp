@@ -286,7 +286,7 @@ namespace novac
 	bool CDateTime::ParseDate(const novac::CString &dateStr, CDateTime &t) {
 		char *pt = NULL, *pt2 = NULL;
 		char str[256]; // local copy
-		snprintf(str, 255, dateStr);
+		snprintf(str, 255, "%s", (const char*)dateStr);
 		int y, m, d;
 		y = m = d = 0;
 
@@ -294,7 +294,7 @@ namespace novac
 		if (Equals(dateStr, "TODAY(", 6)) {
 			int numberOfDays = 0;
 			t.SetToNow();
-			sprintf(str, dateStr.Right(dateStr.GetLength() - 6));
+			sprintf(str, "%s", (const char*)dateStr.Right(dateStr.GetLength() - 6));
 			char *right = strchr(str, ')');
 			if (NULL != right) {
 				right[0] = '\0';
@@ -425,7 +425,7 @@ namespace novac
 	double JulianDay(const CDateTime &utcTime) {
 		int N, J;
 		int b = 0;
-		double Hd, H, JD;
+		double Hd, JD;
 
 		if (utcTime.year < 1901 || utcTime.year > 2100 || utcTime.month < 1 || utcTime.month > 12 || utcTime.day < 1 || utcTime.day > 31)
 			return 0.0;
@@ -455,8 +455,6 @@ namespace novac
 		}
 		if (utcTime.year % 4 == 0)
 			++b;
-
-		H = (double)(J + b);
 
 		Hd = (utcTime.hour - 12.0) / 24.0 + utcTime.minute / (60.0*24.0) + utcTime.second / (3600.0*24.0);						/*CONVERSION HORAR TO DECIMAL SYSTEM*/
 
