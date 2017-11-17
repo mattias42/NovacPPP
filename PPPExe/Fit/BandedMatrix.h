@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <ostream>
 
 namespace MathFit
 {
@@ -43,8 +44,8 @@ namespace MathFit
       // the diagonal.
       BandedMatrix (int N_ = 1, int nbands_off_diagonal = 0) : bands(0)
       {
-	  if (! setup (N_, nbands_off_diagonal))
-	      setup ();
+  	    if (! setup (N_, nbands_off_diagonal))
+	        setup ();
       }
 
       // Create a banded matrix by naming the first and last non-zero bands,
@@ -52,14 +53,14 @@ namespace MathFit
       // negative, bands above the diagonal are positive.
       BandedMatrix (int N_, int first, int last) : bands(0)
       {
-	  if (! setup (N_, first, last))
-	      setup ();
+    	  if (! setup (N_, first, last))
+	       setup ();
       }
 
       // Copy constructor
       BandedMatrix (const BandedMatrix &b) : bands(0)
       {
-	  Copy (*this, b);
+    	  Copy (*this, b);
       }
 
       inline bool setup (int N_ = 1, int noff = 0)
@@ -237,12 +238,12 @@ namespace MathFit
 
       typename BandedMatrix<T>::element_type & operator[] (int j)
       {
-	  return const_cast<BandedMatrix<T> &>(bm).element (i, j);
+	      return const_cast<BandedMatrix<T> &>(bm).element (i, j);
       }
 
-	  typename const BandedMatrix<T>::element_type & operator[] (int j) const
+  	  const typename BandedMatrix<T>::element_type & operator[] (int j) const
       {
-	  return bm.element (i, j);
+	      return bm.element (i, j);
       }
 
   private:

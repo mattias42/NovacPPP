@@ -5,7 +5,7 @@
 
 namespace Evaluation
 {
-	const enum CORRECTION{
+	enum CORRECTION{
 		TEMPERATURE_SLF_VER1 // Correcting for the changing slit-function with temperature, version 1
 	};
 	/** The class <b>CColumnCorrection</b> holds parameters to describe

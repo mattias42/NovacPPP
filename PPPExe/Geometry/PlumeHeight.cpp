@@ -1,4 +1,4 @@
-#include "plumeheight.h"
+#include "PlumeHeight.h"
 
 using namespace Geometry;
 

@@ -1,5 +1,7 @@
-#include "stdfile.h"
+#include "STDFile.h"
+#include <PPPLib/CString.h>
 #include <algorithm>
+#include <cstring>
 
 #undef min
 #undef max
@@ -31,7 +33,7 @@ RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const novac::CString &fileNa
 	if(NULL == fgets(buffer, bufSize, f)){
 		fclose(f); return FAIL;
 	}
-	if(0 != _strnicmp("GDBGMNUP\n", buffer, strlen(buffer))){
+	if(novac::Equals("GDBGMNUP\n", buffer, strlen(buffer))){
 		fclose(f); return FAIL;
 	}
 

@@ -1,4 +1,4 @@
-#include "version.h"
+#include "Version.h"
 
 CVersion::CVersion(void)
 {

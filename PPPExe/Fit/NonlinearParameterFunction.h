@@ -84,7 +84,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		virtual bool SetNonlinearParameter(CVector& vParam)
+		virtual bool SetNonlinearParameter(const CVector& vParam)
 		{
 			// keep internal copy
 			mNonlinearParams.SetParameters(vParam);
@@ -144,7 +144,7 @@ namespace MathFit
 		*
 		* @param vError	The error vector.
 		*/
-		virtual void SetNonlinearError(CVector& vError)
+		virtual void SetNonlinearError(const CVector& vError)
 		{
 			mNonlinearParams.SetError(vError);
 

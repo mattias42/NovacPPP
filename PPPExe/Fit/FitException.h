@@ -11,7 +11,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
-#include "MessageLog.h"
+#include "../Evaluation/MessageLog.h"
 
 //#if defined(WIN32)
 //#include "windows.h"
@@ -87,7 +87,7 @@ namespace MathFit
 		*
 		* @param cSource	The originating object.
 		*/
-		CFitException(CFitException& cSource) : CMessageLog(cSource)
+		CFitException(const CFitException& cSource) : CMessageLog(cSource)
 		{
 			if(cSource.mMessage)
 			{

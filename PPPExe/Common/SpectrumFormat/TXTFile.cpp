@@ -1,4 +1,4 @@
-#include "txtfile.h"
+#include "TXTFile.h"
 
 using namespace SpectrumIO;
 

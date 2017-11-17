@@ -1,4 +1,6 @@
-#include "evaluationconfigurationparser.h"
+#include "EvaluationConfigurationParser.h"
+#include <memory>
+#include <cstring>
 
 using namespace FileHandler;
 using namespace novac;

@@ -1,5 +1,5 @@
 #pragma once
-#include "common/xmlfilereader.h"
+#include "Common/XMLFileReader.h"
 #include "Configuration/NovacPPPConfiguration.h"
 
 #include <PPPLib/CString.h>

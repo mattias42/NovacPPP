@@ -1,4 +1,4 @@
-#include "extendedscanresult.h"
+#include "ExtendedScanResult.h"
 
 using namespace Evaluation;
 

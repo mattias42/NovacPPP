@@ -1,6 +1,7 @@
 #include "XMLFileReader.h"
 #include "../Common/Common.h"
 #include <cstdlib>
+#include <cstring>
 
 using namespace FileHandler;
 

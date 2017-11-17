@@ -1,4 +1,4 @@
-#include "scanevaluation.h"
+#include "ScanEvaluation.h"
 
 #include "../Common/Spectra/Spectrum.h"
 #include "../Common/Spectra/SpectrumIO.h"
@@ -10,6 +10,8 @@
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
+
+#include <cstdint>
 
 extern CPostProcessingStatistics					g_processingStats; // <-- The statistics of the processing itself
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -111,7 +113,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 	CSpectrum sky, dark, current;
 
 	// This is for timing of the evaluation. this is not supported on all hardware thus the boolean...
-	__int64 lpFrequency, timingStart, timingStop;
+	std::int64_t lpFrequency, timingStart, timingStop;
 	// TODO: ImplementMe
 	// BOOL useHighResolutionCounter = QueryPerformanceFrequency((LARGE_INTEGER*)&lpFrequency);
 	

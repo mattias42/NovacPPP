@@ -312,7 +312,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetAllParameter(CVector& vParams)
+		bool SetAllParameter(const CVector& vParams)
 		{
 			mParamsInternal.Copy(vParams);
 
@@ -324,7 +324,7 @@ namespace MathFit
 			return mDefaultParameter;
 		}
 
-		bool SetAllDefaultParameters(CVector& vDefData)
+		bool SetAllDefaultParameters(const CVector& vDefData)
 		{
 			mDefaultParameter.Copy(vDefData);
 
@@ -364,7 +364,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetAllError(CVector& vError)
+		bool SetAllError(const CVector& vError)
 		{
 			mErrorInternal.Copy(vError);
 
@@ -388,7 +388,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetAllCovarMatrix(CMatrix& mCovarMatrix)
+		bool SetAllCovarMatrix(const CMatrix& mCovarMatrix)
 		{
 			mCovarInternal.Copy(mCovarMatrix);
 
@@ -412,7 +412,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetAllCorrelMatrix(CMatrix& mCorrelMatrix)
+		bool SetAllCorrelMatrix(const CMatrix& mCorrelMatrix)
 		{
 			mCorrelInternal.Copy(mCorrelMatrix);
 
@@ -455,7 +455,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetParameters(CVector& vParams)
+		bool SetParameters(const CVector& vParams)
 		{
 			// get local copy
 			mParams.Copy(vParams);
@@ -540,7 +540,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetError(CVector& vError)
+		bool SetError(const CVector& vError)
 		{
 			// get local copy
 			mError.Copy(vError);
@@ -595,7 +595,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetCorrelMatrix(CMatrix& mCorrelMatrix)
+		bool SetCorrelMatrix(const CMatrix& mCorrelMatrix)
 		{
 			// get local copy
 			mCorrel.Copy(mCorrelMatrix);
@@ -657,7 +657,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		bool SetCovarMatrix(CMatrix& mCovarMatrix)
+		bool SetCovarMatrix(const CMatrix& mCovarMatrix)
 		{
 			// get local copy
 			mCovar.Copy(mCovarMatrix);

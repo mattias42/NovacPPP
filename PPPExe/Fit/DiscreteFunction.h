@@ -66,7 +66,7 @@ namespace MathFit
 		*
 		* @exception	CBSplineFailed
 		*/
-		CDiscreteFunction(CVector& vXValues, CVector& vYValues, CVector& vError)
+		CDiscreteFunction(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
 		{
 			SetData(vXValues, vYValues, vError);
 		}
@@ -80,7 +80,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, false if the vector sizes do not match.
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues)
 		{
 			// create a neutral error vector
 			CVector vError(vXValues.GetSize());
@@ -100,7 +100,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues, CVector& vError)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
 		{
 			// first copy data into internal buffers
 			if(!IParamFunction::SetData(vXValues, vYValues, vError))

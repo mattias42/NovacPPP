@@ -10,6 +10,7 @@
 #include <iostream>
 #include <stdarg.h>
 #include <time.h>
+#include <string.h>
 
 /**
  * This class handles any neccessary actions needed to log messages and errors. 

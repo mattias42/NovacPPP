@@ -1,5 +1,6 @@
 #include "ProcessingFileReader.h"
 #include <PPPLib/VolcanoInfo.h>
+#include <cstring>
 
 #include <algorithm>
 

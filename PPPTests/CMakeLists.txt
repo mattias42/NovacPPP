@@ -18,4 +18,9 @@ target_link_libraries(PPPTests PRIVATE PPPLib)
     
 target_include_directories(PPPTests PRIVATE ${PppTests_INCLUDE_DIRS} ${PppLib_INCLUDE_DIRS})
 
-target_compile_options(PPPTests PUBLIC /W4 /WX /sdl)
+IF(WIN32)
+    # TODO: Also include /sdl and /WX
+    target_compile_options(PPPTests PRIVATE /W4 /WX /sdl)
+ELSE()
+    target_compile_options(PPPTests PRIVATE -Wall -std=c++11)
+ENDIF()

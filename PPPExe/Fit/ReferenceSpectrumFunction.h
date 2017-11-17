@@ -85,7 +85,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues, CVector& vError)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
 		{
 			// first copy data into internal buffers
 			if(!IDataSet::SetData(vXValues, vYValues, vError))
@@ -110,7 +110,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues)
 		{
 			CVector vError(vYValues.GetSize());
 			vError.Wedge(1, 0);

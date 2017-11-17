@@ -1,4 +1,4 @@
-#include "fluxresult.h"
+#include "FluxResult.h"
 
 using namespace Flux;
 

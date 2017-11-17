@@ -1,4 +1,6 @@
-#include "evaluationresult.h"
+#include "EvaluationResult.h"
+#include <string.h>
+#include <algorithm>
 
 using namespace Evaluation;
 
@@ -104,7 +106,7 @@ bool CEvaluationResult::CheckGoodnessOfFit(const CSpectrumInfo& info, float chi2
 		if(info.m_numSpec > 0)
 			fitSaturation = info.m_fitIntensity / (maxInt * info.m_numSpec);
 		else{
-			int numSpec = (int) (floor(info.m_peakIntensity / maxInt)); // a guess for the number of co-adds
+			int numSpec = (int) (std::floor(info.m_peakIntensity / maxInt)); // a guess for the number of co-adds
 			fitSaturation = info.m_fitIntensity / (maxInt * numSpec);
 		}
 	}
@@ -114,7 +116,7 @@ bool CEvaluationResult::CheckGoodnessOfFit(const CSpectrumInfo& info, float chi2
 	if(info.m_numSpec > 0){
 		offset	= info.m_offset / (maxInt * info.m_numSpec);
 	}else{
-		int numSpec = (int) (floor(info.m_peakIntensity / maxInt)); // a guess for the number of co-adds
+		int numSpec = (int) (std::floor(info.m_peakIntensity / maxInt)); // a guess for the number of co-adds
 		offset = info.m_offset / (maxInt * numSpec);
 	}
 

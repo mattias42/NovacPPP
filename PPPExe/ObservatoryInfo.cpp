@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "observatoryinfo.h"
+#include "stdafx.h"
+#include "ObservatoryInfo.h"
 
 // The global database of observatories
 CObservatoryInfo g_observatories;

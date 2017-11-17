@@ -1,4 +1,4 @@
-#include "evaluationconfiguration.h"
+#include "EvaluationConfiguration.h"
 
 using namespace Configuration;
 

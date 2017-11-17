@@ -1,4 +1,4 @@
-#include "postevaluationcontroller.h"
+#include "PostEvaluationController.h"
 #include "ScanEvaluation.h"
 
 // This is the information we need to continue an old processing

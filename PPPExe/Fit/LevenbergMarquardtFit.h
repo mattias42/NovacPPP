@@ -71,7 +71,7 @@ namespace MathFit
 			// prepare a lower border for the chi square
 			if(mCheckChiSquare < 0)
 				mCheckChiSquare = mChiSquare * mCHISQUAREMIN;
-			if(!_finite(mCheckChiSquare))
+			if(std::isinf(mCheckChiSquare))
 				mCheckChiSquare = mCHISQUAREMIN;
 
 			if(mMaxFitSteps < 0)
@@ -167,7 +167,7 @@ namespace MathFit
 			// UPD010425: we decrease the lambda and keep the new parameters when we have a better chi square!
 			// if the chi square penalty is set to hard limits, the chi square can be set to infinite, so check this
 			// condition, too!
-			if(_finite(mChiSquare) && mOldChiSquare >= mChiSquare)
+			if(!std::isinf(mChiSquare) && mOldChiSquare >= mChiSquare)
 			{
 				// keep the current iteration count as best steps
 				mSolutionFitSteps = mFitSteps;

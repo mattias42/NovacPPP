@@ -44,7 +44,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints constructor
 		*/
-		IFunction(CVector& vXValues, CVector& vYValues) : IDataSet(vXValues, vYValues)
+		IFunction(const CVector& vXValues, const CVector& vYValues) : IDataSet(vXValues, vYValues)
 		{
 		}
 
@@ -57,7 +57,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints constructor
 		*/
-		IFunction(CVector& vXValues, CVector& vYValues, CVector& vError) : IDataSet(vXValues, vYValues, vError)
+		IFunction(const CVector& vXValues, const CVector& vYValues, const CVector& vError) : IDataSet(vXValues, vYValues, vError)
 		{
 		}
 

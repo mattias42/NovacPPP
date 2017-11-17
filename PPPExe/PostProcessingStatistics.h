@@ -21,7 +21,7 @@ public:
 	// ---------------------- PUBLIC DATA -----------------------------------
 	// ----------------------------------------------------------------------
 	
-	const enum REASON_FOR_REJECTION {
+	enum REASON_FOR_REJECTION {
 		SKY_SPEC_SATURATION, 
 		SKY_SPEC_DARK, 
 		SKY_SPEC_TOO_LONG_EXPTIME, 

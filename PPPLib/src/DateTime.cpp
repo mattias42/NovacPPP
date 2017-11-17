@@ -1,5 +1,6 @@
 #include <PPPLib/DateTime.h>
 #include <time.h>
+#include <cstring>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -29,12 +30,12 @@ namespace novac
 	}
 
 	CDateTime::CDateTime(int y, int mo, int d, int h, int mi, int s) {
-		year = unsigned short(y);
-		month = unsigned char(mo);
-		day = unsigned char(d);
-		hour = unsigned char(h);
-		minute = unsigned char(mi);
-		second = unsigned char(s);
+		year   = (unsigned short)y;
+		month  = (unsigned char)mo;
+		day    = (unsigned char)d;
+		hour   = (unsigned char)h;
+		minute = (unsigned char)mi;
+		second = (unsigned char)s;
 	}
 
 	CDateTime::~CDateTime(void)
@@ -128,12 +129,12 @@ namespace novac
 		time(&t);
 		tim = localtime(&t);
 
-		this->year = unsigned short(1900 + tim->tm_year);
-		this->month = unsigned char(1 + tim->tm_mon);
-		this->day = unsigned char(tim->tm_mday);
-		this->hour = unsigned char(tim->tm_hour);
-		this->minute = unsigned char(tim->tm_min);
-		this->second = unsigned char(tim->tm_sec);
+		this->year   = (unsigned short)(1900 + tim->tm_year);
+		this->month  = (unsigned char)(1 + tim->tm_mon);
+		this->day    = (unsigned char)(tim->tm_mday);
+		this->hour   = (unsigned char)(tim->tm_hour);
+		this->minute = (unsigned char)(tim->tm_min);
+		this->second = (unsigned char)(tim->tm_sec);
 	}
 
 	/** Calculates the difference, in seconds, between two times.
@@ -246,7 +247,7 @@ namespace novac
 		}
 		else {
 			if (this->month < 12) {
-				day = unsigned char(DaysInMonth(this->year, this->month));
+				day = (unsigned char)DaysInMonth(this->year, this->month);
 				month += 1;
 			}
 			else {
@@ -265,7 +266,7 @@ namespace novac
 		}
 		else {
 			if (this->month > 1) {
-				day = unsigned char(DaysInMonth(this->year, this->month - 1));
+				day = (unsigned char)DaysInMonth(this->year, this->month - 1);
 				month -= 1;
 			}
 			else {
@@ -285,7 +286,7 @@ namespace novac
 	bool CDateTime::ParseDate(const novac::CString &dateStr, CDateTime &t) {
 		char *pt = NULL, *pt2 = NULL;
 		char str[256]; // local copy
-		_snprintf(str, 255, dateStr);
+		snprintf(str, 255, dateStr);
 		int y, m, d;
 		y = m = d = 0;
 
@@ -322,9 +323,9 @@ namespace novac
 			}
 			else {
 				if (3 == sscanf(str, "%d.%d.%d", &y, &m, &d)) {
-					t.year = unsigned short(y);
-					t.month = unsigned char(m);
-					t.day = unsigned char(d);
+					t.year  = (unsigned short)y;
+					t.month = (unsigned char)m;
+					t.day   = (unsigned char)d;
 					return true;
 				}
 				else {
@@ -342,9 +343,9 @@ namespace novac
 			}
 			else {
 				if (3 == sscanf(str, "%d:%d:%d", &y, &m, &d)) {
-					t.year = unsigned short(y);
-					t.month = unsigned char(m);
-					t.day = unsigned char(d);
+					t.year  = (unsigned short)y;
+					t.month = (unsigned char)m;
+					t.day   = (unsigned char)d;
 					return true;
 				}
 				else {
@@ -367,9 +368,9 @@ namespace novac
 		if (0 == sscanf(&str[0], "%d", &y))
 			return false;
 
-		t.year = unsigned short(y);
-		t.month = unsigned char(m);
-		t.day = unsigned char(d);
+		t.year  = (unsigned short)y;
+		t.month = (unsigned char)m;
+		t.day   = (unsigned char)d;
 		return true;
 	}
 
@@ -399,9 +400,9 @@ namespace novac
 
 	int	DayNr(const unsigned short day[3]) {
 		CDateTime d;
-		d.year = day[2];
+		d.year  = day[2];
 		d.month = (unsigned char)day[1];
-		d.day = (unsigned char)day[0];
+		d.day   = (unsigned char)day[0];
 		return DayNr(d);
 	}
 

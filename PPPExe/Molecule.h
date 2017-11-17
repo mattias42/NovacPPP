@@ -8,7 +8,7 @@
 	This is also able to use these numbers to convert between columns in number
 	of molecules and in mass.
 */
-const enum STANDARD_MOLECULE{
+enum STANDARD_MOLECULE{
 	MOLEC_SO2,
 	MOLEC_O3,
 	MOLEC_BRO,

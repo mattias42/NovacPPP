@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xmlfilereader.h"
+#include "XMLFileReader.h"
 #include "../Configuration/UserConfiguration.h"
 
 namespace FileHandler{

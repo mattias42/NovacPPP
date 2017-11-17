@@ -1,7 +1,7 @@
-#include "StdAfx.h"
-#include "setupfilereader.h"
-
+#include "stdafx.h"
+#include "SetupFileReader.h"
 #include <PPPLib/CStdioFile.h>
+#include <cstring>
 
 using namespace FileHandler;
 using namespace novac;

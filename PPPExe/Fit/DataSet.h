@@ -42,7 +42,7 @@ namespace MathFit
 		* @param vYValues		A vector object containing the Y values of the data set.
 		* @param vError		A vector object containing the error values of the data set (sigma).
 		*/
-		IDataSet(CVector& vXValues, CVector& vYValues, CVector& vError)
+		IDataSet(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
 		{
 			IDataSet::SetData(vXValues, vYValues, vError);
 		}
@@ -54,7 +54,7 @@ namespace MathFit
 		* @param vXValues		A vector object containing the X values of the data set.
 		* @param vYValues		A vector object containing the Y values of the data set.
 		*/
-		IDataSet(CVector& vXValues, CVector& vYValues)
+		IDataSet(const CVector& vXValues, const CVector& vYValues)
 		{
 			IDataSet::SetData(vXValues, vYValues);
 		}
@@ -68,7 +68,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, false if the vector sizes do not match.
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues)
 		{
 			// create a neutral error vector
 			CVector vError(vXValues.GetSize());
@@ -90,7 +90,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, false if the vector sizes do not match.
 		*/
-		virtual bool SetData(CVector& vXValues, CVector& vYValues, CVector& vError)
+		virtual bool SetData(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
 		{
 			MATHFIT_ASSERT(vXValues.GetSize() == vYValues.GetSize() && vXValues.GetSize() == vError.GetSize());
 
@@ -109,7 +109,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, FALSE otherwise.
 		*/
-		virtual bool SetXData(CVector& vXValues)
+		virtual bool SetXData(const CVector& vXValues)
 		{
 			mXData.Copy(vXValues);
 
@@ -133,7 +133,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, FALSE otherwise.
 		*/
-		virtual bool SetYData(CVector& vYValues)
+		virtual bool SetYData(const CVector& vYValues)
 		{
 			mYData.Copy(vYValues);
 
@@ -157,7 +157,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, FALSE otherwise.
 		*/
-		virtual bool SetErrorData(CVector& vError)
+		virtual bool SetErrorData(const CVector& vError)
 		{
 			mError.Copy(vError);
 

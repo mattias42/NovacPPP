@@ -1,9 +1,10 @@
-#include "spectrum.h"
+#include "Spectrum.h"
 
 #include <algorithm>
 
 #include <cstdarg>
 #include <cassert>
+#include <cstring>
 
 #undef min
 #undef max

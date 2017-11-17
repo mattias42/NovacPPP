@@ -1,5 +1,6 @@
-#include "spectrumio.h"
+#include "SpectrumIO.h"
 #include <algorithm>
+#include <cstring>
 
 #undef min
 #undef max
@@ -40,7 +41,7 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if (0 != fseek(f, std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+		if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -48,7 +49,7 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 		fread(textBuffer, 1, 4, f);
 		if (NULL == strstr(textBuffer, "MKZY")) {
 			// rewind
-			if (0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}
 		else {
@@ -112,7 +113,7 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if (0 != fseek(f, std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+		if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -120,7 +121,7 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 		fread(textBuffer, 1, 4, f);
 		if (NULL == strstr(textBuffer, "MKZY")) {
 			// rewind
-			if (0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}
 		else {
@@ -178,7 +179,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 			char textBuffer[4];
 
 			// Seek our way into the next spectrum...
-			if (0 != fseek(f, std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 
 			// Make sure we're at the right place, if not rewind again and search for the next
@@ -187,7 +188,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 				break;
 			if (NULL == strstr(textBuffer, "MKZY")) {
 				// rewind
-				if (0 != fseek(f, -std::min(MKZY.size, unsigned short(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+				if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 					break;
 			}
 			else {
@@ -622,7 +623,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 
 		CSpectrumInfo *info = &spec->m_info;
 		// save the spectrum information in the CSpectrum data structure
-		spec->m_length = std::max(std::min(MKZY.pixels, unsigned short(MAX_SPECTRUM_LENGTH)), unsigned short(0));
+		spec->m_length = std::max(std::min(MKZY.pixels, (unsigned short)(MAX_SPECTRUM_LENGTH)), (unsigned short)(0));
 		info->m_startChannel = MKZY.startc;
 		info->m_numSpec = MKZY.scans;
 		info->m_exposureTime = (MKZY.exptime > 0) ? MKZY.exptime : -MKZY.exptime;

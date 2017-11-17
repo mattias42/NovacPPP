@@ -37,14 +37,11 @@
 #  define BSPLINE_DLL_ __declspec(dllimport)
 # endif
 #else
-# define BSPLINE_DLL_
+# ifndef BSPLINE_DLL_
+#  define BSPLINE_DLL_
+# endif
 #endif /* WIN32 */
 
-template <class T> class BSpline;
-
-// Opaque structure to hide our matrix implementation, ala
-// Cheshire cat.
-template <class T> struct BSplineBaseP;
 
 /**
  * Base class for a spline object containing the nodes for a given domain,
@@ -134,6 +131,12 @@ University Corporation for Atmospheric Research, UCAR
  */
 namespace MathFit
 {
+  template <class T> class BSpline;
+
+  // Opaque structure to hide our matrix implementation, ala
+  // Cheshire cat.
+  template <class T> struct BSplineBaseP;
+
   template <class T> 
   class BSPLINE_DLL_ BSplineBase  
   {
@@ -340,7 +343,7 @@ namespace MathFit
       BSpline (const T *x, int nx, 		/* independent variable */
 	      const T *y,			/* dependent values @ ea X */
 	      double wl,				/* cutoff wavelength UPD001211 Stefan: defines the number of nodes defining one point of the B-Spline*/
-	      int bc_type = BC_ZERO_SECOND);
+	      int bc_type = BSplineBase<T>::BC_ZERO_SECOND);
 
       /**
       * A BSpline curve can be derived from a separate Base and a set

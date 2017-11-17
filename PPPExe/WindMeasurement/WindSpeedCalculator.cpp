@@ -1,5 +1,5 @@
 #include "../stdafx.h"
-#include "windspeedcalculator.h"
+#include "WindSpeedCalculator.h"
 #include "../Common/EvaluationLogFileHandler.h"
 #include "../Meteorology/WindField.h"
 

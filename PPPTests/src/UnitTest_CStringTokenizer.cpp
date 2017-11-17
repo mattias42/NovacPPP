@@ -1,5 +1,6 @@
 #include <PPPLib/CStringTokenizer.h>
 #include "catch.hpp"
+#include <cstring>
 
 namespace novac
 {

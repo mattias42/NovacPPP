@@ -1,4 +1,4 @@
-#include "referencefitresult.h"
+#include "ReferenceFitResult.h"
 
 using namespace Evaluation;
 

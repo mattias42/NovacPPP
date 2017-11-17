@@ -1,4 +1,4 @@
-#include "fluxcalculator.h"
+#include "FluxCalculator.h"
 
 // Here we need to know about the global settings
 #include "../Configuration/NovacPPPConfiguration.h"

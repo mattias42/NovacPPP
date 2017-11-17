@@ -11,8 +11,7 @@ namespace Meteorology{
 	function 'GetSourceQuality' defined in WindField.h
 */
 
-
-	const enum MET_SOURCE {
+	enum MET_SOURCE {
 		MET_NONE,				/** no source - used to say that this contains no information */
 		MET_DEFAULT,			/** default value */
 		MET_USER,				/** this data was given by the user somehow */

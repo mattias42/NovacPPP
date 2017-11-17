@@ -1,8 +1,9 @@
-#include "StdAfx.h"
-#include "stringtokenizer.h"
+#include "stdafx.h"
+#include "StringTokenizer.h"
 #include <string>
 #include <algorithm>
 #include <cassert>
+#include <string.h>
 
 #undef min
 #undef max

@@ -1,4 +1,4 @@
-#include "mkpack.h"
+#include "MKPack.h"
 
 #include "../Spectra/Spectrum.h"
 

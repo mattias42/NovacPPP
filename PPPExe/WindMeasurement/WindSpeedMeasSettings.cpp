@@ -1,5 +1,5 @@
 #include "../stdafx.h"
-#include "windspeedmeassettings.h"
+#include "WindSpeedMeasSettings.h"
 #include "../Common/Common.h"
 
 using namespace WindSpeedMeasurement;

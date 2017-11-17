@@ -1,4 +1,4 @@
-#include "novacpppconfiguration.h"
+#include "NovacPPPConfiguration.h"
 
 using namespace Configuration;
 

@@ -1,10 +1,15 @@
 #pragma once
 
+#include <stddef.h>
+
 /** The class CStringTokenizer takes care of tokenizing strings the way we want them
 	This is primarily used when passing parameters to the program through the command-line
 		since the normal CRT tokenizer will not be able to keep together strings containing spaces
 	This class will return any string surrounded by ":s as one token (even if it contains spaces)
 */
+
+#define MAX_N_SEPARATORS 256
+
 class CStringTokenizer
 {
 public:
@@ -29,7 +34,6 @@ private:
 	char	*m_lastToken;
 
 	/** The separator characters */
-	static const int MAX_N_SEPARATORS = 256;
 	char	m_separators[MAX_N_SEPARATORS];
 	int		m_separatorNum;
 };

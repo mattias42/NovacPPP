@@ -100,84 +100,84 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 		++curCol;
 
 		// The scan-angle (previously known as elevation)
-		if(0 == strnicmp(szToken, elevation, strlen(elevation))){
+		if(Equals(szToken, elevation, strlen(elevation))){
 			m_col.position = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The scan-angle (previously known as elevation)
-		if(0 == strnicmp(szToken, scanAngle, strlen(scanAngle))){
+		if(Equals(szToken, scanAngle, strlen(scanAngle))){
 			m_col.position = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The observation-angle (the scan-angle for the heidelberg instrument)
-		if(0 == strnicmp(szToken, obsAngle, strlen(obsAngle))){
+		if(Equals(szToken, obsAngle, strlen(obsAngle))){
 			m_col.position = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The azimuth-angle (defined for the heidelberg instrument)
-		if(0 == strnicmp(szToken, azimuth, strlen(azimuth))){
+		if(Equals(szToken, azimuth, strlen(azimuth))){
 			m_col.position2 = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The exposure time
-		if(0 == strnicmp(szToken, exposureTime, strlen(exposureTime))){
+		if(Equals(szToken, exposureTime, strlen(exposureTime))){
 			m_col.expTime = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The start time
-		if(0 == strnicmp(szToken, starttime, strlen(starttime))){
+		if(Equals(szToken, starttime, strlen(starttime))){
 			m_col.starttime = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The stop time
-		if(0 == strnicmp(szToken, stoptime, strlen(stoptime))){
+		if(Equals(szToken, stoptime, strlen(stoptime))){
 			m_col.stoptime = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The name of the spectrum
-		if(0 == strnicmp(szToken, nameStr, strlen(nameStr))){
+		if(Equals(szToken, nameStr, strlen(nameStr))){
 			m_col.name	= curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The number of co-added spectra
-		if(0 == strnicmp(szToken, numSpec, strlen(numSpec))){
+		if(Equals(szToken, numSpec, strlen(numSpec))){
 			m_col.nSpec = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The offset
-		if(0 == strnicmp(szToken, offset, strlen(offset))){
+		if(Equals(szToken, offset, strlen(offset))){
 			m_col.offset = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The column error (must be looked for before 'column')
-		if(0 == strnicmp(szToken, columnError, strlen(columnError))){
+		if(Equals(szToken, columnError, strlen(columnError))){
 			m_col.columnError[m_evResult.m_speciesNum-1] = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The column
-		if(0 == strnicmp(szToken, column, strlen(column))){
+		if(Equals(szToken, column, strlen(column))){
 			novac::CString str;
 			m_col.column[m_evResult.m_speciesNum] = curCol;
 			char *pt = szToken + strlen(column) + 1;
@@ -190,43 +190,43 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 		}
 
 		// The shift error (must be checked before 'shift')
-		if(0 == strnicmp(szToken, shiftError, strlen(shiftError))){
+		if(Equals(szToken, shiftError, strlen(shiftError))){
 			m_col.shiftError[m_evResult.m_speciesNum-1] = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The shift
-		if(0 == strnicmp(szToken, shift, strlen(shift))){
+		if(Equals(szToken, shift, strlen(shift))){
 			m_col.shift[m_evResult.m_speciesNum-1] = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The squeeze error (must be checked before 'squeeze')
-		if(0 == strnicmp(szToken, squeezeError, strlen(squeezeError))){
+		if(Equals(szToken, squeezeError, strlen(squeezeError))){
 			m_col.squeezeError[m_evResult.m_speciesNum-1] = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The squeeze
-		if(0 == strnicmp(szToken, squeeze, strlen(squeeze))){
+		if(Equals(szToken, squeeze, strlen(squeeze))){
 			m_col.squeeze[m_evResult.m_speciesNum-1] = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The spectrum peak-intensity
-		if(0 == strnicmp(szToken, intensity, strlen(intensity))){
+		if(Equals(szToken, intensity, strlen(intensity))){
 			m_col.intensity = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The spectrum fit-intensity
-		if(0 == strnicmp(szToken, fitIntensity, strlen(fitIntensity)) || 
-		   0 == strnicmp(szToken, fitIntensity2, strlen(fitIntensity2))){
+		if(Equals(szToken, fitIntensity, strlen(fitIntensity)) || 
+		   Equals(szToken, fitIntensity2, strlen(fitIntensity2))){
 
 			m_col.fitIntensity = curCol;
 			szToken = NULL;
@@ -234,28 +234,28 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 		}
 
 		// The spectrum maximum saturation ratio of the whole spectrum
-		if(0 == strnicmp(szToken, peakSat, strlen(peakSat))){
+		if(Equals(szToken, peakSat, strlen(peakSat))){
 			m_col.peakSaturation = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The spectrum maximum saturation ratio in the fit region
-		if(0 == strnicmp(szToken, fitSat, strlen(fitSat))){
+		if(Equals(szToken, fitSat, strlen(fitSat))){
 			m_col.fitSaturation = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The delta of the fit
-		if(0 == strnicmp(szToken, delta, strlen(delta))){
+		if(Equals(szToken, delta, strlen(delta))){
 			m_col.delta = curCol;
 			szToken = NULL;
 			continue;
 		}
 
 		// The chi-square of the fit
-		if(0 == strnicmp(szToken, chiSquare, strlen(chiSquare))){
+		if(Equals(szToken, chiSquare, strlen(chiSquare))){
 			m_col.chiSquare = curCol;
 			szToken = NULL;
 			continue;

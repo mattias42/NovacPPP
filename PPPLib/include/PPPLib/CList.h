@@ -116,7 +116,7 @@ namespace novac
 			m_position = other.m_position;
 		}
 
-		POSITION& operator=(const TYPE*)
+		POSITION<TYPE>& operator=(const TYPE*)
 		{
 			this->m_position = m_data.end();
 			return *this;

@@ -1,8 +1,10 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ContinuationOfProcessing.h"
 
 // This is the settings for how to do the procesing
 #include "Configuration/UserConfiguration.h"
+
+#include <cstring>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 

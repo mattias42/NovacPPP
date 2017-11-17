@@ -1,4 +1,4 @@
-#include "geometrycalculator.h"
+#include "GeometryCalculator.h"
 
 #include "../Common/Common.h"
 

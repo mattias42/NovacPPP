@@ -71,8 +71,13 @@ target_include_directories(NovacPPP PRIVATE
 
 target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
 
-# TODO: Also include /sdl and /WX
-target_compile_options(NovacPPP PUBLIC /W3)
+IF(WIN32)
+    # TODO: Also include /sdl and /WX
+    target_compile_options(NovacPPP PUBLIC /W4 /WX /sdl)
+ELSE()
+    target_compile_options(NovacPPP PUBLIC -Wall -std=c++14)
+ENDIF()
+
 
 #Organize the files into folders, for ease of use
 source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})

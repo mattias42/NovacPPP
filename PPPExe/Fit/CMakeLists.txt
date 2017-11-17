@@ -5,7 +5,6 @@ cmake_minimum_required (VERSION 3.6)
 set(NPP_FIT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/ApertureFunction.h
     ${CMAKE_CURRENT_LIST_DIR}/BandedMatrix.h
-    ${CMAKE_CURRENT_LIST_DIR}/BSpline.cxx
     ${CMAKE_CURRENT_LIST_DIR}/BSpline.h
     ${CMAKE_CURRENT_LIST_DIR}/BSplineD.cxx
     ${CMAKE_CURRENT_LIST_DIR}/BSplineD.h

@@ -6,7 +6,7 @@
 namespace Evaluation
 {
 	// the options for the shift and squeeze
-	const enum SHIFT_TYPE{
+	enum SHIFT_TYPE{
 		SHIFT_FREE,
 		SHIFT_FIX,
 		SHIFT_LINK,

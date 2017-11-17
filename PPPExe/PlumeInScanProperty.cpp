@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "plumeinscanproperty.h"
+#include "stdafx.h"
+#include "PlumeInScanProperty.h"
 #include "Common/Common.h"
 
 CPlumeInScanProperty::CPlumeInScanProperty(void)

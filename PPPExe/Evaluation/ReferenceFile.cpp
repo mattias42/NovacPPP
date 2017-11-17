@@ -1,4 +1,4 @@
-#include "referencefile.h"
+#include "ReferenceFile.h"
 
 #include "../Evaluation/Evaluation.h"
 

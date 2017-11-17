@@ -1,4 +1,4 @@
-#include "xmlwindfilereader.h"
+#include "XMLWindFileReader.h"
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
@@ -7,6 +7,7 @@
 #include "../Communication/FTPServerConnection.h"
 
 #include <Poco/Glob.h>
+#include <string.h>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 

@@ -1,4 +1,4 @@
-#include "locationconfiguration.h"
+#include "LocationConfiguration.h"
 
 using namespace Configuration;
 

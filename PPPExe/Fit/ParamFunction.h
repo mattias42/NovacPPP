@@ -77,7 +77,7 @@ namespace MathFit
 		*
 		* @see	IFunction constructor
 		*/
-		IParamFunction(CVector& vXValues, CVector& vYValues) : IFunction(vXValues, vYValues)
+		IParamFunction(const CVector& vXValues, const CVector& vYValues) : IFunction(vXValues, vYValues)
 		{
 			mNearlyZero = MATHFIT_NEARLYZERO;
 			mDelta = MATHFIT_DELTA;
@@ -93,7 +93,7 @@ namespace MathFit
 		*
 		* @see	IFunction constructor
 		*/
-		IParamFunction(CVector& vXValues, CVector& vYValues, CVector& vError) : IFunction(vXValues, vYValues, vError)
+		IParamFunction(const CVector& vXValues, const CVector& vYValues, const CVector& vError) : IFunction(vXValues, vYValues, vError)
 		{
 			mNearlyZero = MATHFIT_NEARLYZERO;
 			mDelta = MATHFIT_DELTA;
@@ -119,7 +119,7 @@ namespace MathFit
 		*
 		* @return TRUE if successful, FALSE if the vector sizes do not match.
 		*/
-		virtual bool SetLinearParameter(CVector& vLinParam)
+		virtual bool SetLinearParameter(const CVector& vLinParam)
 		{
 			MATHFIT_ASSERT(vLinParam.GetSize() == mLinearParams.GetSize());
 
@@ -162,7 +162,7 @@ namespace MathFit
 		*
 		* @return TRUE if successful, FALSE if the vector sizes do not match.
 		*/
-		virtual bool SetNonlinearParameter(CVector& vNonlinParam)
+		virtual bool SetNonlinearParameter(const CVector& vNonlinParam)
 		{
 			MATHFIT_ASSERT(vNonlinParam.GetSize() == mNonlinearParams.GetSize());
 
@@ -515,7 +515,7 @@ namespace MathFit
 		*
 		* @param mCovar	The covariance matrix.
 		*/
-		virtual void SetNonlinearCovarMatrix(CMatrix& mCovar)
+		virtual void SetNonlinearCovarMatrix(const CMatrix& mCovar)
 		{
 			mNonlinearParams.SetCovarMatrix(mCovar);
 		}
@@ -535,7 +535,7 @@ namespace MathFit
 		*
 		* @param mCorrel	The correlation matrix.
 		*/
-		virtual void SetNonlinearCorrelMatrix(CMatrix& mCorrel)
+		virtual void SetNonlinearCorrelMatrix(const CMatrix& mCorrel)
 		{
 			mNonlinearParams.SetCorrelMatrix(mCorrel);
 		}
@@ -555,7 +555,7 @@ namespace MathFit
 		*
 		* @param vError	The error vector.
 		*/
-		virtual void SetNonlinearError(CVector& vError)
+		virtual void SetNonlinearError(const CVector& vError)
 		{
 			mNonlinearParams.SetError(vError);
 		}
@@ -575,7 +575,7 @@ namespace MathFit
 		*
 		* @param mCovar	The covariance matrix.
 		*/
-		virtual void SetLinearCovarMatrix(CMatrix& mCovar)
+		virtual void SetLinearCovarMatrix(const CMatrix& mCovar)
 		{
 			mLinearParams.SetCovarMatrix(mCovar);
 		}
@@ -595,7 +595,7 @@ namespace MathFit
 		*
 		* @param mCorrel	The correlation matrix.
 		*/
-		virtual void SetLinearCorrelMatrix(CMatrix& mCorrel)
+		virtual void SetLinearCorrelMatrix(const CMatrix& mCorrel)
 		{
 			mLinearParams.SetCorrelMatrix(mCorrel);
 		}
@@ -615,7 +615,7 @@ namespace MathFit
 		*
 		* @param vError	The error vector.
 		*/
-		virtual void SetLinearError(CVector& vError)
+		virtual void SetLinearError(const CVector& vError)
 		{
 			mLinearParams.SetError(vError);
 		}
@@ -920,7 +920,7 @@ namespace MathFit
 			return mNonlinearParams;
 		}
 
-		virtual void SetFitRange(CVector& vFitRange)
+		virtual void SetFitRange(const CVector& vFitRange)
 		{
 			mFitRange.Copy(vFitRange);
 		}

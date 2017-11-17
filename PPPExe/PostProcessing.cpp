@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "postprocessing.h"
+#include "stdafx.h"
+#include "PostProcessing.h"
 
 #undef min
 #undef max

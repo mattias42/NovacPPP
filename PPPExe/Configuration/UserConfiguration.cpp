@@ -1,4 +1,5 @@
 #include "UserConfiguration.h"
+#include <algorithm>
 
 using namespace Configuration;
 
@@ -173,7 +174,7 @@ bool CUserConfiguration::operator==(const CUserConfiguration &settings2){
 		return false;
 	
 	// The geometry calculations
-	if(fabs(settings2.m_calcGeometry_CompletenessLimit != m_calcGeometry_CompletenessLimit) > 0.01)
+	if(std::abs(settings2.m_calcGeometry_CompletenessLimit != m_calcGeometry_CompletenessLimit) > 0.01)
 		return false;
 	if(settings2.m_calcGeometryValidTime != m_calcGeometryValidTime)
 		return false;
@@ -197,9 +198,9 @@ bool CUserConfiguration::operator==(const CUserConfiguration &settings2){
 		return false;
 
 	// The quality parameters
-	if(fabs(settings2.m_completenessLimitFlux - m_completenessLimitFlux) > 0.01)
+	if(std::abs(settings2.m_completenessLimitFlux - m_completenessLimitFlux) > 0.01)
 		return false;
-	if(fabs(settings2.m_minimumSaturationInFitRegion - m_minimumSaturationInFitRegion) > 0.01)
+	if(std::abs(settings2.m_minimumSaturationInFitRegion - m_minimumSaturationInFitRegion) > 0.01)
 		return false;
 	if(settings2.m_maxExposureTime_got != m_maxExposureTime_got)
 		return false;

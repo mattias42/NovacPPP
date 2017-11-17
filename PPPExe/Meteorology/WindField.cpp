@@ -1,4 +1,4 @@
-#include "windfield.h"
+#include "WindField.h"
 #include "../Common/Common.h"
 
 using namespace Meteorology;

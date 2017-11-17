@@ -78,13 +78,13 @@ void LoadConfigurations()
 	setupPath.Format("%sconfiguration\\setup.xml", (const char*)common.m_exePath);
 	if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
 	{
-		throw std::exception("Could not read setup.xml. Setup not complete. Please fix and try again");
+		throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Read the users options from file processing.xml
 	processingPath.Format("%sconfiguration\\processing.xml", (const char*)common.m_exePath);
 	if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
-		throw std::exception("Could not read processing.xml. Setup not complete. Please fix and try again");
+		throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Check if there is a configuration file for every spectrometer serial number
@@ -95,7 +95,7 @@ void LoadConfigurations()
 		if (IsExistingFile(evalConfPath))
 			eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
 		else {
-			throw std::exception("Could not find configuration file: " + evalConfPath);
+			throw std::logic_error("Could not find configuration file: " + evalConfPath);
 		}
 	}
 }
@@ -284,7 +284,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 		// the maximum number of threads
 		if (Equals(token, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
 			sscanf(token + strlen(FLAG(str_maxThreadNum)), "%d", &g_userSettings.m_maxThreadNum);
-			g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, unsigned long(1));
+			g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, (unsigned long)1);
 			token = tokenizer.NextToken();
 			continue;
 		}

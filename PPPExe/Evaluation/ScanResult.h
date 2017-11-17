@@ -280,7 +280,7 @@ namespace Evaluation
 		RETURN_CODE GetStartTime(unsigned long index, novac::CDateTime &time) const;
 
 		/** returns the time and date (UMT) when the sky-spectrum was started. */
-		void CScanResult::GetSkyStartTime(novac::CDateTime &t) const;
+		void GetSkyStartTime(novac::CDateTime &t) const;
 
 		/** returns the time and date (UMT) when evaluated spectrum number 'index' 
 		        was stopped.

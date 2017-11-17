@@ -4,7 +4,7 @@
 
 #include "Evaluation.h"
 #include <iostream>
-#include <conio.h>
+
 // include all required fit objects
 #include "../Fit/ReferenceSpectrumFunction.h"
 #include "../Fit/SimpleDOASFunction.h"

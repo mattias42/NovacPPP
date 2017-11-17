@@ -1,5 +1,6 @@
 #include <PPPLib/CFileUtils.h>
 #include <algorithm>
+#include <cstring>
 
 #ifdef _MSC_VER
 #pragma warning(push)

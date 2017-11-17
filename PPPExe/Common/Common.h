@@ -15,6 +15,7 @@
 #include "../Meteorology/WindField.h"
 #include "GPSData.h"
 #include "../PlumeInScanProperty.h"
+#include <cmath>
 
 // definition used for storing the spectral data
 typedef double SpecData;
@@ -72,11 +73,11 @@ enum	DARK_SPEC_OPTION { MEASURE, MODEL_SOMETIMES, MODEL_ALWAYS, DARK_USER_SUPPLI
 enum	DARK_MODEL_OPTION { MEASURED, USER_SUPPLIED };
 
 // The list of instrument types available
-const enum INSTRUMENT_TYPE {INSTR_GOTHENBURG, INSTR_HEIDELBERG};
+enum INSTRUMENT_TYPE {INSTR_GOTHENBURG, INSTR_HEIDELBERG};
 
 
 // The options for how to do the post-processing
-const enum PROCESSING_MODE{
+enum PROCESSING_MODE{
 	PROCESSING_MODE_FLUX,
 	PROCESSING_MODE_COMPOSITION,
 	PROCESSING_MODE_STRATOSPHERE,
@@ -595,7 +596,7 @@ template <class T> double Std(T array[], long nElements){
 	if(nElements <= 0)
 		return 0.0;
 
-	return sqrt(Variance(array, nElements));
+	return std::sqrt(Variance(array, nElements));
 }
 
 #endif

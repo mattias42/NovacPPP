@@ -5,7 +5,7 @@
 #include "../Meteorology/WindField.h"
 #include <PPPLib/CString.h>
 
-const enum FLUX_QUALITY_FLAG{
+enum FLUX_QUALITY_FLAG{
 	FLUX_QUALITY_GREEN,
 	FLUX_QUALITY_YELLOW,
 	FLUX_QUALITY_RED

@@ -6,6 +6,7 @@
 #include <cctype>
 #include <locale>
 #include <vector>
+#include <cstring>
 
 namespace novac
 {
@@ -51,7 +52,7 @@ namespace novac
 
 		va_list args;
 		va_start(args, format);
-		vsprintf_s(localBuffer.data(), localBuffer.size(), format, args);
+		vsprintf(localBuffer.data(), format, args);
 		va_end(args);
 
 		m_data = std::string{ localBuffer.data() };
@@ -63,7 +64,7 @@ namespace novac
 
 		va_list args;
 		va_start(args, format);
-		vsprintf_s(localBuffer.data(), localBuffer.size(), format, args);
+		vsprintf(localBuffer.data(), format, args);
 		va_end(args);
 
 		m_data = this->m_data + std::string{ localBuffer.data() };
@@ -393,11 +394,18 @@ namespace novac
 	}
 
 	int Equals(const CString &str1, const CString &str2) {
-		return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
+		#ifdef _MSC_VER
+			return (0 == _strnicmp(str1, str2, std::max(strlen(str1), strlen(str2))));
+		#else
+			return (0 == strncasecmp(str1, str2, std::max(strlen(str1), strlen(str2))));
+		#endif
 	}
 
 	int Equals(const CString &str1, const CString &str2, size_t nCharacters) {
-		return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
+		#ifdef _MSC_VER
+			return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
+		#else
+			return (0 == strncasecmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));
+		#endif
 	}
-
 }

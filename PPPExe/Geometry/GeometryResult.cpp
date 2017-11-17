@@ -1,4 +1,4 @@
-#include "geometryresult.h"
+#include "GeometryResult.h"
 #include "../Common/Common.h"
 
 using namespace Geometry;
