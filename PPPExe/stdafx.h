@@ -31,9 +31,6 @@
 // turns off MFC's hiding of some common and often safely ignored warning messages
 // #define _AFX_ALL_WARNINGS
 
-// Disable the extra security warnings on windows
-#define _CRT_SECURE_NO_WARNINGS
-
 // MFC Replacements, copy-paste from https://msdn.microsoft.com/en-us/library/aa383751(VS.85).aspx
 #define CONST const
 typedef unsigned int UINT;

@@ -73,7 +73,8 @@ target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
 
 IF(WIN32)
     # TODO: Also include /sdl and /WX
-    target_compile_options(NovacPPP PUBLIC /W4 /WX /sdl)
+    target_compile_options(NovacPPP PUBLIC /W4)
+    target_compile_definitions(NovacPPP PUBLIC _CRT_SECURE_NO_WARNINGS)
 ELSE()
     target_compile_options(NovacPPP PUBLIC -Wall -std=c++14)
 ENDIF()
