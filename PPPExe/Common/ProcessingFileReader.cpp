@@ -40,13 +40,13 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
 
 		// If we've found the output directory
 		if (Equals(szToken, str_outputDirectory, strlen(str_outputDirectory))) {
-			Parse_StringItem(ENDTAG(str_outputDirectory), settings.m_outputDirectory);
+			Parse_PathItem(ENDTAG(str_outputDirectory), settings.m_outputDirectory);
 			continue;
 		}
 
 		// If we've found the temporary directory
 		if (Equals(szToken, str_tempDirectory, strlen(str_tempDirectory))) {
-			Parse_StringItem(ENDTAG(str_tempDirectory), settings.m_tempDirectory);
+			Parse_PathItem(ENDTAG(str_tempDirectory), settings.m_tempDirectory);
 			continue;
 		}
 
@@ -135,7 +135,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
 
 		// If we've found the wind field file to use
 		if (Equals(szToken, str_windFieldFile, strlen(str_windFieldFile))) {
-			Parse_StringItem(ENDTAG(str_windFieldFile), settings.m_windFieldFile);
+			Parse_PathItem(ENDTAG(str_windFieldFile), settings.m_windFieldFile);
 			continue;
 		}
 		if (Equals(szToken, str_windFieldFileOption, strlen(str_windFieldFileOption))) {
@@ -145,7 +145,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
 
 		// If we've found the local directory where to search for data
 		if (Equals(szToken, str_LocalDirectory, strlen(str_LocalDirectory))) {
-			Parse_StringItem(ENDTAG(str_LocalDirectory), settings.m_LocalDirectory);
+			Parse_PathItem(ENDTAG(str_LocalDirectory), settings.m_LocalDirectory);
 			continue;
 		}
 

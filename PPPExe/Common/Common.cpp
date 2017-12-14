@@ -33,14 +33,24 @@ bool IsExistingFile(const novac::CString &fileName) {
 
 int CreateDirectoryStructure(const novac::CString &path)
 {
-	Poco::File directory(path.c_str());
-	directory.createDirectories();
+	try
+	{
+		Poco::File directory(path.c_str());
+		directory.createDirectories();
 
-	if (directory.exists()) {
-		return 0;
+		if (directory.exists()) {
+			return 0;
+		}
+		else {
+			return 1; // error
+		}
 	}
-	else {
-		return 1; // error
+	catch(std::exception& e)
+	{
+		novac::CString message = "Failed to create directory: ";
+		message.AppendFormat("%s", e.what());
+		ShowMessage(message);
+		return 1;
 	}
 }
 

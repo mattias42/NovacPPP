@@ -36,6 +36,8 @@ void CalculateAllFluxes();
 void ParseCommandLineOptions(int argc, char* argv[]);
 int main(int argc, char* argv[])
 {
+	std::cout << "Novac Post Processing Program" << std::endl;
+
 	try
 	{
 		Poco::Path executable(argv[0]);
@@ -48,13 +50,21 @@ int main(int argc, char* argv[])
 		Poco::Logger& log = Poco::Logger::get("NovacPPP");
 
 		// Read the configuration files
+		std::cout << " Loading configuration" << std::endl;
 		LoadConfigurations();
 
 		// Get the options from the command line
+		std::cout << " Getting command line arguments" << std::endl;
 		ParseCommandLineOptions(argc, argv);
 
 		// Start calculating the fluxes, this is the old button handler
+		std::cout << " Setup done: starting calculations" << std::endl;
 		OnBnClickedCalculateFluxes();
+	}
+	catch(Poco::FileNotFoundException& e)
+	{
+		std::cout << e.displayText() << std::endl;
+		return 1;
 	}
 	catch (std::exception& e)
 	{
@@ -75,21 +85,21 @@ void LoadConfigurations()
 	FileHandler::CProcessingFileReader processing_reader;
 
 	//Read configuration from file setup.xml */	
-	setupPath.Format("%sconfiguration\\setup.xml", (const char*)common.m_exePath);
+	setupPath.Format("%sconfiguration/setup.xml", (const char*)common.m_exePath);
 	if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
 	{
 		throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Read the users options from file processing.xml
-	processingPath.Format("%sconfiguration\\processing.xml", (const char*)common.m_exePath);
+	processingPath.Format("%sconfiguration/processing.xml", (const char*)common.m_exePath);
 	if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
 		throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Check if there is a configuration file for every spectrometer serial number
 	for (int k = 0; k < g_setup.m_instrumentNum; ++k) {
-		evalConfPath.Format("%sconfiguration\\%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
+		evalConfPath.Format("%sconfiguration/%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
 
 		if (IsExistingFile(evalConfPath))
 			eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
@@ -148,77 +158,90 @@ void OnBnClickedCalculateFluxes(int selectedVolcano)
 
 
 void CalculateAllFluxes() {
-	CPostProcessing post;
-	novac::CString userMessage, processingOutputFile, setupOutputFile;
-	novac::CString confCopyDir, serial;
-	Common common;
-	FileHandler::CProcessingFileReader writer;
-	unsigned int k;
+	try
+	{
+		CPostProcessing post;
+		novac::CString userMessage, processingOutputFile, setupOutputFile;
+		novac::CString confCopyDir, serial;
+		Common common;
+		FileHandler::CProcessingFileReader writer;
+		unsigned int k;
 
-	// Set the directory where we're working in...
-	post.m_exePath.Format(common.m_exePath);
+		// Set the directory where we're working in...
+		post.m_exePath.Format(common.m_exePath);
 
-	// set the directory to which we want to copy the settings
-	confCopyDir.Format("%s\\copiedConfiguration\\", (const char*)g_userSettings.m_outputDirectory);
+		// set the directory to which we want to copy the settings
+		confCopyDir.Format("%s/copiedConfiguration/", (const char*)g_userSettings.m_outputDirectory);
 
-	// make sure that the output directory exists
-	if (CreateDirectoryStructure(g_userSettings.m_outputDirectory)) {
-		userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
-		ShowMessage(userMessage);
+		// make sure that the output directory exists
+		if (CreateDirectoryStructure(g_userSettings.m_outputDirectory)) {
+			userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
+			ShowMessage(userMessage);
+			ShowMessage("-- Exit post processing --");
+			return;
+		}
+		if (CreateDirectoryStructure(confCopyDir)) {
+			userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
+			ShowMessage(userMessage);
+			ShowMessage("-- Exit post processing --");
+			return;
+		}
+		// we want to copy the setup and processing files to the confCopyDir
+		processingOutputFile.Format("%s/processing.xml", (const char*)confCopyDir);
+		setupOutputFile.Format("%s/setup.xml", (const char*)confCopyDir);
+
+		Common::ArchiveFile(setupOutputFile);
+		Common::ArchiveFile(processingOutputFile);
+
+		// Copy the settings that we have read in from the 'configuration' directory
+		//	to the output directory to make it easier for the user to remember 
+		//	what has been done...
+		writer.WriteProcessingFile(processingOutputFile, g_userSettings);
+
+		Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);
+		for (k = 0; k < g_setup.m_instrumentNum; ++k) {
+			serial.Format(g_setup.m_instrument[k].m_serial);
+
+			Common::CopyFile(common.m_exePath + "configuration/" + serial + ".exml", confCopyDir + serial + ".exml");
+		}
+
+		// Do the post-processing
+		if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION) {
+			ShowMessage("Warning: Post processing of composition measurements is not yet fully implemented");
+			post.DoPostProcessing_Flux(); // this uses the same code as the flux processing
+		}
+		else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE) {
+			ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
+			post.DoPostProcessing_Strat();
+		}
+		else if (g_userSettings.m_processingMode == PROCESSING_MODE_TROPOSPHERE) {
+			ShowMessage("Post processing of tropospheric measurements is not yet implemented");
+		}
+		else if (g_userSettings.m_processingMode == PROCESSING_MODE_GEOMETRY) {
+			post.DoPostProcessing_Geometry();
+		}
+		else if (g_userSettings.m_processingMode == PROCESSING_MODE_DUALBEAM) {
+
+		}
+		else {
+			post.DoPostProcessing_Flux();
+		}
+
+		// Tell the user that we're done
 		ShowMessage("-- Exit post processing --");
+
 		return;
 	}
-	if (CreateDirectoryStructure(confCopyDir)) {
-		userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
-		ShowMessage(userMessage);
-		ShowMessage("-- Exit post processing --");
+	catch(Poco::FileNotFoundException& e)
+	{
+		std::cout << e.displayText() << std::endl;
 		return;
 	}
-	// we want to copy the setup and processing files to the confCopyDir
-	processingOutputFile.Format("%s\\processing.xml", (const char*)confCopyDir);
-	setupOutputFile.Format("%s\\setup.xml", (const char*)confCopyDir);
-
-	Common::ArchiveFile(setupOutputFile);
-	Common::ArchiveFile(processingOutputFile);
-
-	// Copy the settings that we have read in from the 'configuration' directory
-	//	to the output directory to make it easier for the user to remember 
-	//	what has been done...
-	writer.WriteProcessingFile(processingOutputFile, g_userSettings);
-
-	Common::CopyFile(common.m_exePath + "configuration\\setup.xml", setupOutputFile);
-	for (k = 0; k < g_setup.m_instrumentNum; ++k) {
-		serial.Format(g_setup.m_instrument[k].m_serial);
-
-		Common::CopyFile(common.m_exePath + "configuration\\" + serial + ".exml", confCopyDir + serial + ".exml");
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		return;
 	}
-
-	// Do the post-processing
-	if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION) {
-		ShowMessage("Warning: Post processing of composition measurements is not yet fully implemented");
-		post.DoPostProcessing_Flux(); // this uses the same code as the flux processing
-	}
-	else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE) {
-		ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
-		post.DoPostProcessing_Strat();
-	}
-	else if (g_userSettings.m_processingMode == PROCESSING_MODE_TROPOSPHERE) {
-		ShowMessage("Post processing of tropospheric measurements is not yet implemented");
-	}
-	else if (g_userSettings.m_processingMode == PROCESSING_MODE_GEOMETRY) {
-		post.DoPostProcessing_Geometry();
-	}
-	else if (g_userSettings.m_processingMode == PROCESSING_MODE_DUALBEAM) {
-
-	}
-	else {
-		post.DoPostProcessing_Flux();
-	}
-
-	// Tell the user that we're done
-	ShowMessage("-- Exit post processing --");
-
-	return;
 }
 
 
@@ -364,8 +387,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			if (sscanf(token + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data())) {
 				g_userSettings.m_outputDirectory.Format("%s", buffer.data());
 				// make sure that this ends with a trailing '\'
-				if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '\\') {
-					g_userSettings.m_outputDirectory.AppendFormat("\\");
+				if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/') {
+					g_userSettings.m_outputDirectory.AppendFormat("/");
 				}
 			}
 			token = tokenizer.NextToken();
@@ -377,8 +400,8 @@ void ParseCommandLineOptions(int argc, char* argv[])
 			if (sscanf(token + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data())) {
 				g_userSettings.m_tempDirectory.Format("%s", buffer.data());
 				// make sure that this ends with a trailing '\'
-				if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '\\') {
-					g_userSettings.m_tempDirectory.AppendFormat("\\");
+				if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/') {
+					g_userSettings.m_tempDirectory.AppendFormat("/");
 				}
 			}
 			token = tokenizer.NextToken();

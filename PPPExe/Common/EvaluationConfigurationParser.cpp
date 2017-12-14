@@ -290,7 +290,7 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
 
 		if(Equals(szToken, "fraunhoferSpec", 14)){
 			// Parse the settings for the wavelength calibration
-			this->Parse_StringItem("/fraunhoferSpec", window.fraunhoferRef.m_path);
+			this->Parse_PathItem("/fraunhoferSpec", window.fraunhoferRef.m_path);
 			continue;
 		}
 		
@@ -339,7 +339,7 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "path")){
-			Parse_StringItem("/path", window.ref[nRef].m_path);
+			Parse_PathItem("/path", window.ref[nRef].m_path);
 			continue;
 		}
 
