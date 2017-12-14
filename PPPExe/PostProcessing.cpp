@@ -72,21 +72,25 @@ void CPostProcessing::DoPostProcessing_Flux() {
 	novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
 	novac::CString messageToUser, statFileName, windFileName;
 
+	ShowMessage("--- Prepairing to perform Flux Calculations --- ");
 	// --------------- PREPARING FOR THE PROCESSING -----------
 
 	// Checks that the evaluation is ok and that all settings makes sense.
+	ShowMessage("--- Validating settings --- ");
 	if (CheckSettings()) {
 		ShowMessage("Exiting post processing");
 		return;
 	}
 
 	// Prepare for the evaluation by reading in the reference files
+	ShowMessage("--- Reading References --- ");
 	if (PrepareEvaluation()) {
 		ShowMessage("Exiting post processing");
 		return;
 	}
 
 	// Prepare for the flux-calculation by reading in the wind-field
+	ShowMessage("--- Reading Wind information --- ");
 	if (ReadWindField()) {
 		ShowMessage("Exiting post processing");
 		return;
@@ -678,9 +682,9 @@ int CPostProcessing::ReadWindField() {
 			g_volcanoes.GetVolcanoCode(g_userSettings.m_volcano, name3);
 
 			// Get the path to the executable, so that we know where to start looking
-			path1.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name1);
-			path2.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name2);
-			path3.Format("%sconfiguration\\%s.wxml", (const char*)common.m_exePath, (const char*)name3);
+			path1.Format("%sconfiguration%c%s.wxml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)name1);
+			path2.Format("%sconfiguration%c%s.wxml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)name2);
+			path3.Format("%sconfiguration%c%s.wxml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)name3);
 
 			// check which of the files exists
 			if (IsExistingFile(path1)) {

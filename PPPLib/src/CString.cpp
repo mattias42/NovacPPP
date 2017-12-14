@@ -46,6 +46,22 @@ namespace novac
 
 	// --------------------- Formatting -----------------------
 
+	CString CString::FormatString(const char* format, ...)
+	{
+		CString str;
+
+		std::vector<char> localBuffer(65535);
+
+		va_list args;
+		va_start(args, format);
+		vsprintf(localBuffer.data(), format, args);
+		va_end(args);
+
+		str.m_data = std::string{ localBuffer.data() };
+
+		return str;
+	}
+
 	void CString::Format(const char * format, ...)
 	{
 		std::vector<char> localBuffer(65535);

@@ -33,7 +33,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 
 	// 0. If the file is on the server, then download it first
 	if(Equals(fileName.Left(6), "ftp://")){
-		Communication::CFTPServerConnection *ftp = new Communication::CFTPServerConnection();
+		Communication::CFTPServerConnection ftp;
 		
 		novac::CString tmpFileName;
 		tmpFileName.Format(fileName);
@@ -47,9 +47,8 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 			return 1;
 		}
 
-		if(ftp->DownloadFileFromFTP(fileName, localFileName, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)){
+		if(ftp.DownloadFileFromFTP(fileName, localFileName, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)){
 			ShowMessage("Failed to download wind file from FTP server");
-			delete ftp;
 			return 1;
 		}
 	}else{
@@ -59,6 +58,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 
 	// 1. Open the file
 	if(!file.Open(localFileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)){
+		ShowMessage(std::string("Failed to open wind field file for reading: '") + localFileName.std_str());
 		return 1;
 	}
 	this->m_File		= &file;

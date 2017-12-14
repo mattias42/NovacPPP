@@ -17,6 +17,7 @@
 #include <Poco/Path.h>
 #include <Poco/Logger.h>
 #include <Poco/ConsoleChannel.h>
+#include <Poco/Util/Application.h>
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -33,73 +34,123 @@ std::string s_exeFileName;
 void LoadConfigurations();
 void OnBnClickedCalculateFluxes(int selectedVolcano = 0);
 void CalculateAllFluxes();
-void ParseCommandLineOptions(int argc, char* argv[]);
-int main(int argc, char* argv[])
+void ParseCommandLineOptions(const std::vector<std::string>& arguments);
+
+
+class NovacPPPApplication : public Poco::Util::Application
 {
-	std::cout << "Novac Post Processing Program" << std::endl;
+protected:
+    void initialize(Poco::Util::Application& application){
+        //this->config().setString("optionval", "defaultoption");
+        this->loadConfiguration();
+        Poco::Util::Application::initialize(application);
+    }
 
-	try
-	{
-		Poco::Path executable(argv[0]);
+    void uninitialize(){
+        Poco::Util::Application::uninitialize();
+    }
 
-		s_exePath = executable.parent().toString();
-		s_exeFileName = executable.getFileName();
+    void defineOptions(Poco::Util::OptionSet& optionSet) {
+        Poco::Util::Application::defineOptions(optionSet);
 
-		// Setup the logging
-		Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
-		Poco::Logger& log = Poco::Logger::get("NovacPPP");
+        /* optionSet.addOption(
+                Poco::Util::Option("optionval", "", "Some value")
+                        .required(false)
+                        .repeatable(true)
+                        .argument("<the value>", true)
+                        .callback(Poco::Util::OptionCallback<OptionExample>(this, &OptionExample::handleMyOpt))
+        ); */
+    }
 
-		// Read the configuration files
-		std::cout << " Loading configuration" << std::endl;
-		LoadConfigurations();
+    void handleMyOpt(const std::string &name, const std::string &value) {
+        std::cout << "Setting option " << name << " to " << value << std::endl;
+        this->config().setString(name, value);
+        std::cout << "The option is now " << this->config().getString(name) << std::endl;
+    }
 
-		// Get the options from the command line
-		std::cout << " Getting command line arguments" << std::endl;
-		ParseCommandLineOptions(argc, argv);
+    int main(const std::vector<std::string> &arguments) {
+		std::cout << "Novac Post Processing Program" << std::endl;
 
-		// Start calculating the fluxes, this is the old button handler
-		std::cout << " Setup done: starting calculations" << std::endl;
-		OnBnClickedCalculateFluxes();
+		try
+		{
+			auto& application = Poco::Util::Application::instance();
+			Poco::Path executable(application.commandPath());
+
+			s_exePath = executable.parent().toString();
+			s_exeFileName = executable.getFileName();
+
+			// Setup the logging
+			Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
+			Poco::Logger& log = Poco::Logger::get("NovacPPP");
+			ShowMessage(novac::CString::FormatString(" Executing %s in '%s'", s_exeFileName.c_str(), s_exePath.c_str()));
+
+			// Read the configuration files
+			std::cout << " Loading configuration" << std::endl;
+			LoadConfigurations();
+
+			// Get the options from the command line
+			std::cout << " Getting command line arguments" << std::endl;
+			ParseCommandLineOptions(arguments);
+
+			// Start calculating the fluxes, this is the old button handler
+			std::cout << " Setup done: starting calculations" << std::endl;
+			OnBnClickedCalculateFluxes();
+		}
+		catch(Poco::FileNotFoundException& e)
+		{
+			std::cout << e.displayText() << std::endl;
+			return 1;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+			return 1;
+		}
+
+		return 0;
 	}
-	catch(Poco::FileNotFoundException& e)
-	{
-		std::cout << e.displayText() << std::endl;
-		return 1;
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		return 1;
-	}
+};
 
-	return 0;
-}
+POCO_APP_MAIN(NovacPPPApplication)
+
 
 void LoadConfigurations()
 {
 	// Declaration of variables and objects
 	Common common;
-	novac::CString setupPath, processingPath, evalConfPath, message, volcanoName;
+	novac::CString setupPath, processingPath, evalConfPath, volcanoName;
 	FileHandler::CSetupFileReader reader;
 	FileHandler::CEvaluationConfigurationParser eval_reader;
 	FileHandler::CProcessingFileReader processing_reader;
 
 	//Read configuration from file setup.xml */	
-	setupPath.Format("%sconfiguration/setup.xml", (const char*)common.m_exePath);
+	setupPath.Format("%sconfiguration%csetup.xml", (const char*)common.m_exePath, Poco::Path::separator());
 	if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
 	{
 		throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
+	{
+		novac::CString message;
+		message.Format(" Parsed %s, %d instruments found. (", setupPath.c_str(), g_setup.m_instrumentNum);
+		for(int k = 0; k < (int)g_setup.m_instrumentNum; ++k)
+		{
+			message.AppendFormat("%s, ", g_setup.m_instrument[k].m_serial.c_str());
+		}
+		message.AppendFormat(")");
+		ShowMessage(message);
+	}
+	throw std::logic_error("Stanna pressarna!");
+
 
 	// Read the users options from file processing.xml
-	processingPath.Format("%sconfiguration/processing.xml", (const char*)common.m_exePath);
+	processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)common.m_exePath, Poco::Path::separator());
 	if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
 		throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
 	}
 
 	// Check if there is a configuration file for every spectrometer serial number
-	for (int k = 0; k < g_setup.m_instrumentNum; ++k) {
-		evalConfPath.Format("%sconfiguration/%s.exml", (const char*)common.m_exePath, (const char*)g_setup.m_instrument[k].m_serial);
+	for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k) {
+		evalConfPath.Format("%sconfiguration%c%s.exml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)g_setup.m_instrument[k].m_serial);
 
 		if (IsExistingFile(evalConfPath))
 			eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
@@ -245,7 +296,7 @@ void CalculateAllFluxes() {
 }
 
 
-void ParseCommandLineOptions(int argc, char* argv[])
+void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 {
 	char seps[] = " \t";
 	std::vector<char> buffer(16384, 0);
@@ -254,9 +305,9 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 	// a local copy of the command line parameters
 	novac::CString commandLine;
-	for (int arg = 1; arg < argc; ++arg)
+	for (size_t arg = 1; arg < arguments.size(); ++arg)
 	{
-		commandLine = commandLine + " " + novac::CString(argv[arg]);
+		commandLine = commandLine + " " + novac::CString(arguments[arg]);
 	}
 
 	// Go through the received input parameters and set the approprate option
@@ -420,7 +471,7 @@ void ParseCommandLineOptions(int argc, char* argv[])
 
 		// The processing mode
 		if (Equals(token, FLAG(str_processingMode), strlen(FLAG(str_processingMode)))) {
-			sscanf(token + strlen(FLAG(str_processingMode)), "%d", &g_userSettings.m_processingMode);
+			sscanf(token + strlen(FLAG(str_processingMode)), "%d", (int*)&g_userSettings.m_processingMode);
 			token = tokenizer.NextToken();
 			continue;
 		}

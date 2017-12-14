@@ -43,6 +43,10 @@ namespace novac
 
 		// --------------------- Formatting -----------------------
 
+
+		/** Constructs a new string using the common printf formatting. */
+		static CString FormatString(const char* format, ...);
+
 		/** Constructs the contents of this string using the common printf formatting. */
 		void Format(const char* format, ...);
 

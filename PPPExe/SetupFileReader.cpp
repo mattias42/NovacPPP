@@ -19,6 +19,7 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Conf
 
 	// 1. Open the file
 	if(!file.Open(filename, novac::CStdioFile::ModeFlag::modeRead | novac::CStdioFile::ModeFlag::typeText)){
+		ShowMessage(std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'"));
 		return FAIL;
 	}
 	this->m_File = &file;

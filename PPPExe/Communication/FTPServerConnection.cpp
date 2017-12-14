@@ -15,6 +15,7 @@
 #include <PPPLib/ThreadUtils.h>
 #include <Poco/Net/FTPClientSession.h>
 #include <Poco/Net/NetException.h>
+#include <Poco/Path.h>
 
 #include <fstream>
 #include <chrono>
@@ -318,7 +319,7 @@ void DownloadFile(Poco::Net::FTPClientSession& ftp, const novac::CFileInfo& file
 	if (novac::CFileUtils::GetInfoFromFileName(fileInfo.fileName, start, serial, channel, mode)) {
 		if (start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start) {
 			// the creation date is between the start and the stop dates. Download the file
-			localFileName.Format("%s\\%s", (const char*)g_userSettings.m_tempDirectory, fileInfo.fileName.c_str());
+			localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), fileInfo.fileName.c_str());
 			if (IsExistingFile(localFileName)) {
 				userMessage.Format("File %s is already downloaded", (const char*)localFileName);
 				ShowMessage(userMessage);
