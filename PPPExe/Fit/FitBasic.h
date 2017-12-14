@@ -235,7 +235,7 @@ namespace MathFit
 #define MATHFIT_ASSERT(a)	ASSERT(a)
 #endif // defined(MATHFIT_USEMATHFIT_ASSERT)
 #else
-#define MATHFIT_ASSERT(a)
+#define MATHFIT_ASSERT(a) ASSERT(a)
 #endif // defined(_DEBUG)
 }
 

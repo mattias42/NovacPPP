@@ -457,7 +457,7 @@ namespace MathFit
 		TFitData* GetSafePtr() const
 		{
 			MATHFIT_ASSERT(mLength > 0);
-			// MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mLength, TRUE));
+			//MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mLength, TRUE));
 
 			return mData;
 		}
@@ -471,7 +471,7 @@ namespace MathFit
 		*/
 		TFitData GetAt(int iIndex) const
 		{
-			MATHFIT_ASSERT(iIndex >= 0 && iIndex < mLength);
+			MATHFIT_ASSERT(iIndex >= 0 && iIndex * mStepSize < mLength);
 
 			return GetSafePtr()[iIndex * mStepSize];
 		}

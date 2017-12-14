@@ -287,6 +287,7 @@ namespace MathFit
 				const TFitData fYHigh = mYData.GetAt(iIndexHigh);
 
 				// get preprepared coefficients
+				const int mHSize = mH.GetSize();
 				const TFitData fH = mH.GetAt(iIndexHigh);
 
 				const TFitData fYDeltaLow = mDeltaHSquareLow.GetAt(iIndexHigh);

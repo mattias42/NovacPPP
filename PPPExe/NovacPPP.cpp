@@ -129,17 +129,7 @@ void LoadConfigurations()
 	{
 		throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
 	}
-	{
-		novac::CString message;
-		message.Format(" Parsed %s, %d instruments found. (", setupPath.c_str(), g_setup.m_instrumentNum);
-		for(int k = 0; k < (int)g_setup.m_instrumentNum; ++k)
-		{
-			message.AppendFormat("%s, ", g_setup.m_instrument[k].m_serial.c_str());
-		}
-		message.AppendFormat(")");
-		ShowMessage(message);
-	}
-	throw std::logic_error("Stanna pressarna!");
+	ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found. (", setupPath.c_str(), g_setup.m_instrumentNum));
 
 
 	// Read the users options from file processing.xml
