@@ -6,9 +6,7 @@ set(NPP_FIT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/ApertureFunction.h
     ${CMAKE_CURRENT_LIST_DIR}/BandedMatrix.h
     ${CMAKE_CURRENT_LIST_DIR}/BSpline.h
-    ${CMAKE_CURRENT_LIST_DIR}/BSplineD.cxx
     ${CMAKE_CURRENT_LIST_DIR}/BSplineD.h
-    ${CMAKE_CURRENT_LIST_DIR}/BSplineF.cxx
     ${CMAKE_CURRENT_LIST_DIR}/BSplineF.h
     ${CMAKE_CURRENT_LIST_DIR}/BSplineImpl.h
     ${CMAKE_CURRENT_LIST_DIR}/ConstFunction.h

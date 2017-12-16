@@ -10,10 +10,9 @@
 #include "ParamFunction.h"
 #include "CubicSplineFunction.h"
 
-#ifdef _MSC_VER
+#if _MSC_VER > 1000
 #pragma once
-#pragma warning (push, 3)
-#endif
+#endif // _MSC_VER > 1000
 
 namespace MathFit
 {
@@ -84,7 +83,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
+		virtual bool SetData(CVector& vXValues, CVector& vYValues, CVector& vError)
 		{
 			// first copy data into internal buffers
 			if(!IDataSet::SetData(vXValues, vYValues, vError))
@@ -109,7 +108,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(const CVector& vXValues, const CVector& vYValues)
+		virtual bool SetData(CVector& vXValues, CVector& vYValues)
 		{
 			CVector vError(vYValues.GetSize());
 			vError.Wedge(1, 0);
@@ -332,7 +331,7 @@ namespace MathFit
 		virtual void GetNonlinearDyDa(CVector& vXValues, CMatrix& mDyDa)
 		{
 			const int iParamSize = mNonlinearParams.GetSize();
-			// const int iXSize = vXValues.GetSize();
+			const int iXSize = vXValues.GetSize();
 
 			int iParamID;
 			for(iParamID = 0; iParamID < iParamSize; iParamID++)
@@ -643,9 +642,4 @@ namespace MathFit
 		TFitData mFitRangeLow;
 	};
 }
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
-
 #endif // !defined(AFX_DOASFUNCTIONS_H__F778D400_2C41_4092_8BA9_F789F5766579__INCLUDED_)

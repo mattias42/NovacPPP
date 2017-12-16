@@ -9,10 +9,9 @@
 
 #include "ParamFunction.h"
 
-#ifdef _MSC_VER
+#if _MSC_VER > 1000
 #pragma once
-#pragma warning (push, 3)
-#endif
+#endif // _MSC_VER > 1000
 
 namespace MathFit
 {
@@ -83,7 +82,7 @@ namespace MathFit
 		*
 		* @return	TRUE if successful, FALSE otherwise.
 		*/
-		virtual bool SetNonlinearParameter(const CVector& vParam)
+		virtual bool SetNonlinearParameter(CVector& vParam)
 		{
 			// keep internal copy
 			mNonlinearParams.SetParameters(vParam);
@@ -143,7 +142,7 @@ namespace MathFit
 		*
 		* @param vError	The error vector.
 		*/
-		virtual void SetNonlinearError(const CVector& vError)
+		virtual void SetNonlinearError(CVector& vError)
 		{
 			mNonlinearParams.SetError(vError);
 
@@ -212,9 +211,4 @@ namespace MathFit
 		IParamFunction& mOperand;
 	};
 }
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
-
 #endif

@@ -16,11 +16,11 @@
 #define EPSILON			1e-5
 #define CHISQUAREMIN	1e-20
 
-#ifdef _MSC_VER
+#if _MSC_VER > 1000
 #pragma once
-#pragma warning (push, 3)
-#endif
+#endif // _MSC_VER > 1000
 
+#pragma warning (push, 3)
 
 namespace MathFit
 {
@@ -388,8 +388,5 @@ namespace MathFit
 	};
 }
 
-#ifdef _MSC_VER
 #pragma warning (pop)
-#endif
-
 #endif

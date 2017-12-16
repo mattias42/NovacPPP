@@ -21,9 +21,7 @@
 #include "FitBasic.h"
 #include "FitException.h"
 
-#ifdef _MSC_VER
 #pragma warning (push, 3)
-#endif
 
 namespace MathFit
 {
@@ -118,7 +116,7 @@ namespace MathFit
 		* @param iOffset	The offset from which the subvector should start
 		* @param iSize		The number of elements in the subvector.
 		*/
-		CVector(const CVector& vSecond, int iOffset, int iSize)
+		CVector(CVector& vSecond, int iOffset, int iSize)
 		{
 			MATHFIT_ASSERT(iOffset + iSize <= vSecond.GetSize());
 			MATHFIT_ASSERT(iSize > 0);
@@ -310,33 +308,6 @@ namespace MathFit
 			return *this;
 		}
 
-
-		/**
-		* Attaches the content of another CVector object to the current one
-		*
-		* @param vSecond		The originating object, this takes ownership of the data.
-		*
-		* @return	A reference to the current object.
-		*/
-		CVector& Attach(CVector&& vSecond)
-		{
-			// first clear the old data
-			if(mData && mAutoRelease)
-				delete mData;
-
-			// get the data pointer
-			mData = vSecond.mData;
-			mLength = vSecond.mLength;
-			mStepSize = vSecond.mStepSize;
-			{
-				// so the current object will no take care about destruction of the vector data
-				mAutoRelease = vSecond.mAutoRelease;
-				vSecond.mAutoRelease = false;
-			}
-
-			return *this;
-		}		
-
 		/**
 		* Attaches the content of another CVector object to the current one
 		*
@@ -393,7 +364,7 @@ namespace MathFit
 		*
 		* @return	A vector object representing the selected subvector.
 		*/
-		CVector SubVector(int iOffset, int iSize) const
+		CVector SubVector(int iOffset, int iSize)
 		{
 			// create new subclassed vector object
 			return CVector(*this, iOffset, iSize);
@@ -457,7 +428,7 @@ namespace MathFit
 		TFitData* GetSafePtr() const
 		{
 			MATHFIT_ASSERT(mLength > 0);
-			//MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mLength, TRUE));
+			// MATHFIT_ASSERT(_CrtIsValidPointer(mData, sizeof(mData[0]) * mLength, TRUE));
 
 			return mData;
 		}
@@ -471,7 +442,7 @@ namespace MathFit
 		*/
 		TFitData GetAt(int iIndex) const
 		{
-			MATHFIT_ASSERT(iIndex >= 0 && iIndex * mStepSize < mLength);
+			MATHFIT_ASSERT(iIndex >= 0 && iIndex < mLength);
 
 			return GetSafePtr()[iIndex * mStepSize];
 		}
@@ -1246,8 +1217,5 @@ namespace MathFit
 	};
 }
 
-#ifdef _MSC_VER
 #pragma warning (pop)
-#endif
-
 #endif

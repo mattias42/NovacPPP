@@ -9,10 +9,9 @@
 
 #include "ParamFunction.h"
 
-#ifdef _MSC_VER
+#if _MSC_VER > 1000
 #pragma once
-#pragma warning (push, 3)
-#endif
+#endif // _MSC_VER > 1000
 
 namespace MathFit
 {
@@ -65,7 +64,7 @@ namespace MathFit
 		*
 		* @exception	CBSplineFailed
 		*/
-		CDiscreteFunction(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
+		CDiscreteFunction(CVector& vXValues, CVector& vYValues, CVector& vError)
 		{
 			SetData(vXValues, vYValues, vError);
 		}
@@ -79,7 +78,7 @@ namespace MathFit
 		*
 		* @return TRUE is successful, false if the vector sizes do not match.
 		*/
-		virtual bool SetData(const CVector& vXValues, const CVector& vYValues)
+		virtual bool SetData(CVector& vXValues, CVector& vYValues)
 		{
 			// create a neutral error vector
 			CVector vError(vXValues.GetSize());
@@ -99,7 +98,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints::SetData
 		*/
-		virtual bool SetData(const CVector& vXValues, const CVector& vYValues, const CVector& vError)
+		virtual bool SetData(CVector& vXValues, CVector& vYValues, CVector& vError)
 		{
 			// first copy data into internal buffers
 			if(!IParamFunction::SetData(vXValues, vYValues, vError))
@@ -260,9 +259,4 @@ namespace MathFit
 		CVector mDiscreteSlopes;
 	};
 }
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
-
 #endif

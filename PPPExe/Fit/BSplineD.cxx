@@ -31,16 +31,13 @@
  * so that we can explicitly instantiate and export a template for
  * a specific type.
  */
-//#if WIN32
-//# define BSPLINE_DLL_ __declspec(dllexport)
-//#endif
+#if WIN32
+# define BSPLINE_DLL_ __declspec(dllexport)
+#endif
 
 #include "BSpline.cxx"
-namespace MathFit
-{
-//template class BSPLINE_DLL_ BSplineBase<double>;
-//template class BSPLINE_DLL_ BSpline<double>;
-template class BSplineBase<double>;
-template class BSpline<double>;
-}
+
+template class BSPLINE_DLL_ BSplineBase<double>;
+template class BSPLINE_DLL_ BSpline<double>;
+
 /* That's it! */

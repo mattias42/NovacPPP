@@ -29,13 +29,14 @@
  * assume only the implementation is wanted and empty the DLL macro
  * before including the interface.
  */
-#if WIN32
 #pragma warning(push)
 #pragma warning(disable:4244)
-#endif
 
-#ifndef BSPLINE_DLL_
-#define BSPLINE_DLL_
+#if WIN32
+# ifndef BSPLINE_DLL_
+#  define BSPLINE_DLL_
+# endif
+#endif /* WIN32 */
 
 #include "BSpline.h"
 #include "BandedMatrix.h"
@@ -47,8 +48,6 @@
 
 #include <assert.h>
 
-namespace MathFit
-{
 template <class T>
 class Matrix : public BandedMatrix<T>
 {
@@ -56,13 +55,13 @@ public:
     Matrix &operator += (const Matrix &B)
     {
 		Matrix &A = *this;
-        typename Matrix::size_type M = A.num_rows();
-		typename Matrix::size_type N = A.num_cols();
+        Matrix::size_type M = A.num_rows();
+		Matrix::size_type N = A.num_cols();
 		
 		assert(M==B.num_rows());
 		assert(N==B.num_cols());
 		
-		typename Matrix::size_type i,j;
+		Matrix::size_type i,j;
 		for (i=0; i<M; i++)
 			for (j=0; j<N; j++)
 				A[i][j] += B[i][j];
@@ -283,11 +282,11 @@ inline double BSplineBase<T>::Beta (int m)
  * of x data points in this BSplineBase, create a BSpline
  * object which contains the smoothed curve for the y array.
  */
-//template <class T>
-//BSpline<T>* BSplineBase<T>::apply (const T *y)
-//{
-//    return new BSpline<T> (*this, y);
-//}
+template <class T>
+BSpline<T>* BSplineBase<T>::apply (const T *y)
+{
+    return new BSpline<T> (*this, y);
+}
 
 /*
  * Evaluate the closed basis function at node m for value x,
@@ -393,7 +392,7 @@ double BSplineBase<T>::qDelta (int m1, int m2)
 		return 0.0;
 	
     double q = 0;
-    for (int m = std::max (m1-2,0); m < std::min (m1+2, M); ++m)
+    for (int m = max (m1-2,0); m < min (m1+2, M); ++m)
 		q += qparts[K-1][m2-m1][m-m1+2];
     return q * alpha;
 }
@@ -476,7 +475,7 @@ void BSplineBase<T>::addP ()
 		
 		// Loop over the upper triangle of nonzero basis functions,
 		// and add in the products on each side of the diagonal.
-		for (m = std::max(0, mx-1); m <= std::min(M, mx+2); ++m)
+		for (m = max(0, mx-1); m <= min(M, mx+2); ++m)
 		{
 			//float pn;
 			//float pm = Basis (m, x);
@@ -486,7 +485,7 @@ void BSplineBase<T>::addP ()
 			double pm = Basis (m, x);
 			double sum = pm * pm;
 			P[m][m] += sum;
-			for (n = m+1; n <= std::min(M, mx+2); ++n)
+			for (n = m+1; n <= min(M, mx+2); ++n)
 			{
 				pn = Basis (n, x);
 				sum = pm * pn;
@@ -608,12 +607,12 @@ const T* BSplineBase<T>::nodes (int *nn)
 		*nn = base->Nodes.size();
 	
     assert (base->Nodes.size() == (unsigned)(M+1));
-    return base->Nodes.data();
+    return base->Nodes.begin();
 }
 
 template <class T> std::ostream &operator<< (std::ostream &out, const std::vector<T> &c)
 {
-    for (typename std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
+    for (std::vector<T>::const_iterator it = c.begin(); it < c.end(); ++it)
 		out << *it << ", ";
     out << std::endl;
     return out;
@@ -663,71 +662,71 @@ BSpline<T>::BSpline (BSplineBase<T> &bb, const T *y) :
 template <class T>
 bool BSpline<T>::solve (const T *y)
 {
-    if (! this->OK)
+    if (! OK)
 		return false;
 	
     // Any previously calculated curve is now invalid.
     s->spline.clear ();
-    this->OK = false;
+    OK = false;
 	
     // Given an array of data points over x and its precalculated
     // P+Q matrix, calculate the b vector and solve for the coefficients.
     std::vector<T> &B = s->A;
     std::vector<T> &A = s->A;
     A.clear ();
-    A.resize (this->M+1);
+    A.resize (M+1);
 	
-    if (this->Debug()) std::cerr << "Solving for B..." << std::endl;
+    if (Debug()) std::cerr << "Solving for B..." << std::endl;
 	
     // Find the mean of these data
     mean = 0.0;
     int i;
-    for (i = 0; i < this->NX; ++i)
+    for (i = 0; i < NX; ++i)
     {
 		mean += y[i];
     }
-    mean = mean / (double)this->NX;
-    if (this->Debug())
+    mean = mean / (double)NX;
+    if (Debug())
 		std::cerr << "Mean for y: " << mean << std::endl;
 	
     int mx, m, j;
-    for (j = 0; j < this->NX; ++j)
+    for (j = 0; j < NX; ++j)
     {
 		// Which node does this put us in?
-		T &xj = this->base->X[j];
+		T &xj = base->X[j];
 		T yj = y[j] - mean;
-		mx = (int)((xj - this->xmin) / this->DX);
+		mx = (int)((xj - xmin) / DX);
 		
-		for (m = std::max(0,mx-1); m <= std::min(mx+2,this->M); ++m)
+		for (m = max(0,mx-1); m <= min(mx+2,M); ++m)
 		{
-			B[m] += yj * this->Basis (m, xj);
+			B[m] += yj * Basis (m, xj);
 		}
     }
 	
-    if (this->Debug() && this->M < 30)
+    if (Debug() && M < 30)
     {
 		std::cerr << "Solution a for (P+Q)a = b" << std::endl;
 		std::cerr << " b: " << B << std::endl;
     }
 	
     // Now solve for the A vector in place.
-    if (LU_solve_banded (this->base->Q, A, 3) != 0)
+    if (LU_solve_banded (base->Q, A, 3) != 0)
     {
-		if (this->Debug())
+		if (Debug())
 			std::cerr << "LU_solve_banded() failed." << std::endl;
     }
     else
     {
-		this->OK = true;
-		if (this->Debug()) std::cerr << "Done." << std::endl;
-		if (this->Debug() && this->M < 30)
+		OK = true;
+		if (Debug()) std::cerr << "Done." << std::endl;
+		if (Debug() && M < 30)
 		{
 			std::cerr << " a: " << A << std::endl;
 			std::cerr << "LU factor of (P+Q) = " << std::endl 
-				<< this->base->Q << std::endl;
+				<< base->Q << std::endl;
 		}
     }
-    return this->OK;
+    return OK;
 }
 
 template <class T>
@@ -739,8 +738,8 @@ BSpline<T>::~BSpline()
 template <class T>
 T BSpline<T>::coefficient (int n)
 {
-    if (this->OK)
-		if (0 <= n && n <= this->M)
+    if (OK)
+		if (0 <= n && n <= M)
 			return s->A[n];
 	return 0;
 }
@@ -749,12 +748,12 @@ template <class T>
 T BSpline<T>::evaluate (T x)
 {
     double y = 0;
-    if (this->OK)
+    if (OK)
     {
-		int n = (int)((x - this->xmin)/this->DX);
-		for (int i = std::max(0,n-1); i <= std::min(this->M,n+2); ++i)
+		int n = (int)((x - xmin)/DX);
+		for (int i = max(0,n-1); i <= min(M,n+2); ++i)
 		{
-			y += s->A[i] * this->Basis (i, x);
+			y += s->A[i] * Basis (i, x);
 		}
 		y += mean;
     }
@@ -765,12 +764,12 @@ template <class T>
 T BSpline<T>::slope (T x)
 {
     T dy = 0;
-    if (this->OK)
+    if (OK)
     {
-		int n = (int)((x - this->xmin)/this->DX);
-		for (int i = std::max(0,n-1); i <= std::min(this->M,n+2); ++i)
+		int n = (int)((x - xmin)/DX);
+		for (int i = max(0,n-1); i <= min(M,n+2); ++i)
 		{
-			dy += s->A[i] * this->DBasis (i, x);
+			dy += s->A[i] * DBasis (i, x);
 		}
     }
     return dy;
@@ -779,30 +778,24 @@ T BSpline<T>::slope (T x)
 template <class T>
 const T *BSpline<T>::curve (int *nx)
 {
-    if (! this->OK)
+    if (! OK)
 		return 0;
 	
     // If we already have the curve calculated, don't do it again.
     std::vector<T> &spline = s->spline;
     if (spline.size() == 0)
     {
-		spline.reserve (this->M+1);
-		for (int n = 0; n <= this->M; ++n)
+		spline.reserve (M+1);
+		for (int n = 0; n <= M; ++n)
 		{
-			T x = this->xmin + (n * this->DX);
+			T x = xmin + (n * DX);
 			spline.push_back (evaluate (x));
 		}
     }
 	
     if (nx)
 		*nx = spline.size();
-    return spline.data();
-}
+    return spline.begin();
 }
 
-#endif  // BSPLINE_DLL_
-
-#if WIN32
 #pragma warning(pop)
-#endif
-

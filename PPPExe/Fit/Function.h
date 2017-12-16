@@ -13,9 +13,9 @@
 #include "Matrix.h"
 #include "DataSet.h"
 
-#ifdef _MSC_VER
+#if _MSC_VER > 1000
 #pragma once
-#endif
+#endif // _MSC_VER > 1000
 
 namespace MathFit
 {
@@ -44,7 +44,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints constructor
 		*/
-		IFunction(const CVector& vXValues, const CVector& vYValues) : IDataSet(vXValues, vYValues)
+		IFunction(CVector& vXValues, CVector& vYValues) : IDataSet(vXValues, vYValues)
 		{
 		}
 
@@ -57,7 +57,7 @@ namespace MathFit
 		*
 		* @see	IDataPoints constructor
 		*/
-		IFunction(const CVector& vXValues, const CVector& vYValues, const CVector& vError) : IDataSet(vXValues, vYValues, vError)
+		IFunction(CVector& vXValues, CVector& vYValues, CVector& vError) : IDataSet(vXValues, vYValues, vError)
 		{
 		}
 

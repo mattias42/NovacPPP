@@ -9,11 +9,9 @@
 
 #include "Minimizer.h"
 
-#ifdef _MSC_VER
-#pragma warning (push, 3)
+#if _MSC_VER > 1000
 #pragma once
-#endif
-
+#endif // _MSC_VER > 1000
 
 namespace MathFit
 {
@@ -171,9 +169,4 @@ namespace MathFit
 		IMinimizer& mLinearMinimizer;
 	};
 }
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
-
 #endif

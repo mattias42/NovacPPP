@@ -264,7 +264,7 @@ namespace MathFit
   }
 
   /*
-  * Return the correct coneAngle value given the node index.  The value depends
+  * Return the correct beta value given the node index.  The value depends
   * on the node index and the current boundary condition type.
   */
   template <class T>

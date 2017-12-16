@@ -1,7 +1,7 @@
 #if !defined(CUBICSPLINEFUNCTION_H_020817)
 #define CUBICSPLINEFUNCTION_H_020817
 
-#include "../Fit/Function.h"
+#include "Function.h"
 
 namespace MathFit
 {
@@ -287,7 +287,6 @@ namespace MathFit
 				const TFitData fYHigh = mYData.GetAt(iIndexHigh);
 
 				// get preprepared coefficients
-				const int mHSize = mH.GetSize();
 				const TFitData fH = mH.GetAt(iIndexHigh);
 
 				const TFitData fYDeltaLow = mDeltaHSquareLow.GetAt(iIndexHigh);
