@@ -339,11 +339,9 @@ namespace MathFit
 			CVector& vNonlinearParams = mNonlinearParams.GetParameter();
 
 			const int iParamSize = mNonlinearParams.GetSize();
-			const int iXSize = vXValues.GetSize();
 
 			int iAutoTuneCount = 0;
-			int iParamID;
-			for(iParamID = 0; iParamID < iParamSize; iParamID++)
+			for(int iParamID = 0; iParamID < iParamSize; iParamID++)
 			{
 				CVector& vParamColumn = mDyDa.GetCol(iParamID);
 

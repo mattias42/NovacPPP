@@ -17,7 +17,9 @@
 
 using namespace MathFit;
 
+#ifdef _MSC_VER
 #pragma warning (push, 3)
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -1544,4 +1546,6 @@ void CBasicMath::InverseFFT(double* fReal, double* fImaginary, double* fData, in
 }
 */
 
+#ifdef _MSC_VER
 #pragma warning (pop)
+#endif

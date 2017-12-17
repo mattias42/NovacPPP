@@ -331,11 +331,11 @@ namespace MathFit
 		virtual void GetNonlinearDyDa(CVector& vXValues, CMatrix& mDyDa)
 		{
 			const int iParamSize = mNonlinearParams.GetSize();
-			const int iXSize = vXValues.GetSize();
 
-			int iParamID;
-			for(iParamID = 0; iParamID < iParamSize; iParamID++)
+			for(int iParamID = 0; iParamID < iParamSize; iParamID++)
+			{
 				GetNonlinearParamSlopes(vXValues, mDyDa.GetCol(iParamID), iParamID);
+			}
 		}
 
 		/**
