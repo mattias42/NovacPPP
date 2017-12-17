@@ -1,6 +1,5 @@
 #pragma once
 
-
 // the maximum length of any single spectrum
 #define MAX_SPECTRUM_LENGTH 4096L
 
@@ -9,7 +8,6 @@
 
 // definition used for storing the spectral data
 typedef double SpecData;
-
 
 #include <PPPLib/Spectra/SpectrumInfo.h>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../GPSData.h"
+#include <PPPLib/GPSData.h>
 #include <PPPLib/DateTime.h>
-#include "../SpectrometerModel.h"
+#include <PPPLib/SpectrometerModel.h>
 #include <PPPLib/CString.h>
 
 /** <b>CSpectrumInfo</b> is a class that contains all auxilliary information about

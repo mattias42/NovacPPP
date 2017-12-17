@@ -1,13 +1,7 @@
 #pragma once
 
-// #include <afxtempl.h>
-
-#include "SpectrumIO.h"
+#include <PPPLib/Spectra/SpectrumIO.h>
 #include <PPPLib/CArray.h>
-
-// #include "../../Evaluation/EvaluationResult.h"
-// #include "../../Meteorology/WindField.h"
-
 #include <PPPLib/CString.h>
 
 namespace FileHandler

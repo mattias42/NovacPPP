@@ -11,14 +11,14 @@ set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumInfo.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumIO.h
-    PARENT_SCOPE)
+)
     
 set(PPPLIB_SPECTRA_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/Spectrum.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
-    PARENT_SCOPE)
+)
 
 
 
@@ -26,14 +26,12 @@ set(PPPLIB_SPECTRUM_FORMAT_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/MKPack.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/STDFile.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/TXTFile.h
-    PARENT_SCOPE
 )
 
 set(PPPLIB_SPECTRUM_FORMAT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/MKPack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
-    PARENT_SCOPE
 )
 
 # Add the different components
