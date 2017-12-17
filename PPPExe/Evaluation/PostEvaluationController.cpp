@@ -238,7 +238,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	// 0a. Write the additional scan-information to the evaluation log
 	FILE *f = fopen(txtFile, "w");
 	if (f != nullptr) {
-		fprintf(f, "%s", string);
+		fprintf(f, "%s", string.c_str());
 		fprintf(f, "\n");
 	}
 
@@ -278,7 +278,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 	// 0.1b Write the flux-information to the evaluation-log
 	if (f != nullptr) {
-		fprintf(f, string);
+		fprintf(f, string.c_str());
 		fprintf(f, "\n");
 	}
 
@@ -301,7 +301,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 	// 1a. Write the header to the log file
 	if (f != nullptr) {
-		fprintf(f, "%s", string);
+		fprintf(f, "%s", string.c_str());
 		fprintf(f, "\n<spectraldata>\n");
 	}
 
@@ -348,16 +348,16 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	// 2b. Write it all to the evaluation log file
 	if (f != nullptr) {
 		if (strlen(string1) > 0) {
-			fprintf(f, "%s", string1); fprintf(f, "\n");
+			fprintf(f, "%s", string1.c_str()); fprintf(f, "\n");
 		}
 		if (strlen(string2) > 0) {
-			fprintf(f, "%s", string2); fprintf(f, "\n");
+			fprintf(f, "%s", string2.c_str()); fprintf(f, "\n");
 		}
 		if (strlen(string3) > 0) {
-			fprintf(f, "%s", string3); fprintf(f, "\n");
+			fprintf(f, "%s", string3.c_str()); fprintf(f, "\n");
 		}
 		if (strlen(string4) > 0) {
-			fprintf(f, "%s", string4); fprintf(f, "\n");
+			fprintf(f, "%s", string4.c_str()); fprintf(f, "\n");
 		}
 	}
 
@@ -373,7 +373,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 		// 3b. Write it all to the evaluation log file
 		if (f != nullptr) {
-			fprintf(f, "%s", string);
+			fprintf(f, "%s", string.c_str());
 			fprintf(f, "\n");
 		}
 	}

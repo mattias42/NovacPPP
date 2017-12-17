@@ -1004,7 +1004,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		string.AppendFormat("\tcompiledate=%s\n",					  __DATE__);
 
 		string.AppendFormat("</scaninformation>\n\n");
-		fprintf(f, string);
+		fprintf(f, "%s", string.c_str());
 
 		// ----------------- Create the flux-information ----------------------
 		wind.GetWindSpeedSource(wsSrc);
@@ -1023,7 +1023,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		//else
 		//	string.AppendFormat("\tcompasssource=user\n");
 		string.AppendFormat("</fluxinfo>\n");
-		fprintf(f, string);
+		fprintf(f, "%s", string.c_str());
 
 		// ----------------------- write the header --------------------------------
 		if(m_instrumentType == INSTR_GOTHENBURG){
@@ -1042,7 +1042,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 		string.AppendFormat("isgoodpoint\toffset\tflag");
 		string.AppendFormat("\n<spectraldata>\n");
 
-		fprintf(f, string);
+		fprintf(f, "%s", string.c_str());
 
 
 		// ------------------- Then write the parameters for each spectrum ---------------------------
@@ -1051,7 +1051,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 			FormatEvaluationResult(&scan.GetSpectrumInfo(itSpectrum), scan.GetResult(itSpectrum), m_instrumentType, 0.0, scan.GetSpecieNum(itSpectrum), string);
 
 			// 3b. Write it to the evaluation log file
-			fprintf(f, string);
+			fprintf(f, "%s", string.c_str());
 			fprintf(f, "\n");
 		}
 		fprintf(f, "</spectraldata>\n");

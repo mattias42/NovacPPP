@@ -47,7 +47,7 @@ RETURN_CODE CSTDFile::ReadSpectrum(CSpectrum &spec, const novac::CString &fileNa
 		fclose(f); return FAIL;
 	}
 	long tmpLength = 0L;
-	if(1 > sscanf(buffer, "%d", &tmpLength)){
+	if(1 > sscanf(buffer, "%ld", &tmpLength)){
 		fclose(f); return FAIL;
 	}
 	spec.m_length = std::min(tmpLength, MAX_SPECTRUM_LENGTH);

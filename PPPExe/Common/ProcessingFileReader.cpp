@@ -530,7 +530,7 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
 	}
 	else if (settings.m_skyOption == SKY_INDEX) {
 		fprintf(f, "\t\t<option>Index</option>\n");
-		fprintf(f, "\t\t<value>%d</value>\n", settings.m_skyIndex);
+		fprintf(f, "\t\t<value>%ld</value>\n", settings.m_skyIndex);
 	}
 	else if (settings.m_skyOption == SKY_USER) {
 		fprintf(f, "\t\t<option>User</option>\n");
