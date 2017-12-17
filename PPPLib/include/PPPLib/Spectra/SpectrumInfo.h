@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../GPSData.h"
+#include <PPPLib/DateTime.h>
 #include "../SpectrometerModel.h"
 #include <PPPLib/CString.h>
 

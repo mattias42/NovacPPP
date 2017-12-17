@@ -1,5 +1,5 @@
 #include "EvaluationLogFileHandler.h"
-#include "../Common/SpectrometerModel.h"
+#include <PPPLib/SpectrometerModel.h>
 #include "../Common/Version.h"
  
  #include <PPPLib/CSingleLock.h>

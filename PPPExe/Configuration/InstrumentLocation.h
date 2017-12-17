@@ -1,6 +1,6 @@
 #pragma once
 #include "../Common/Common.h"
-#include "../Common/SpectrometerModel.h"
+#include <PPPLib/SpectrometerModel.h>
 
 /** 
 	The class <b>CInstrumentLocation</b> is used to store information

@@ -1,4 +1,4 @@
-#include "ScanFileHandler.h"
+#include <PPPLib/Spectra/ScanFileHandler.h>
 
 using namespace SpectrumIO;
 using namespace FileHandler;
@@ -28,7 +28,6 @@ CScanFileHandler::~CScanFileHandler(void)
     @param fileName - the name of the file in which the spectra of the scan are saved */
 RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	CSpectrumIO reader;
-	novac::CString errMsg;
 	novac::CString strings[] = {novac::CString("sky"), novac::CString("zenith"), novac::CString("dark"), novac::CString("offset"), novac::CString("dark_cur"), novac::CString("darkcur")};
 	int indices[] = {-1, -1, -1, -1, -1, -1};
 	bool error = false;
@@ -48,8 +47,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 				if(SUCCESS == reader.ReadNextSpectrum(f, tempSpec)){
 					m_spectrumBuffer.SetAtGrow(k, tempSpec);
 				}else{
-					errMsg.Format("Could not read spectrum from file: %s", fileName->c_str());
-					ShowMessage(errMsg);
+					printf("Could not read spectrum from file: %s", fileName->c_str());
 					this->m_lastError = reader.m_lastError;
 					fclose(f);
 					return FAIL;
@@ -80,8 +78,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 		m_fHasSky = false;
 	}
 	if(error){
-		errMsg.Format("Could not read sky-spectrum in file: %s", fileName->c_str());
-		ShowMessage(errMsg);
+		printf("Could not read sky-spectrum in file: %s", fileName->c_str());
 		this->m_lastError = reader.m_lastError;
 		return FAIL;
 	}
@@ -102,8 +99,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	}
 	if(error){
 		m_fHasDark = false;
-		errMsg.Format("Could not read dark-spectrum in file: %s", fileName->c_str());
-		ShowMessage(errMsg);
+		printf("Could not read dark-spectrum in file: %s", fileName->c_str());
 		this->m_lastError = reader.m_lastError;
 		return FAIL;
 	}
@@ -111,8 +107,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	// --------------- read the offset spectrum (if any) ----------------------
 	if(indices[3] != -1){
 		if(SUCCESS != reader.ReadSpectrum(m_fileName, indices[3], m_offset)){
-			errMsg.Format("Could not read offset-spectrum in file: %s", fileName->c_str());
-			ShowMessage(errMsg);
+			printf("Could not read offset-spectrum in file: %s", fileName->c_str());
 			this->m_lastError = reader.m_lastError;
 			return FAIL;
 		}
@@ -122,8 +117,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	// --------------- read the dark-current spectrum (if any) ----------------------
 	if(indices[4] != -1){
 		if(SUCCESS != reader.ReadSpectrum(m_fileName, indices[4], m_darkCurrent)){
-			errMsg.Format("Could not read offset-spectrum in file: %s", fileName->c_str());
-			ShowMessage(errMsg);
+			printf("Could not read offset-spectrum in file: %s", fileName->c_str());
 			this->m_lastError = reader.m_lastError;
 			return FAIL;
 		}
@@ -131,8 +125,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	}
 	if(indices[5] != -1){
 		if(SUCCESS != reader.ReadSpectrum(m_fileName, indices[5], m_darkCurrent)){
-			errMsg.Format("Could not read offset-spectrum in file: %s", fileName->c_str());
-			ShowMessage(errMsg);
+			printf("Could not read offset-spectrum in file: %s", fileName->c_str());
 			this->m_lastError = reader.m_lastError;
 			return FAIL;
 		}
@@ -166,7 +159,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 int CScanFileHandler::GetNextSpectrum(CSpectrum &spec){
 	CSpectrumIO reader;
 
-	if(m_spectrumBufferNum == m_specNum){
+	if(m_spectrumBufferNum == (unsigned int)m_specNum){
 		// We've read in the spectra into the buffer, just read it from there
 		// instead of reading from the file itself.
 		if(m_specReadSoFarNum >= m_spectrumBufferNum){
@@ -204,7 +197,7 @@ int CScanFileHandler::GetNextSpectrum(CSpectrum &spec){
 int CScanFileHandler::GetSpectrum(CSpectrum &spec, long specNo){
 	CSpectrumIO reader;
 
-	if(m_spectrumBufferNum == m_specNum){
+	if(m_spectrumBufferNum == (unsigned int)m_specNum){
 		// We've read in the spectra into the buffer, just read it from there
 		// instead of reading from the file itself.
 		if(m_specReadSoFarNum >= m_spectrumBufferNum){
@@ -288,13 +281,13 @@ void  CScanFileHandler::ResetCounter(){
 	if(m_sky.ScanIndex() == 0)
 		m_specReadSoFarNum = 1;
 
-	if(m_dark.ScanIndex() == m_specReadSoFarNum)
+	if((unsigned int)m_dark.ScanIndex() == m_specReadSoFarNum)
 		m_specReadSoFarNum += 1;
 	
-	if(m_offset.ScanIndex() == m_specReadSoFarNum || m_darkCurrent.ScanIndex() == m_specReadSoFarNum)
+	if((unsigned int)m_offset.ScanIndex() == m_specReadSoFarNum || (unsigned int)m_darkCurrent.ScanIndex() == m_specReadSoFarNum)
 		m_specReadSoFarNum += 1;
 
-	if(m_offset.ScanIndex() == m_specReadSoFarNum || m_darkCurrent.ScanIndex() == m_specReadSoFarNum)
+	if((unsigned int)m_offset.ScanIndex() == m_specReadSoFarNum || (unsigned int)m_darkCurrent.ScanIndex() == m_specReadSoFarNum)
 		m_specReadSoFarNum += 1;
 }
 

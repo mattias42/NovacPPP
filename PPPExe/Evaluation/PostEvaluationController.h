@@ -5,7 +5,7 @@
 #include "ScanResult.h"
 
 #include "../Common/Common.h"
-#include "../Common/Spectra/ScanFileHandler.h"
+#include <PPPLib/Spectra/ScanFileHandler.h>
 #include "../Configuration/NovacPPPConfiguration.h"
 
 extern UINT primaryLanguage;

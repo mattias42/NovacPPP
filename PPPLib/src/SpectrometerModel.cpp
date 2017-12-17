@@ -1,4 +1,4 @@
-#include "SpectrometerModel.h"
+#include <PPPLib/SpectrometerModel.h>
 
 
 CSpectrometerModel::CSpectrometerModel(void)

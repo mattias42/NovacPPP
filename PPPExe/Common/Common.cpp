@@ -1166,21 +1166,7 @@ bool Common::ArchiveFile(const novac::CString &fileName) {
 	return true;
 }
 
-int Common::GetInterlaceSteps(int channel, int &interlaceSteps) {
-	// if the spectrum is a mix of several spectra
-	if (channel >= 129) {
-		interlaceSteps = channel - 127;
-		return -1;
-	}
 
-	// special case, channel = 128 is same as channel = 0
-	if (channel == 128)
-		channel = 0;
-
-	// If the spectrum is a single spectrum
-	interlaceSteps = (channel / 16) + 1; // 16->31 means interlace=2, 32->47 means interlace=3 etc.
-	return (channel % 16); // the remainder tells the channel number
-}
 
 /*EQUATORIAL COORDINATES:RIGHT ASCENSION AND DECLINATION*/
 void Common::EquatorialCoordinates(double D, double &RA, double &dec, double &EQT)

@@ -5,7 +5,7 @@
 #include "../Configuration/DarkSettings.h"
 
 #include "../Common/Common.h"
-#include "../Common/Spectra/ScanFileHandler.h"
+#include <PPPLib/Spectra/ScanFileHandler.h>
 
 namespace Evaluation
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/GPSData.h"
+#include <PPPLib/GPSData.h>
 #include "GeometryResult.h"
 #include "../Configuration/InstrumentLocation.h"
 

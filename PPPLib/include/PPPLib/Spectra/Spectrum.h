@@ -1,8 +1,17 @@
 #pragma once
 
 
-#include "../Common.h"
-#include "SpectrumInfo.h"
+// the maximum length of any single spectrum
+#define MAX_SPECTRUM_LENGTH 4096L
+
+// the maximum number of channels that the program can handle
+#define MAX_CHANNEL_NUM 8
+
+// definition used for storing the spectral data
+typedef double SpecData;
+
+
+#include <PPPLib/Spectra/SpectrumInfo.h>
 
 /**
 <b>CSpectrum</b> is an implementation of a spectrum. 
@@ -90,36 +99,46 @@ public:
 	/** Returns the electronic offset of the spectrum */
 	SpecData GetOffset() const;
 
-		/** If the channel number of this spectrum is larger than 128 then this function
-				will split the current spectrum up into several spectra 
-				(the maximum number of spectra that can be generated is (channel - 127) with a maximum of MAX_CHANNEL_NUM. 
-				Explanation: When collecting spectra with a multichannel spectrometer
-					the spectra can be collected simultaneously and read out through the ADC
-					in one reading. However, the spectra will then be saved into one spectrum.
-					If there are N channels being used simultaneously then the first pixel
-					in the read out spectrum is the first pixel on the master channel, the 
-					second pixel is the secon pixel in the first slave channel, the third pixel
-					is the third pixel in the second slave, ... the N:th pixel is the N:th
-					pixel in the (N-1):th slave. The (N+1):th pixel is the (N+1):th pixel
-					in the master channel.
-					This function separates spectra saved in this way into N different spectra.
-				If the channel number is below 129 nothing will be done. 
-				@return - the number of spectra generated
-				@param spec1 - the spectrum to contain the master channel spectrum
-				@param spec2 - the spectrum to contain the spectrum from the first slave
-				@param ... - the spectra to contain spectra form slave 2, 3, 4, etc...
-				*/
-		int	Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const;
+	/** If the channel number of this spectrum is larger than 128 then this function
+			will split the current spectrum up into several spectra 
+			(the maximum number of spectra that can be generated is (channel - 127) with a maximum of MAX_CHANNEL_NUM. 
+			Explanation: When collecting spectra with a multichannel spectrometer
+				the spectra can be collected simultaneously and read out through the ADC
+				in one reading. However, the spectra will then be saved into one spectrum.
+				If there are N channels being used simultaneously then the first pixel
+				in the read out spectrum is the first pixel on the master channel, the 
+				second pixel is the secon pixel in the first slave channel, the third pixel
+				is the third pixel in the second slave, ... the N:th pixel is the N:th
+				pixel in the (N-1):th slave. The (N+1):th pixel is the (N+1):th pixel
+				in the master channel.
+				This function separates spectra saved in this way into N different spectra.
+			If the channel number is below 129 nothing will be done. 
+			@return - the number of spectra generated
+			@param spec1 - the spectrum to contain the master channel spectrum
+			@param spec2 - the spectrum to contain the spectrum from the first slave
+			@param ... - the spectra to contain spectra form slave 2, 3, 4, etc...
+			*/
+	int	Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const;
 
-		/** Interpolate the spectrum originating from the channel number 'channel'
-				to a full '2048' sized spectrum */
-		RETURN_CODE	InterpolateSpectrum();
+	/** Interpolate the spectrum originating from the channel number 'channel'
+			to a full '2048' sized spectrum */
+	RETURN_CODE	InterpolateSpectrum();
 
-		/** Interpolate the spectrum originating from the channel number 'channel'
-				to a full '2048' sized spectrum. Output is saved in provided spectrum 'spec' */
-		RETURN_CODE	InterpolateSpectrum(CSpectrum &spec) const;
+	/** Interpolate the spectrum originating from the channel number 'channel'
+			to a full '2048' sized spectrum. Output is saved in provided spectrum 'spec' */
+	RETURN_CODE	InterpolateSpectrum(CSpectrum &spec) const;
 
-		/** Short-cut to getting the number of co-added spectra */
+	/** Retrieves the interlace step and the spectrometer channel (if a single)
+		that the spectrum originates from.
+		@return 0-7 if the spectrum originates from a single spectrometer channel
+		@return -1 if the spectrum is a mix of two or more spectra
+		@param channel - the channel number from the spectrum header
+		@param interlaceSteps - the difference in pixel number between two
+			adjacent data points in the spectrum. E.g. 2 if the spectrum contains
+			every other pixel from the spectrometer. */
+	static int GetInterlaceSteps(int channel, int &interlaceSteps);
+
+	/** Short-cut to getting the number of co-added spectra */
 	inline long NumSpectra() const { return this->m_info.m_numSpec; }
 
 	/** Short-cut to getting the number of co-added spectra */

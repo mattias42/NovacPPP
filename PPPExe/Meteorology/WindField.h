@@ -2,8 +2,8 @@
 
 #include <PPPLib/CString.h>
 #include <PPPLib/DateTime.h>
+#include <PPPLib/GPSData.h>
 
-#include "../Common/GPSData.h"
 #include "../MeteorologySource.h"
 
 #ifndef WINDFIELD_H

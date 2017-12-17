@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/Spectra/Spectrum.h"
+#include <PPPLib/Spectra/Spectrum.h>
 #include "../Meteorology/WindField.h"
 
 #include "EvaluationResult.h"

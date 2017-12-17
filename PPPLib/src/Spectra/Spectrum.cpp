@@ -1,4 +1,4 @@
-#include "Spectrum.h"
+#include <PPPLib/Spectra/Spectrum.h>
 
 #include <algorithm>
 
@@ -250,7 +250,7 @@ int	CSpectrum::Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const{
 	for(i = 0; i < NSpectra; ++i){
 		spec[i]->m_info                 = m_info;
 		spec[i]->m_info.m_interlaceStep = NSpectra;
-		spec[i]->m_info.m_channel       = i + 16 * (spec[i]->m_info.m_interlaceStep - 1);
+		spec[i]->m_info.m_channel       = (unsigned char)(i + 16 * (spec[i]->m_info.m_interlaceStep - 1));
 		spec[i]->m_length               = 0;
 	}
 		
@@ -272,7 +272,7 @@ int	CSpectrum::Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const{
 			// Change the length of the spectrum
 			spec[specIndex]->m_length++;
 		}else{
-			ShowMessage("CSpectrum::Split was called with an illegal start-channel");
+			// ShowMessage("CSpectrum::Split was called with an illegal start-channel");
 		}
 
 		// Take the next spectrum to update
@@ -281,6 +281,22 @@ int	CSpectrum::Split(CSpectrum *spec[MAX_CHANNEL_NUM]) const{
 	}
 
 	return NSpectra;
+}
+
+int CSpectrum::GetInterlaceSteps(int channel, int &interlaceSteps) {
+	// if the spectrum is a mix of several spectra
+	if (channel >= 129) {
+		interlaceSteps = channel - 127;
+		return -1;
+	}
+
+	// special case, channel = 128 is same as channel = 0
+	if (channel == 128)
+		channel = 0;
+
+	// If the spectrum is a single spectrum
+	interlaceSteps = (channel / 16) + 1; // 16->31 means interlace=2, 32->47 means interlace=3 etc.
+	return (channel % 16); // the remainder tells the channel number
 }
 
 /** Interpolate the spectrum originating from the channel number 'channel' */

@@ -17,7 +17,7 @@
 
 #include "../Fit/Vector.h"
 
-#include "../Common/Spectra/Spectrum.h"
+#include <PPPLib/Spectra/Spectrum.h>
 #include "../Fit/ReferenceSpectrumFunction.h"
 
 namespace Evaluation

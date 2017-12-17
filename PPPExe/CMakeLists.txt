@@ -82,8 +82,6 @@ ENDIF()
 
 #Organize the files into folders, for ease of use
 source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
-source_group("Header Files\\Common\\Spectra"        FILES ${NPP_COMMON_SPECTRA_HEADERS})
-source_group("Header Files\\Common\\SpectrumFormat" FILES ${NPP_COMMON_SPECTRUM_FORMAT_HEADERS})
 source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
 source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${NPP_EVALUATION_HEADERS})
@@ -96,8 +94,6 @@ source_group("Header Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_
 
 
 source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
-source_group("Source Files\\Common\\Spectra"        FILES ${NPP_COMMON_SPECTRA_SOURCES})
-source_group("Source Files\\Common\\SpectrumFormat" FILES ${NPP_COMMON_SPECTRUM_FORMAT_SOURCES})
 source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
 source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${NPP_EVALUATION_SOURCES})

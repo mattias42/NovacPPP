@@ -1,9 +1,9 @@
 #include "ScanEvaluation.h"
 
-#include "../Common/Spectra/Spectrum.h"
-#include "../Common/Spectra/SpectrumIO.h"
-#include "../Common/SpectrumFormat/STDFile.h"
-#include "../Common/SpectrumFormat/TXTFile.h"
+#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/Spectra/SpectrumIO.h>
+#include <PPPLib/SpectrumFormat/STDFile.h>
+#include <PPPLib/SpectrumFormat/TXTFile.h>
 
 // we want to make some statistics on the processing
 #include "../PostProcessingStatistics.h"

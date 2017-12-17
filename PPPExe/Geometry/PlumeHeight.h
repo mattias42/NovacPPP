@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/GPSData.h"
+#include <PPPLib/GPSData.h>
 #include "../Meteorology/WindField.h"
 
 #ifndef PLUMEHEIGHT_H

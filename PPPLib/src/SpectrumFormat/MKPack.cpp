@@ -1,6 +1,5 @@
-#include "MKPack.h"
-
-#include "../Spectra/Spectrum.h"
+#include <PPPLib/SpectrumFormat/MKPack.h>
+#include <PPPLib/Spectra/Spectrum.h>
 
 using namespace SpectrumIO;
 

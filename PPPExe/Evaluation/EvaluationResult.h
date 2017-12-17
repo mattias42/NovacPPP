@@ -4,7 +4,7 @@
 
 #include "../Common/Common.h"
 #include "ReferenceFitResult.h"
-#include "../Common/Spectra/SpectrumInfo.h"
+#include <PPPLib/Spectra/SpectrumInfo.h>
 #include "ColumnCorrection.h"
 #include <PPPLib/CString.h>
 #include <PPPLib/CArray.h>

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Common.h"
-
-
+#include <PPPLib/CString.h>
+#include <PPPLib/PPPLib.h>
 
 enum SPECTROMETER_MODEL {
 	S2000, 
@@ -30,7 +29,7 @@ public:
 	static double	GetMaxIntensity(const SPECTROMETER_MODEL modelNumber);
 
 	/** Converts a SPECTROMETER_MODEL to a string item */
-	static RETURN_CODE		ToString(SPECTROMETER_MODEL model, novac::CString &str);
+	static RETURN_CODE ToString(SPECTROMETER_MODEL model, novac::CString &str);
 
 	/** Converts a string item to a SPECTROMETER_MODEL */
 	static SPECTROMETER_MODEL GetModel(const novac::CString &str);

@@ -6,19 +6,17 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <PPPLib/PPPLib.h>
 #include <PPPLib/CString.h>
 #include <PPPLib/CList.h>
 #include <PPPLib/Measurement.h>
 #include <PPPLib/DateTime.h>
+#include <PPPLib/Spectra/Spectrum.h>
 
 #include "../Geometry/PlumeHeight.h"
 #include "../Meteorology/WindField.h"
-#include "GPSData.h"
 #include "../PlumeInScanProperty.h"
 #include <cmath>
-
-// definition used for storing the spectral data
-typedef double SpecData;
 
 // ---------------------------------------------------------------
 // ---------------- GLOBAL FUNCTIONS -----------------------------
@@ -63,9 +61,6 @@ void UpdateMessage(const novac::CString &message);
 // ---------------- DEFINED CONSTANTS ----------------------------
 // ---------------------------------------------------------------
 
-// defining if a function has failed or succeeded
-enum RETURN_CODE { FAIL, SUCCESS };
-
 // defining how to get the dark-spectrum
 enum	DARK_SPEC_OPTION { MEASURE, MODEL_SOMETIMES, MODEL_ALWAYS, DARK_USER_SUPPLIED };
 
@@ -91,12 +86,6 @@ enum PROCESSING_MODE{
 
 // The maximum number of fit windows that can be handled at any single time
 #define MAX_FIT_WINDOWS 5
-
-// the maximum length of any single spectrum
-#define MAX_SPECTRUM_LENGTH 4096L
-
-// the maximum number of channels that the program can handle
-#define MAX_CHANNEL_NUM 8
 
 //size of buffer to receive data
 #define SIZEOFBUFFER 2048
@@ -418,15 +407,7 @@ public:
 	/** Guesses the name of the specie from the name of the reference file. */
 	static void GuessSpecieName(const novac::CString &string, novac::CString &specie);
 
-	/** Retrieves the interlace step and the spectrometer channel (if a single) 
-			that the spectrum originates from. 
-			@return 0-7 if the spectrum originates from a single spectrometer channel
-			@return -1 if the spectrum is a mix of two or more spectra
-			@param channel - the channel number from the spectrum header
-			@param interlaceSteps - the difference in pixel number between two 
-				adjacent data points in the spectrum. E.g. 2 if the spectrum contains
-				every other pixel from the spectrometer. */
-	static int GetInterlaceSteps(int channel, int &interlaceSteps);
+
 
 };// end of class Common
 

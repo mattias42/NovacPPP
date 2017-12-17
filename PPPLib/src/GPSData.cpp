@@ -1,4 +1,4 @@
-#include "GPSData.h"
+#include <PPPLib/GPSData.h>
 
 #include <math.h>
 

@@ -1,4 +1,6 @@
-#include "SpectrumIO.h"
+#include <PPPLib/Spectra/SpectrumIO.h>
+#include <PPPLib/Spectra/Spectrum.h>
+
 #include <algorithm>
 #include <cstring>
 
@@ -17,15 +19,13 @@ CSpectrumIO::~CSpectrumIO(void)
 }
 
 int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
-	novac::CString errorMessage; // a string used for error messages
 	unsigned long specNum = 0;
 	int headerSize;
 
 	FILE *f = fopen(fileName, "rb");
 
 	if (f == NULL) {
-		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
-		ShowMessage(errorMessage);
+		printf("Could not open spectrum file: %s", (const char*)fileName);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return(1);
 	}
@@ -72,15 +72,13 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::CString *specNamesToLookFor, int numSpecNames, int *indices) {
 	novac::CString errorMessage; // a string used for error messages
 	novac::CString specName;
-	Common common;
 	unsigned long specNum = 0;
 	int headerSize, nameIndex;
 
 	FILE *f = fopen(fileName, "rb");
 
 	if (f == NULL) {
-		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
-		ShowMessage(errorMessage);
+		printf("Could not open spectrum file: %s", (const char*)fileName);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return(1);
 	}
@@ -142,7 +140,6 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 }
 
 RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int spectrumNumber, CSpectrum &spec, char *headerBuffer /* = NULL*/, int headerBufferSize /* = 0*/, int *headerSize /* = NULL*/) {
-	novac::CString errorMessage; // a string used for error messages
 	MKPack mkPack;
 
 	long i, j;
@@ -157,8 +154,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 	FILE *f = fopen(fileName, "rb");
 
 	if (f == NULL) {
-		errorMessage.Format("Could not open spectrum file: %s", (const char*)fileName);
-		ShowMessage(errorMessage);
+		printf("Could not open spectrum file: %s", (const char*)fileName);
 		m_lastError = ERROR_COULD_NOT_OPEN_FILE;
 		return FAIL;
 	}
@@ -212,8 +208,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 
 			if (fread(buffer, 1, MKZY.size, f) < MKZY.size) //read compressed info
 			{
-				errorMessage.Format("Error EOF! in %s", (const char*)fileName);
-				ShowMessage(errorMessage);
+				printf("Error EOF! in %s", (const char*)fileName);
 				fclose(f);
 				m_lastError = ERROR_EOF;
 				return FAIL;
@@ -254,8 +249,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 			p = (unsigned short *)&chk;
 			checksum = p[0] + p[1];
 			if (checksum != MKZY.checksum) {
-				errorMessage.Format("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
-				ShowMessage(errorMessage);
+				printf("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
 
 				m_lastError = ERROR_CHECKSUM_MISMATCH;
 				fclose(f);
@@ -340,7 +334,6 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec) {
 	@param spec - Will on successful return contain the desired spectrum.
 	@return SUCCESS if all is ok. */
 RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerSize, char *headerBuffer, int headerBufferSize) {
-	novac::CString errorMessage; // a string used for error messages
 	long outlen;
 	long j;
 	unsigned long chk;
@@ -362,8 +355,7 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 
 	if (fread(buffer, 1, MKZY.size, f) < MKZY.size) //read compressed info
 	{
-		errorMessage.Format("Error EOF! in pak-file");
-		ShowMessage(errorMessage);
+		printf("Error EOF! in pak-file");
 
 		m_lastError = ERROR_EOF;
 		return FAIL;
@@ -406,8 +398,7 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 	p = (unsigned short *)&chk;
 	checksum = p[0] + p[1];
 	if (checksum != MKZY.checksum) {
-		errorMessage.Format("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
-		ShowMessage(errorMessage);
+		printf("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
 
 		this->m_lastError = ERROR_CHECKSUM_MISMATCH;
 		return FAIL;
@@ -631,7 +622,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 		info->m_gps.m_latitude = MKZY.lat;
 		info->m_gps.m_altitude = MKZY.altitude;
 		info->m_channel = MKZY.channel;
-		Common::GetInterlaceSteps(info->m_channel, info->m_interlaceStep);
+		CSpectrum::GetInterlaceSteps(info->m_channel, info->m_interlaceStep);
 		info->m_scanAngle = MKZY.viewangle;
 		if (info->m_scanAngle > 180.0)
 			info->m_scanAngle -= 360.0; // map 270 -> -90
@@ -639,7 +630,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 		info->m_coneAngle = MKZY.coneangle;
 		info->m_compass = (float)MKZY.compassdir / 10.0f;
 		if (info->m_compass > 360.0 || info->m_compass < 0) {
-			ShowMessage("Spectrum has compass angle outside of the expected [0, 360] degree range. ");
+			printf("Spectrum has compass angle outside of the expected [0, 360] degree range. ");
 		}
 		info->m_batteryVoltage = (float)MKZY.ADC[0] / 100.0f;
 		info->m_temperature = MKZY.temperature;

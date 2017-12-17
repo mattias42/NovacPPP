@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Spectra/Spectrum.h"
+#include <PPPLib/Spectra/Spectrum.h>
 #include <PPPLib/CString.h>
 
 namespace SpectrumIO {

@@ -1,4 +1,4 @@
-#include "TXTFile.h"
+#include <PPPLib/SpectrumFormat/TXTFile.h>
 
 using namespace SpectrumIO;
 

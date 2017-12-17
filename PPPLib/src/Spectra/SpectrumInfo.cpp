@@ -1,4 +1,5 @@
-#include "SpectrumInfo.h"
+#include <PPPLib/Spectra/SpectrumInfo.h>
+
 #include <cstring>
 
 CSpectrumInfo::CSpectrumInfo(void)
