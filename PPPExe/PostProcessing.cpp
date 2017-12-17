@@ -152,12 +152,12 @@ void CPostProcessing::DoPostProcessing_Flux() {
 	CalculateFluxes(evalLogFiles);
 
 	// 7. Write the statistics
-	statFileName.Format("%s\\ProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory);
+	statFileName.Format("%s%cProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	Common::ArchiveFile(statFileName);
 	g_processingStats.WriteStatToFile(statFileName);
 
 	// 8. Also write the wind field that we have created to file
-	windFileName.Format("%s\\GeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory);
+	windFileName.Format("%s%cGeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	Common::ArchiveFile(windFileName);
 	m_windDataBase.WriteToFile(windFileName);
 
@@ -229,7 +229,7 @@ void CPostProcessing::DoPostProcessing_Strat() {
 	ShowMessage("Calculation Done");
 
 	// 7. Write the statistics
-	statFileName.Format("%s\\ProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory);
+	statFileName.Format("%s%cProcessingStatistics.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	Common::ArchiveFile(statFileName);
 	g_processingStats.WriteStatToFile(statFileName);
 }
@@ -261,8 +261,8 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 
 		while (dir != end) {
 			novac::CString fileName, fullFileName;
-			fileName.Format("%s", dir.name());
-			fullFileName.Format("%s/%s", (const char*)path, dir.name());
+			fileName.Format("%s", dir.name().c_str());
+			fullFileName.Format("%s/%s", (const char*)path, dir.name().c_str());
 
 			if (novac::Equals(dir.name(), ".") || novac::Equals(dir.name(), "..")) {
 				continue;
@@ -309,8 +309,8 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 	// Search for the file
 	while (dir != end) {
 		novac::CString fileName, fullFileName;
-		fileName.Format("%s", dir.name());
-		fullFileName.Format("%s/%s", (const char*)path, dir.name());
+		fileName.Format("%s", dir.name().c_str());
+		fullFileName.Format("%s%c%s", (const char*)path, Poco::Path::separator(), dir.name().c_str());
 
 		// if this is a incomplete scan, then don't process it.
 		if (novac::CFileUtils::IsIncompleteFile(fileName))
@@ -562,7 +562,7 @@ int CPostProcessing::PrepareEvaluation() {
 			for (int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex) {
 				if (!IsExistingFile(window.ref[referenceIndex].m_path)) {
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration\\%s", (const char*)m_exePath, (const char*)window.ref[referenceIndex].m_path);
+					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), (const char*)window.ref[referenceIndex].m_path);
 					if (IsExistingFile(fileName)) {
 						window.ref[referenceIndex].m_path.Format(fileName);
 					}
@@ -605,7 +605,7 @@ int CPostProcessing::PrepareEvaluation() {
 			if (window.fraunhoferRef.m_path.GetLength() > 4) {
 				if (!IsExistingFile(window.fraunhoferRef.m_path)) {
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration\\%s", (const char*)m_exePath, (const char*)window.fraunhoferRef.m_path);
+					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), (const char*)window.fraunhoferRef.m_path);
 					if (IsExistingFile(fileName)) {
 						window.fraunhoferRef.m_path.Format(fileName);
 					}
@@ -1081,7 +1081,10 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
 	// Also write the statistics for the flux
 	ShowMessage("Writing flux statistics");
 	stat.AttachFluxList(calculatedFluxes);
-	stat.WriteFluxStat(g_userSettings.m_outputDirectory + "\\FluxStatistics.txt");
+
+	novac::CString fluxStatFileName;
+	fluxStatFileName.Format("%s%c%s", g_userSettings.m_outputDirectory.c_str(), Poco::Path::separator(), "FluxStatistics.txt");
+	stat.WriteFluxStat(fluxStatFileName);
 }
 
 void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
@@ -1092,7 +1095,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
 	now.SetToNow();
 
 	// the name and path of the final flux-log file
-	fluxLogFile.Format("%s\\FluxLog.xml", (const char*)g_userSettings.m_outputDirectory);
+	fluxLogFile.Format("%s%cFluxLog.xml", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	// Check if there's already a file like this, then archive it...
 	Common::ArchiveFile(fluxLogFile);
@@ -1193,7 +1196,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
 	fclose(f);
 
 	// ------------- we also need an xslt - file to display the output -----------------
-	styleFile.Format("%s\\fluxresult.xsl", (const char*)g_userSettings.m_outputDirectory);
+	styleFile.Format("%s%cfluxresult.xsl", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	// Try to open the file
 	f = fopen(styleFile, "w");
@@ -1235,7 +1238,7 @@ void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux:
 	now.SetToNow();
 
 	// the name and path of the final flux-log file
-	fluxLogFile.Format("%s\\FluxLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	fluxLogFile.Format("%s%cFluxLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	// Try to open the file
 	if (IsExistingFile(fluxLogFile)) {
@@ -1340,7 +1343,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
 
 	FILE *f = nullptr;
 	novac::CString geomLogFile;
-	geomLogFile.Format("%s\\GeometryLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	geomLogFile.Format("%s%cGeometryLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	if (IsExistingFile(geomLogFile)) {
 		f = fopen(geomLogFile, "a");
@@ -1485,7 +1488,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 	ShowMessage(userMessage);
 
 	// Create the dual-beam log-file
-	windLogFile.Format("%s\\DualBeamLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	windLogFile.Format("%s%cDualBeamLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	calculator.WriteWindSpeedLogHeader(windLogFile);
 
 
@@ -1664,15 +1667,15 @@ void CPostProcessing::UploadResultsToFTP() {
 	novac::CList <novac::CString, novac::CString&> fileList;
 
 	// 1. the geometry log file
-	fileName.Format("%s\\GeometryLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	fileName.Format("%s%cGeometryLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	fileList.AddTail(fileName);
 
 	// 2. the generated wind field
-	fileName.Format("%s\\GeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory);
+	fileName.Format("%s%cGeneratedWindField.wxml", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	fileList.AddTail(fileName);
 
 	// 3. the generated flux log
-	fileName.Format("%s\\FluxLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	fileName.Format("%s%cFluxLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	fileList.AddTail(fileName);
 
 	// upload the files

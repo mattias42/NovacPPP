@@ -11,6 +11,9 @@
 // This is the configuration of the network
 #include "../Configuration/NovacPPPConfiguration.h"
 
+#include <Poco/Path.h>
+
+
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
@@ -76,7 +79,7 @@ void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtend
 
 	// remove the old stratospheric output-file
 	// TODO: ImplementMe
-	//fileName.Format("%s\\Stratosphere.txt", (const char*)g_userSettings.m_outputDirectory);
+	//fileName.Format("%s%cStratosphere.txt", (const char*)g_userSettings.m_outputDirectory,  Poco::Path::separator());
 	//DeleteFile(fileName);
 
 
@@ -218,7 +221,7 @@ void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double
 	novac::CString fileName;
 	
 	// the name of the output file
-	fileName.Format("%s\\Stratosphere.txt", (const char*)g_userSettings.m_outputDirectory);
+	fileName.Format("%s%cStratosphere.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	if(!IsExistingFile(fileName))
 		writeHeader = true;

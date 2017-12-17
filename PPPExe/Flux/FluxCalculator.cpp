@@ -10,6 +10,7 @@
 #include "../Configuration/UserConfiguration.h"
 
 #include <PPPLib/CFileUtils.h>
+#include <Poco/Path.h>
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -306,10 +307,11 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 
 	// 20a. Make the directory
 	serialNumber.Format("%s", (const char*)result->GetSerial());
-	directory.Format("%s%s\\%s\\", (const char*)g_userSettings.m_outputDirectory, (const char*)dateStr2, (const char*)serialNumber);
+	directory.Format("%s%s%c%s%c", (const char*)g_userSettings.m_outputDirectory, (const char*)dateStr2, 
+		Poco::Path::separator(), (const char*)serialNumber, Poco::Path::separator());
 	if(CreateDirectoryStructure(directory)){
 		Common common;
-		directory.Format("%sOutput\\%s", (const char*)common.m_exePath, (const char*)dateStr2, (const char*)serialNumber);
+		directory.Format("%sOutput%c%s%c%s", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)dateStr2, Poco::Path::separator(), (const char*)serialNumber);
 		if(CreateDirectoryStructure(directory)){
 			errorMessage.Format("Could not create storage directory for flux-data. Please check settings and restart.");
 			ShowError(errorMessage);

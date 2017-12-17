@@ -16,6 +16,8 @@
 // we want to make some statistics on the processing
 #include "../PostProcessingStatistics.h"
 
+#include <Poco/Path.h>
+
 using namespace Evaluation;
 using namespace SpectrumIO;
 using namespace FileHandler;
@@ -389,7 +391,10 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
-	evalSummaryLog.Format("%s\\%s\\EvaluationSummary_%s.txt", (const char*)g_userSettings.m_outputDirectory, (const char*)window->name, (const char*)result->GetSerial());
+	evalSummaryLog.Format("%s%c%s%cEvaluationSummary_%s.txt", 
+		(const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(),
+		(const char*)window->name, Poco::Path::separator(),
+		(const char*)result->GetSerial());
 
 	if (!IsExistingFile(evalSummaryLog)) {
 		fWriteHeaderLine = true;
@@ -437,7 +442,7 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
 	bool fWriteHeaderLine = false;
 
 	// we can also write an evaluation-summary log file
-	pakSummaryLog.Format("%s\\PakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory);
+	pakSummaryLog.Format("%s%cPakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
 	if (!IsExistingFile(pakSummaryLog)) {
 		fWriteHeaderLine = true;
@@ -490,11 +495,11 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	// 0. Make an initial assumption of the file-names
 	int i = 0;
 	while (1) {
-		pakFile.Format("%s\\UnknownScans\\%d.pak", (const char*)g_userSettings.m_outputDirectory, ++i);
+		pakFile.Format("%s%cUnknownScans%c%d.pak", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), ++i);
 		if (!IsExistingFile(pakFile))
 			break;
 	}
-	txtFile.Format("%s\\UnknownScans\\%d.txt", (const char*)g_userSettings.m_outputDirectory, i);
+	txtFile.Format("%s%cUnknownScans%c%d.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), i);
 
 	// 1. Read the first spectrum in the scan
 	if (SUCCESS != reader.ReadSpectrum(temporaryScanFile, 0, tmpSpec))
@@ -523,7 +528,8 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	// 4. Write the archiving name of the spectrum file
 
 	// 4a. Write the folder name
-	pakFile.Format("%s%s\\%s\\%s\\", (const char*)g_userSettings.m_outputDirectory, (const char*)fitWindowName, (const char*)dateStr2, (const char*)serialNumber);
+	pakFile.Format("%s%s%c%s%c%s%c", (const char*)g_userSettings.m_outputDirectory, (const char*)fitWindowName, Poco::Path::separator(), 
+		(const char*)dateStr2, Poco::Path::separator(), (const char*)serialNumber, Poco::Path::separator());
 	txtFile.Format("%s", (const char*)pakFile);
 
 	// 4b. Make sure that the folder exists

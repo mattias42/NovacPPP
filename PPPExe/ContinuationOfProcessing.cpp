@@ -5,6 +5,7 @@
 #include "Configuration/UserConfiguration.h"
 
 #include <cstring>
+#include <Poco/Path.h>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
@@ -33,7 +34,7 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans(){
 	if(g_userSettings.m_fIsContinuation == false)
 		return;
 
-	oldStatusLogfile.Format("%s\\StatusLog.txt", (const char*)g_userSettings.m_outputDirectory);
+	oldStatusLogfile.Format("%s%cStatusLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 	if(!IsExistingFile(oldStatusLogfile))
 		return;
 

@@ -7,6 +7,7 @@
 #include "../Communication/FTPServerConnection.h"
 
 #include <Poco/Glob.h>
+#include <Poco/Path.h>
 #include <string.h>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
@@ -38,7 +39,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 		novac::CString tmpFileName;
 		tmpFileName.Format(fileName);
 		Common::GetFileName(tmpFileName); // this is the name of the file, without the path...
-		localFileName.Format("%s\\%s", (const char*)g_userSettings.m_tempDirectory, (const char*)tmpFileName);
+		localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), (const char*)tmpFileName);
 		
 		// make sure that the tmp-directory exists
 		if(CreateDirectoryStructure(g_userSettings.m_tempDirectory)){
@@ -184,7 +185,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 		}
 
 		for(const std::string& fName : filesFound) {
-			localFileName.Format("%s\\%s", (const char*)directory, fName.c_str());
+			localFileName.Format("%s%c%s", (const char*)directory, Poco::Path::separator(), fName.c_str());
 			localFileList.AddTail(localFileName);	
 		}
 	}

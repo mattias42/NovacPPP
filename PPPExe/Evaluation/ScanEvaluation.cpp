@@ -685,7 +685,7 @@ CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWi
 				improvedFitWindow.ref[it].m_shiftValue		= shift;
 				improvedFitWindow.ref[it].m_squeezeValue	= squeeze;
 			}
-			message.Format("  Shift: %.2lf ± %.2lf; Squeeze: %.2lf ± %.2lf", shift, shiftError, squeeze, squeezeError);
+			message.Format("  Shift: %.2lf +- %.2lf; Squeeze: %.2lf +- %.2lf", shift, shiftError, squeeze, squeezeError);
 			ShowMessage(message);
 		}else{
 			ShowMessage("Fit not good enough. Will proceed with default parameters.");

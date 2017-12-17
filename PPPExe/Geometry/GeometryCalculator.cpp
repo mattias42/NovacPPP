@@ -9,6 +9,8 @@
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
+#include <Poco/Path.h>
+
 #undef min
 #undef max
 
@@ -646,7 +648,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	
 	#ifdef _DEBUG
 		novac::CString fileName;
-		fileName.Format("%s\\debugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
+		fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
 			fprintf(f, "%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], plumeHeight, plumeHeightErr);
@@ -730,7 +732,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 	
 	#ifdef _DEBUG
 		novac::CString fileName;
-		fileName.Format("%s\\debugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
+		fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
 			fprintf(f, "wd\t%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], windDirection, windDirectionErr);
