@@ -198,9 +198,15 @@ namespace MathFit
 			// get the subvector objects and attach them to our objects
 			int i;
 			for(i = 0; i < iRows; i++)
-				mRows[i].Attach(mSecond.GetRow(iStartRow + i).SubVector(iStartCol, iCols));
+			{
+				auto temp = mSecond.GetRow(iStartRow + i).SubVector(iStartCol, iCols);
+				mRows[i].Attach(temp);
+			}
 			for(i = 0; i < iCols; i++)
-				mCols[i].Attach(mSecond.GetCol(iStartCol + i).SubVector(iStartRow, iRows));
+			{
+				auto temp = mSecond.GetCol(iStartCol + i).SubVector(iStartRow, iRows);
+				mCols[i].Attach(temp);
+			}
 
 			mData = mRows[0].GetSafePtr();
 			mAutoRelease = false;

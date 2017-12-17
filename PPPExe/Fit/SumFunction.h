@@ -558,7 +558,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetLinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetLinearParameter(vParam.SubVector(iOffset, iSize));
+				{
+					auto temp = vParam.SubVector(iOffset, iSize);
+					mOperands[i]->SetLinearParameter(temp);
+				}
 				iOffset += iSize;
 			}
 
@@ -583,7 +586,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetNonlinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetNonlinearParameter(vParam.SubVector(iOffset, iSize));
+				{
+					auto temp = vParam.SubVector(iOffset, iSize);
+					mOperands[i]->SetNonlinearParameter(temp);
+				}
 				iOffset += iSize;
 			}
 
@@ -606,7 +612,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetNonlinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetNonlinearCovarMatrix(mCovar.SubMatrix(iOffset, iOffset, iSize, iSize));
+				{
+					auto temp = mCovar.SubMatrix(iOffset, iOffset, iSize, iSize);
+					mOperands[i]->SetNonlinearCovarMatrix(temp);
+				}
 				iOffset += iSize;
 			}
 		}
@@ -627,7 +636,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetNonlinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetNonlinearCorrelMatrix(mCorrel.SubMatrix(iOffset, iOffset, iSize, iSize));
+				{
+					auto temp = mCorrel.SubMatrix(iOffset, iOffset, iSize, iSize);
+					mOperands[i]->SetNonlinearCorrelMatrix(temp);
+				}
 				iOffset += iSize;
 			}
 		}
@@ -648,7 +660,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetNonlinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetNonlinearError(vError.SubVector(iOffset, iSize));
+				{
+					auto temp = vError.SubVector(iOffset, iSize);
+					mOperands[i]->SetNonlinearError(temp);
+				}
 				iOffset += iSize;
 			}
 		}
@@ -669,7 +684,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetLinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetLinearCovarMatrix(mCovar.SubMatrix(iOffset, iOffset, iSize, iSize));
+				{
+					auto temp = mCovar.SubMatrix(iOffset, iOffset, iSize, iSize);
+					mOperands[i]->SetLinearCovarMatrix(temp);
+				}
 				iOffset += iSize;
 			}
 		}
@@ -690,7 +708,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetLinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetLinearCorrelMatrix(mCorrel.SubMatrix(iOffset, iOffset, iSize, iSize));
+				{
+					auto temp = mCorrel.SubMatrix(iOffset, iOffset, iSize, iSize);
+					mOperands[i]->SetLinearCorrelMatrix(temp);
+				}
 				iOffset += iSize;
 			}
 		}
@@ -711,7 +732,10 @@ namespace MathFit
 			{
 				const int iSize = mOperands[i]->GetLinearParameter().GetSize();
 				if(iSize > 0)
-					mOperands[i]->SetLinearError(vError.SubVector(iOffset, iSize));
+				{
+					auto temp = vError.SubVector(iOffset, iSize);
+					mOperands[i]->SetLinearError(temp);
+				}
 				iOffset += iSize;
 			}
 		}

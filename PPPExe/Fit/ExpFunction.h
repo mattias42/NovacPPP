@@ -94,11 +94,17 @@ namespace MathFit
 			// split up vector into linear and nonlinear parts.
 			const int iLinSize = mExponent.GetLinearParameter().GetSize();
 			if(iLinSize > 0)
-				mExponent.SetLinearParameter(vParam.SubVector(0, iLinSize));
+			{
+				auto temp = vParam.SubVector(0, iLinSize);
+				mExponent.SetLinearParameter(temp);
+			}
 
 			const int iNonlinSize = mExponent.GetNonlinearParameter().GetSize();
 			if(iNonlinSize > 0)
-				mExponent.SetNonlinearParameter(vParam.SubVector(iLinSize, iNonlinSize));
+			{
+				auto temp = vParam.SubVector(iLinSize, iNonlinSize);
+				mExponent.SetNonlinearParameter(temp);
+			}
 
 			return true;
 		}
@@ -115,11 +121,17 @@ namespace MathFit
 			// split up vector into linear and nonlinear parts.
 			const int iLinSize = mExponent.GetLinearParameter().GetSize();
 			if(iLinSize > 0)
-				mExponent.SetLinearCovarMatrix(mCovar.SubMatrix(0, 0, iLinSize, iLinSize));
+			{
+				auto temp = mCovar.SubMatrix(0, 0, iLinSize, iLinSize);
+				mExponent.SetLinearCovarMatrix(temp);
+			}
 
 			const int iNonlinSize = mExponent.GetNonlinearParameter().GetSize();
 			if(iNonlinSize > 0)
-				mExponent.SetNonlinearCovarMatrix(mCovar.SubMatrix(iLinSize, iLinSize, iNonlinSize, iNonlinSize));
+			{
+				auto temp = mCovar.SubMatrix(iLinSize, iLinSize, iNonlinSize, iNonlinSize);
+				mExponent.SetNonlinearCovarMatrix(temp);
+			}
 		}
 
 		/**
@@ -134,11 +146,17 @@ namespace MathFit
 			// split up vevctor into linear and nonlinear parts.
 			const int iLinSize = mExponent.GetLinearParameter().GetSize();
 			if(iLinSize > 0)
-				mExponent.SetLinearCorrelMatrix(mCorrel.SubMatrix(0, 0, iLinSize, iLinSize));
+			{
+				auto temp = mCorrel.SubMatrix(0, 0, iLinSize, iLinSize);
+				mExponent.SetLinearCorrelMatrix(temp);
+			}
 
 			const int iNonlinSize = mExponent.GetNonlinearParameter().GetSize();
 			if(iNonlinSize > 0)
-				mExponent.SetNonlinearCorrelMatrix(mCorrel.SubMatrix(iLinSize, iLinSize, iNonlinSize, iNonlinSize));
+			{
+				auto temp = mCorrel.SubMatrix(iLinSize, iLinSize, iNonlinSize, iNonlinSize);
+				mExponent.SetNonlinearCorrelMatrix(temp);
+			}
 		}
 
 		/**
@@ -153,11 +171,17 @@ namespace MathFit
 			// split up vev´ctor into linear and nonlinear parts.
 			const int iLinSize = mExponent.GetLinearParameter().GetSize();
 			if(iLinSize > 0)
-				mExponent.SetLinearError(vError.SubVector(0, iLinSize));
+			{
+				auto temp = vError.SubVector(0, iLinSize);
+				mExponent.SetLinearError(temp);
+			}
 
 			const int iNonlinSize = mExponent.GetNonlinearParameter().GetSize();
 			if(iNonlinSize > 0)
-				mExponent.SetNonlinearError(vError.SubVector(iLinSize, iNonlinSize));
+			{
+				auto temp = vError.SubVector(iLinSize, iNonlinSize);
+				mExponent.SetNonlinearError(temp);
+			}
 		}
 
 		/**

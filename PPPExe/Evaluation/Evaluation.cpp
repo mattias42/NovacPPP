@@ -116,7 +116,10 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 	CDiscreteFunction dataTarget;
 
 	// now set the data of the measured spectrum in regard to the wavelength information
-	dataTarget.SetData(vXData.SubVector(measured.m_info.m_startChannel, m_window.specLength), vMeas);
+	{
+		auto temp = vXData.SubVector(measured.m_info.m_startChannel, m_window.specLength);
+		dataTarget.SetData(temp, vMeas);
+	}
 	
 	// since the DOAS model function consists of the sum of all reference spectra and a polynomial,
 	// we first create a summation object
@@ -327,7 +330,10 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 	CDiscreteFunction dataTarget;
 
 	// now set the data of the measured spectrum in regard to the wavelength information
-	dataTarget.SetData(vXData.SubVector(measured.m_info.m_startChannel, m_window.specLength), vMeas);
+	{
+		auto temp = vXData.SubVector(measured.m_info.m_startChannel, m_window.specLength);
+		dataTarget.SetData(temp, vMeas);
+	}
 	
 	// since the DOAS model function consists of the sum of all reference spectra and a polynomial,
 	// we first create a summation object
@@ -344,7 +350,8 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 	// set the spectral data of the reference spectrum to the object. This also causes an internal
 	// transformation of the spectral data into a B-Spline that will be used to interpolate the 
 	// reference spectrum during shift and squeeze operations
-	if(!solarSpec->SetData(vXData.SubVector(0, localSolarSpectrumData.GetSize()), localSolarSpectrumData))
+	auto tempXVec = vXData.SubVector(0, localSolarSpectrumData.GetSize());
+	if(!solarSpec->SetData(tempXVec, localSolarSpectrumData))
 	{
 		Error0("Error initializing spline object!");
 		free(measArray);
@@ -597,10 +604,14 @@ int CEvaluation::CreateReferenceSpectrum(){
 		for(unsigned int k = 0; k < m_window.ref[i].m_data->GetSize(); ++k){
 			yValues.SetAt(k, m_window.ref[i].m_data->GetAt(k));
 		}
-		if(!ref[i]->SetData(vXData.SubVector(0, m_window.ref[i].m_data->GetSize()), yValues))
+
 		{
-			Error0("Error initializing spline object!");
-			return(1);
+			auto tempXVec = vXData.SubVector(0, m_window.ref[i].m_data->GetSize());
+			if(!ref[i]->SetData(tempXVec, yValues))
+			{
+				Error0("Error initializing spline object!");
+				return(1);
+			}
 		}
 
 		// Chech the options for the column value
@@ -646,10 +657,14 @@ int CEvaluation::CreateReferenceSpectrum(){
 		for(int k = 0; k < m_skySpectrum.m_length; ++k){
 			yValues.SetAt(k, m_sky[k]);
 		}
-		if(!ref[i]->SetData(vXData.SubVector(0, m_skySpectrum.m_length), yValues))
+
 		{
-			Error0("Error initializing spline object!");
-			return(1);
+			auto tempXVec = vXData.SubVector(0, m_skySpectrum.m_length);
+			if(!ref[i]->SetData(tempXVec, yValues))
+			{
+				Error0("Error initializing spline object!");
+				return(1);
+			}
 		}
 
 		// Chech the options for the column value
