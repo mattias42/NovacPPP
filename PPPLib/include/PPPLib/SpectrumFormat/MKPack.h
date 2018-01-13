@@ -26,8 +26,8 @@ namespace SpectrumIO
 		std::int16_t viewangle;        // the viewing angle of the instrument
 		std::uint16_t scans;           // total number of scans added
 		std::int16_t exptime;          // exposure time, negative if set automatic
-		unsigned char channel;         // channel of the spectrometer, typically 0
-		unsigned char flag;            // for further use, currently contains the
+		std::uint8_t channel;          // channel of the spectrometer, typically 0
+		std::uint8_t flag;             // for further use, currently contains the
 									   // status of the solenoid(s) in bit 0 and 1
 		std::uint32_t date;            // date.
 		std::uint32_t starttime;       // time when the scanning was started.
@@ -62,23 +62,23 @@ namespace SpectrumIO
 			@param ut - will on return contain the compressed spectrum
 			@param size - the number of data-points in the uncompressed spectrum
 			@return - the number of data-points in the compressed spectrum */
-		std::uint16_t mk_compress(long *in,unsigned char *ut,std::uint16_t size);
+		std::uint16_t mk_compress(long *in,std::uint8_t *ut,std::uint16_t size);
 
 		/** Uncompress the given input-buffer to the given output-buffer
 				@param inpek - the input-buffer
 				@param kvar - the number of data-points to be written to the output-buffer
 				@param ut - will in return contain the uncompressed spectrum
 				@return -  the number of data-points in the uncompressed spectrum ???? */
-		long UnPack(unsigned char *inpek, long kvar, long *ut );
+		long UnPack(std::uint8_t *inpek, long kvar, long *ut );
 
 	private:
-		void SetBit(unsigned char *pek, long bit);
-		void ClearBit(unsigned char *pek,long bit);
+		void SetBit(std::uint8_t *pek, long bit);
+		void ClearBit(std::uint8_t *pek,long bit);
 
-		void WriteBits(std::int16_t a,std::int16_t curr,long *inpek,unsigned char *utpek,long bitnr);
+		void WriteBits(std::int16_t a,std::int16_t curr,long *inpek,std::uint8_t *utpek,long bitnr);
 		std::int16_t BitsPrec(long i);
 
-		void PackSeg(unsigned char *utpek, long *kvar);
+		void PackSeg(std::uint8_t *utpek, long *kvar);
 
 		long m_bitnr;
 		long *m_strt;

@@ -11,19 +11,19 @@ MKPack::~MKPack(void)
 {
 }
 
-void MKPack::SetBit(unsigned char *pek,long bit)
+void MKPack::SetBit(std::uint8_t *pek,long bit)
 {
 	std::uint16_t ut=0x80;
 	pek[bit>>3]|=(ut>>(bit&7));
 }
 
-void MKPack::ClearBit(unsigned char *pek,long bit)
+void MKPack::ClearBit(std::uint8_t *pek,long bit)
 {
-	unsigned char ut=0x80;
+	std::uint8_t ut=0x80;
 	pek[bit>>3]&=~(ut>>(bit&7));
 }
 
-void MKPack::WriteBits(std::int16_t a,std::int16_t curr,long *inpek,unsigned char *utpek,long bitnr)
+void MKPack::WriteBits(std::int16_t a,std::int16_t curr,long *inpek,std::uint8_t *utpek,long bitnr)
 {
 	std::int16_t jj,j;
 	long utwrd;
@@ -74,7 +74,7 @@ std::int16_t MKPack::BitsPrec(long i)
 	return(j);
 }
 
-void MKPack::PackSeg(unsigned char *utpek, long *kvar)
+void MKPack::PackSeg(std::uint8_t *utpek, long *kvar)
 {
 	std::int16_t len[33];
 	long j;
@@ -127,7 +127,7 @@ void MKPack::PackSeg(unsigned char *utpek, long *kvar)
 	m_bitnr += a*curr+headsiz;
 }
 
-std::uint16_t MKPack::mk_compress(long *in,unsigned char *ut,std::uint16_t size)
+std::uint16_t MKPack::mk_compress(long *in,std::uint8_t *ut,std::uint16_t size)
 {
 	std::uint16_t outsize;
 
@@ -147,7 +147,7 @@ std::uint16_t MKPack::mk_compress(long *in,unsigned char *ut,std::uint16_t size)
 	@param inpek - a pointer to the compressed spectrum
 	@param kvar - the length of the uncompressed spectrum
 	@param ut - a pointer to a buffer to which the data will be uncompressed */
-long MKPack::UnPack(unsigned char *inpek, long kvar, long *ut )
+long MKPack::UnPack(std::uint8_t *inpek, long kvar, long *ut )
 {
 	long *utpek = NULL;
 	std::int16_t len,curr;
@@ -209,7 +209,6 @@ long MKPack::UnPack(unsigned char *inpek, long kvar, long *ut )
 	{
 		ut[jj] += ut[jj-1];
 	}
-//	fclose(f);
 
 	return(lentofile);
 }

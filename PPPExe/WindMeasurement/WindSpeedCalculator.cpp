@@ -355,7 +355,7 @@ void CWindSpeedCalculator::InitializeArrays(){
 		ANY SENSE...
 */
 int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation &location, const Geometry::CPlumeHeight &plumeHeight, Meteorology::CWindField &windField){
-	double distance; // the distance between the two viewing directions at the altitude of the plume.
+	double distance = 0; // the distance between the two viewing directions at the altitude of the plume.
 	
 	// Extract the relative plume height
 	Geometry::CPlumeHeight relativePlumeHeight = plumeHeight;
@@ -479,20 +479,20 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 	// 3. Create the wind-speed measurement series
 	for(k = 0; k < 2; ++k){
 		// 3a. The scan we're looking at
-		Evaluation::CScanResult &scan = reader[k].m_scan[scanIndex[k]];
+		Evaluation::CScanResult &secondScan = reader[k].m_scan[scanIndex[k]];
 
 		// 3c. The length of the measurement
-		int	length = scan.GetEvaluatedNum();
+		int	length = secondScan.GetEvaluatedNum();
 
 		// 3d. Allocate the memory for the series
 		series[k] = new CMeasurementSeries(length);
 
 		// 3e. Copy the relevant data in the scan
 		for(int i = 0; i < length; ++i){
-			scan.GetStartTime(i, time);
+			secondScan.GetStartTime(i, time);
 
 			// get the column value
-			series[k]->column[i]	= scan.GetColumn(i, 0);
+			series[k]->column[i]	= secondScan.GetColumn(i, 0);
 
 			// calculate the time-difference between the start of the
 			//	time-series and this measurement
@@ -684,7 +684,7 @@ void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileNam
 
 /** Appends a dual-beam wind speed result to the given file */
 void CWindSpeedCalculator::AppendResultToFile(const novac::CString &fileName, const novac::CDateTime &startTime,
-	const Configuration::CInstrumentLocation &location,
+	const Configuration::CInstrumentLocation& /*location*/,
 	const Geometry::CPlumeHeight &plumeHeight,
 	Meteorology::CWindField &windField){
 	novac::CDateTime validFrom, validTo;

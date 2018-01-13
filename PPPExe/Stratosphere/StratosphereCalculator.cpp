@@ -210,13 +210,13 @@ double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData &locatio
 	@param VCDErr - will on return be the estimated error in the calculated VCD 
 	@param S0 - will on return be the calculated slant column in the sky-spectrum 
 	*/
-void CStratosphereCalculator::CalculateVCD(CMeasurementDay &measDay, double &VCD, double &VCDErr, double &S0){
+void CStratosphereCalculator::CalculateVCD(CMeasurementDay& /*measDay*/, double& /*VCD*/, double& /*VCDErr*/, double& /*S0*/){
 
 
 }
 
 /** Writes the given results to the output file */
-void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double VCD, double VCDErr, double S0){
+void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double /*VCD*/, double /*VCDErr*/, double /*S0*/){
 	bool writeHeader = false;
 	novac::CString fileName;
 	

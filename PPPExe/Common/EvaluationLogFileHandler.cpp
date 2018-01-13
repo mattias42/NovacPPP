@@ -178,12 +178,12 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 
 		// The column
 		if(Equals(szToken, column, strlen(column))){
-			novac::CString str;
 			m_col.column[m_evResult.m_speciesNum] = curCol;
 			char *pt = szToken + strlen(column) + 1;
 			szToken[strlen(szToken) - 1] = 0;
-			str.Format("%s", pt);
-			m_evResult.InsertSpecie(str);
+			novac::CString specie;
+			specie.Format("%s", pt);
+			m_evResult.InsertSpecie(specie);
 			++m_col.nSpecies;
 			szToken = NULL;
 			continue;
@@ -327,7 +327,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 
 			// convert the string to all lower-case letters
 			for(unsigned int it = 0; it < strlen(szLine); ++it){
-				szLine[it] = tolower(szLine[it]);
+				szLine[it] = (char)tolower(szLine[it]);
 			}
 
 			// find the next scan-information section
@@ -416,9 +416,9 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 					sscanf(szToken, "%d:%d:%d", &fValue1, &fValue2, &fValue3);
 				else
 					sscanf(szToken, "%d.%d.%d", &fValue1, &fValue2, &fValue3);
-				m_specInfo.m_startTime.hour		= fValue1;
-				m_specInfo.m_startTime.minute	= fValue2;
-				m_specInfo.m_startTime.second	= fValue3;
+				m_specInfo.m_startTime.hour		= (unsigned char)fValue1;
+				m_specInfo.m_startTime.minute	= (unsigned char)fValue2;
+				m_specInfo.m_startTime.second	= (unsigned char)fValue3;
 				szToken = NULL;
 				continue;
 			}
@@ -430,9 +430,9 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 					sscanf(szToken, "%d:%d:%d", &fValue1, &fValue2, &fValue3);
 				else
 					sscanf(szToken, "%d.%d.%d", &fValue1, &fValue2, &fValue3);
-				m_specInfo.m_stopTime.hour		= fValue1;
-				m_specInfo.m_stopTime.minute    = fValue2;
-				m_specInfo.m_stopTime.second	= fValue3;
+				m_specInfo.m_stopTime.hour		= (unsigned char)fValue1;
+				m_specInfo.m_stopTime.minute    = (unsigned char)fValue2;
+				m_specInfo.m_stopTime.second	= (unsigned char)fValue3;
 				szToken = NULL;
 				continue;
 			}
@@ -557,7 +557,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 				m_scan[m_scanNum].InitializeArrays(m_scan[m_scanNum-1].GetEvaluatedNum());
 			}
 
-			m_specInfo.m_scanIndex = measNr;
+			m_specInfo.m_scanIndex = (short)measNr;
 			if(Equals(m_specInfo.m_name, "sky")){
 				m_scan[m_scanNum].SetSkySpecInfo(m_specInfo);
 			}else if(Equals(m_specInfo.m_name, "dark")){
@@ -631,7 +631,7 @@ long CEvaluationLogFileHandler::CountScansInFile(){
 		while(fgets(szLine, 8192, f)){
 			// convert the string to all lower-case letters
 			for(unsigned int it = 0; it < strlen(szLine); ++it){
-				szLine[it] = tolower(szLine[it]);
+				szLine[it] = (char)tolower(szLine[it]);
 			}
 
 			// find the next start of a scan 
@@ -665,7 +665,7 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
 		// convert to lower-case
 		for(unsigned int it = 0; it < strlen(szLine); ++it){
-			szLine[it] = tolower(szLine[it]);
+			szLine[it] = (char)tolower(szLine[it]);
 		}
 
 		if(pt = strstr(szLine, "</scaninformation>")){
@@ -681,27 +681,27 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 		}
 		if(pt = strstr(szLine, "date=")){
 			sscanf(pt+5, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2]);
-			scanInfo.m_startTime.year	= tmpInt[2];
-			scanInfo.m_startTime.month	= tmpInt[1];
-			scanInfo.m_startTime.day	= tmpInt[0];
-			scanInfo.m_stopTime.year	= tmpInt[2];
-			scanInfo.m_stopTime.month	= tmpInt[1];
-			scanInfo.m_stopTime.day		= tmpInt[0];
+			scanInfo.m_startTime.year	= (unsigned short)tmpInt[2];
+			scanInfo.m_startTime.month	= (unsigned char)tmpInt[1];
+			scanInfo.m_startTime.day	= (unsigned char)tmpInt[0];
+			scanInfo.m_stopTime.year	= (unsigned short)tmpInt[2];
+			scanInfo.m_stopTime.month	= (unsigned char)tmpInt[1];
+			scanInfo.m_stopTime.day		= (unsigned char)tmpInt[0];
 			continue;
 		}
 		if(pt = strstr(szLine, "starttime=")){
 			if(3 == sscanf(pt+10, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2])){
-				scanInfo.m_startTime.hour		= tmpInt[0];
-				scanInfo.m_startTime.minute		= tmpInt[1];
-				scanInfo.m_startTime.second		= tmpInt[2];
+				scanInfo.m_startTime.hour		= (unsigned char)tmpInt[0];
+				scanInfo.m_startTime.minute		= (unsigned char)tmpInt[1];
+				scanInfo.m_startTime.second		= (unsigned char)tmpInt[2];
 			}
 			continue;
 		}
 		if(pt = strstr(szLine, "stoptime=")){
 			if(3 == sscanf(pt+9, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2])){
-				scanInfo.m_stopTime.hour		= tmpInt[0];
-				scanInfo.m_stopTime.minute		= tmpInt[1];
-				scanInfo.m_stopTime.second		= tmpInt[2];
+				scanInfo.m_stopTime.hour		= (unsigned char)tmpInt[0];
+				scanInfo.m_stopTime.minute		= (unsigned char)tmpInt[1];
+				scanInfo.m_stopTime.second		= (unsigned char)tmpInt[2];
 			}
 			continue;
 		}
@@ -1242,7 +1242,7 @@ void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluatio
 		Algorithm based on BubbleSort (~O(N2))
 		Quite efficient for small arrays since the elements does not have to be copied
 			and thus uses very little memory */
-void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending){
+void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool /*ascending*/){
 	novac::CDateTime time1, time2;
 	bool change;
 	unsigned long nElements = (unsigned long)array.GetSize(); // number of elements

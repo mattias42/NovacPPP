@@ -80,7 +80,7 @@ namespace MathFit
 		*
 		* @return The slope of the function at the given point.
 		*/
-		virtual TFitData GetSlope(TFitData fXValue)
+		virtual TFitData GetSlope(TFitData /*fXValue*/)
 		{
 			throw(EXCEPTION(CNotImplementedException));
 		}

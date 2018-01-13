@@ -386,7 +386,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField) {
+RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const Evaluation::CFitWindow *window, Meteorology::CWindField& /*windField*/) {
 	novac::CString evalSummaryLog;
 	bool fWriteHeaderLine = false;
 
@@ -437,7 +437,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 	return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField) {
+RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const Evaluation::CFitWindow* /*window*/, Meteorology::CWindField& /*windField*/) {
 	novac::CString pakSummaryLog;
 	bool fWriteHeaderLine = false;
 

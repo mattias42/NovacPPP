@@ -446,7 +446,7 @@ namespace MathFit
 		* @param mA			The matrix object receiving the A matrix
 		* @param vB			The vector object modified by the constant values of the equations.
 		*/
-		virtual void GetLinearAMatrix(CVector& vXValues, CMatrix& mA, CVector& vB)
+		virtual void GetLinearAMatrix(CVector& vXValues, CMatrix& mA, CVector& /*vB*/)
 		{
 			const int iXSize = vXValues.GetSize();
 			const int iParamSize = mLinearParams.GetSize();
@@ -670,8 +670,6 @@ namespace MathFit
 			{
 				return mLinearParams.FixParameter(iParamID);
 			}
-
-			return false;
 		}
 
 		/**
@@ -700,8 +698,6 @@ namespace MathFit
 			{
 				return mLinearParams.FixParameter(iParamID, fValue);
 			}
-
-			return false;
 		}
 
 		/**
@@ -726,8 +722,6 @@ namespace MathFit
 			{
 				return mLinearParams.ReleaseParameter(iParamID);
 			}
-
-			return false;
 		}
 
 		/**
@@ -756,8 +750,6 @@ namespace MathFit
 			{
 				return mLinearParams.SetParameter(iParamID, fValue);
 			}
-
-			return false;
 		}
 
 		/**
@@ -786,8 +778,6 @@ namespace MathFit
 			{
 				return mLinearParams.SetAllDefaultParameter(iParamID, fValue);
 			}
-
-			return false;
 		}
 
 		/**
@@ -841,8 +831,6 @@ namespace MathFit
 					return mLinearParams.LinkParameter(iSrcID, ipfTarget.mLinearParams, iTargetID);
 				}
 			}
-
-			return false;
 		}
 
 		/**
@@ -894,8 +882,6 @@ namespace MathFit
 					return mLinearParams.UnlinkParameter(iSrcID, ipfTarget.mLinearParams, iTargetID);
 				}
 			}
-
-			return false;
 		}
 
 		/**

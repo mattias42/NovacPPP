@@ -69,7 +69,7 @@ namespace MathFit
 		*
 		* @return	The basis function in regard to the given linear parameter.
 		*/
-		virtual TFitData GetLinearBasisFunction(TFitData fXValue, int iParamID, bool bFixedID = true)
+		virtual TFitData GetLinearBasisFunction(TFitData /*fXValue*/, int /*iParamID*/, bool /*bFixedID = true*/)
 		{
 			throw(EXCEPTION(CNotImplementedException));
 		}
