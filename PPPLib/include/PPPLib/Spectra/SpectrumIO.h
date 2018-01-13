@@ -12,8 +12,8 @@ namespace SpectrumIO
 	class CSpectrumIO
 	{
 	public:
-		CSpectrumIO(void);
-		~CSpectrumIO(void);
+		CSpectrumIO();
+		~CSpectrumIO();
 
 		static const int ERROR_NO_ERROR = 0;
 		static const int ERROR_EOF = 1;
@@ -126,24 +126,16 @@ namespace SpectrumIO
 				@return 1 - ...*/
 		int ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spec = NULL, char *headerBuffer = NULL, int headerBufferSize = 0);
 
-		/** Converts a time from unsigned long to novac::CDateTime */
-		void ParseTime(const unsigned long t, novac::CDateTime &time) const;
+		/** Converts a time from std::uint32_t to novac::CDateTime */
+		void ParseTime(const std::uint32_t t, novac::CDateTime &time) const;
 
-		/** Converts a time from novac::CDateTime to unsigned long */
-		void WriteTime(unsigned long &t, const novac::CDateTime &time) const;
+		/** Converts a time from novac::CDateTime to std::uint32_t */
+		void WriteTime(std::uint32_t &t, const novac::CDateTime &time) const;
 
-		/** Converts a time from novac::CDateTime to unsigned long, 
-				overload added on 2018-01-13 by Mattias to be able to handle gcc struct alignment. */
-		unsigned long WriteTime(const novac::CDateTime &time) const;
+		/** Converts a date from std::uint32_t to novac::CDateTime */
+		void ParseDate(const std::uint32_t d, novac::CDateTime &day) const;
 
-		/** Converts a date from unsigned long to novac::CDateTime */
-		void ParseDate(const unsigned long d, novac::CDateTime &day) const;
-
-		/** Converts a date from novac::CDateTime to unsigned long */
-		void WriteDate(unsigned long &d, const novac::CDateTime &day) const;
-
-		/** Converts a date from novac::CDateTime to unsigned long,
-				overload added on 2018-01-13 by Mattias to be able to handle gcc struct alignment. */
-		unsigned long WriteDate(const novac::CDateTime &day) const;
+		/** Converts a date from novac::CDateTime to std::uint32_t */
+		void WriteDate(std::uint32_t &d, const novac::CDateTime &day) const;
 	};
 }

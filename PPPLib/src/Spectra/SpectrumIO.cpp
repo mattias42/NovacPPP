@@ -19,7 +19,7 @@ CSpectrumIO::~CSpectrumIO(void)
 }
 
 int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
-	unsigned long specNum = 0;
+	std::uint32_t specNum = 0;
 	int headerSize;
 
 	FILE *f = fopen(fileName, "rb");
@@ -41,7 +41,7 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+		if (0 != fseek(f, std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -49,7 +49,7 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 		fread(textBuffer, 1, 4, f);
 		if (NULL == strstr(textBuffer, "MKZY")) {
 			// rewind
-			if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, -std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}
 		else {
@@ -72,7 +72,7 @@ int CSpectrumIO::CountSpectra(const novac::CString &fileName) {
 int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::CString *specNamesToLookFor, int numSpecNames, int *indices) {
 	novac::CString errorMessage; // a string used for error messages
 	novac::CString specName;
-	unsigned long specNum = 0;
+	std::uint32_t specNum = 0;
 	int headerSize, nameIndex;
 
 	FILE *f = fopen(fileName, "rb");
@@ -111,7 +111,7 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 		char textBuffer[4];
 
 		// Seek our way into the next spectrum...
-		if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+		if (0 != fseek(f, std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 			break;
 
 		// Make sure we're at the right place, if not rewind again and search for the next
@@ -119,7 +119,7 @@ int CSpectrumIO::ScanSpectrumFile(const novac::CString &fileName, const novac::C
 		fread(textBuffer, 1, 4, f);
 		if (NULL == strstr(textBuffer, "MKZY")) {
 			// rewind
-			if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, -std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 		}
 		else {
@@ -144,11 +144,11 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 
 	long i, j;
 	long outlen;
-	unsigned long chk;
-	unsigned short checksum;
+	std::uint32_t chk;
+	std::uint16_t checksum;
 	int hdrSize;
 
-	unsigned short *p = NULL;
+	std::uint16_t *p = NULL;
 
 	i = 0;
 	FILE *f = fopen(fileName, "rb");
@@ -175,7 +175,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 			char textBuffer[4];
 
 			// Seek our way into the next spectrum...
-			if (0 != fseek(f, std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+			if (0 != fseek(f, std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 				break;
 
 			// Make sure we're at the right place, if not rewind again and search for the next
@@ -184,7 +184,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 				break;
 			if (NULL == strstr(textBuffer, "MKZY")) {
 				// rewind
-				if (0 != fseek(f, -std::min(MKZY.size, (unsigned short)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
+				if (0 != fseek(f, -std::min(MKZY.size, (std::uint16_t)(4 * MAX_SPECTRUM_LENGTH)), SEEK_CUR))
 					break;
 			}
 			else {
@@ -246,7 +246,7 @@ RETURN_CODE CSpectrumIO::ReadSpectrum(const novac::CString &fileName, const int 
 				chk += outbuf[j];
 				spec.m_data[j] = outbuf[j];
 			}
-			p = (unsigned short *)&chk;
+			p = (std::uint16_t *)&chk;
 			checksum = p[0] + p[1];
 			if (checksum != MKZY.checksum) {
 				printf("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
@@ -336,11 +336,11 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec) {
 RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerSize, char *headerBuffer, int headerBufferSize) {
 	long outlen;
 	long j;
-	unsigned long chk;
-	unsigned short checksum;
+	std::uint32_t chk;
+	std::uint16_t checksum;
 	MKPack mkPack;
 
-	unsigned short *p = NULL;
+	std::uint16_t *p = NULL;
 
 	int ret = ReadNextSpectrumHeader(f, headerSize, &spec, headerBuffer, headerBufferSize);
 	if (ret != 0)
@@ -395,7 +395,7 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 	{
 		chk += outbuf[j];
 	}
-	p = (unsigned short *)&chk;
+	p = (std::uint16_t *)&chk;
 	checksum = p[0] + p[1];
 	if (checksum != MKZY.checksum) {
 		printf("Checksum mismatch %04x!=x%04x\n", checksum, MKZY.checksum);
@@ -418,50 +418,41 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 	return SUCCESS;
 }
 
-void CSpectrumIO::ParseTime(const unsigned long t, novac::CDateTime &time) const {
+void CSpectrumIO::ParseTime(const std::uint32_t t, novac::CDateTime &time) const {
 	time.hour = (unsigned char)(t / 1000000);
 	time.minute = (unsigned char)((t - time.hour * 1000000) / 10000);
 	time.second = (unsigned char)((t - time.hour * 1000000 - time.minute * 10000) / 100);
-	time.msec = 10 * ((unsigned short)(t % 100));
+	time.msec = 10 * ((std::uint16_t)(t % 100));
 }
 
-void CSpectrumIO::WriteTime(unsigned long &t, const novac::CDateTime &time) const {
+void CSpectrumIO::WriteTime(std::uint32_t &t, const novac::CDateTime &time) const {
 	t = time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.msec / 10;
 }
-unsigned long CSpectrumIO::WriteTime(const novac::CDateTime &time) const {
-	return time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.msec / 10;
-}
 
-void CSpectrumIO::ParseDate(const unsigned long d, novac::CDateTime &day) const {
+void CSpectrumIO::ParseDate(const std::uint32_t d, novac::CDateTime &day) const {
 	day.day = (unsigned char)(d / 10000);                  // the day
 	day.month = (unsigned char)((d - day.day * 10000) / 100);  // the month
-	day.year = (unsigned short)(d % 100);                  // the year
+	day.year = (std::uint16_t)(d % 100);                  // the year
 
 	if (day.year < 100)
 		day.year += 2000; // assume the 21:st century (should be ok for another 95 years)
 }
 
 // Write the date in Manne's format: ddmmyy 
-void CSpectrumIO::WriteDate(unsigned long &d, const novac::CDateTime &day) const {
+void CSpectrumIO::WriteDate(std::uint32_t &d, const novac::CDateTime &day) const {
 	if (day.year < 100)
 		d = day.day * 10000 + day.month * 100 + day.year;
 	else
 		d = day.day * 10000 + day.month * 100 + day.year - (day.year / 100) * 100;
-}
-unsigned long CSpectrumIO::WriteDate(const novac::CDateTime &day) const {
-	if (day.year < 100)
-		return day.day * 10000 + day.month * 100 + day.year;
-	else
-		return day.day * 10000 + day.month * 100 + day.year - (day.year / 100) * 100;
 }
 
 int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectrum &spectrum, const char *headerBuffer, int headerSize) {
 
 	long last, tmp;
 	int i;
-	unsigned short outsiz;
-	unsigned long checksum;
-	unsigned short *p;
+	std::uint16_t outsiz;
+	std::uint32_t checksum;
+	std::uint16_t *p;
 	MKPack mkPack;
 
 	// Test the input-data
@@ -479,7 +470,7 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	checksum = 0;
 	for (i = 0; i < spectrum.m_length; ++i)
 		checksum += spec[i];
-	p = (unsigned short *)&checksum;
+	p = (std::uint16_t *)&checksum;
 	MKZY.checksum = p[0] + p[1];
 
 	// the spectrum should be stored as just the difference
@@ -494,9 +485,9 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	}
 
 	// Compress the spectrum..
-	unsigned short *sbuf = new unsigned short[16384];
+	std::uint16_t *sbuf = new std::uint16_t[16384];
 	memset(sbuf, 0, 16384);
-	outsiz = mkPack.mk_compress(spec, (unsigned char *)sbuf, (unsigned short)spectrum.m_length);
+	outsiz = mkPack.mk_compress(spec, (unsigned char *)sbuf, (std::uint16_t)spectrum.m_length);
 	const CSpectrumInfo &info = spectrum.m_info;
 
 	MKZY.ident[0] = 'M';
@@ -508,10 +499,10 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	MKZY.channel = info.m_channel;
 	MKZY.compassdir = (short)(info.m_compass * 10.0f);
 
-	MKZY.ADC[0] = (unsigned short)(info.m_batteryVoltage * 100.0f);
+	MKZY.ADC[0] = (std::uint16_t)(info.m_batteryVoltage * 100.0f);
 
 	MKZY.coneangle = (char)info.m_coneAngle;
-	MKZY.date = WriteDate(info.m_startTime);
+	WriteDate(MKZY.date, info.m_startTime);
 	MKZY.exptime = (short)info.m_exposureTime;
 	MKZY.flag = info.m_flag;
 	MKZY.hdrsize = sizeof(struct MKZYhdr);
@@ -522,17 +513,17 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	MKZY.measurecnt = (char)info.m_scanSpecNum;
 	MKZY.measureidx = (char)info.m_scanIndex;
 	sprintf(MKZY.name, "%.12s", (const char*)spectrum.m_info.m_name);
-	MKZY.pixels = (unsigned short)spectrum.m_length;
+	MKZY.pixels = (std::uint16_t)spectrum.m_length;
 	MKZY.size = outsiz;
 	MKZY.startc = info.m_startChannel;
-	MKZY.scans = (unsigned short)info.m_numSpec;
-	MKZY.starttime = WriteTime(info.m_startTime);
-	MKZY.stoptime = WriteTime(info.m_stopTime);
+	MKZY.scans = (std::uint16_t)info.m_numSpec;
+	WriteTime(MKZY.starttime, info.m_startTime);
+	WriteTime(MKZY.stoptime, info.m_stopTime);
 	MKZY.temperature = info.m_temperature;
 	MKZY.tiltX = (short)info.m_roll;		// <-- The leaning in the direction perpendicular to the scanner
 	MKZY.tiltY = (short)info.m_pitch;		// <-- The leaning in the direction of the scanner
-	MKZY.viewangle = (unsigned short)info.m_scanAngle;
-	MKZY.viewangle2 = (unsigned short)info.m_scanAngle2;
+	MKZY.viewangle = (std::uint16_t)info.m_scanAngle;
+	MKZY.viewangle2 = (std::uint16_t)info.m_scanAngle2;
 
 	FILE *f = fopen(fileName, "r+b");
 	if (f == NULL) // this will happen if the file does not exist...
@@ -566,7 +557,7 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 /** Reads a spectrum header from the supplied file. The result
 		will be saved to the member-variable 'MKZY'. */
 int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spec, char *headerBuffer, int headerBufferSize) {
-	unsigned long local_headersize;
+	std::uint32_t local_headersize;
 	long sizdiff;
 
 	memset(&MKZY, 0, sizeof(MKZY));  // clear header information
@@ -608,7 +599,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 	{
 		// If the user want the whole header, read it. Otherwise jump formwards
 		if (headerBuffer != NULL && headerBufferSize > MKZY.hdrsize) {
-			if (fread(headerBuffer + local_headersize, 1, sizdiff, f) < (unsigned long)sizdiff)
+			if (fread(headerBuffer + local_headersize, 1, sizdiff, f) < (std::uint32_t)sizdiff)
 				m_lastError = ERROR_SPECTRUM_NOT_FOUND;
 			return FAIL;
 		}
@@ -623,7 +614,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 
 		CSpectrumInfo *info = &spec->m_info;
 		// save the spectrum information in the CSpectrum data structure
-		spec->m_length = std::max(std::min(MKZY.pixels, (unsigned short)(MAX_SPECTRUM_LENGTH)), (unsigned short)(0));
+		spec->m_length = std::max(std::min(MKZY.pixels, (std::uint16_t)(MAX_SPECTRUM_LENGTH)), (std::uint16_t)(0));
 		info->m_startChannel = MKZY.startc;
 		info->m_numSpec = MKZY.scans;
 		info->m_exposureTime = (MKZY.exptime > 0) ? MKZY.exptime : -MKZY.exptime;

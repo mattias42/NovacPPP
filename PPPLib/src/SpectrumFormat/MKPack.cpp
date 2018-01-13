@@ -13,7 +13,7 @@ MKPack::~MKPack(void)
 
 void MKPack::SetBit(unsigned char *pek,long bit)
 {
-	unsigned short ut=0x80;
+	std::uint16_t ut=0x80;
 	pek[bit>>3]|=(ut>>(bit&7));
 }
 
@@ -23,14 +23,14 @@ void MKPack::ClearBit(unsigned char *pek,long bit)
 	pek[bit>>3]&=~(ut>>(bit&7));
 }
 
-void MKPack::WriteBits(short a,short curr,long *inpek,unsigned char *utpek,long bitnr)
+void MKPack::WriteBits(std::int16_t a,std::int16_t curr,long *inpek,unsigned char *utpek,long bitnr)
 {
-	short jj,j;
+	std::int16_t jj,j;
 	long utwrd;
 	long kk;
-	unsigned short utlng=0x80;
+	std::uint16_t utlng=0x80;
 
-	utwrd=(unsigned long)( (a<<5) | (curr & 0x1f) );
+	utwrd=(std::uint32_t)( (a<<5) | (curr & 0x1f) );
 	kk=1L<<(headsiz-1);
 	for(j=0;j<headsiz;j++)
 		{
@@ -52,9 +52,9 @@ void MKPack::WriteBits(short a,short curr,long *inpek,unsigned char *utpek,long 
 		}
 }
 
-short MKPack::BitsPrec(long i)
+std::int16_t MKPack::BitsPrec(long i)
 {
-	short j=1;
+	std::int16_t j=1;
 	if(!i)
 		return(0);
 
@@ -76,10 +76,10 @@ short MKPack::BitsPrec(long i)
 
 void MKPack::PackSeg(unsigned char *utpek, long *kvar)
 {
-	short len[33];
+	std::int16_t len[33];
 	long j;
 	long *incpy;
-	short curr,i,a;
+	std::int16_t curr,i,a;
 	
 	for(j = 0; j < 33; j++)
 		len[j]=0;
@@ -127,9 +127,9 @@ void MKPack::PackSeg(unsigned char *utpek, long *kvar)
 	m_bitnr += a*curr+headsiz;
 }
 
-unsigned short MKPack::mk_compress(long *in,unsigned char *ut,unsigned short size)
+std::uint16_t MKPack::mk_compress(long *in,unsigned char *ut,std::uint16_t size)
 {
-	unsigned short outsize;
+	std::uint16_t outsize;
 
 	m_strt = in;
 	long kvar = size;
@@ -139,7 +139,7 @@ unsigned short MKPack::mk_compress(long *in,unsigned char *ut,unsigned short siz
 		PackSeg(ut,&kvar);
 	} while(kvar > 0);
 
-	outsize = (unsigned short)(m_bitnr+7)>>3;
+	outsize = (std::uint16_t)(m_bitnr+7)>>3;
 	return(outsize);
 }
 
@@ -150,10 +150,10 @@ unsigned short MKPack::mk_compress(long *in,unsigned char *ut,unsigned short siz
 long MKPack::UnPack(unsigned char *inpek, long kvar, long *ut )
 {
 	long *utpek = NULL;
-	short len,curr;
-	short j,jj;
+	std::int16_t len,curr;
+	std::int16_t j,jj;
 	long a;
-	unsigned short lentofile=0;
+	std::uint16_t lentofile=0;
 	long bit = 0;
 
 	// validate the input data - Added 2006.02.13 by MJ
