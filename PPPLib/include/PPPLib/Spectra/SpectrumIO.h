@@ -132,10 +132,18 @@ namespace SpectrumIO
 		/** Converts a time from novac::CDateTime to unsigned long */
 		void WriteTime(unsigned long &t, const novac::CDateTime &time) const;
 
+		/** Converts a time from novac::CDateTime to unsigned long, 
+				overload added on 2018-01-13 by Mattias to be able to handle gcc struct alignment. */
+		unsigned long WriteTime(const novac::CDateTime &time) const;
+
 		/** Converts a date from unsigned long to novac::CDateTime */
 		void ParseDate(const unsigned long d, novac::CDateTime &day) const;
 
 		/** Converts a date from novac::CDateTime to unsigned long */
 		void WriteDate(unsigned long &d, const novac::CDateTime &day) const;
+
+		/** Converts a date from novac::CDateTime to unsigned long,
+				overload added on 2018-01-13 by Mattias to be able to handle gcc struct alignment. */
+		unsigned long WriteDate(const novac::CDateTime &day) const;
 	};
 }

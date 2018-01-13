@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace SpectrumIO
 {
 
@@ -22,9 +24,9 @@ namespace SpectrumIO
 		unsigned char channel;          // channel of the spectrometer, typically 0
 		unsigned char flag;             // for further use, currently contains the
 										// status of the solenoid(s) in bit 0 and 1
-		unsigned long date;             // date
-		unsigned long starttime;        // time when the scanning was started
-		unsigned long stoptime;         // time when the scanning was finished
+		std::uint32_t date;             // date. Type changed from 'unsigned long' to uint32_t on 2018-01-13 by Mattias
+		std::uint32_t starttime;        // time when the scanning was started. Type changed from 'unsigned long' to uint32_t on 2018-01-13 by Mattias
+		std::uint32_t stoptime;         // time when the scanning was finished. Type changed from 'unsigned long' to uint32_t on 2018-01-13 by Mattias
 		double lat;                     // GPS latitude in degrees
 		double lon;                     // GPS longitude in degrees
 		short altitude;                 // new in version 2

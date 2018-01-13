@@ -428,6 +428,9 @@ void CSpectrumIO::ParseTime(const unsigned long t, novac::CDateTime &time) const
 void CSpectrumIO::WriteTime(unsigned long &t, const novac::CDateTime &time) const {
 	t = time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.msec / 10;
 }
+unsigned long CSpectrumIO::WriteTime(const novac::CDateTime &time) const {
+	return time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.msec / 10;
+}
 
 void CSpectrumIO::ParseDate(const unsigned long d, novac::CDateTime &day) const {
 	day.day = (unsigned char)(d / 10000);                  // the day
@@ -444,6 +447,12 @@ void CSpectrumIO::WriteDate(unsigned long &d, const novac::CDateTime &day) const
 		d = day.day * 10000 + day.month * 100 + day.year;
 	else
 		d = day.day * 10000 + day.month * 100 + day.year - (day.year / 100) * 100;
+}
+unsigned long CSpectrumIO::WriteDate(const novac::CDateTime &day) const {
+	if (day.year < 100)
+		return day.day * 10000 + day.month * 100 + day.year;
+	else
+		return day.day * 10000 + day.month * 100 + day.year - (day.year / 100) * 100;
 }
 
 int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectrum &spectrum, const char *headerBuffer, int headerSize) {
@@ -502,7 +511,7 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	MKZY.ADC[0] = (unsigned short)(info.m_batteryVoltage * 100.0f);
 
 	MKZY.coneangle = (char)info.m_coneAngle;
-	WriteDate(MKZY.date, info.m_startTime);
+	MKZY.date = WriteDate(info.m_startTime);
 	MKZY.exptime = (short)info.m_exposureTime;
 	MKZY.flag = info.m_flag;
 	MKZY.hdrsize = sizeof(struct MKZYhdr);
@@ -517,8 +526,8 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	MKZY.size = outsiz;
 	MKZY.startc = info.m_startChannel;
 	MKZY.scans = (unsigned short)info.m_numSpec;
-	WriteTime(MKZY.starttime, info.m_startTime);
-	WriteTime(MKZY.stoptime, info.m_stopTime);
+	MKZY.starttime = WriteTime(info.m_startTime);
+	MKZY.stoptime = WriteTime(info.m_stopTime);
 	MKZY.temperature = info.m_temperature;
 	MKZY.tiltX = (short)info.m_roll;		// <-- The leaning in the direction perpendicular to the scanner
 	MKZY.tiltY = (short)info.m_pitch;		// <-- The leaning in the direction of the scanner
