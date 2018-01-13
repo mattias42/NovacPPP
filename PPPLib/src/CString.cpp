@@ -168,7 +168,7 @@ namespace novac
 		iStart = (int)foundPos;
 
 		// 3. extract the string
-		return CString(m_data.substr(strStart, foundPos));
+		return CString(m_data.substr(strStart, foundPos-strStart));
 	}
 
 	// trim from start

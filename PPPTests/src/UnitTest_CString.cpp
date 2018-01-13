@@ -306,14 +306,14 @@ namespace novac
 		{
 			CString str("%First Second#Third");
 			CString resToken;
-			int curPos;
+			int curPos = 0;
 			CString expected[] = { CString("First"), CString("Second"), CString("Third") };
 
 			int iteration = 0;
 			resToken = str.Tokenize("% #", curPos);
 			while (resToken != "")
 			{
-				REQUIRE(resToken == expected[iteration]);
+				REQUIRE(resToken == expected[iteration++]);
 				resToken = str.Tokenize("% #", curPos);
 			};
 		}
