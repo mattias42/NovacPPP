@@ -47,8 +47,8 @@ namespace SpectrumIO
 	class MKPack
 	{
 	public:
-		MKPack(void);
-		~MKPack(void);
+		MKPack();
+		~MKPack();
 
 		/** Compress the given input-buffer to the given output-buffer 
 			@param in - the uncompressed spectral data

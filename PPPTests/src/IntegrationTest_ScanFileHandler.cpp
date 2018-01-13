@@ -5,7 +5,11 @@ namespace novac
 {
 	novac::CString GetFileName()
 	{
+#ifdef _MSC_VER
 		return novac::CString("../testData/I2J8549_170216_1230_0.pak");
+#else
+		return novac::CString("testData/I2J8549_170216_1230_0.pak");
+#endif // _MSC_VER
 	}
 
 	TEST_CASE("ScanFileHandler CheckScanFile", "[ScanFileHandler][IntegrationTests]")

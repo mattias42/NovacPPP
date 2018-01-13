@@ -39,7 +39,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 	m_specNum = reader.ScanSpectrumFile(m_fileName, strings, 6, indices);
 
 	// Read in the spectra into the buffer, if the file is not too long
-		if(m_specNum < 200){
+	if(m_specNum < 200){
 		m_spectrumBuffer.SetSize(m_specNum);
 		FILE *f = fopen(m_fileName, "rb");
 		if(f != NULL){
