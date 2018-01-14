@@ -917,7 +917,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 
 					geometryResults.AddTail(result);
 
-					messageToUser.Format(" + Calculated a plume altitude of %.0lf ± %.0lf meters and wind direction of %.0lf ± %.0lf degrees by combining measurements from %s and %s",
+					messageToUser.Format(" + Calculated a plume altitude of %.0lf +- %.0lf meters and wind direction of %.0lf +- %.0lf degrees by combining measurements from %s and %s",
 						result->m_plumeAltitude, result->m_plumeAltitudeError, result->m_windDirection, result->m_windDirectionError, (const char*)serial1, (const char*)serial2);
 					ShowMessage(messageToUser);
 
@@ -966,7 +966,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 				geometryResults.AddTail(result);
 
 				// tell the user			
-				messageToUser.Format(" + Calculated a wind direction of %.0lf ± %.0lf degrees from a scan by instrument %s",
+				messageToUser.Format(" + Calculated a wind direction of %.0lf +- %.0lf degrees from a scan by instrument %s",
 					result->m_windDirection, result->m_windDirectionError, (const char*)serial1);
 				ShowMessage(messageToUser);
 			}
@@ -1518,12 +1518,12 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 
 			// insert the newly calculated wind-speed into the database
 			if (windField.GetWindSpeedError() > g_userSettings.m_dualBeam_MaxWindSpeedError) {
-				userMessage.Format("-Calculated a wind-speed of %.1lf ± %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+				userMessage.Format("-Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
 					startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
 			}
 			else {
 				// tell the user...
-				userMessage.Format("+Calculated a wind-speed of %.1lf ± %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+				userMessage.Format("+Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
 					startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
 
 				// get the time-interval that the measurement is valid for
@@ -1580,12 +1580,12 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 
 					// insert the newly calculated wind-speed into the database
 					if (windField.GetWindSpeedError() > g_userSettings.m_dualBeam_MaxWindSpeedError) {
-						userMessage.Format("-Calculated a wind-speed of %.1lf ± %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+						userMessage.Format("-Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
 							startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
 					}
 					else {
 						// tell the user...
-						userMessage.Format("+Calculated a wind-speed of %.1lf ± %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+						userMessage.Format("+Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
 							startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
 
 						windField.GetValidTimeFrame(validFrom, validTo);
