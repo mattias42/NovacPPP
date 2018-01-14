@@ -16,6 +16,8 @@
 #include <thread>
 #include <Poco/Path.h>
 #include <Poco/Logger.h>
+#include <Poco/FileChannel.h>
+#include <Poco/SplitterChannel.h>
 #include <Poco/ConsoleChannel.h>
 #include <Poco/Util/Application.h>
 
@@ -80,6 +82,8 @@ protected:
 			s_exeFileName = executable.getFileName();
 
 			// Setup the logging
+			Poco::AutoPtr<Poco::SplitterChannel> splitterChannel(new Poco::SplitterChannel());
+			splitterChannel->addChannel(new Poco::ConsoleChannel());
 			Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
 			Poco::Logger& log = Poco::Logger::get("NovacPPP");
 			ShowMessage(novac::CString::FormatString(" Executing %s in '%s'", s_exeFileName.c_str(), s_exePath.c_str()));
@@ -87,6 +91,9 @@ protected:
 			// Read the configuration files
 			std::cout << " Loading configuration" << std::endl;
 			LoadConfigurations();
+
+			splitterChannel->addChannel(new Poco::FileChannel(g_userSettings.m_outputDirectory.std_str() + "StatusLog.txt"));
+			log.setChannel(splitterChannel);
 
 			// Get the options from the command line
 			std::cout << " Getting command line arguments" << std::endl;
