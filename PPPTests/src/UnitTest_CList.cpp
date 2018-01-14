@@ -6,17 +6,32 @@ namespace novac
 {
 	TEST_CASE("POSITION")
 	{
-		SECTION("Assignment from nullptr")
+		SECTION("Construction from nullptr")
 		{
 			POSITION<int> p2 = nullptr;
 
 			REQUIRE_FALSE(p2.HasNext());
 		}
+
+		SECTION("Assignment to nullptr, does not alter list")
+		{
+			CList<int> originalList;
+			originalList.AddTail(1);
+			originalList.AddTail(2);
+
+			POSITION<int> sut = originalList.GetHeadPosition();
+
+			REQUIRE(originalList.GetSize() == 2);
+
+			sut = nullptr;
+
+			REQUIRE(originalList.GetSize() == 2);
+		}
 	}
 
 	TEST_CASE("REVERSE_POSITION")
 	{
-		SECTION("Assignment from nullptr")
+		SECTION("Construction from nullptr")
 		{
 			REVERSE_POSITION<int> p2 = nullptr;
 

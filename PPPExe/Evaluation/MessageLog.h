@@ -405,7 +405,7 @@ public:
 		// if window mode is applied, display the message box
 		if(mMode & LOGMODEWINDOW)
 		{
-			// only display a message box if an error occured or no other output media is selected
+			// only display a message box if an error occurred or no other output media is selected
 			if(!(mMode & (~LOGMODEWINDOW)) || iLogLevel == LOGERROR)
 			{
 				char* szOut = new char[1024];

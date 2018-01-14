@@ -51,8 +51,8 @@ extern novac::CVolcanoInfo							g_volcanoes;   // <-- A list of all known volca
 CPostProcessingStatistics							g_processingStats; // <-- The statistics of the processing itself
 
 
-// this is the working-thread that takes care of evaluating one scan
-void EvaluateOneScan();
+// this is the working-thread that takes care of evaluating a portion of the scans
+void EvaluateScansThread();
 
 // this takes care of adding the evaluated log-files to the list in an synchronized way
 //	 the parameter passed in a reference to an array of strings holding the names of the 
@@ -387,7 +387,7 @@ void CPostProcessing::EvaluateScans(novac::CList<novac::CString, novac::CString 
 	// start the threads
 	std::vector<std::thread> evalThreads(g_userSettings.m_maxThreadNum);
 	for (unsigned int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
-		std::thread t{ EvaluateOneScan };
+		std::thread t{ EvaluateScansThread };
 		evalThreads[threadIdx] = std::move(t);
 	}
 
@@ -403,7 +403,7 @@ void CPostProcessing::EvaluateScans(novac::CList<novac::CString, novac::CString 
 	ShowMessage(messageToUser);
 }
 
-void EvaluateOneScan() {
+void EvaluateScansThread() {
 	novac::CString evalLog[MAX_FIT_WINDOWS];
 	std::string fileName;
 	int fitWindowIndex;

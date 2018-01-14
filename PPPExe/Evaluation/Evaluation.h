@@ -60,7 +60,7 @@ namespace Evaluation
 			and using the sky-spectrum which has been set by a previous call to
 			'SetSkySpectrum'
 			@return 0 if all is ok.
-			@return 1 if any error occured, or if the window is not defined. */
+			@return 1 if any error occurred, or if the window is not defined. */
 		int Evaluate(const CSpectrum &measured, int numSteps = 1000);
 		
 		/** Evaluate the supplied spectrum using the solarReference found in 'm_window'
@@ -71,7 +71,7 @@ namespace Evaluation
 				will be determined for the pixel-range 'window.fitLow' and 'window.fitHigh'
 
 			@return 0 if the fit succeeds and the shift & squeeze could be determined
-			@return 1 if any error occured. */
+			@return 1 if any error occurred. */
 		int EvaluateShift(const CSpectrum &measured, double &shift, double &shiftError, double &squeeze, double &squeezeError);
 
 		/** Returns the evaluation result for the last spectrum

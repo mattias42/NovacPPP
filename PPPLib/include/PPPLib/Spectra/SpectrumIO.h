@@ -21,7 +21,7 @@ namespace SpectrumIO
 		static const int ERROR_CHECKSUM_MISMATCH = 3;
 		static const int ERROR_SPECTRUM_TOO_LARGE = 4;  // the size of the uncompressed spectrum is too large to handle
 		static const int ERROR_SPECTRUM_NOT_FOUND = 5;  // the given spectrum index was not found (end of file)
-		static const int ERROR_DECOMPRESS = 6;  // an error occured while decompressing the spectrum
+		static const int ERROR_DECOMPRESS = 6;  // an error occurred while decompressing the spectrum
 		static const int ERROR_SPECTRUM_NOT_COMPLETE = 7;  // the whole spectrum was not saved
 		static const int ERROR_COULD_NOT_CHANGE_POS = 8;  // the position in the file could not be changed
 

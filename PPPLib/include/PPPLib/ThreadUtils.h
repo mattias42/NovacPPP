@@ -84,6 +84,11 @@ namespace novac
 			}
 		}
 
+		size_t Size() {
+			std::lock_guard<std::mutex> lock(guard);
+			return m_items.size();
+		}
+
 	private:
 		std::list<T> m_items;
 		std::mutex guard;

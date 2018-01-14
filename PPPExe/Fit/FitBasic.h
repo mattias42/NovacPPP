@@ -127,7 +127,7 @@ try
 		::cout << szOut << endl;
 	}
 }
-// if an unrecoverable error occured during fitting, we catch it here
+// if an unrecoverable error occurred during fitting, we catch it here
 catch(CFitException e)
 {
 	// on error, print the apropriate message

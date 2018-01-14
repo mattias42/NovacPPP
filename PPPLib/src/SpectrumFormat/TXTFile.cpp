@@ -59,7 +59,7 @@ RETURN_CODE CTXTFile::WriteSpectrum(const CSpectrum &spec, const novac::CString 
 	// Write the spectrum, one data-point at a time
 	for(int k = 0; k < spec.m_length; ++k){
 		if(0 > fprintf(f, "%lf\r\n", spec.m_data[k])){
-			// an error has occured, try to close the file
+			// an error has occurred, try to close the file
 			fclose(f);
 			return FAIL;
 		}

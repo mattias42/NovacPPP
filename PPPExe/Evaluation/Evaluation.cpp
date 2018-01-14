@@ -237,7 +237,7 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 		//	std::cout << "Failed: " << ++iFalseCount << std::endl;
 		//	std::cout << "Steps: " << cFirstFit.GetNonlinearMinimizer().GetFitSteps() << " - Chi: " << cFirstFit.GetNonlinearMinimizer().GetChiSquare() << std::endl;
 
-			message.Format("A Fit Exception has occured. Are the reference files OK?");
+			message.Format("A Fit Exception has occurred. Are the reference files OK?");
 			ShowMessage(message);
 
 			// clean up the evaluation
@@ -255,7 +255,7 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 		will be determined for the pixel-range 'window.fitLow' and 'window.fitHigh'
 
 	@return 0 if the fit succeeds and the shift & squeeze could be determined
-	@return 1 if any error occured. */
+	@return 1 if any error occurred. */
 int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double &shiftError, double &squeeze, double &squeezeError){
 	novac::CString message;
 	int i;
@@ -467,7 +467,7 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 			//	std::cout << "Failed: " << ++iFalseCount << std::endl;
 			//	std::cout << "Steps: " << cFirstFit.GetNonlinearMinimizer().GetFitSteps() << " - Chi: " << cFirstFit.GetNonlinearMinimizer().GetChiSquare() << std::endl;
 
-			message.Format("A Fit Exception has occured. Are the reference files OK?");
+			message.Format("A Fit Exception has occurred. Are the reference files OK?");
 			ShowMessage(message);
 
 			// clean up the evaluation
