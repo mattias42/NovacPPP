@@ -174,7 +174,7 @@ bool CUserConfiguration::operator==(const CUserConfiguration &settings2){
 		return false;
 	
 	// The geometry calculations
-	if(std::abs(settings2.m_calcGeometry_CompletenessLimit != m_calcGeometry_CompletenessLimit) > 0.01)
+	if(std::abs(settings2.m_calcGeometry_CompletenessLimit - m_calcGeometry_CompletenessLimit) > 0.01)
 		return false;
 	if(settings2.m_calcGeometryValidTime != m_calcGeometryValidTime)
 		return false;
