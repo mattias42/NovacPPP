@@ -460,9 +460,10 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 		return 1;
 
 	// ---- start by converting the spectrum into 'long'
-	long *spec = new long[spectrum.m_length];
-	for (i = 0; i < spectrum.m_length; ++i)
+    std::vector<long> spec(spectrum.m_length);
+	for (i = 0; i < spectrum.m_length; ++i) {
 		spec[i] = (long)spectrum.m_data[i];
+    }
 
 	// ---- create the proper header information ---- 
 
@@ -485,9 +486,9 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	}
 
 	// Compress the spectrum..
-	std::uint16_t *sbuf = new std::uint16_t[16384];
-	memset(sbuf, 0, 16384);
-	outsiz = mkPack.mk_compress(spec, (unsigned char *)sbuf, (std::uint16_t)spectrum.m_length);
+    std::vector<std::uint16_t> sbuf(16384);
+	memset(sbuf.data(), 0, 16384);
+	outsiz = mkPack.mk_compress(spec.data(), (unsigned char *)sbuf.data(), (std::uint16_t)spectrum.m_length);
 	const CSpectrumInfo &info = spectrum.m_info;
 
 	MKZY.ident[0] = 'M';
@@ -529,8 +530,6 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	if (f == NULL) // this will happen if the file does not exist...
 		f = fopen(fileName, "w+b");
 	if (f == NULL) {
-		delete sbuf;
-		delete spec;
 		return 1;
 	}
 
@@ -544,12 +543,9 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 		}
 
 		// Write the spectrum data
-		fwrite(sbuf, outsiz, 1, f);
+		fwrite(sbuf.data(), outsiz, 1, f);
 	}
 	fclose(f);
-
-	delete sbuf;
-	delete spec;
 
 	return 0;
 }

@@ -3,6 +3,7 @@
 #include "BasicMath.h"
 
 #include <algorithm>
+#include <vector>
 #include <PPPLib/CStdioFile.h>
 
 #include "../Fit/Vector.h"
@@ -165,22 +166,20 @@ int CCrossSectionData::HighPassFilter(){
 	CBasicMath mathObject;
 	
 	// copy the data
-	double *data = new double[m_length];
+	std::vector<double> data(m_length);
 	for(unsigned long k = 0; k < m_length; ++k){
 		data[k] = this->GetAt(k);
 	}
 
-	mathObject.Mul(data, m_length, -2.5e15);
-	mathObject.Delog(data, m_length);
-	mathObject.HighPassBinomial(data, m_length, 500);
-	mathObject.Log(data, m_length);
-	mathObject.Div(data, m_length, 2.5e15);
+	mathObject.Mul(data.data(), m_length, -2.5e15);
+	mathObject.Delog(data.data(), m_length);
+	mathObject.HighPassBinomial(data.data(), m_length, 500);
+	mathObject.Log(data.data(), m_length);
+	mathObject.Div(data.data(), m_length, 2.5e15);
 	
 	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
-	
-	delete data;
 
 	return 0;
 }
@@ -189,20 +188,18 @@ int CCrossSectionData::HighPassFilter_Ring(){
 	CBasicMath mathObject;
 	
 	// copy the data
-	double *data = new double[m_length];
+	std::vector<double> data(m_length);
 	for(unsigned long k = 0; k < m_length; ++k){
 		data[k] = this->GetAt(k);
 	}
 
-	mathObject.HighPassBinomial(data, m_length, 500);
-	mathObject.Log(data, m_length);
+	mathObject.HighPassBinomial(data.data(), m_length, 500);
+	mathObject.Log(data.data(), m_length);
 	
 	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	
-	delete data;
-
 	return 0;
 }
 
@@ -212,18 +209,16 @@ int CCrossSectionData::Multiply(double scalar){
 	CBasicMath mathObject;
 	
 	// copy the data
-	double *data = new double[m_length];
+	std::vector<double> data(m_length);
 	for(unsigned long k = 0; k < m_length; ++k){
 		data[k] = this->GetAt(k);
 	}
 
-	mathObject.Mul(data, m_length, scalar);
+	mathObject.Mul(data.data(), m_length, scalar);
 	
 	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
-	
-	delete data;
 
 	return 0;
 }
@@ -232,18 +227,16 @@ int CCrossSectionData::Log(){
 	CBasicMath mathObject;
 	
 	// copy the data
-	double *data = new double[m_length];
+	std::vector<double> data(m_length);
 	for(unsigned long k = 0; k < m_length; ++k){
 		data[k] = this->GetAt(k);
 	}
 
-	mathObject.Log(data, m_length);
+	mathObject.Log(data.data(), m_length);
 	
 	for(int k = 0; k < m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
-	
-	delete data;
 
 	return 0;
 }
