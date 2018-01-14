@@ -12,12 +12,12 @@ CScanResult::CScanResult(void)
 	m_specNum = 0;
 	m_plumeProperties.Clear();
 	m_flux.Clear();
-	m_geomError					= 30.0;	// best-case guess, 30%
-	m_spectroscopyError			= 15.0;	// best-case guess, 15%
-	m_scatteringError			= 30.0;	// best-case guess, 30%
-	m_measurementMode			= MODE_UNKNOWN;
-	m_instrumentType			= INSTR_GOTHENBURG;
-	m_corruptedNum				= 0;
+	m_geomError = 30.0;	// best-case guess, 30%
+	m_spectroscopyError = 15.0;	// best-case guess, 15%
+	m_scatteringError = 30.0;	// best-case guess, 30%
+	m_measurementMode = MODE_UNKNOWN;
+	m_instrumentType = INSTR_GOTHENBURG;
+	m_corruptedNum = 0;
 }
 
 CScanResult::~CScanResult(void)
@@ -30,10 +30,10 @@ CScanResult::~CScanResult(void)
 	m_corruptedSpectra.FreeExtra();
 }
 
-/** Intializes the memory arrays to have, initially, space for 
+/** Intializes the memory arrays to have, initially, space for
 		'specNum' spectra. */
-void CScanResult::InitializeArrays(long specNum){
-	if(specNum < 0 || specNum > 1024){
+void CScanResult::InitializeArrays(long specNum) {
+	if (specNum < 0 || specNum > 1024) {
 		return;
 	}
 
@@ -42,7 +42,7 @@ void CScanResult::InitializeArrays(long specNum){
 }
 
 /** Appends the result to the list of calculated results */
-int CScanResult::AppendResult(const CEvaluationResult &evalRes, const CSpectrumInfo &specInfo){
+int CScanResult::AppendResult(const CEvaluationResult &evalRes, const CSpectrumInfo &specInfo) {
 
 	// Append the evaluationresult to the end of the 'm_spec'-vector
 	m_spec.SetAtGrow(m_specNum, CEvaluationResult(evalRes));
@@ -55,27 +55,27 @@ int CScanResult::AppendResult(const CEvaluationResult &evalRes, const CSpectrumI
 	return 0;
 }
 
-const CEvaluationResult *CScanResult::GetResult(unsigned int specIndex) const{
-	if(specIndex >= m_specNum)
+const CEvaluationResult *CScanResult::GetResult(unsigned int specIndex) const {
+	if (specIndex >= m_specNum)
 		return NULL; // not a valid index
 
 	return &m_spec.GetAt(specIndex);
 }
 
-/** Adds spectrum number 'specIndex' into the list of spectra in the .pak -file 
+/** Adds spectrum number 'specIndex' into the list of spectra in the .pak -file
 		which are corrupted and could not be evaluated */
-void	CScanResult::MarkAsCorrupted(unsigned int specIndex){
+void	CScanResult::MarkAsCorrupted(unsigned int specIndex) {
 	m_corruptedSpectra.SetAtGrow(m_corruptedNum++, specIndex);
 }
 
 /** Retrieves how many spectra are corrupted in the scan */
-int CScanResult::GetCorruptedNum() const{
+int CScanResult::GetCorruptedNum() const {
 	return m_corruptedNum;
 }
 
 /** Removes the spectrum number 'specIndex' from the list of calcualted results */
-int CScanResult::RemoveResult(unsigned int specIndex){
-	if(specIndex >= m_specNum)
+int CScanResult::RemoveResult(unsigned int specIndex) {
+	if (specIndex >= m_specNum)
 		return 1; // not a valid index
 
 	// Remove the desired value
@@ -88,33 +88,33 @@ int CScanResult::RemoveResult(unsigned int specIndex){
 }
 
 /** Stores the information about the sky-spectrum used */
-void CScanResult::SetSkySpecInfo(const CSpectrumInfo &skySpecInfo){
+void CScanResult::SetSkySpecInfo(const CSpectrumInfo &skySpecInfo) {
 	this->m_skySpecInfo = skySpecInfo;
 }
 
 /** Stores the information about the dark-spectrum used */
-void CScanResult::SetDarkSpecInfo(const CSpectrumInfo &darkSpecInfo){
+void CScanResult::SetDarkSpecInfo(const CSpectrumInfo &darkSpecInfo) {
 	this->m_darkSpecInfo = darkSpecInfo;
 }
 
 /** Stores the information about the offset-spectrum used */
-void CScanResult::SetOffsetSpecInfo(const CSpectrumInfo &offsetSpecInfo){
+void CScanResult::SetOffsetSpecInfo(const CSpectrumInfo &offsetSpecInfo) {
 	this->m_offsetSpecInfo = offsetSpecInfo;
 }
 
 /** Stores the information about the dark-current-spectrum used */
-void CScanResult::SetDarkCurrentSpecInfo(const CSpectrumInfo &darkCurSpecInfo){
+void CScanResult::SetDarkCurrentSpecInfo(const CSpectrumInfo &darkCurSpecInfo) {
 	this->m_darkCurSpecInfo = darkCurSpecInfo;
 }
 
 /** Check the last spectrum point for goodness of fit */
-bool CScanResult::CheckGoodnessOfFit(const CSpectrumInfo& info, float chi2Limit, float upperLimit, float lowerLimit){
-	return CheckGoodnessOfFit(info, m_specNum-1, chi2Limit, upperLimit, lowerLimit);
+bool CScanResult::CheckGoodnessOfFit(const CSpectrumInfo& info, float chi2Limit, float upperLimit, float lowerLimit) {
+	return CheckGoodnessOfFit(info, m_specNum - 1, chi2Limit, upperLimit, lowerLimit);
 }
 
 /** Check spectrum number 'index' for goodness of fit */
-bool CScanResult::CheckGoodnessOfFit(const CSpectrumInfo& info, int index, float chi2Limit, float upperLimit, float lowerLimit){
-	if(index < 0 || (unsigned int)index >= m_specNum)
+bool CScanResult::CheckGoodnessOfFit(const CSpectrumInfo& info, int index, float chi2Limit, float upperLimit, float lowerLimit) {
+	if (index < 0 || (unsigned int)index >= m_specNum)
 		return false;
 
 	// remember the electronic offset (NB. this is not same as the scan-offset)
@@ -123,36 +123,39 @@ bool CScanResult::CheckGoodnessOfFit(const CSpectrumInfo& info, int index, float
 	return m_spec[index].CheckGoodnessOfFit(info, chi2Limit, upperLimit, lowerLimit);
 }
 
-int CScanResult::CalculateOffset(const CMolecule &specie){
-	if(m_specNum < 0)
-		return 1;
-
-	// Get the index for the specie for which we want to calculate the offset
-	long specieIndex = GetSpecieIndex(specie.m_name);
-	if(specieIndex == -1){ // if the specified specie does not exist
+int CScanResult::CalculateOffset(const CMolecule &specie) {
+	if (m_specNum < 0) {
 		return 1;
 	}
 
-	double  *columns = new double[m_specNum];
-	bool    *badEval = new bool[m_specNum];
+	// Get the index for the specie for which we want to calculate the offset
+	long specieIndex = GetSpecieIndex(specie.m_name);
+	if (specieIndex == -1) { // if the specified specie does not exist
+		return 1;
+	}
+
+	std::vector<double> columns(m_specNum);
+	bool* badEval = new bool[m_specNum];
 
 	// We then need to rearrange the column data a little bit. 
-	for(unsigned int i = 0; i < m_specNum; ++i){
+	for (unsigned int i = 0; i < m_specNum; ++i) {
 		columns[i] = m_spec[i].m_ref[specieIndex].m_column;
 
 		// The spectrum is considered as bad if the goodness-of-fit checking
 		//	has marked it as bad or the user has marked it as deleted
-		if(m_spec[i].IsBad() || m_spec[i].IsDeleted())
+		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			badEval[i] = true;
-		else
+		}
+		else {
 			badEval[i] = false;
+		}
 	}
 
 	// Calculate the offset
-	this->m_plumeProperties.m_offset = Common::CalculateOffset(columns, badEval, m_specNum);
+	this->m_plumeProperties.m_offset = Common::CalculateOffset(columns.data(), badEval, m_specNum);
 
-	delete [] columns;
-	delete [] badEval;
+	delete[] badEval;
+
 	return 0;
 }
 
@@ -160,16 +163,16 @@ int CScanResult::GetSpecieIndex(const novac::CString &specie) const
 {
 	unsigned long i; // iterator
 
-	if(m_specNum <= 0) // <-- if there are no spectra, there can be no species
+	if (m_specNum <= 0) // <-- if there are no spectra, there can be no species
 		return -1;
 
 	// if there's only one specie, assume that this is the correct one
-	if(m_spec[0].m_speciesNum == 1)
+	if (m_spec[0].m_speciesNum == 1)
 		return 0;
 
 	// find the index of the interesting specie
-	for(i = 0; i < m_spec[0].m_speciesNum; ++i){
-		if(Equals(m_spec[0].m_ref[i].m_specieName, specie)){
+	for (i = 0; i < m_spec[0].m_speciesNum; ++i) {
+		if (Equals(m_spec[0].m_ref[i].m_specieName, specie)) {
 			return i;
 		}
 	}
@@ -177,46 +180,43 @@ int CScanResult::GetSpecieIndex(const novac::CString &specie) const
 	return -1;
 }
 
-int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle, double tilt){
+int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle, double tilt) {
 	unsigned long i; // iterator
 	novac::CDateTime startTime1, startTime2;
 	Meteorology::CWindField modifiedWind;
 
 	// If this is a not a flux measurement, then don't calculate any flux
-	if(!IsFluxMeasurement())
+	if (!IsFluxMeasurement())
 		return 1;
 
 	// get the specie index
 	int specieIndex = GetSpecieIndex(specie.m_name);
-	if(specieIndex == -1){
+	if (specieIndex == -1) {
 		return 1;
 	}
 
 	// pull out the good data points out of the measurement and ignore the bad points
 	// at the same time convert to mg/m2
-	double *scanAngle	= new double[m_specNum];
-	double *scanAngle2	= new double[m_specNum];
-	double *column		= new double[m_specNum];
+	std::vector<double> scanAngle(m_specNum);
+	std::vector<double> scanAngle2(m_specNum);
+	std::vector<double> column(m_specNum);
 	unsigned int nDataPoints = 0;
-	for(i = 0; i < m_specNum; ++i){
-		if(m_spec[i].IsBad() || m_spec[i].IsDeleted())
+	for (i = 0; i < m_specNum; ++i) {
+		if (m_spec[i].IsBad() || m_spec[i].IsDeleted())
 			continue; // this is a bad measurement
-		if(m_specInfo[i].m_flag >= 64)
+		if (m_specInfo[i].m_flag >= 64)
 			continue; // this is a direct-sun measurement, don't use it to calculate the flux...
 
-		scanAngle[nDataPoints]	= m_specInfo[i].m_scanAngle;
-		scanAngle2[nDataPoints]	= m_specInfo[i].m_scanAngle2;
-		column[nDataPoints]     = specie.Convert_MolecCm2_to_kgM2(m_spec[i].m_ref[specieIndex].m_column);
+		scanAngle[nDataPoints] = m_specInfo[i].m_scanAngle;
+		scanAngle2[nDataPoints] = m_specInfo[i].m_scanAngle2;
+		column[nDataPoints] = specie.Convert_MolecCm2_to_kgM2(m_spec[i].m_ref[specieIndex].m_column);
 		++nDataPoints;
 	}
 
 	// if there are no good datapoints in the measurement, the flux is assumed to be zero
-	if(nDataPoints < 10){
-		delete[] scanAngle;
-		delete[] scanAngle2;
-		delete[] column;
+	if (nDataPoints < 10) {
 		m_flux.Clear();
-		if(nDataPoints == 0)
+		if (nDataPoints == 0)
 			ShowMessage("Could not calculate flux, no good datapoints in measurement");
 		else
 			ShowMessage("Could not calculate flux, too few good datapoints in measurement");
@@ -226,58 +226,54 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 	// Get the times of the scan
 	this->GetSkyStartTime(startTime1);
 	this->GetStartTime(0, startTime2);
-	if(startTime1 < startTime2){
+	if (startTime1 < startTime2) {
 		m_flux.m_startTime = startTime1;
-	}else{
+	}
+	else {
 		m_flux.m_startTime = startTime2;
 	}
-	this->GetStopTime(m_specNum-1, m_flux.m_stopTime);
-	
+	this->GetStopTime(m_specNum - 1, m_flux.m_stopTime);
+
 	// and the serial number of the instrument
 	m_flux.m_instrument.Format(GetSerial());
 
 	// Calculate the flux
-	m_flux.m_flux				= Common::CalculateFlux(scanAngle, scanAngle2, column, specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, wind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
-	m_flux.m_windField			= wind;
-	m_flux.m_plumeHeight        = relativePlumeHeight;
-	m_flux.m_compass            = compass;
-	m_flux.m_coneAngle          = coneAngle;
-	m_flux.m_tilt               = tilt;
-	m_flux.m_numGoodSpectra		= nDataPoints;
+	m_flux.m_flux = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, wind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+	m_flux.m_windField = wind;
+	m_flux.m_plumeHeight = relativePlumeHeight;
+	m_flux.m_compass = compass;
+	m_flux.m_coneAngle = coneAngle;
+	m_flux.m_tilt = tilt;
+	m_flux.m_numGoodSpectra = nDataPoints;
 
 	// calculate the completeness and centre of the plume
 	CalculatePlumeCentre(specie);
 
-	m_flux.m_scanOffset		= m_plumeProperties.m_offset;
-	m_flux.m_completeness	= m_plumeProperties.m_completeness;
-	m_flux.m_plumeCentre[0]	= m_plumeProperties.m_plumeCentre[0];
-	m_flux.m_plumeCentre[1]	= m_plumeProperties.m_plumeCentre[1];
-	m_flux.m_instrumentType	= m_instrumentType;
-	
+	m_flux.m_scanOffset = m_plumeProperties.m_offset;
+	m_flux.m_completeness = m_plumeProperties.m_completeness;
+	m_flux.m_plumeCentre[0] = m_plumeProperties.m_plumeCentre[0];
+	m_flux.m_plumeCentre[1] = m_plumeProperties.m_plumeCentre[1];
+	m_flux.m_instrumentType = m_instrumentType;
+
 	// Try to make an estimation of the error in flux from the
 	//		wind field used and from the plume height used
-	
+
 	// 1. the wind field
 	modifiedWind = wind;
 	modifiedWind.SetWindDirection(wind.GetWindDirection() - wind.GetWindDirectionError(), wind.GetWindDirectionSource());
-	double flux1 = 	Common::CalculateFlux(scanAngle, scanAngle2, column, specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+	double flux1 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
 
 	modifiedWind.SetWindDirection(wind.GetWindDirection() + wind.GetWindDirectionError(), wind.GetWindDirectionSource());
-	double flux2 = 	Common::CalculateFlux(scanAngle, scanAngle2, column, specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
-	
+	double flux2 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+
 	double fluxErrorDueToWindDirection = std::max(fabs(flux2 - m_flux.m_flux), fabs(flux1 - m_flux.m_flux));
-	
+
 	double fluxErrorDueToWindSpeed = m_flux.m_flux * wind.GetWindSpeedError() / wind.GetWindSpeed();
-	
+
 	m_flux.m_fluxError_Wind = sqrt(fluxErrorDueToWindDirection * fluxErrorDueToWindDirection + fluxErrorDueToWindSpeed * fluxErrorDueToWindSpeed);
 
 	// 2. the plume height
 	m_flux.m_fluxError_PlumeHeight = m_flux.m_flux * relativePlumeHeight.m_plumeAltitudeError / relativePlumeHeight.m_plumeAltitude;
-
-
-	delete[] scanAngle;
-	delete[] scanAngle2;
-	delete[] column;
 
 	return 0;
 }
@@ -285,16 +281,16 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 /** Tries to find a plume in the last scan result. If the plume is found
 		this function returns true. The result of the calculations is stored in
 		the member-variables 'm_plumeCentre', 'm_plumeCompleteness' and m_plumeEdge[0] and m_plumeEdge[1] */
-bool CScanResult::CalculatePlumeCentre(const CMolecule &specie){
+bool CScanResult::CalculatePlumeCentre(const CMolecule &specie) {
 	return CalculatePlumeCentre(specie, this->m_plumeProperties);
 }
 
 /** Tries to find a plume in the last scan result. If the plume is found
-		this function returns true, and the centre of the plume (in scanAngles) 
-		is given in 'plumeCentre' and the widht of the plume (in scanAngles) 
+		this function returns true, and the centre of the plume (in scanAngles)
+		is given in 'plumeCentre' and the widht of the plume (in scanAngles)
 		is given in 'plumeWidth' */
 
-bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProperty &plumeProperties){
+bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProperty &plumeProperties) {
 	unsigned long i; // iterator
 	double offset = m_plumeProperties.m_offset;
 	m_plumeProperties.Clear(); // notify that the plume-centre position is unknown
@@ -302,72 +298,71 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 
 	// if this is a wind-speed measurement, then there's no use to try to 
 	//		calculate the plume-centre
-	if(this->IsWindMeasurement())
+	if (this->IsWindMeasurement())
 		return false;
 
 	// get the specie index
 	int specieIndex = GetSpecieIndex(specie.m_name);
-	if(specieIndex == -1){
+	if (specieIndex == -1) {
 		return false;
 	}
 
 	// pull out the good data points out of the measurement and ignore the bad points
-	double *scanAngle		= new double[m_specNum];
-	double *phi				= new double[m_specNum];
-	double *column			= new double[m_specNum];
-	double *columnError		= new double[m_specNum];
-	bool	 *badEval		= new bool[m_specNum];
-	for(i = 0; i < m_specNum; ++i){
-		if(m_spec[i].IsBad() || m_spec[i].IsDeleted()){
+
+	std::vector<double> scanAngle(m_specNum);
+	std::vector<double> phi(m_specNum);
+	std::vector<double> column(m_specNum);
+	std::vector<double> columnError(m_specNum);
+	bool	 *badEval = new bool[m_specNum];
+	for (i = 0; i < m_specNum; ++i) {
+		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			badEval[i] = true;
-		}else{
-			badEval[i]	  = false;
-			scanAngle[i]  = m_specInfo[i].m_scanAngle;
-			phi[i]		  = m_specInfo[i].m_scanAngle2;
-			column[i]     = m_spec[i].m_ref[specieIndex].m_column;
-			columnError[i]= m_spec[i].m_ref[specieIndex].m_columnError;
+		}
+		else {
+			badEval[i] = false;
+			scanAngle[i] = m_specInfo[i].m_scanAngle;
+			phi[i] = m_specInfo[i].m_scanAngle2;
+			column[i] = m_spec[i].m_ref[specieIndex].m_column;
+			columnError[i] = m_spec[i].m_ref[specieIndex].m_columnError;
 		}
 	}
 
 	// Calculate the offset of the scan
-	plumeProperties.m_offset = Common::CalculateOffset(column, badEval, m_specNum);
+	plumeProperties.m_offset = Common::CalculateOffset(column.data(), badEval, m_specNum);
 
 	// Estimate the completeness of the plume (this will call on Common::FindPlume we don't need to do that here...)
-	bool ret = Common::CalculatePlumeCompleteness(scanAngle, phi, column, columnError, badEval, offset, m_specNum, m_plumeProperties);
+	bool ret = Common::CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
 
 	// Calculate the centre of the plume
 	//	bool ret = Common::FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);
-	
-	if(ret){
+
+	if (ret) {
 		// Remember the calculated value of the plume centre
-		plumeProperties	=	m_plumeProperties;
-	}else{
+		plumeProperties = m_plumeProperties;
+	}
+	else {
 		// If there's no plume, then the flux is probably not very good
 	}
 
-	delete[] scanAngle;
-	delete[] phi;
-	delete[] column;
-	delete[] columnError;
 	delete[] badEval;
 
 	return ret;
 }
 
 /** Calculates the maximum good column value in the scan, corrected for the offset */
-double CScanResult::GetMaxColumn(const novac::CString &specie) const{
+double CScanResult::GetMaxColumn(const novac::CString &specie) const {
 	unsigned long i; // iterator
 	double maxColumn = 0.0;
 
 	// get the specie index
 	int specieIndex = GetSpecieIndex(specie);
-	if(specieIndex == -1){
+	if (specieIndex == -1) {
 		return 0.0;
 	}
 
 	// Go through the column values and pick out the highest
-	for(i = 0; i < m_specNum; ++i){
-		if(m_spec[i].IsBad() || m_spec[i].IsDeleted()){
+	for (i = 0; i < m_specNum; ++i) {
+		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			continue;
 		}
 		maxColumn = std::max(maxColumn, m_spec[i].m_ref[specieIndex].m_column - m_plumeProperties.m_offset);
@@ -377,100 +372,100 @@ double CScanResult::GetMaxColumn(const novac::CString &specie) const{
 }
 
 /** Returns the calculated plume edges */
-void CScanResult::GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const{
-	lowEdge		= m_plumeProperties.m_plumeEdge_low;
-	highEdge	= m_plumeProperties.m_plumeEdge_high;
+void CScanResult::GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const {
+	lowEdge = m_plumeProperties.m_plumeEdge_low;
+	highEdge = m_plumeProperties.m_plumeEdge_high;
 }
 
-double CScanResult::GetColumn(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetColumn(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, COLUMN);
 }
 
-double CScanResult::GetColumn(unsigned long spectrumNum, CMolecule &molec) const{
+double CScanResult::GetColumn(unsigned long spectrumNum, CMolecule &molec) const {
 	int index = this->GetSpecieIndex(molec.m_name);
-	if(index == -1)
+	if (index == -1)
 		return NOT_A_NUMBER;
 	else
 		return GetFitParameter(spectrumNum, index, COLUMN);
 }
 
-double CScanResult::GetColumnError(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetColumnError(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, COLUMN_ERROR);
 }
 
-double CScanResult::GetShift(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetShift(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, SHIFT);
 }
 
-double CScanResult::GetShiftError(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetShiftError(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, SHIFT_ERROR);
 }
 
-double CScanResult::GetSqueeze(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetSqueeze(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, SQUEEZE);
 }
 
-double CScanResult::GetSqueezeError(unsigned long spectrumNum, unsigned long specieNum) const{
+double CScanResult::GetSqueezeError(unsigned long spectrumNum, unsigned long specieNum) const {
 	return this->GetFitParameter(spectrumNum, specieNum, SQUEEZE_ERROR);
 }
 
 /** @return the delta of the fit for spectrum number 'spectrumNum'
 	  @param spectrumNum - the spectrum number (zero-based) for which the delta value is desired         */
-double CScanResult::GetDelta(unsigned long spectrumNum) const{
+double CScanResult::GetDelta(unsigned long spectrumNum) const {
 	return this->m_spec[spectrumNum].m_delta;
 }
 
 /** @return the chi-square of the fit for spectrum number 'spectrumNum'
 	  @param spectrumNum - the spectrum number (zero-based) for which the delta value is desired         */
-double CScanResult::GetChiSquare(unsigned long spectrumNum) const{
-	 return this->m_spec[spectrumNum].m_chiSquare;
+double CScanResult::GetChiSquare(unsigned long spectrumNum) const {
+	return this->m_spec[spectrumNum].m_chiSquare;
 }
 
 /** Returns the desired fit parameter */
-double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long specieIndex, FIT_PARAMETER parameter) const{
-	if(specIndex < 0 || specIndex > m_specNum)
+double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long specieIndex, FIT_PARAMETER parameter) const {
+	if (specIndex < 0 || specIndex > m_specNum)
 		return 0.0f;
 
-	if(specieIndex < 0 || specieIndex > this->m_spec[specIndex].m_speciesNum)
+	if (specieIndex < 0 || specieIndex > this->m_spec[specIndex].m_speciesNum)
 		return 0.0f;
 
-	switch(parameter){
-		case COLUMN:        return this->m_spec[specIndex].m_ref[specieIndex].m_column;
-		case COLUMN_ERROR:  return this->m_spec[specIndex].m_ref[specieIndex].m_columnError;
-		case SHIFT:         return this->m_spec[specIndex].m_ref[specieIndex].m_shift;
-		case SHIFT_ERROR:   return this->m_spec[specIndex].m_ref[specieIndex].m_shiftError;
-		case SQUEEZE:       return this->m_spec[specIndex].m_ref[specieIndex].m_squeeze;
-		case SQUEEZE_ERROR: return this->m_spec[specIndex].m_ref[specieIndex].m_squeezeError;
-		case DELTA:         return this->m_spec[specIndex].m_delta;
-		default:            return 0.0f;
+	switch (parameter) {
+	case COLUMN:        return this->m_spec[specIndex].m_ref[specieIndex].m_column;
+	case COLUMN_ERROR:  return this->m_spec[specIndex].m_ref[specieIndex].m_columnError;
+	case SHIFT:         return this->m_spec[specIndex].m_ref[specieIndex].m_shift;
+	case SHIFT_ERROR:   return this->m_spec[specIndex].m_ref[specieIndex].m_shiftError;
+	case SQUEEZE:       return this->m_spec[specIndex].m_ref[specieIndex].m_squeeze;
+	case SQUEEZE_ERROR: return this->m_spec[specIndex].m_ref[specieIndex].m_squeezeError;
+	case DELTA:         return this->m_spec[specIndex].m_delta;
+	default:            return 0.0f;
 	}
 }
 
-const CSpectrumInfo& CScanResult::GetSpectrumInfo(unsigned long index) const{
+const CSpectrumInfo& CScanResult::GetSpectrumInfo(unsigned long index) const {
 	return m_specInfo[index];
 }
 
 /** Returns a reference to the spectrum info-structure of the sky-spectrum used */
-const CSpectrumInfo &CScanResult::GetSkySpectrumInfo() const{
+const CSpectrumInfo &CScanResult::GetSkySpectrumInfo() const {
 	return m_skySpecInfo;
 }
 
 /** Returns a reference to the spectrum info-structure of the dark-spectrum used */
-const CSpectrumInfo &CScanResult::GetDarkSpectrumInfo() const{
+const CSpectrumInfo &CScanResult::GetDarkSpectrumInfo() const {
 	return m_darkSpecInfo;
 }
 
 
 /** Assignment operator */
-CScanResult &CScanResult::operator=(const CScanResult &s2){
+CScanResult &CScanResult::operator=(const CScanResult &s2) {
 	// The calculated flux and offset
-	this->m_flux    = s2.m_flux;
+	this->m_flux = s2.m_flux;
 
 	this->m_plumeProperties = s2.m_plumeProperties;
 
 	// The errors
-	m_geomError         = s2.m_geomError;
-	m_scatteringError   = s2.m_scatteringError;
+	m_geomError = s2.m_geomError;
+	m_scatteringError = s2.m_scatteringError;
 	m_spectroscopyError = s2.m_spectroscopyError;
 
 	// The calculated wind-direction and plume-centre
@@ -479,69 +474,69 @@ CScanResult &CScanResult::operator=(const CScanResult &s2){
 	this->m_specInfo.Copy(s2.m_specInfo);
 	this->m_corruptedSpectra.Copy(s2.m_corruptedSpectra);
 	this->m_corruptedNum = s2.m_corruptedNum;
-	this->m_specNum      = s2.m_specNum;
+	this->m_specNum = s2.m_specNum;
 
-	this->m_skySpecInfo   = s2.m_skySpecInfo;
-	this->m_darkSpecInfo  = s2.m_darkSpecInfo;
+	this->m_skySpecInfo = s2.m_skySpecInfo;
+	this->m_darkSpecInfo = s2.m_darkSpecInfo;
 
 	this->m_measurementMode = s2.m_measurementMode;
-	this->m_instrumentType  = s2.m_instrumentType;
+	this->m_instrumentType = s2.m_instrumentType;
 
 	return *this;
 }
 
 /** Marks the desired spectrum with the supplied mark_flag.
-    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-    @return SUCCESS on success. */
-RETURN_CODE  CScanResult::MarkAs(unsigned long index, int MARK_FLAG){
-	if(!IsValidSpectrumIndex(index))
+	Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
+	@return SUCCESS on success. */
+RETURN_CODE  CScanResult::MarkAs(unsigned long index, int MARK_FLAG) {
+	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
 	return m_spec[index].MarkAs(MARK_FLAG);
 }
 
 /** Removes the desired mark from the desired spectrum
-    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-    @return SUCCESS on success. */
-RETURN_CODE  CScanResult::RemoveMark(unsigned long index, int MARK_FLAG){
-	if(!IsValidSpectrumIndex(index))
+	Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
+	@return SUCCESS on success. */
+RETURN_CODE  CScanResult::RemoveMark(unsigned long index, int MARK_FLAG) {
+	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
 	return m_spec[index].RemoveMark(MARK_FLAG);
 }
 
 /** Returns the latitude of the system */
-double	CScanResult::GetLatitude() const{
-	for(unsigned int k = 0; k < m_specNum; ++k){
+double	CScanResult::GetLatitude() const {
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
-		if(fabs(info.m_gps.m_latitude) > 1e-2)
+		if (fabs(info.m_gps.m_latitude) > 1e-2)
 			return info.m_gps.m_latitude;
 	}
 	return 0.0;
 }
 
 /** Returns the longitude of the system */
-double	CScanResult::GetLongitude() const{
-	for(unsigned int k = 0; k < m_specNum; ++k){
+double	CScanResult::GetLongitude() const {
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
-		if(fabs(info.m_gps.m_longitude) > 1e-2)
+		if (fabs(info.m_gps.m_longitude) > 1e-2)
 			return info.m_gps.m_longitude;
 	}
 	return 0.0;
 }
 /** Returns the altitude of the system */
-double	CScanResult::GetAltitude() const{
-	for(unsigned int k = 0; k < m_specNum; ++k){
+double	CScanResult::GetAltitude() const {
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
-		if(fabs(info.m_gps.m_altitude) > 1e-2)
+		if (fabs(info.m_gps.m_altitude) > 1e-2)
 			return info.m_gps.m_altitude;
 	}
 	return 0.0;
 }
 
 /** Returns the compass-direction of the system */
-double	CScanResult::GetCompass() const{
-	if(m_specNum == 0)
+double	CScanResult::GetCompass() const {
+	if (m_specNum == 0)
 		return 0.0;
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(0);
@@ -549,8 +544,8 @@ double	CScanResult::GetCompass() const{
 }
 
 /** Returns the battery-voltage of the sky spectrum */
-float	CScanResult::GetBatteryVoltage() const{
-	if(m_specNum == 0)
+float	CScanResult::GetBatteryVoltage() const {
+	if (m_specNum == 0)
 		return 0.0;
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(0);
@@ -558,8 +553,8 @@ float	CScanResult::GetBatteryVoltage() const{
 }
 
 /** Returns the cone angle of the scanning instrument */
-double	CScanResult::GetConeAngle() const{
-	if(m_specNum == 0)
+double	CScanResult::GetConeAngle() const {
+	if (m_specNum == 0)
 		return 90.0;
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(0);
@@ -567,26 +562,26 @@ double	CScanResult::GetConeAngle() const{
 }
 
 /** Returns the pitch of the scanning instrument */
-double	CScanResult::GetPitch() const{
-	if(m_specNum == 0)
+double	CScanResult::GetPitch() const {
+	if (m_specNum == 0)
 		return 90.0;
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(0);
-	return info.m_pitch; 
+	return info.m_pitch;
 }
 
 /** Returns the roll of the scanning instrument */
-double	CScanResult::GetRoll() const{
-	if(m_specNum == 0)
+double	CScanResult::GetRoll() const {
+	if (m_specNum == 0)
 		return 90.0;
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(0);
-	return info.m_roll; 
+	return info.m_roll;
 }
 
 /** Returns the name of the requested spectrum */
-novac::CString CScanResult::GetName(int index) const{
-	if(!IsValidSpectrumIndex(index))
+novac::CString CScanResult::GetName(int index) const {
+	if (!IsValidSpectrumIndex(index))
 		return novac::CString("");
 
 	const CSpectrumInfo &info = m_specInfo.GetAt(index);
@@ -594,27 +589,31 @@ novac::CString CScanResult::GetName(int index) const{
 }
 
 /** Returns the serial-number of the spectrometer that collected this scan */
-novac::CString CScanResult::GetSerial() const{
-	for(unsigned int k = 0; k < m_specNum; ++k){
+novac::CString CScanResult::GetSerial() const {
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
-		if(strlen(info.m_device) > 0)
+		if (strlen(info.m_device) > 0)
 			return info.m_device;
 	}
-	return novac::CString("");	
+	return novac::CString("");
 }
 
 /** Checks the kind of measurement that we have here and sets the flag 'm_measurementMode'
 		to the appropriate value... */
-MEASUREMENT_MODE CScanResult::CheckMeasurementMode(){
-	if(IsStratosphereMeasurement()){
+MEASUREMENT_MODE CScanResult::CheckMeasurementMode() {
+	if (IsStratosphereMeasurement()) {
 		m_measurementMode = MODE_STRATOSPHERE;
-	}else if(IsWindMeasurement()){
+	}
+	else if (IsWindMeasurement()) {
 		m_measurementMode = MODE_WINDSPEED;
-	}else if(this->IsDirectSunMeasurement()){
+	}
+	else if (this->IsDirectSunMeasurement()) {
 		m_measurementMode = MODE_DIRECT_SUN;
-	}else if(this->IsCompositionMeasurement()){
+	}
+	else if (this->IsCompositionMeasurement()) {
 		m_measurementMode = MODE_COMPOSITION;
-	}else{
+	}
+	else {
 		m_measurementMode = MODE_FLUX;
 	}
 
@@ -623,128 +622,133 @@ MEASUREMENT_MODE CScanResult::CheckMeasurementMode(){
 
 /** Checks the kind of measurement that we have here and sets the flag 'm_measurementMode'
 		to the appropriate value... */
-MEASUREMENT_MODE CScanResult::GetMeasurementMode() const{
-	if(IsStratosphereMeasurement()){
+MEASUREMENT_MODE CScanResult::GetMeasurementMode() const {
+	if (IsStratosphereMeasurement()) {
 		return MODE_STRATOSPHERE;
-	}else if(IsWindMeasurement()){
+	}
+	else if (IsWindMeasurement()) {
 		return MODE_WINDSPEED;
-	}else if(this->IsDirectSunMeasurement()){
+	}
+	else if (this->IsDirectSunMeasurement()) {
 		return MODE_DIRECT_SUN;
-	}else if(this->IsCompositionMeasurement()){
+	}
+	else if (this->IsCompositionMeasurement()) {
 		return MODE_COMPOSITION;
-	}else{
+	}
+	else {
 		return MODE_FLUX;
 	}
 }
 
 /** Returns true if this is a stratospheric mode measurement */
-bool CScanResult::IsStratosphereMeasurement() const{
+bool CScanResult::IsStratosphereMeasurement() const {
 	double SZA, SAZ;
 	novac::CDateTime startTime;
 
 	// Check so that the measurement is long enough, but not too long
-	if(m_specNum < 3 || m_specNum > 50)
+	if (m_specNum < 3 || m_specNum > 50)
 		return false;
 
 	// Check if we've already checked the mode
-	if(m_measurementMode == MODE_STRATOSPHERE)
+	if (m_measurementMode == MODE_STRATOSPHERE)
 		return true;
 
 	// If the measurement started at a time when the Solar Zenith Angle 
 	//	was larger than 75 degrees then it is not a wind-speed measurement
 	this->GetStartTime(0, startTime);
-	if(SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+	if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
 		return false; // error
 
 	// It is here assumed that the measurement is a stratospheric measurment
 	//	if there are more than 3 repetitions in the zenith positon
-	int nRepetitions	= 0; // <-- the number of repetitions in one position
-	for(unsigned int k = 0; k < m_specNum; ++k){
+	int nRepetitions = 0; // <-- the number of repetitions in one position
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		float pos = GetScanAngle(k);
-		if(fabs(pos) < 1e-2)
+		if (fabs(pos) < 1e-2)
 			++nRepetitions;
-		else{
+		else {
 			nRepetitions = 0;
 		}
 
-		if(nRepetitions > 50){
-			if(fabs(SZA) > 75.0)
+		if (nRepetitions > 50) {
+			if (fabs(SZA) > 75.0)
 				return true;
 			else
 				return false;
 		}
 	}
 
-	if(nRepetitions > 2)
+	if (nRepetitions > 2)
 		return true;
 
 	return false;
 }
 
-bool CScanResult::IsFluxMeasurement(){
+bool CScanResult::IsFluxMeasurement() {
 
 	// Check if we've already checked the mode
-	if(m_measurementMode == MODE_FLUX)
+	if (m_measurementMode == MODE_FLUX)
 		return true;
 
 	// Then check the measurement mode
 	this->CheckMeasurementMode();
 
-	if(m_measurementMode == MODE_FLUX){
+	if (m_measurementMode == MODE_FLUX) {
 		return true;
-	}else{
+	}
+	else {
 		return false;
 	}
 }
 
-bool CScanResult::IsWindMeasurement() const{
-	if(this->IsWindMeasurement_Gothenburg())
+bool CScanResult::IsWindMeasurement() const {
+	if (this->IsWindMeasurement_Gothenburg())
 		return true;
-	if(this->IsWindMeasurement_Heidelberg())
+	if (this->IsWindMeasurement_Heidelberg())
 		return true;
 
 	return false;
 }
 
-bool CScanResult::IsWindMeasurement_Gothenburg() const{
+bool CScanResult::IsWindMeasurement_Gothenburg() const {
 	double SZA, SAZ;
 	novac::CDateTime startTime;
 
 	// Check so that the measurement is long enough
-	if(m_specNum < 52)
+	if (m_specNum < 52)
 		return false;
 
 	// Check if we've already checked the mode
-	if(m_measurementMode == MODE_WINDSPEED)
+	if (m_measurementMode == MODE_WINDSPEED)
 		return true;
 
 	// If the measurement started at a time when the Solar Zenith Angle 
 	//	was larger than 85 degrees then it is not a wind-speed measurement
 	this->GetStartTime(0, startTime);
-	if(SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+	if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
 		return false; // error
-	if(fabs(SZA) >= 85.0)
+	if (fabs(SZA) >= 85.0)
 		return false;
 
 	// Check if this is a wind-measurement in the Gothenburg method...
-	int nRepetitions	= 0; // <-- the number of repetitions in one position
-	float lastPos			= GetScanAngle(3);
-	float lastPos2		= GetScanAngle2(3);
+	int nRepetitions = 0; // <-- the number of repetitions in one position
+	float lastPos = GetScanAngle(3);
+	float lastPos2 = GetScanAngle2(3);
 
 	// It is here assumed that the measurement is a wind speed measurment
 	//	if there are more then 50 repetitions in one measurement positon
-	for(unsigned int k = 4; k < m_specNum; ++k){
-		float pos  = GetScanAngle(k);
+	for (unsigned int k = 4; k < m_specNum; ++k) {
+		float pos = GetScanAngle(k);
 		float pos2 = GetScanAngle2(k);
-		if((fabs(pos - lastPos) < 1e-2) && (fabs(pos2 - lastPos2) < 1e-2))
+		if ((fabs(pos - lastPos) < 1e-2) && (fabs(pos2 - lastPos2) < 1e-2))
 			++nRepetitions;
-		else{
+		else {
 			nRepetitions = 0;
-			lastPos  = pos;
+			lastPos = pos;
 			lastPos2 = pos2;
 		}
 
-		if(nRepetitions > 50){
+		if (nRepetitions > 50) {
 			return true;
 		}
 	}
@@ -752,99 +756,100 @@ bool CScanResult::IsWindMeasurement_Gothenburg() const{
 	return false;
 }
 
-bool CScanResult::IsWindMeasurement_Heidelberg() const{
+bool CScanResult::IsWindMeasurement_Heidelberg() const {
 	double SAZ, SZA;
 	novac::CDateTime startTime;
 
 	// Check so that the measurement is long enough
-	if(m_specNum < 52)
+	if (m_specNum < 52)
 		return false;
 
 	// Check if we've already checked the mode
-	if(m_measurementMode == MODE_WINDSPEED)
+	if (m_measurementMode == MODE_WINDSPEED)
 		return true;
 
 	// Check if the channel-number is equal to 0
-	if(m_specInfo[0].m_channel > 0)
+	if (m_specInfo[0].m_channel > 0)
 		return false;
 
 	// If the measurement started at a time when the Solar Zenith Angle 
 	//	was larger than 75 degrees then it is not a wind-speed measurement
 	this->GetStartTime(0, startTime);
-	if(SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+	if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
 		return false; // error
-	if(fabs(SZA) >= 75.0)
+	if (fabs(SZA) >= 75.0)
 		return false;
 
 	// Check if this is a wind-measurement in the Heidelberg method...
-	int nRepetitions		= 0; // <-- the number of repetitions in one position
-	float scanAngle[2]	= {GetScanAngle(3), GetScanAngle(4)};
-	float scanAngle2[2]	= {GetScanAngle2(3),GetScanAngle2(4)};
-	int		scanIndex			= 0;
+	int nRepetitions = 0; // <-- the number of repetitions in one position
+	float scanAngle[2] = { GetScanAngle(3), GetScanAngle(4) };
+	float scanAngle2[2] = { GetScanAngle2(3),GetScanAngle2(4) };
+	int		scanIndex = 0;
 
 	// It is here assumed that the measurement is a wind speed measurement
 	//	if there are more then 50 repetitions in one measurement positon
-	for(unsigned int k = 5; k < m_specNum; ++k){
+	for (unsigned int k = 5; k < m_specNum; ++k) {
 		float pos = GetScanAngle(k);
-		float pos2= GetScanAngle2(k);
+		float pos2 = GetScanAngle2(k);
 
-		if((fabs(pos - scanAngle[scanIndex]) < 1e-2) && (fabs(pos2 - scanAngle2[scanIndex]) < 1e-2)){
+		if ((fabs(pos - scanAngle[scanIndex]) < 1e-2) && (fabs(pos2 - scanAngle2[scanIndex]) < 1e-2)) {
 			++nRepetitions;
 			scanIndex = (scanIndex + 1) % 2;
-		}else{
+		}
+		else {
 			return false;
 		}
 
-		if(nRepetitions > 50){
+		if (nRepetitions > 50) {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 /** Returns true if this is a direct-sun mode measurement */
-bool CScanResult::IsDirectSunMeasurement() const{
+bool CScanResult::IsDirectSunMeasurement() const {
 	// It is here assumed that the measurement is a direct-sun measurment
 	//	if there is at least 1 spectrum with the name 'direct_sun'
-	for(unsigned int k = 5; k < m_specNum; ++k){
+	for (unsigned int k = 5; k < m_specNum; ++k) {
 		novac::CString name = GetName(k);
-		if(Equals(name, "direct_sun"))
+		if (Equals(name, "direct_sun"))
 			return true;
 	}
-	
+
 	return false;
 }
 
 /** Returns true if this is a lunar mode measurement */
-bool CScanResult::IsLunarMeasurement() const{
+bool CScanResult::IsLunarMeasurement() const {
 	int	nFound = 0;
 
 	// It is here assumed that the measurement is a lunar measurment
 	//	if there is at least 1 spectrum with the name 'lunar'
-	for(unsigned int k = 5; k < m_specNum; ++k){
+	for (unsigned int k = 5; k < m_specNum; ++k) {
 		novac::CString name = GetName(k);
-		if(Equals(name, "lunar"))
+		if (Equals(name, "lunar"))
 			++nFound;
-			if(nFound == 5)
-				return true;
+		if (nFound == 5)
+			return true;
 	}
-	
+
 	return false;
 }
 
 /** Returns true if this is a composition mode measurement */
-bool CScanResult::IsCompositionMeasurement() const{
+bool CScanResult::IsCompositionMeasurement() const {
 	// It is here assumed that the measurement is a composition measurment
 	//	if there is 
 	//		* at least 1 spectrum with the name 'comp'
 	//		* no more than 15 spectra in total
-	if(m_specNum > 15)
+	if (m_specNum > 15)
 		return false;
 
-	for(unsigned int k = 0; k < m_specNum; ++k){
+	for (unsigned int k = 0; k < m_specNum; ++k) {
 		novac::CString name = GetName(k);
-		if(Equals(name, "comp")){
+		if (Equals(name, "comp")) {
 			return true;
 		}
 	}
@@ -853,9 +858,9 @@ bool CScanResult::IsCompositionMeasurement() const{
 }
 
 /** returns the time and date (UMT) when evaluated spectrum number 'index' was started.
-    @param index - the zero based index into the list of evaluated spectra */
-RETURN_CODE CScanResult::GetStartTime(unsigned long index, novac::CDateTime &t) const{
-	if(!IsValidSpectrumIndex(index))
+	@param index - the zero based index into the list of evaluated spectra */
+RETURN_CODE CScanResult::GetStartTime(unsigned long index, novac::CDateTime &t) const {
+	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
 	// The start-time
@@ -864,17 +869,17 @@ RETURN_CODE CScanResult::GetStartTime(unsigned long index, novac::CDateTime &t) 
 	return SUCCESS;
 }
 
-void CScanResult::GetSkyStartTime(novac::CDateTime &t) const{
-	
+void CScanResult::GetSkyStartTime(novac::CDateTime &t) const {
+
 	t = m_skySpecInfo.m_startTime;
 	return;
 }
 
 /** returns the time and date (UMT) when evaluated spectrum number 'index' was stopped.
-    @param index - the zero based index into the list of evaluated spectra.
+	@param index - the zero based index into the list of evaluated spectra.
 		@return SUCCESS if the index is valid */
-RETURN_CODE CScanResult::GetStopTime(unsigned long index, novac::CDateTime &t) const{
-	if(!IsValidSpectrumIndex(index))
+RETURN_CODE CScanResult::GetStopTime(unsigned long index, novac::CDateTime &t) const {
+	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
 	t = m_specInfo[index].m_stopTime;
@@ -883,42 +888,42 @@ RETURN_CODE CScanResult::GetStopTime(unsigned long index, novac::CDateTime &t) c
 }
 
 /** Sets the type of the instrument used */
-void CScanResult::SetInstrumentType(INSTRUMENT_TYPE type){
+void CScanResult::SetInstrumentType(INSTRUMENT_TYPE type) {
 	this->m_instrumentType = type;
 }
 
 /** Sets the type of the instrument used */
-INSTRUMENT_TYPE CScanResult::GetInstrumentType() const{
+INSTRUMENT_TYPE CScanResult::GetInstrumentType() const {
 	return this->m_instrumentType;
 }
 
 /** Getting the estimated geometrical error */
-double	CScanResult::GetGeometricalError() const{
+double	CScanResult::GetGeometricalError() const {
 	return m_geomError;
 }
 
 /** Getting the scattering Error */
-double	CScanResult::GetScatteringError() const{
+double	CScanResult::GetScatteringError() const {
 	return m_scatteringError;
 }
 
 /** Getting the spectroscopical error */
-double	CScanResult::GetSpectroscopicalError() const{
+double	CScanResult::GetSpectroscopicalError() const {
 	return m_spectroscopyError;
 }
 
 /** Getting the estimated geometrical error */
-void	CScanResult::SetGeometricalError(double err){
+void	CScanResult::SetGeometricalError(double err) {
 	m_geomError = err;
 }
 
 /** Getting the scattering Error */
-void	CScanResult::SetScatteringError(double err){
+void	CScanResult::SetScatteringError(double err) {
 	m_scatteringError = err;
 }
 
 /** Getting the spectroscopical error */
-void	CScanResult::SetSpectroscopicalError(double err){
+void	CScanResult::SetSpectroscopicalError(double err) {
 	m_spectroscopyError = err;
 }
 
@@ -929,18 +934,18 @@ void	CScanResult::SetSpectroscopicalError(double err){
 		@param specie - The name of the specie for which to apply the correction, if NULL then correction will be applied to all species.
 		@return zero if all is ok, otherwise a non-zero value
 */
-int CScanResult::ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie){
+int CScanResult::ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie) {
 	unsigned int i, k;
 	double f; // the correction factor
 
-	for(i = 0; i < m_specNum; ++i){
+	for (i = 0; i < m_specNum; ++i) {
 		CEvaluationResult &evalRes = m_spec.GetAt(i); // a handle to the result.
 
 		// Loop through all evaluated species
-		for(k = 0; k < evalRes.m_speciesNum; ++k){
+		for (k = 0; k < evalRes.m_speciesNum; ++k) {
 			// check if we should apply any correction to this specie
-			if(specie != NULL){
-				if(!Equals(evalRes.m_ref[k].m_specieName, *specie)){
+			if (specie != NULL) {
+				if (!Equals(evalRes.m_ref[k].m_specieName, *specie)) {
 					continue;
 				}
 
