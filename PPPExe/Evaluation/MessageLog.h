@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include <string.h>
+#include <vector>
 
 /**
  * This class handles any neccessary actions needed to log messages and errors. 
@@ -380,8 +381,8 @@ public:
 		if(iLogLevel < LOGERROR || iLogLevel > LOGINFO)
 			iLogLevel = LOGERROR;
 
-		// check wheter we should display the current message anyway
-		if(!CheckLogLevel(iLogLevel)	)
+		// check whether we should display the current message anyway
+		if(!CheckLogLevel(iLogLevel))
 			return(true);
 
 		// strip path definitions
@@ -397,10 +398,10 @@ public:
 		else
 			szModName += 1;
 
-		char* szMsg = new char[MAXMSGLEN];
+        std::vector<char> szMsg(MAXMSGLEN);
 
 		// format the given message
-		vsprintf(szMsg, szFormat, vaVarList);
+		vsprintf(szMsg.data(), szFormat, vaVarList);
 
 		// if window mode is applied, display the message box
 		if(mMode & LOGMODEWINDOW)
@@ -408,12 +409,12 @@ public:
 			// only display a message box if an error occurred or no other output media is selected
 			if(!(mMode & (~LOGMODEWINDOW)) || iLogLevel == LOGERROR)
 			{
-				char* szOut = new char[1024];
+				std::vector<char> szOut(1024);
 
 				if(szModName)
-					sprintf(szOut, "ID: %s\nModule: %s\nLine: %d\nError: %s", mID, szModName, iLineNo, szMsg);
+					sprintf(szOut.data(), "ID: %s\nModule: %s\nLine: %d\nError: %s", mID, szModName, iLineNo, szMsg.data());
 				else
-					sprintf(szOut, "ID: %s\nError: %s", mID, szMsg);
+					sprintf(szOut.data(), "ID: %s\nError: %s", mID, szMsg.data());
 
 //#if defined(WIN32)
 //				switch(iLogLevel)
@@ -435,31 +436,30 @@ public:
 //					break;
 //				}
 //#endif
-				delete(szOut);
 			}
 		}
 
 		if(mMode & (~LOGMODEWINDOW))
 		{
 			// build output message
-			char* szOut = new char[1024];
+            std::vector<char> szOut(1024);
 
 			time_t timeNow = time(NULL);
 
 			if(szModName)
-				sprintf(szOut, "%.24s - %s from %s at {%s@%d}: %s\n", asctime(localtime(&timeNow)), mLogLevelMsg[iLogLevel], mID, szModName, iLineNo, szMsg);
+				sprintf(szOut.data(), "%.24s - %s from %s at {%s@%d}: %s\n", asctime(localtime(&timeNow)), mLogLevelMsg[iLogLevel], mID, szModName, iLineNo, szMsg.data());
 			else
-				sprintf(szOut, "%.24s - %s from %s: %s\n", asctime(localtime(&timeNow)), mLogLevelMsg[iLogLevel], mID, szMsg);
+				sprintf(szOut.data(), "%.24s - %s from %s: %s\n", asctime(localtime(&timeNow)), mLogLevelMsg[iLogLevel], mID, szMsg.data());
 
 			// check for console output
 			if(mMode & LOGMODECONSOLE)
 			{
 				// if we have the TRACE statement and are in debug mode, put it on the trace panel
 #if defined(TRACE) && defined(_DEBUG)
-				TRACE(szOut);
+				TRACE(szOut.data());
 #endif
 				// put the message on stdout
-				std::cout << szOut;
+				std::cout << szOut.data();
 			}
 
 			// check for file output
@@ -468,13 +468,10 @@ public:
 				FILE* ioOut = fopen(mLogFile, "a+t");
 				if(ioOut)
 				{
-					fputs(szOut, ioOut);
+					fputs(szOut.data(), ioOut);
 					fclose(ioOut);
 				}
 			}
-			
-			delete(szMsg);
-			delete(szOut);
 		}
 
 		return(true);

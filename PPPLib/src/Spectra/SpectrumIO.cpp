@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 #undef min
 #undef max

@@ -196,7 +196,7 @@ namespace Evaluation
 		double	GetCalculatedPlumeCompleteness() const {return m_plumeProperties.m_completeness; }
 
 		/** Sets the offset of the measurement */
-		void SetOffset(double offset) {m_plumeProperties.m_offset = offset = offset; } 
+		void SetOffset(double offset) {m_plumeProperties.m_offset = offset; } 
 
 		/** returns the number of spectra evaluated */
 		long  GetEvaluatedNum() const {return m_specNum; }
