@@ -29,7 +29,7 @@ namespace novac
 
 	CVolcanoInfo::CVolcano::CVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory) {
 		m_name.Format(name);
-		m_simpleName.Format(SimplifyString(name));
+		SimplifyString(name, m_simpleName);
 		m_number.Format(number);
 		m_country.Format(country);
 
@@ -46,7 +46,7 @@ namespace novac
 		m_name = name;
 
 		if (simpleName.GetLength() == 0) {
-			m_simpleName = SimplifyString(name);
+			SimplifyString(name, m_simpleName);
 		}
 		else {
 			m_simpleName = simpleName;
@@ -68,7 +68,11 @@ namespace novac
 
 	/** Adds a new volcano to the list */
 	void CVolcanoInfo::AddVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory) {
-		m_volcanoes.push_back(CVolcano(name, SimplifyString(name), number, country, latitude, longitude, altitude, hoursToGMT, observatory));
+		novac::CString simpleName;
+		SimplifyString(name, simpleName);
+
+		m_volcanoes.push_back(CVolcano(name, simpleName, number, country, latitude, longitude, altitude, hoursToGMT, observatory));
+		
 		++m_volcanoNum;
 	}
 
@@ -79,7 +83,7 @@ namespace novac
 		else {
 			CVolcano &volcano = m_volcanoes.at(index);
 			volcano.m_name.Format(name);
-			volcano.m_simpleName.Format(SimplifyString(name));
+			SimplifyString(name, volcano.m_simpleName);
 			volcano.m_number.Format(number);
 			volcano.m_country.Format(country);
 			volcano.m_peakHeight = altitude;

@@ -7,6 +7,7 @@
 #include <locale>
 #include <vector>
 #include <cstring>
+#include <sstream>
 
 namespace novac
 {
@@ -309,9 +310,11 @@ namespace novac
 
 	char CString::GetAt(int index) const
 	{
-		if (index < 0 || (unsigned int)index >= m_data.length())
+		if ((size_t)index >= m_data.length())
 		{
-			throw std::invalid_argument("Invalid character retrieved in CString.");
+			std::stringstream ss;
+			ss << "Request for invalid character index in CString::GetAt. index = " << index << " but length=" << m_data.length() << " in string '" << m_data << "'";
+			throw std::invalid_argument(ss.str());
 		}
 		else
 		{
@@ -343,22 +346,22 @@ namespace novac
 		}
 	}
 
-	CString SimplifyString(const CString& in) {
-		static CString str;
+	void SimplifyString(const CString& in, CString& out) {
+		CString tempString;
 
 		// Clean the string for non-printable characters
-		CleanString(in, str);
+		CleanString(in, tempString);
 
 		// Make a local copy of the string
-		unsigned long L = (unsigned long)strlen(str);
-		char *buffer = new char[L + 2];
-		for (unsigned int it = 0; it < L; ++it) {
-			buffer[it] = str.GetAt(it);
+		size_t L = strlen(tempString);
+		std::vector<char> buffer(L+2);
+		for (size_t it = 0; it < L; ++it) {
+			buffer[it] = tempString.GetAt((int)it);
 		}
 		buffer[L] = 0;
 
 		// Check all characters in the string
-		for (unsigned long i = 0; i < L; ++i) {
+		for (size_t i = 0; i < L; ++i) {
 			// 1. Replace spaces, commas and dots with underscores
 			if (buffer[i] == ' ' || buffer[i] == ',' || buffer[i] == '.') {
 				buffer[i] = '_';
@@ -370,7 +373,7 @@ namespace novac
 
 			// 3. Remove paranthesis...
 			if (buffer[i] == '(' || buffer[i] == '[' || buffer[i] == '{' || buffer[i] == ')' || buffer[i] == ']' || buffer[i] == '}') {
-				for (unsigned long j = i; j < L - 1; ++j) {
+				for (size_t j = i; j < L - 1; ++j) {
 					buffer[j] = buffer[j + 1];
 				}
 				buffer[L - 1] = '\0';
@@ -403,10 +406,7 @@ namespace novac
 		}
 
 		// copy the buffer to a CString
-		str.Format("%s", buffer);
-
-		delete[] buffer;
-		return str;
+		out.Format("%s", buffer.data());
 	}
 
 	int Equals(const CString &str1, const CString &str2) {

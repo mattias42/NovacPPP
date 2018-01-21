@@ -1087,7 +1087,9 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
 	string.AppendFormat("%02d:%02d:%02d\t", info->m_stopTime.hour, info->m_stopTime.minute, info->m_stopTime.second);
 
 	// 5 The name of the spectrum
-	string.AppendFormat("%s\t", (const char*)SimplifyString(info->m_name));
+	novac::CString simpleName;
+	SimplifyString(info->m_name, simpleName);
+	string.AppendFormat("%s\t", (const char*)simpleName);
 
 	// 6. The (maximum) saturation ratio of the whole spectrum,
 	//			the (maximum) saturation ratio in the fit-region

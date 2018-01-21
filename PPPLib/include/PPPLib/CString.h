@@ -135,7 +135,7 @@ namespace novac
 		1 - Spaces are replaced with '_' (underscore)
 		2 - All characters are converted to lower-case
 		3 - accents are removed ('ó' -> 'o') */
-	CString SimplifyString(const CString& in);
+	void SimplifyString(const CString& in, CString& out);
 
 	/** Compares two strings without regard to case.
 		@return 1 if the strings are equal. @return 0 if the strings are not equal. */
