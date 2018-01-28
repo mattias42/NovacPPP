@@ -404,39 +404,43 @@ void CPostProcessing::EvaluateScans(novac::CList<novac::CString, novac::CString 
 }
 
 void EvaluateScansThread() {
-	novac::CString evalLog[MAX_FIT_WINDOWS];
 	std::string fileName;
-	int fitWindowIndex;
-	novac::CString messageToUser;
-	CPlumeInScanProperty scanProperties[MAX_FIT_WINDOWS];
 
 	// create a new CPostEvaluationController
 	Evaluation::CPostEvaluationController eval;
 
 	// while there are more .pak-files
 	while (s_pakFilesRemaining.PopFront(fileName)) {
+		novac::CString evalLog[MAX_FIT_WINDOWS];
+		CPlumeInScanProperty scanProperties[MAX_FIT_WINDOWS];
+
 		// evaluate the .pak-file in all the specified fit-windows and retrieve the name of the 
 		//	eval-logs. If any of the fit-windows fails then the scan is not inserted.
-		for (fitWindowIndex = 0; fitWindowIndex < g_userSettings.m_nFitWindowsToUse; ++fitWindowIndex) {
+		bool evaluationSucceeded = true;
+		for (int fitWindowIndex = 0; fitWindowIndex < g_userSettings.m_nFitWindowsToUse; ++fitWindowIndex) {
 			if (0 != eval.EvaluateScan(fileName, g_userSettings.m_fitWindowsToUse[fitWindowIndex], &evalLog[fitWindowIndex], &scanProperties[fitWindowIndex])) {
-				fitWindowIndex = -2; // this is used to signal that we don't want to insert the eval-log into the list
+				evaluationSucceeded = false;
 				break;
 			}
 		}
 
-		if (fitWindowIndex < 0) {
-			continue;
+		if(evaluationSucceeded)
+		{
+			// If we made it this far then the measurement is ok, insert it into the list!
+			AddResultToList(fileName, evalLog, scanProperties[g_userSettings.m_mainFitWindow]);
+
+			// Tell the user what is happening
+			novac::CString messageToUser;
+			messageToUser.Format(" + Inserted scan %s into list of evaluation logs", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
+			ShowMessage(messageToUser);
 		}
-
-		// If we made it this far then the measurement is ok, insert it into the list!
-		AddResultToList(fileName, evalLog, scanProperties[g_userSettings.m_mainFitWindow]);
-
-		// Tell the user what is happening
-		messageToUser.Format(" + Inserted scan %s into list of evaluation logs", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
-		ShowMessage(messageToUser);
+		else
+		{
+			novac::CString messageToUser;
+			messageToUser.Format(" - Evaluation of scan %s failed", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
+			ShowMessage(messageToUser);
+		}
 	}
-
-	return;
 }
 
 // this function takes care of adding filenames to the list

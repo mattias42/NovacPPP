@@ -26,8 +26,9 @@ CCrossSectionData::~CCrossSectionData(void)
 
 /** Sets the reference information at the given pixel */
 void CCrossSectionData::SetAt(int index, double wavel, double value){
-	if(index < 0)
+	if(index < 0) {
 		return;
+	}
 		
 	this->m_waveLength.at(index) = wavel;
 	this->m_crossSection.at(index) = value;
@@ -177,7 +178,7 @@ int CCrossSectionData::HighPassFilter(){
 	mathObject.Log(data.data(), m_length);
 	mathObject.Div(data.data(), m_length, 2.5e15);
 	
-	for(int k = 0; k < m_length; ++k){
+	for(int k = 0; k < (int)m_length; ++k) {
 		this->SetAt(k, k, data[k]);
 	}
 
@@ -196,7 +197,7 @@ int CCrossSectionData::HighPassFilter_Ring(){
 	mathObject.HighPassBinomial(data.data(), m_length, 500);
 	mathObject.Log(data.data(), m_length);
 	
-	for(int k = 0; k < m_length; ++k){
+	for(int k = 0; k < (int)m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 	
@@ -216,7 +217,7 @@ int CCrossSectionData::Multiply(double scalar){
 
 	mathObject.Mul(data.data(), m_length, scalar);
 	
-	for(int k = 0; k < m_length; ++k){
+	for(int k = 0; k < (int)m_length; ++k){
 		this->SetAt(k, k, data[k]);
 	}
 

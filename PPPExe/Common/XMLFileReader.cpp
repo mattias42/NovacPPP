@@ -58,10 +58,12 @@ char *CXMLFileReader::NextToken(){
 		++nLinesRead;
 	}
 	
-	if(nullptr == m_tokenPt || strlen(m_tokenPt) < 2)
+	if(nullptr == m_tokenPt || strlen(m_tokenPt) < 2) {
 		return NextToken();
-	else
+	}
+	else {
 		return m_tokenPt;
+	}
 }
 
 /** Retrieves the value of the given attribute from the current token 
@@ -70,8 +72,9 @@ char *CXMLFileReader::NextToken(){
 const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 	novac::CString toSearchFor;
 
-	if(nLinesRead == 0 || szToken == nullptr)
+	if(nLinesRead == 0 || szToken == nullptr) {
 		return nullptr; // we haven't started reading the file yet...
+	}
 		
 	// make a copy of szToken, so that we can make changes to it...
 	char copyOfToken[4096];
@@ -80,14 +83,16 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 	// search for the attribute in szToken
 	toSearchFor.Format("%s=\"", (const char*)label);
 	char *pt_start = strstr(copyOfToken, toSearchFor);
-	if(pt_start == nullptr)
+	if(pt_start == nullptr) {
 		return nullptr;
+	}
 	pt_start += toSearchFor.GetLength(); // point to the character after the double-quote
 	
 	// search for the ending double-quote
 	char *pt_end = strstr(pt_start, "\"");
-	if(pt_end == nullptr)
+	if(pt_end == nullptr) {
 		return nullptr;
+	}
 	*pt_end = '\0'; // make the string end at the position of the double-quote
 	
 	// now we have the value of the attribute	
@@ -99,7 +104,7 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label){
 int CXMLFileReader::Parse_StringItem(const novac::CString &label, novac::CString &string){
 	string.Format("");
 
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 
 		if(Equals(szToken, label))
 		{
@@ -137,10 +142,11 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &
 
 int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number){
 
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 
-		if(Equals(szToken, label))
-		return 1;
+		if(Equals(szToken, label)) {
+			return 1;
+		}
 
 		number = std::atol(szToken);
 	}
@@ -149,10 +155,11 @@ int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number){
 }
 /** General parsing of a single, simple float item */
 int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number){
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())) {
 
-		if(Equals(szToken, label))
-		return 1;
+		if(Equals(szToken, label)) {
+			return 1;
+		}
 
 		number = std::atof(szToken);
 	}
@@ -162,10 +169,11 @@ int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number)
 
 /** General parsing of a single, simple integer item */
 int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number){
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 
-		if(Equals(szToken, label))
-		return 1;
+		if(Equals(szToken, label)) {
+			return 1;
+		}
 
 	   
 		number = std::atoi(szToken);
@@ -176,11 +184,12 @@ int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number){
 
 /** General parsing of a single, simple long integer item */
 int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3){
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 		int i0, i1, i2,i3;
 
-		if(Equals(szToken, label))
-		return 1;
+		if(Equals(szToken, label)){
+			return 1;
+		}
 
 		sscanf(szToken, "%d.%d.%d.%d", &i0, &i1, &i2, &i3);
 		ip0 = i0;
@@ -195,7 +204,7 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE 
 int CXMLFileReader::Parse_Date(const novac::CString &label, novac::CDateTime &datum){
 	int nFields = 0;
 
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 		int i0 = 0;
 		int i1 = 0;
 		int i2 = 0;
@@ -203,8 +212,9 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, novac::CDateTime &da
 		int i4 = 0;
 		int i5 = 0;
 
-		if(Equals(szToken, label))
+		if(Equals(szToken, label)) {
 			return 1;
+		}
 
 		char *pt = strstr(szToken, "T");
 

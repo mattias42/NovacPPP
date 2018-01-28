@@ -85,7 +85,7 @@ namespace novac
 			then the array will grow to accomodate the new item.. */
 		void SetAtGrow(int index, TYPE newValue)
 		{
-			if (index >= m_data.size())
+			if ((std::size_t)index >= m_data.size())
 			{
 				this->SetSize(index + 1);
 			}

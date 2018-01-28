@@ -66,21 +66,22 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 	this->m_filename.Format(localFileName);
 
 	// parse the file
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 3)
+		if(strlen(szToken) < 3) {
 			continue;
+		}
 
 		// If this is a wind-field item then parse this. 
-		if(novac::Equals(szToken, "windfield", 9)){
+		if(novac::Equals(szToken, "windfield", 9)) {
 			Parse_WindField(dataBase);
 			continue;
 		}
 
 		// if this is the beginning of the wind-section,  extract the name of the 
 		//	database
-		if(novac::Equals(szToken, "Wind", 4)){
+		if(novac::Equals(szToken, "Wind", 4)) {
 			const char *volcanoName = GetAttributeValue("volcano");
 			if(volcanoName != NULL){
 				dataBase.m_dataBaseName.Format("%s", volcanoName);
@@ -233,10 +234,11 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase &dataBase){
 	MET_SOURCE windSource;
 
 	// parse the file
-	while(szToken = NextToken()){
+	while(nullptr != (szToken = NextToken())){
 		// no use to parse empty lines
-		if(strlen(szToken) < 2)
+		if(strlen(szToken) < 2) {
 			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){

@@ -14,7 +14,8 @@ namespace FileHandler
 		CXMLFileReader(void);
 		~CXMLFileReader(void);
 
-		/** Retrieve the next token from the xml file */
+		/** Retrieve the next token from the xml file.
+			Returns nullptr if no more tokens are available.  */
 		char *NextToken();
 
 		/** Retrieves the value of the given attribute from the current token 

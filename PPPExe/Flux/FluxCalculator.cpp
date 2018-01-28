@@ -176,7 +176,7 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 */
 int CFluxCalculator::GetLocation(const novac::CString &serial, const novac::CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation){
 	novac::CDateTime day, evalValidFrom, evalValidTo;
-	Configuration::CInstrumentConfiguration *instrumentConf = NULL;
+	Configuration::CInstrumentConfiguration *instrumentConf = nullptr;
 	Configuration::CInstrumentLocation singleLocation;
 	novac::CString errorMessage;
 	
@@ -187,7 +187,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const novac::CDat
 			break;
 		}
 	}
-	if(instrumentConf == NULL){
+	if(instrumentConf == nullptr){
 		errorMessage.Format("Recieved spectrum from not-configured instrument %s. Cannot calculate flux!", (const char*)serial);
 		ShowMessage(errorMessage);
 		return 1;
@@ -196,7 +196,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const novac::CDat
 	// Next find the instrument location that is valid for this date
 	Configuration::CLocationConfiguration &locationconf = instrumentConf->m_location;
 	bool foundValidLocation = false;
-	for(int k = 0; k < locationconf.GetLocationNum(); ++k){
+	for(int k = 0; k < (int)locationconf.GetLocationNum(); ++k){
 		locationconf.GetLocation(k, singleLocation);
 
 		if(singleLocation.m_validFrom  < startTime && (startTime < singleLocation.m_validTo || startTime == singleLocation.m_validTo)){
@@ -326,7 +326,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	if(!IsExistingFile(fluxLogFile)){
 		// write the header
 		FILE *f = fopen(fluxLogFile, "w");
-		if(f != NULL){
+		if(f != nullptr){
 			fprintf(f, "serial=%s\n", (const char*)serialNumber);
 			fprintf(f, "volcano=x\n");//,		m_common.SimplifyString(spectrometer.m_scanner.volcano));
 			fprintf(f, "site=x\n");//,				m_common.SimplifyString(spectrometer.m_scanner.site));
@@ -343,9 +343,8 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 
 	// 20d. Write the flux-result to the file
 	FILE *f = fopen(fluxLogFile, "a+");
-	if(f != NULL){
-		fprintf(f, string);
-		fprintf(f, "\n");
+	if(f != nullptr){
+		fprintf(f, "%s\n", (const char*)string);
 		fclose(f);
 	}
 

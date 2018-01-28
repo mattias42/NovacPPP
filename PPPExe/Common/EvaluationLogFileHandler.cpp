@@ -96,7 +96,7 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]){
 	char stoptime[]			= "stoptime";
 	char nameStr[]			= "name";
 
-	while(szToken = strtok(szToken, "\t")){
+	while(nullptr != (szToken = strtok(szToken, "\t"))) {
 		++curCol;
 
 		// The scan-angle (previously known as elevation)
@@ -406,30 +406,34 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 			// Split the scan information up into tokens and parse them. 
 			char* szToken = (char*)(LPCSTR)szLine;
 			int curCol = -1;
-			while(szToken = strtok(szToken, " \t")){
-			++curCol;
+			while(nullptr != (szToken = strtok(szToken, " \t"))) {
+				++curCol;
 
-			// First check the starttime
-			if(curCol == m_col.starttime){
-				int fValue1, fValue2, fValue3;
-				if(strstr(szToken, ":"))
-					sscanf(szToken, "%d:%d:%d", &fValue1, &fValue2, &fValue3);
-				else
-					sscanf(szToken, "%d.%d.%d", &fValue1, &fValue2, &fValue3);
-				m_specInfo.m_startTime.hour		= (unsigned char)fValue1;
-				m_specInfo.m_startTime.minute	= (unsigned char)fValue2;
-				m_specInfo.m_startTime.second	= (unsigned char)fValue3;
-				szToken = NULL;
-				continue;
-			}
+				// First check the starttime
+				if(curCol == m_col.starttime){
+					int fValue1, fValue2, fValue3;
+					if(strstr(szToken, ":")) {
+						sscanf(szToken, "%d:%d:%d", &fValue1, &fValue2, &fValue3);
+					}
+					else {
+						sscanf(szToken, "%d.%d.%d", &fValue1, &fValue2, &fValue3);
+					}
+					m_specInfo.m_startTime.hour		= (unsigned char)fValue1;
+					m_specInfo.m_startTime.minute	= (unsigned char)fValue2;
+					m_specInfo.m_startTime.second	= (unsigned char)fValue3;
+					szToken = NULL;
+					continue;
+				}
 
-			// Then check the stoptime
+				// Then check the stoptime
 				if(curCol == m_col.stoptime){
 				int fValue1, fValue2, fValue3;
-				if(strstr(szToken, ":"))
+				if(strstr(szToken, ":")) {
 					sscanf(szToken, "%d:%d:%d", &fValue1, &fValue2, &fValue3);
-				else
+				}
+				else {
 					sscanf(szToken, "%d.%d.%d", &fValue1, &fValue2, &fValue3);
+				}
 				m_specInfo.m_stopTime.hour		= (unsigned char)fValue1;
 				m_specInfo.m_stopTime.minute    = (unsigned char)fValue2;
 				m_specInfo.m_stopTime.second	= (unsigned char)fValue3;
@@ -567,14 +571,13 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog(){
 			}else if(Equals(m_specInfo.m_name, "dark_cur")){
 				m_scan[m_scanNum].SetDarkCurrentSpecInfo(m_specInfo);
 			}else{
-			m_scan[m_scanNum].AppendResult(m_evResult, m_specInfo);
+				m_scan[m_scanNum].AppendResult(m_evResult, m_specInfo);
 				m_scan[m_scanNum].SetFlux(flux);
 				m_scan[m_scanNum].SetInstrumentType(m_instrumentType);
 			}
 
-			double dynamicRange = 1.0; // <-- unknown
 			if(m_col.peakSaturation != -1){ // If the intensity is specified as a saturation ratio...
-				dynamicRange = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
+				double dynamicRange = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
 			}
 			m_scan[m_scanNum].CheckGoodnessOfFit(m_specInfo);
 			++measNr;
@@ -664,22 +667,29 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 	while(fgets(szLine, 8192, f)){
 
 		// convert to lower-case
-		for(unsigned int it = 0; it < strlen(szLine); ++it){
+		for(unsigned int it = 0; it < strlen(szLine); ++it) {
 			szLine[it] = (char)tolower(szLine[it]);
 		}
 
-		if(pt = strstr(szLine, "</scaninformation>")){
+		pt = strstr(szLine, "</scaninformation>");
+		if(nullptr != pt) {
 			break;
 		}
-		if(pt = strstr(szLine, "compiledate=")){
+
+		pt = strstr(szLine, "compiledate=");
+		if(nullptr != pt) {
 			continue;
 		}
-		if(pt = strstr(szLine, "site=")){
+
+		pt = strstr(szLine, "site=");
+		if(nullptr != pt) {
 			scanInfo.m_site.Format("%s", pt+5);
 			scanInfo.m_site.Remove('\n'); // Remove newline characters
 			continue;
 		}
-		if(pt = strstr(szLine, "date=")){
+
+		pt = strstr(szLine, "date=");
+		if(nullptr != pt) {
 			sscanf(pt+5, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2]);
 			scanInfo.m_startTime.year	= (unsigned short)tmpInt[2];
 			scanInfo.m_startTime.month	= (unsigned char)tmpInt[1];
@@ -689,7 +699,9 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 			scanInfo.m_stopTime.day		= (unsigned char)tmpInt[0];
 			continue;
 		}
-		if(pt = strstr(szLine, "starttime=")){
+
+		pt = strstr(szLine, "starttime=");
+		if(nullptr != pt){
 			if(3 == sscanf(pt+10, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2])){
 				scanInfo.m_startTime.hour		= (unsigned char)tmpInt[0];
 				scanInfo.m_startTime.minute		= (unsigned char)tmpInt[1];
@@ -697,7 +709,9 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 			}
 			continue;
 		}
-		if(pt = strstr(szLine, "stoptime=")){
+
+		pt = strstr(szLine, "stoptime=");
+		if(nullptr != pt) {
 			if(3 == sscanf(pt+9, "%d.%d.%d", &tmpInt[0], &tmpInt[1], &tmpInt[2])){
 				scanInfo.m_stopTime.hour		= (unsigned char)tmpInt[0];
 				scanInfo.m_stopTime.minute		= (unsigned char)tmpInt[1];
@@ -705,32 +719,43 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 			}
 			continue;
 		}
-		if(pt = strstr(szLine, "compass=")){
+
+		pt = strstr(szLine, "compass=");
+		if(nullptr != pt){
 			sscanf(pt+8, "%lf", &tmpDouble);
 			scanInfo.m_compass = (float)fmod(tmpDouble, 360.0);
 			continue;
 		}
-		if(pt = strstr(szLine, "tilt=")){
+
+		pt = strstr(szLine, "tilt=");
+		if(nullptr != pt){
 			sscanf(pt + 5, "%lf", &tmpDouble);
 			scanInfo.m_pitch = (float)tmpDouble;
 		}
 
-		if(pt = strstr(szLine, "lat=")){
+		pt = strstr(szLine, "lat=");
+		if(nullptr != pt){
 			sscanf(pt+4, "%lf", &tmpDouble);
 			scanInfo.m_gps.m_latitude = tmpDouble;
 			continue;
 		}
-		if(pt = strstr(szLine, "long=")){
+
+		pt = strstr(szLine, "long=");
+		if(nullptr != pt){
 			sscanf(pt+5, "%lf", &tmpDouble);
 			scanInfo.m_gps.m_longitude = tmpDouble;
 			continue;
 		}
-		if(pt = strstr(szLine, "alt=")){
+
+		pt = strstr(szLine, "alt=");
+		if(nullptr != pt){
 			sscanf(pt+4, "%lf", &tmpDouble);
 			scanInfo.m_gps.m_altitude = (long)tmpDouble;
 			continue;
 		}
-		if(pt = strstr(szLine, "serial=")){
+
+		pt = strstr(szLine, "serial=");
+		if(nullptr != pt){
 			scanInfo.m_device.Format("%s", pt + 7);
 			scanInfo.m_device.Remove('\n'); // remove remaining strange things in the serial-number
 			scanInfo.m_device.MakeUpper();	// Convert the serial-number to all upper case letters
@@ -740,51 +765,64 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
 			continue;
 		}
-		if(pt = strstr(szLine, "spectrometer=")){
+
+		pt = strstr(szLine, "spectrometer=");
+		if(nullptr != pt){
 			// TODO:: read in the spectrometer model somewhere
 			continue;
 		}
 
-		if(pt = strstr(szLine, "volcano=")){
+		pt = strstr(szLine, "volcano=");
+		if(nullptr != pt) {
 			scanInfo.m_volcano.Format("%s", pt+8);
 			scanInfo.m_volcano.Remove('\n'); // Remove newline characters
 			continue;
 		}
 
-		if(pt = strstr(szLine, "observatory=")){
+		pt = strstr(szLine, "observatory=");
+		if(nullptr != pt) {
 			scanInfo.m_observatory.Format("%s", pt+12);
 			scanInfo.m_observatory.Remove('\n'); // Remove newline characters
 			continue;
 		}
 
-		if(pt = strstr(szLine, "channel=")){
+		pt = strstr(szLine, "channel=");
+		if(nullptr != pt) {
 			sscanf(pt + 8, "%lf", &tmpDouble);
 			scanInfo.m_channel = (unsigned char)tmpDouble;
 		}
-		if(pt = strstr(szLine, "coneangle=")){
+
+		pt = strstr(szLine, "coneangle=");
+		if(nullptr != pt) {
 			sscanf(pt + 10, "%lf", &tmpDouble);
 			scanInfo.m_coneAngle = (float)tmpDouble;
 		}
 
-		if(pt = strstr(szLine, "flux=")){
+		pt = strstr(szLine, "flux=");
+		if(nullptr != pt){
 			sscanf(pt + 5, "%lf", &tmpDouble);
 			flux = tmpDouble;
 		}
 
-		if(pt = strstr(szLine, "battery=")){
+		pt = strstr(szLine, "battery=");
+		if(nullptr != pt){
 			sscanf(pt + 8, "%f", &scanInfo.m_batteryVoltage);
 		}
 
-		if(pt = strstr(szLine, "temperature")){
+		pt = strstr(szLine, "temperature");
+		if(nullptr != pt) {
 			sscanf(pt + 12, "%f", &scanInfo.m_temperature);
 		}
 
-		if(pt = strstr(szLine, "instrumenttype=")){
+		pt = strstr(szLine, "instrumenttype=");
+		if(nullptr != pt) {
 			sscanf(pt + 15, "%s", instrumentType);
-			if(Equals(instrumentType, "heidelberg"))
+			if(Equals(instrumentType, "heidelberg")) {
 				m_instrumentType = INSTR_HEIDELBERG;
-			else
+			}
+			else {
 				m_instrumentType = INSTR_GOTHENBURG;
+			}
 		}
 	}
 }
@@ -800,7 +838,8 @@ void CEvaluationLogFileHandler::ParseFluxInformation(Meteorology::CWindField &wi
 
 	// read the additional scan-information, line by line
 	while(fgets(szLine, 8192, f)){
-		if(pt = strstr(szLine, "</fluxinfo>")){
+		pt = strstr(szLine, "</fluxinfo>");
+		if(nullptr != pt) {
 			// save all the values
 //			windField.SetPlumeHeight(plumeHeight, plumeHeightSource);
 			windField.SetWindDirection(windDirection, windDirectionSource);
@@ -808,39 +847,46 @@ void CEvaluationLogFileHandler::ParseFluxInformation(Meteorology::CWindField &wi
 			break;
 		}
 
-		if(pt = strstr(szLine, "flux=")){
+		pt = strstr(szLine, "flux=");
+		if(nullptr != pt) {
 			sscanf(pt+5, "%lf", &flux);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "windspeed=")){
+		pt = strstr(szLine, "windspeed=");
+		if(nullptr != pt) {
 			sscanf(pt+10, "%lf", &windSpeed);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "winddirection=")){
+		pt = strstr(szLine, "winddirection=");
+		if(nullptr != pt) {
 			sscanf(pt+14, "%lf", &windDirection);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "plumeheight=")){
+		pt = strstr(szLine, "plumeheight=");
+		if(nullptr != pt) {
 			sscanf(pt+12, "%lf", &plumeHeight);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "windspeedsource=")){
+		pt = strstr(szLine, "windspeedsource=");
+		if(nullptr != pt) {
 			sscanf(pt+16, "%s", source);
 			windSpeedSource = Meteorology::StringToMetSource(source);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "winddirectionsource=")){
+		pt = strstr(szLine, "winddirectionsource=");
+		if(nullptr != pt) {
 			sscanf(pt+20, "%s", source);
 			windDirectionSource = Meteorology::StringToMetSource(source);
 			continue;
 		}
 
-		if(pt = strstr(szLine, "plumeheightsource=")){
+		pt = strstr(szLine, "plumeheightsource=");
+		if(nullptr != pt) {
 			sscanf(pt+18, "%s", source);
 			plumeHeightSource = Meteorology::StringToMetSource(source);
 			continue;
