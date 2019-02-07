@@ -7,6 +7,9 @@ set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib h
 # Add the DOAS-fit files from DOASIS
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
 
+# Add the common Evaluation classes
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
+
 set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
@@ -53,6 +56,8 @@ add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
     ${PPPLIB_SPECTRA_HEADERS}
     ${PPPLIB_SPECTRUM_FORMAT_HEADERS}
+    ${SPECTRUM_FIT_HEADERS}
+    ${SPECTRUM_EVALUATION_HEADERS}
 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
@@ -72,8 +77,7 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
     ${PPPLIB_SPECTRA_SOURCES}
     ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
-    ${SPECTRUM_FIT_HEADERS}
-    ${SPECTRUM_FIT_SOURCES}
+    ${SPECTRUM_EVALUATION_SOURCES}
 )
 
 target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
@@ -88,7 +92,9 @@ ENDIF()
 source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS})
 source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
 source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
+source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
 
 source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES})
 source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
 source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
+source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})

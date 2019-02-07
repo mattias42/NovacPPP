@@ -1,6 +1,6 @@
 #include "CrossSectionData.h"
 #include "../Common/Common.h"
-#include "BasicMath.h"
+#include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
 
 #include <algorithm>
 #include <vector>

@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 
-#include "BasicMath.h"
+#include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
 #include "EvaluationResult.h"
 #include "FitWindow.h"
 #include "CrossSectionData.h"
