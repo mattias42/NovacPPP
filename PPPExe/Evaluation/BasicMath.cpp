@@ -3,14 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "BasicMath.h"
-#include "../Fit/Vector.h"
-#include "../Fit/GaussFunction.h"
-#include "../Fit/CubicSplineFunction.h"
-#include "../Fit/StandardMetricFunction.h"
-#include "../Fit/PolynomialFunction.h"
-#include "../Fit/DiscreteFunction.h"
-#include "../Fit/StandardFit.h"
-#include "../Fit/DOASVector.h"
+#include <PPPLib/SpectralEvaluation/Fit/Vector.h>
+#include <PPPLib/SpectralEvaluation/Fit/GaussFunction.h>
+#include <PPPLib/SpectralEvaluation/Fit/CubicSplineFunction.h>
+#include <PPPLib/SpectralEvaluation/Fit/StandardMetricFunction.h>
+#include <PPPLib/SpectralEvaluation/Fit/PolynomialFunction.h>
+#include <PPPLib/SpectralEvaluation/Fit/DiscreteFunction.h>
+#include <PPPLib/SpectralEvaluation/Fit/StandardFit.h>
+#include <PPPLib/SpectralEvaluation/Fit/DOASVector.h>
 #include <math.h>
 #include <algorithm>
 #include <vector>

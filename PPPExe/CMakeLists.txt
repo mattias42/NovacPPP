@@ -7,7 +7,6 @@ add_subdirectory(Common)
 add_subdirectory(Communication)
 add_subdirectory(Configuration)
 add_subdirectory(Evaluation)
-add_subdirectory(Fit)
 add_subdirectory(Flux)
 add_subdirectory(Geometry)
 add_subdirectory(Meteorology)
@@ -50,8 +49,6 @@ add_executable(NovacPPP
     ${NPP_CONFIGURATION_SOURCES}
     ${NPP_EVALUATION_HEADERS}
     ${NPP_EVALUATION_SOURCES}
-    ${NPP_FIT_HEADERS}
-    ${NPP_FIT_SOURCES}
     ${NPP_FLUX_HEADERS}
     ${NPP_FLUX_SOURCES}
     ${NPP_GEOMETRY_HEADERS}
@@ -85,7 +82,6 @@ source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
 source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
 source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${NPP_EVALUATION_HEADERS})
-source_group("Header Files\\Fit"                    FILES ${NPP_FIT_HEADERS})
 source_group("Header Files\\Flux"                   FILES ${NPP_FLUX_HEADERS})
 source_group("Header Files\\Geometry"               FILES ${NPP_GEOMETRY_HEADERS})
 source_group("Header Files\\Meteorology"            FILES ${NPP_METEOROLOGY_HEADERS})
@@ -97,7 +93,6 @@ source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
 source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
 source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${NPP_EVALUATION_SOURCES})
-source_group("Source Files\\Fit"                    FILES ${NPP_FIT_SOURCES})
 source_group("Source Files\\Flux"                   FILES ${NPP_FLUX_SOURCES})
 source_group("Source Files\\Geometry"               FILES ${NPP_GEOMETRY_SOURCES})
 source_group("Source Files\\Meteorology"            FILES ${NPP_METEOROLOGY_SOURCES})

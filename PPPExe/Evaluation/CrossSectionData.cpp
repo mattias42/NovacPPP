@@ -6,7 +6,7 @@
 #include <vector>
 #include <PPPLib/CStdioFile.h>
 
-#include "../Fit/Vector.h"
+#include <PPPLib/SpectralEvaluation/Fit/Vector.h>
 
 using namespace Evaluation;
 

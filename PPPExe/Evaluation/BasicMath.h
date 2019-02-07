@@ -10,7 +10,7 @@ namespace MathFit
 	class CVector;
 }
 
-#include "../Fit/FitException.h"
+#include <PPPLib/SpectralEvaluation/Fit/FitException.h>
 
 #if _MSC_VER > 1000
 #pragma once

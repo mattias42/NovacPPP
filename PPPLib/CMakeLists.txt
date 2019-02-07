@@ -4,23 +4,22 @@ cmake_minimum_required (VERSION 3.6)
 
 set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib headers")
 
+# Add the DOAS-fit files from DOASIS
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
 
-    
 set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumInfo.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumIO.h
 )
-    
+
 set(PPPLIB_SPECTRA_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/Spectrum.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
 )
-
-
 
 set(PPPLIB_SPECTRUM_FORMAT_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/MKPack.h
@@ -36,33 +35,33 @@ set(PPPLIB_SPECTRUM_FORMAT_SOURCES
 
 # Add the different components
 add_library(PPPLib
-	${PppLib_INCLUDE_DIRS}/PPPLib/CArray.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CCriticalSection.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CFileUtils.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CFtpUtils.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CList.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CSingleLock.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CStdioFile.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CString.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/DateTime.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CArray.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CCriticalSection.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CFileUtils.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CFtpUtils.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CList.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CSingleLock.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CStdioFile.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CString.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/DateTime.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/GPSData.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/PPPLib.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrometerModel.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
-	${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
     ${PPPLIB_SPECTRA_HEADERS}
     ${PPPLIB_SPECTRUM_FORMAT_HEADERS}
 
-	${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
-	${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
-	${CMAKE_CURRENT_LIST_DIR}/src/CStdioFile.cpp
-	${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
-	${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
-	${CMAKE_CURRENT_LIST_DIR}/src/DateTime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
+    ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
+    ${CMAKE_CURRENT_LIST_DIR}/src/CStdioFile.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/DateTime.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/GPSData.cpp
-	${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrometerModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/Spectrum.cpp
@@ -73,19 +72,23 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
     ${PPPLIB_SPECTRA_SOURCES}
     ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
+    ${SPECTRUM_FIT_HEADERS}
+    ${SPECTRUM_FIT_SOURCES}
 )
 
 target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
 
 IF(WIN32)
-	target_compile_options(PPPLib PRIVATE /W4 /WX /sdl)
+    target_compile_options(PPPLib PRIVATE /W4 /WX /sdl)
     target_compile_definitions(PPPLib PRIVATE _CRT_SECURE_NO_WARNINGS)
 ELSE()
-	target_compile_options(PPPLib PRIVATE -Wall -std=c++14)
+    target_compile_options(PPPLib PRIVATE -Wall -std=c++14)
 ENDIF()
 
-source_group("Header Files\\Spectra"        FILES ${PPPLIB_SPECTRA_HEADERS})
-source_group("Header Files\\SpectrumFormat" FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
+source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS})
+source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
+source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
 
-source_group("Source Files\\Spectra"        FILES ${PPPLIB_SPECTRA_SOURCES})
-source_group("Source Files\\SpectrumFormat" FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
+source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES})
+source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
+source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})

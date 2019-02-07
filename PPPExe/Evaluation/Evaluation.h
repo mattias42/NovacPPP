@@ -15,10 +15,10 @@
 #include "FitWindow.h"
 #include "CrossSectionData.h"
 
-#include "../Fit/Vector.h"
+#include <PPPLib/SpectralEvaluation/Fit/Vector.h>
+#include <PPPLib/SpectralEvaluation/Fit/ReferenceSpectrumFunction.h>
 
 #include <PPPLib/Spectra/Spectrum.h>
-#include "../Fit/ReferenceSpectrumFunction.h"
 
 namespace Evaluation
 {

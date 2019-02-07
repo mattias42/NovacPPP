@@ -1,0 +1,6 @@
+[submodule "PPPLib/src/SpectralEvaluation"]
+	path = PPPLib/src/SpectralEvaluation
+	url = https://github.com/NOVACProject/SpectralEvaluation.git
+[submodule "PPPLib/include/PPPLib/SpectralEvaluation"]
+	path = PPPLib/include/PPPLib/SpectralEvaluation
+	url = https://github.com/NOVACProject/SpectralEvaluation.git
