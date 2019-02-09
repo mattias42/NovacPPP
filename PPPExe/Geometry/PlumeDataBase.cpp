@@ -20,8 +20,8 @@ CPlumeDataBase::CPlumeData::CPlumeData(){
 	this->altitudeError	= 1000.0;
 	this->altitudeSource= Meteorology::MET_DEFAULT;
 	
-	this->validFrom		= novac::CDateTime(0,0,0,0,0,0);
-	this->validTo		= novac::CDateTime(9999,12,31,23,59,59);
+	this->validFrom		= CDateTime(0,0,0,0,0,0);
+	this->validTo		= CDateTime(9999,12,31,23,59,59);
 }
 
 CPlumeDataBase::CPlumeData::CPlumeData(const CPlumeDataBase::CPlumeData &p){
@@ -64,7 +64,7 @@ CPlumeDataBase::~CPlumeDataBase(void)
 		about the plume height at the requested time.
 	@return true if the wind field could be retrieved, otherwise false.
 	*/
-bool CPlumeDataBase::GetPlumeHeight(const novac::CDateTime &time, CPlumeHeight &plumeHeight) const{
+bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHeight) const{
 	std::list <CPlumeData> validData;
 	
 	// There can be more than one piece of wind-information valid for this given moment
@@ -182,8 +182,8 @@ void CPlumeDataBase::InsertPlumeHeight(const CPlumeHeight &plumeHeight){
 /** Inserts a calculated plume height into the database */
 void CPlumeDataBase::InsertPlumeHeight(const CGeometryResult &geomResult){
 	CPlumeData data;
-	novac::CDateTime validFrom = geomResult.m_averageStartTime;
-	novac::CDateTime validTo = geomResult.m_averageStartTime;
+	CDateTime validFrom = geomResult.m_averageStartTime;
+	CDateTime validTo = geomResult.m_averageStartTime;
 	
 	// make the result of the measurement valid within +- 'g_userSettings.m_calcGeometryValidTime'/2 minutes of the measurement occasion
 	validFrom.Decrement(g_userSettings.m_calcGeometryValidTime / 2);

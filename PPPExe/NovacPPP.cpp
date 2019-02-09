@@ -317,7 +317,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 		// The first date which we should analyze data from
 		if (Equals(token, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
 			parameter.Format(token + strlen(FLAG(str_fromDate)));
-			if (!novac::CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
+			if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
 				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}
@@ -328,7 +328,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 		// The last date which we should analyze data from
 		if (Equals(token, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
 			parameter.Format(token + strlen(FLAG(str_toDate)));
-			if (!novac::CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
+			if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
 				errorMessage.Format("Could not parse date: %s", (const char*)parameter);
 				ShowMessage(errorMessage);
 			}

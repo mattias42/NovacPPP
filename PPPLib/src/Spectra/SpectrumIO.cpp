@@ -419,18 +419,18 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 	return SUCCESS;
 }
 
-void CSpectrumIO::ParseTime(const std::uint32_t t, novac::CDateTime &time) const {
+void CSpectrumIO::ParseTime(const std::uint32_t t, CDateTime &time) const {
 	time.hour = (unsigned char)(t / 1000000);
 	time.minute = (unsigned char)((t - time.hour * 1000000) / 10000);
 	time.second = (unsigned char)((t - time.hour * 1000000 - time.minute * 10000) / 100);
-	time.msec = 10 * ((std::uint16_t)(t % 100));
+	time.millisecond = 10 * ((std::uint16_t)(t % 100));
 }
 
-void CSpectrumIO::WriteTime(std::uint32_t &t, const novac::CDateTime &time) const {
-	t = time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.msec / 10;
+void CSpectrumIO::WriteTime(std::uint32_t &t, const CDateTime &time) const {
+	t = time.hour * 1000000 + time.minute * 10000 + time.second * 100 + time.millisecond / 10;
 }
 
-void CSpectrumIO::ParseDate(const std::uint32_t d, novac::CDateTime &day) const {
+void CSpectrumIO::ParseDate(const std::uint32_t d, CDateTime &day) const {
 	day.day = (unsigned char)(d / 10000);                  // the day
 	day.month = (unsigned char)((d - day.day * 10000) / 100);  // the month
 	day.year = (std::uint16_t)(d % 100);                  // the year
@@ -440,7 +440,7 @@ void CSpectrumIO::ParseDate(const std::uint32_t d, novac::CDateTime &day) const 
 }
 
 // Write the date in Manne's format: ddmmyy 
-void CSpectrumIO::WriteDate(std::uint32_t &d, const novac::CDateTime &day) const {
+void CSpectrumIO::WriteDate(std::uint32_t &d, const CDateTime &day) const {
 	if (day.year < 100)
 		d = day.day * 10000 + day.month * 100 + day.year;
 	else

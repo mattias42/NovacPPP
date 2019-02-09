@@ -2,7 +2,7 @@
 #define NOVAC_PPPLIB_CFILE_UTILS_H
 
 #include <PPPLib/CString.h>
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include <PPPLib/Measurement.h>
 
 namespace novac
@@ -21,7 +21,7 @@ namespace novac
 		/** Takes the filename of an evaluation log and extracts the
 			Serial-number of the spectrometer, the date the scan was performed
 			and the start-time of the scan from the filename. */
-		static bool GetInfoFromFileName(const novac::CString fileName, novac::CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode);
+		static bool GetInfoFromFileName(const novac::CString fileName, CDateTime &start, novac::CString &serial, int &channel, MEASUREMENT_MODE &mode);
 
 		/** Judges if the provided .pak file is a complete file from the file name only. 
 			@return true if the file is from an incomplete scan */

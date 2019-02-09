@@ -31,7 +31,7 @@ CFluxCalculator::~CFluxCalculator(void)
 	@return 0 on success, else non-zero value
 	*/
 int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult){
-	novac::CDateTime skyStartTime;
+	CDateTime skyStartTime;
 	novac::CString errorMessage, shortFileName, serial;
 	Geometry::CPlumeHeight relativePlumeHeight;
 	Meteorology::CWindField windField;
@@ -174,8 +174,8 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
 	was made.
 	@return 0 if successful otherwise non-zero		
 */
-int CFluxCalculator::GetLocation(const novac::CString &serial, const novac::CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation){
-	novac::CDateTime day, evalValidFrom, evalValidTo;
+int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation){
+	CDateTime day, evalValidFrom, evalValidTo;
 	Configuration::CInstrumentConfiguration *instrumentConf = nullptr;
 	Configuration::CInstrumentLocation singleLocation;
 	novac::CString errorMessage;
@@ -223,7 +223,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
 	novac::CString fluxLogFile, directory;
 	novac::CString wdSrc, wsSrc, phSrc;
 	novac::CString errorMessage;
-	novac::CDateTime dateTime;
+	CDateTime dateTime;
 
 	// 0. Get the sources for the wind-field
 	fluxResult.m_windField.GetWindSpeedSource(wsSrc);

@@ -13,6 +13,8 @@
 // include the global settings
 #include <PPPLib/VolcanoInfo.h>
 
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+
 extern novac::CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 
 extern std::string s_exePath;
@@ -296,10 +298,10 @@ int Common::GetDay()
 		*/
 RETURN_CODE Common::ConvertToLocalTime(unsigned short date[3], int &hr, CGPSData &gps) {
 	// Direction is -1 if the local time is after the GMT-time, otherwise positive.
-	int		 direction = (gps.Longitude() > 0) ? 1 : -1;
+	int		 direction = (gps.m_longitude > 0) ? 1 : -1;
 
 	// The absolute number of degrees from Greenwitch
-	double degreesToGreenwitch = fabs(gps.Longitude());
+	double degreesToGreenwitch = fabs(gps.m_longitude);
 
 	// The number of hours that differ between the local time and GMT
 	int hoursToGreenwitch = (int)round((12.0 / 180.0) * degreesToGreenwitch);
@@ -329,7 +331,7 @@ RETURN_CODE Common::DecreaseDate(unsigned short date[3], int nDays) {
 	// Check for illegal dates
 	if (date[1] < 1 || date[1] > 12)
 		return FAIL;
-	if (date[2] < 1 || date[2] > novac::DaysInMonth(date[0], date[1]))
+	if (date[2] < 1 || date[2] > DaysInMonth(date[0], date[1]))
 		return FAIL;
 
 	// If we should not change the date, return without doing anything
@@ -356,7 +358,7 @@ RETURN_CODE Common::DecreaseDate(unsigned short date[3], int nDays) {
 			*month += 12;
 		}
 
-		*day += novac::DaysInMonth(*year, *month);
+		*day += DaysInMonth(*year, *month);
 	}
 	// Check the month 
 	while (*month < 1) {
@@ -373,7 +375,7 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 	// Check for illegal dates
 	if (date[1] < 1 || date[1] > 12)
 		return FAIL;
-	if (date[2] < 1 || date[2] > novac::DaysInMonth(date[0], date[1]))
+	if (date[2] < 1 || date[2] > DaysInMonth(date[0], date[1]))
 		return FAIL;
 
 	// If we should not change the date, return without doing anything
@@ -392,8 +394,8 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 	*day += nDays;
 
 	// Check the day of the month
-	while (*day > novac::DaysInMonth(*year, *month)) { // <-- if we've passed to the next month
-		*day -= novac::DaysInMonth(*year, *month);
+	while (*day > DaysInMonth(*year, *month)) { // <-- if we've passed to the next month
+		*day -= DaysInMonth(*year, *month);
 		++*month; // go the next month
 
 		while (*month > 12) { // <-- if we've passed to the next year
@@ -414,11 +416,11 @@ RETURN_CODE Common::IncreaseDate(unsigned short date[3], int nDays) {
 		for the site specified by (lat, lon) and for the time given in gmtTime.
 		Note that the returned angles are in degrees and that the specified
 		time _must_ be GMT-time. */
-RETURN_CODE Common::GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
+RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
 	SZA = SAZ = 0; // reset the numbers
 
 	// Get the julian day
-	double D = novac::JulianDay(gmtTime) - 2451545.0;
+	double D = JulianDay(gmtTime) - 2451545.0;
 
 	// Get the Equatorial coordinates...
 	double	RA; //	the right ascension (deg)

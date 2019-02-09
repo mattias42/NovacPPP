@@ -280,8 +280,8 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const novac::CString 
 	fprintf(f, "INT_TIME %ld\n", info.m_exposureTime);
 
 	fprintf(f, "SITE %s\n", (const char*)info.m_name);
-	fprintf(f, "LONGITUDE %.6lf\n", info.m_gps.Longitude());
-	fprintf(f, "LATITUDE %.6lf\n", info.m_gps.Latitude());
+	fprintf(f, "LONGITUDE %.6lf\n", info.m_gps.m_longitude);
+	fprintf(f, "LATITUDE %.6lf\n", info.m_gps.m_latitude);
 
 	if (extendedFormat) {
 		fprintf(f, "Author = \"\"\n");
@@ -297,10 +297,10 @@ RETURN_CODE CSTDFile::WriteSpectrum(const CSpectrum &spec, const novac::CString 
 		fprintf(f, "FitHigh = 0\n");
 		fprintf(f, "FitLow = 0\n");
 		fprintf(f, "Gain = 0\n");
-		fprintf(f, "Latitude = %.6lf\n", info.m_gps.Latitude());
+		fprintf(f, "Latitude = %.6lf\n", info.m_gps.m_latitude);
 		fprintf(f, "LightPath = 0\n");
 		fprintf(f, "LightSource = \"\"\n");
-		fprintf(f, "Longitude = %.6lf\n", info.m_gps.Longitude());
+		fprintf(f, "Longitude = %.6lf\n", info.m_gps.m_longitude);
 		fprintf(f, "Marker = %ld\n", spec.m_length / 2);
 		fprintf(f, "MathHigh = %ld\n", spec.m_length - 1);
 		fprintf(f, "MathLow = 0\n");

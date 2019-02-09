@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/GPSData.h>
+#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
 #include "../Meteorology/WindField.h"
 
 #ifndef PLUMEHEIGHT_H
@@ -35,8 +35,8 @@ namespace Geometry{
 		Meteorology::MET_SOURCE		m_plumeAltitudeSource;
 
 		/** The time range over which this information of the plume is valid */
-		novac::CDateTime	m_validFrom;
-		novac::CDateTime	m_validTo;
+		CDateTime	m_validFrom;
+		CDateTime	m_validTo;
 	
 	};
 }

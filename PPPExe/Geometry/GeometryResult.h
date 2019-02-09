@@ -1,6 +1,7 @@
 #pragma once
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include "../MeteorologySource.h"
+#include <PPPLib/CString.h>
 
 namespace Geometry{
 	class CGeometryResult
@@ -23,7 +24,7 @@ namespace Geometry{
 		/** The average of the starting-time of the
 				two scans that were combined to generate the result
 				(seconds since midnight, UTC) */
-		novac::CDateTime m_averageStartTime;
+		CDateTime m_averageStartTime;
 
 		/** The difference in start-time between the two
 			scans that were combined to make this measurement.

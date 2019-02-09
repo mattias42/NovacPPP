@@ -10,7 +10,7 @@
 #include <PPPLib/CString.h>
 #include <PPPLib/CList.h>
 #include <PPPLib/Measurement.h>
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include <PPPLib/Spectra/Spectrum.h>
 
 #include "../Geometry/PlumeHeight.h"
@@ -281,7 +281,7 @@ public:
 			for the site specified by (lat, lon) and for the time given in gmtTime. 
 			Note that the returned angles are in degrees and that the specified
 			time _must_ be GMT-time. */
-	static RETURN_CODE GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ);
+	static RETURN_CODE GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ);
 
 	/** ???? 
 		D  is the JulianDay counted from the 1st of January 2000 @ midnight

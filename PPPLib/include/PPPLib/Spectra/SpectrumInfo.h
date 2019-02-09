@@ -1,7 +1,7 @@
 #pragma once
 
-#include <PPPLib/GPSData.h>
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include <PPPLib/SpectrometerModel.h>
 #include <PPPLib/CString.h>
 
@@ -47,11 +47,11 @@ public:
 	/** The battery voltage when this spectrum was read out. */
 	float			m_batteryVoltage;
 
-	/** The time the spectrum collection began (see {@link novac::CDateTime}) */
-	novac::CDateTime m_startTime;
+	/** The time the spectrum collection began (see {@link CDateTime}) */
+	CDateTime m_startTime;
 
-	/** The time the spectrum collection stopped (see {@link novac::CDateTime}) */
-	novac::CDateTime m_stopTime;
+	/** The time the spectrum collection stopped (see {@link CDateTime}) */
+	CDateTime m_stopTime;
 
 	/** The spectrometer which collected the spectrum. 
 		For OceanOptics Spectrometers this is the serial number */

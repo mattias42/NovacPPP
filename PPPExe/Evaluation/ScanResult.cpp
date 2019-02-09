@@ -182,7 +182,7 @@ int CScanResult::GetSpecieIndex(const novac::CString &specie) const
 
 int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle, double tilt) {
 	unsigned long i; // iterator
-	novac::CDateTime startTime1, startTime2;
+	CDateTime startTime1, startTime2;
 	Meteorology::CWindField modifiedWind;
 
 	// If this is a not a flux measurement, then don't calculate any flux
@@ -643,7 +643,7 @@ MEASUREMENT_MODE CScanResult::GetMeasurementMode() const {
 /** Returns true if this is a stratospheric mode measurement */
 bool CScanResult::IsStratosphereMeasurement() const {
 	double SZA, SAZ;
-	novac::CDateTime startTime;
+	CDateTime startTime;
 
 	// Check so that the measurement is long enough, but not too long
 	if (m_specNum < 3 || m_specNum > 50)
@@ -712,7 +712,7 @@ bool CScanResult::IsWindMeasurement() const {
 
 bool CScanResult::IsWindMeasurement_Gothenburg() const {
 	double SZA, SAZ;
-	novac::CDateTime startTime;
+	CDateTime startTime;
 
 	// Check so that the measurement is long enough
 	if (m_specNum < 52)
@@ -758,7 +758,7 @@ bool CScanResult::IsWindMeasurement_Gothenburg() const {
 
 bool CScanResult::IsWindMeasurement_Heidelberg() const {
 	double SAZ, SZA;
-	novac::CDateTime startTime;
+	CDateTime startTime;
 
 	// Check so that the measurement is long enough
 	if (m_specNum < 52)
@@ -859,7 +859,7 @@ bool CScanResult::IsCompositionMeasurement() const {
 
 /** returns the time and date (UMT) when evaluated spectrum number 'index' was started.
 	@param index - the zero based index into the list of evaluated spectra */
-RETURN_CODE CScanResult::GetStartTime(unsigned long index, novac::CDateTime &t) const {
+RETURN_CODE CScanResult::GetStartTime(unsigned long index, CDateTime &t) const {
 	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
@@ -869,7 +869,7 @@ RETURN_CODE CScanResult::GetStartTime(unsigned long index, novac::CDateTime &t) 
 	return SUCCESS;
 }
 
-void CScanResult::GetSkyStartTime(novac::CDateTime &t) const {
+void CScanResult::GetSkyStartTime(CDateTime &t) const {
 
 	t = m_skySpecInfo.m_startTime;
 	return;
@@ -878,7 +878,7 @@ void CScanResult::GetSkyStartTime(novac::CDateTime &t) const {
 /** returns the time and date (UMT) when evaluated spectrum number 'index' was stopped.
 	@param index - the zero based index into the list of evaluated spectra.
 		@return SUCCESS if the index is valid */
-RETURN_CODE CScanResult::GetStopTime(unsigned long index, novac::CDateTime &t) const {
+RETURN_CODE CScanResult::GetStopTime(unsigned long index, CDateTime &t) const {
 	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 

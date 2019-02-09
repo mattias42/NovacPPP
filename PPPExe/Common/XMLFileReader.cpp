@@ -142,7 +142,7 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &
  	{
  		std::string p = Poco::Path::expand(path.std_str());
 
- 		if(p.compare(path.std_str()) != 0)
+ 		if(!novac::EqualsIgnoringCase(p, path.ToStdString()))
  		{
  			novac::CString message;
 	 		message.Format("Expanded path: '%s' into '%s'", path.c_str(), p.c_str());
@@ -165,7 +165,7 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, std::string &pat
     {
         std::string p = Poco::Path::expand(path);
 
-        if (p.compare(path) != 0)
+        if (!novac::EqualsIgnoringCase(p, path))
         {
             novac::CString message;
             message.Format("Expanded path: '%s' into '%s'", path.c_str(), p.c_str());
@@ -242,7 +242,7 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE 
 	return 0;
 }
 /** General parsing of a date */
-int CXMLFileReader::Parse_Date(const novac::CString &label, novac::CDateTime &datum){
+int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum){
 	int nFields = 0;
 
 	while(nullptr != (szToken = NextToken())){
@@ -276,7 +276,7 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, novac::CDateTime &da
 		
 		if(nFields == 0){
 			// if the normal parsing didn't work, then try also to parse functional expressions...
-			novac::CDateTime::ParseDate(szToken, datum);
+			CDateTime::ParseDate(szToken, datum);
 		}
 	}
 

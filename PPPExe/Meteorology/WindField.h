@@ -1,8 +1,8 @@
 #pragma once
 
 #include <PPPLib/CString.h>
-#include <PPPLib/DateTime.h>
-#include <PPPLib/GPSData.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
 
 #include "../MeteorologySource.h"
 
@@ -46,10 +46,10 @@ namespace Meteorology{
 		CWindField(void);
 
 		/** Constructor */
-		CWindField(double windSpeed, MET_SOURCE windSpeedSrc, double windDir, MET_SOURCE windDirSrc, const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double lat, double lon, double alt);
+		CWindField(double windSpeed, MET_SOURCE windSpeedSrc, double windDir, MET_SOURCE windDirSrc, const CDateTime &validFrom, const CDateTime &validTo, double lat, double lon, double alt);
 
 		/** Constructor */
-		CWindField(double windSpeed, double windSpeedErr, MET_SOURCE windSpeedSrc, double windDir, double windDirErr, MET_SOURCE windDirSrc, const novac::CDateTime &validFrom, const novac::CDateTime &validTo, double lat, double lon, double alt);
+		CWindField(double windSpeed, double windSpeedErr, MET_SOURCE windSpeedSrc, double windDir, double windDirErr, MET_SOURCE windDirSrc, const CDateTime &validFrom, const CDateTime &validTo, double lat, double lon, double alt);
 
 		/** Default destructor */
 		~CWindField(void);
@@ -64,7 +64,7 @@ namespace Meteorology{
 		void SetWindDirection(double wd, MET_SOURCE source);
 
 		/** Sets the time-frame the wind-field is valid for */
-		void SetValidTimeFrame(const novac::CDateTime &from, const novac::CDateTime &to);
+		void SetValidTimeFrame(const CDateTime &from, const CDateTime &to);
 
 		/** Gets the wind-speed */
 		double GetWindSpeed() const;
@@ -97,7 +97,7 @@ namespace Meteorology{
 		void	SetWindDirectionError(double err);
 
 		/** Gets the time and date for which this wind-field is valid */
-		void GetValidTimeFrame(novac::CDateTime &from, novac::CDateTime &to) const;
+		void GetValidTimeFrame(CDateTime &from, CDateTime &to) const;
 		
 		/** Gets the position that this wind-field is valid for */
 		void GetValidPosition(double &lat, double &lon, double &alt) const;
@@ -120,8 +120,8 @@ namespace Meteorology{
 
 		/** The time frame during which this piece of wind information
 			is valid. */
-		novac::CDateTime		m_validFrom;
-		novac::CDateTime		m_validTo;
+		CDateTime		m_validFrom;
+		CDateTime		m_validTo;
 		
 		/** The place on earth where this wind-field comes from */
 		CGPSData		m_location;

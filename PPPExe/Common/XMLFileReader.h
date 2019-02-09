@@ -2,7 +2,7 @@
 
 #include "../stdafx.h"
 
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include <PPPLib/CString.h>
 #include <PPPLib/CStdioFile.h>
 
@@ -45,7 +45,7 @@ namespace FileHandler
 		int Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3);
 
 		/** General parsing of a date */
-		int Parse_Date(const novac::CString &label, novac::CDateTime &datum);
+		int Parse_Date(const novac::CString &label, CDateTime &datum);
 
 		/**set the opened file pointer*/
 		void SetFile(novac::CStdioFile* file);

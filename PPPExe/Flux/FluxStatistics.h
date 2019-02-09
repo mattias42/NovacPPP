@@ -48,7 +48,7 @@ namespace Flux{
 		public:
 			CMeasurementDay();
 			~CMeasurementDay();
-			novac::CDateTime day; // the date of the measurement
+			CDateTime day; // the date of the measurement
 			novac::CList <CFluxResult> fluxList;
 			static void GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
 			void GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);

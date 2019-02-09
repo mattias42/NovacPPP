@@ -40,7 +40,7 @@ const CInstrumentConfiguration *CNovacPPPConfiguration::GetInstrument(const nova
 	for the given time 
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetInstrumentLocation(const novac::CString &serial, const novac::CDateTime &day, CInstrumentLocation &instrLocation) const{
+int CNovacPPPConfiguration::GetInstrumentLocation(const novac::CString &serial, const CDateTime &day, CInstrumentLocation &instrLocation) const{
 	CInstrumentLocation singleLocation;
 	novac::CString errorMessage;
 
@@ -79,8 +79,8 @@ int CNovacPPPConfiguration::GetInstrumentLocation(const novac::CString &serial, 
 		will be returned.
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int channel, const novac::CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName) const{
-	novac::CDateTime evalValidFrom, evalValidTo;
+int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName) const{
+	CDateTime evalValidFrom, evalValidTo;
 	novac::CString errorMessage, windowName;
 	
 	if(fitWindowName != nullptr){
@@ -134,7 +134,7 @@ int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int chann
 
 	@return 0 if successful otherwise non-zero		
 */
-int CNovacPPPConfiguration::GetDarkCorrection(const novac::CString &serial, const novac::CDateTime &dateAndTime, CDarkSettings &settings) const{
+int CNovacPPPConfiguration::GetDarkCorrection(const novac::CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const{
 	// First of all find the instrument 
 	const CInstrumentConfiguration *instrumentConf = GetInstrument(serial);
 	if(instrumentConf == nullptr)

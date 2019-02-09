@@ -265,7 +265,7 @@ void LoginAndDownloadDataFromDir(ftpLogin login, std::string directory, novac::G
 	nFTPThreadsRunning.DecrementValue();
 }
 
-bool ParseDate(const std::string& str, novac::CDateTime& result)
+bool ParseDate(const std::string& str, CDateTime& result)
 {
 	int year = 0;
 	int month = 0;
@@ -273,7 +273,7 @@ bool ParseDate(const std::string& str, novac::CDateTime& result)
 
 	int nNumbers = sscanf(str.c_str(), "%d.%d.%d", &year, &month, &day);
 	if (nNumbers == 3) {
-		result = novac::CDateTime(year, month, day, 0, 0, 0);
+		result = CDateTime(year, month, day, 0, 0, 0);
 		return true;
 	}
 	else {
@@ -289,7 +289,7 @@ void DownloadData(Poco::Net::FTPClientSession& ftp, novac::GuardedList<novac::CF
 	novac::CFileInfo nextDownloadItem;
 	while (downloadedQueue.PopFront(nextDownloadItem)) {
 		if (nextDownloadItem.isDirectory) {
-			novac::CDateTime date;
+			CDateTime date;
 			if (ParseDate(nextDownloadItem.fileName, date)) {
 				if (date <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= date) {
 					DownloadDataFromDir(ftp, nextDownloadItem.path + nextDownloadItem.fileName, downloadedFiles);
@@ -311,7 +311,7 @@ void DownloadData(Poco::Net::FTPClientSession& ftp, novac::GuardedList<novac::CF
 void DownloadFile(Poco::Net::FTPClientSession& ftp, const novac::CFileInfo& fileInfo, novac::GuardedList<std::string>& downloadedFiles) {
 	novac::CString localFileName, serial;
 	novac::CString userMessage;
-	novac::CDateTime start;
+	CDateTime start;
 	int channel;
 	MEASUREMENT_MODE mode;
 
@@ -352,7 +352,7 @@ void DownloadDataFromDir(Poco::Net::FTPClientSession& ftp, std::string directory
 			DownloadFile(ftp, fileInfo, downloadedFiles);
 		}
 		else if (g_userSettings.m_includeSubDirectories_FTP && fileInfo.isDirectory) {
-			novac::CDateTime date;
+			CDateTime date;
 			if (ParseDate(fileInfo.fileName, date)) {
 				if (date < g_userSettings.m_fromDate) {
 					continue;
@@ -400,7 +400,7 @@ int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDi
 */
 int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
 	const novac::CString &username, const novac::CString &password) {
-	novac::CDateTime now;
+	CDateTime now;
 
 	// Extract the name of the server and the login
 	ftpLogin login;
@@ -457,7 +457,7 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 */
 int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username,
 	const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList) {
-	novac::CDateTime now;
+	CDateTime now;
 
 	// Extract the name of the server and the login
 	ftpLogin login;

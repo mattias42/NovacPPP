@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Common/Common.h"
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include "../Meteorology/WindField.h"
 #include <PPPLib/CString.h>
 
@@ -66,10 +66,10 @@ namespace Flux
 		double	m_compass;
 
 		/** The date and time (UTC) when the measurement was started */
-		novac::CDateTime	m_startTime;
+		CDateTime	m_startTime;
 		
 		/** The date and time (UTC) when the measurement was finished */
-		novac::CDateTime	m_stopTime;
+		CDateTime	m_stopTime;
 
 		/** The volcano that this measurement was made at. Set to -1 if unknown */
 		int			m_volcano;

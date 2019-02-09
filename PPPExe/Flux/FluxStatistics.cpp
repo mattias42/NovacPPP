@@ -118,7 +118,7 @@ void CFluxStatistics::AttachFluxList(novac::CList <CFluxResult, CFluxResult&>& c
 void CFluxStatistics::AttachFlux(const CFluxResult &result){
 	CFluxResult r = result; // make a local copy of the result
 	CMeasurementDay measday;
-	novac::CDateTime resultDay = novac::CDateTime(result.m_startTime.year, result.m_startTime.month, result.m_startTime.day, 0, 0, 0);
+	CDateTime resultDay = CDateTime(result.m_startTime.year, result.m_startTime.month, result.m_startTime.day, 0, 0, 0);
 
 	// find out if we know about this instrument
 	bool foundInstrument = false;

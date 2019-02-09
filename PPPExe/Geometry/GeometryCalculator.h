@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/GPSData.h>
+#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
 #include "GeometryResult.h"
 #include "../Configuration/InstrumentLocation.h"
 
@@ -54,7 +54,7 @@ namespace Geometry{
 				@return true on success */
 		static bool CalculateGeometry(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
 		static bool CalculateGeometry(const novac::CString &evalLog1, int scanIndex1, const novac::CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
-		static bool CalculateGeometry(const CPlumeInScanProperty &plume1, const novac::CDateTime &startTime1, const CPlumeInScanProperty &plume2, const novac::CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
+		static bool CalculateGeometry(const CPlumeInScanProperty &plume1, const CDateTime &startTime1, const CPlumeInScanProperty &plume2, const CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
 
 		/** Calculate the plume-height using the scan found in the given evaluation-file.
 				@param windDirection - the assumed wind-direction at the time the measurement was made

@@ -596,7 +596,7 @@ void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CStr
 	fprintf(f, "<%s>%.2lf</%s>\n", (const char*)tag, value, (const char*)tag);
 	return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const novac::CDateTime &value) {
+void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const CDateTime &value) {
 	PrintTabs(f, nTabs);
 	fprintf(f, "<%s>%04d.%02d.%02d</%s>\n", (const char*)tag, value.year, value.month, value.day, (const char*)tag);
 	return;

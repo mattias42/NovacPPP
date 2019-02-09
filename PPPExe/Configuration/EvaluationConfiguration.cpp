@@ -21,14 +21,14 @@ void CEvaluationConfiguration::Clear(){
 	@param window - the fit-window to insert 
 	@param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
 	@param validTo - the time to which this fit-window is valid, NULL if valid until the end of time */
-void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &window, const novac::CDateTime *validFrom, const novac::CDateTime *validTo){
+void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &window, const CDateTime *validFrom, const CDateTime *validTo){
 	// make a copy of the fit - window
 	Evaluation::CFitWindow *newWindow = new Evaluation::CFitWindow();
 	*newWindow = window;
 	
 	// Get the time-range for which this window is valid
-	novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
-	novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
+	CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);
+	CDateTime *toTime = new CDateTime(9999, 12, 31, 23, 59, 59);
 	if(validFrom != NULL){
 		*fromTime = *validFrom;
 	}
@@ -53,7 +53,7 @@ void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &win
 	@param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
 	@param validTo - the time to which this fit-window is valid, NULL if valid until the end of time 
 	@return 0 if sucessful, otherwise 1 */
-int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWindow &window, novac::CDateTime *validFrom, novac::CDateTime *validTo){
+int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWindow &window, CDateTime *validFrom, CDateTime *validTo){
 	if(index < 0)
 		return 1;
 
@@ -62,8 +62,8 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
 	*newWindow = window;
 	
 	// Get the time-range for which this window is valid
-	novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
-	novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
+	CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);
+	CDateTime *toTime = new CDateTime(9999, 12, 31, 23, 59, 59);
 	if(validFrom != NULL){
 		*fromTime = *validFrom;
 	}
@@ -75,8 +75,8 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
 	int length = m_fitWindows.GetCount();
 	if(index < length){
 		Evaluation::CFitWindow *window = m_fitWindows.GetAt(index);
-		novac::CDateTime *from = m_validFrom.GetAt(index);
-		novac::CDateTime *to   = m_validTo.GetAt(index);
+		CDateTime *from = m_validFrom.GetAt(index);
+		CDateTime *to   = m_validTo.GetAt(index);
 		
 		delete window;
 		delete from;
@@ -99,7 +99,7 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
 	@param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
 	@param validTo - the time to which this fit-window is valid, NULL if valid until the end of time 
 	@return 0 if sucessful, otherwise 1 */
-int CEvaluationConfiguration::GetFitWindow(int index, Evaluation::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo) const{
+int CEvaluationConfiguration::GetFitWindow(int index, Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo) const{
 	if(index < 0 || index >= m_fitWindows.GetSize())
 		return 1;
 
@@ -133,7 +133,7 @@ int CEvaluationConfiguration::CheckSettings() const{
 		for(int j = k+1; j < nWindows; ++j){
 			if(m_fitWindows[j]->channel != m_fitWindows[k]->channel){
 				continue; // no use to compare master and slave...
-			}else if(m_fitWindows[j]->name.compare(m_fitWindows[k]->name) != 0){
+			}else if(!novac::EqualsIgnoringCase(m_fitWindows[j]->name, m_fitWindows[k]->name)){
 				continue; // if the windows have different names, then don't compare...
 			}else{
 				if((*m_validFrom[k] < *m_validFrom[j]) && (*m_validTo[k] > *m_validFrom[j])){

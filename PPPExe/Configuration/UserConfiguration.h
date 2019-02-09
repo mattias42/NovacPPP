@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/DateTime.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 
 #include "../Common/Common.h"
 #include "../Molecule.h"
@@ -102,11 +102,11 @@ namespace Configuration{
 		// ------------------------------------------------------------------------
 
 		/** The first day that we should look for data (inclusive) */
-		novac::CDateTime		m_fromDate;
+		CDateTime		m_fromDate;
 		#define			str_fromDate "FromDate"
 		
 		/** The last day that we should look for data (inclusive) */
-		novac::CDateTime		m_toDate;
+		CDateTime		m_toDate;
 		#define			str_toDate "ToDate"
 
 		// ------------------------------------------------------------------------

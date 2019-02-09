@@ -56,7 +56,7 @@ namespace Configuration{
 		
 		/** Time stamps, during which this location information
 			is resonable/useful */
-		novac::CDateTime m_validFrom, m_validTo;
+		CDateTime m_validFrom, m_validTo;
 		
 		
 		// ---------------------------------------------

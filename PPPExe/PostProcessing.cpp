@@ -245,7 +245,7 @@ void CPostProcessing::DoPostProcessing_Geometry() {
 
 void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CList <novac::CString, novac::CString&> &fileList) {
 	int channel;
-	novac::CDateTime startTime;
+	CDateTime startTime;
 	novac::CString serial, userMessage;
 	MEASUREMENT_MODE mode;
 
@@ -472,7 +472,7 @@ void AddResultToList(const novac::CString &pakFileName, const novac::CString(&ev
 int CPostProcessing::CheckSettings() {
 	unsigned int j, k; //iterators
 	novac::CString errorMessage;
-	novac::CDateTime now;
+	CDateTime now;
 
 	// Check that no instrument is duplicated in the list of instruments...
 	for (j = 0; j < g_setup.m_instrumentNum; ++j) {
@@ -545,7 +545,7 @@ int CPostProcessing::CheckSettings() {
 }
 
 int CPostProcessing::PrepareEvaluation() {
-	novac::CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
+	CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
 	novac::CString errorMessage, fileName;
 
 	// this is true if we failed to prepare the evaluation...
@@ -760,8 +760,8 @@ int CPostProcessing::PreparePlumeHeights() {
 	Geometry::CPlumeHeight plumeHeight;
 	plumeHeight.m_plumeAltitude = g_volcanoes.GetPeakAltitude(g_userSettings.m_volcano);
 	plumeHeight.m_plumeAltitudeSource = Meteorology::MET_DEFAULT;
-	plumeHeight.m_validFrom = novac::CDateTime(0, 0, 0, 0, 0, 0);
-	plumeHeight.m_validTo = novac::CDateTime(9999, 12, 31, 23, 59, 59);
+	plumeHeight.m_validFrom = CDateTime(0, 0, 0, 0, 0, 0);
+	plumeHeight.m_validTo = CDateTime(9999, 12, 31, 23, 59, 59);
 
 	// the estimated plume height is half of the altitude difference between the highest
 	//	instrument for this volcano and the volcano altitude
@@ -801,7 +801,7 @@ int CPostProcessing::PreparePlumeHeights() {
 	*/
 void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
 	novac::CString serial1, serial2, messageToUser;
-	novac::CDateTime startTime1, startTime2;
+	CDateTime startTime1, startTime2;
 	MEASUREMENT_MODE measMode1, measMode2;
 	int channel;
 	unsigned long nFilesChecked1 = 0; // this is for debugging purposes...
@@ -865,7 +865,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 
 			// The time elapsed between the two measurements must not be more than 
 			//	the user defined time-limit (in seconds)
-			double timeDifference = fabs(novac::CDateTime::Difference(startTime1, startTime2));
+			double timeDifference = fabs(CDateTime::Difference(startTime1, startTime2));
 			if (timeDifference > g_userSettings.m_calcGeometry_MaxTimeDifference) {
 				pos2 = nullptr;
 				continue;
@@ -954,7 +954,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 			auto gp = geometryResults.GetTailPosition();
 			while (gp != nullptr) {
 				const Geometry::CGeometryResult *oldResult = geometryResults.GetPrev(gp);
-				if (fabs(novac::CDateTime::Difference(oldResult->m_averageStartTime, startTime1)) < g_userSettings.m_calcGeometryValidTime) {
+				if (fabs(CDateTime::Difference(oldResult->m_averageStartTime, startTime1)) < g_userSettings.m_calcGeometryValidTime) {
 					if ((oldResult->m_plumeAltitudeError < plumeHeight.m_plumeAltitudeError) && (oldResult->m_plumeAltitude > NOT_A_NUMBER)) {
 						plumeHeight.m_plumeAltitude = oldResult->m_plumeAltitude;
 						plumeHeight.m_plumeAltitudeError = oldResult->m_plumeAltitudeError;
@@ -1026,7 +1026,7 @@ bool CPostProcessing::ApplyACDCCorrections(novac::CList <Evaluation::CExtendedSc
 		altitude of the summit of the volcano will be used.
 	*/
 void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles) {
-	novac::CDateTime scanStartTime;
+	CDateTime scanStartTime;
 	novac::CString serial, messageToUser;
 	Geometry::CPlumeHeight plumeHeight; // the altitude of the plume, in meters above sea level
 	MEASUREMENT_MODE measMode;
@@ -1093,7 +1093,7 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
 
 void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
 	novac::CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
-	novac::CDateTime now;
+	CDateTime now;
 
 	// get the current time
 	now.SetToNow();
@@ -1236,7 +1236,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
 
 void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes) {
 	novac::CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
-	novac::CDateTime now;
+	CDateTime now;
 
 	// get the current time
 	now.SetToNow();
@@ -1398,7 +1398,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
 // 5. Insert the calculated geometries into the plume height database
 void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
 	Meteorology::CWindField windField;
-	novac::CDateTime validFrom, validTo;
+	CDateTime validFrom, validTo;
 	Configuration::CInstrumentLocation location;
 
 	auto pos = geometryResults.GetHeadPosition();
@@ -1415,9 +1415,9 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geome
 			g_setup.GetInstrumentLocation(result->m_instr1, result->m_averageStartTime, location);
 
 			// get the time-interval that the measurement is valid for
-			validFrom = novac::CDateTime(result->m_averageStartTime);
+			validFrom = CDateTime(result->m_averageStartTime);
 			validFrom.Decrement(g_userSettings.m_calcGeometryValidTime);
-			validTo = novac::CDateTime(result->m_averageStartTime);
+			validTo = CDateTime(result->m_averageStartTime);
 			validTo.Increment(g_userSettings.m_calcGeometryValidTime);
 
 			// insert the wind-direction into the wind database
@@ -1437,11 +1437,11 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 	novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
 	novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
 	novac::CList <novac::CString, novac::CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis
-	novac::CDateTime validFrom, validTo;
+	CDateTime validFrom, validTo;
 
 	novac::CString serial, serial2, fileName, fileName2, nonsenseString;
 	novac::CString userMessage, windLogFile;
-	novac::CDateTime startTime, startTime2;
+	CDateTime startTime, startTime2;
 	int channel, channel2, nWindMeasFound = 0;
 	MEASUREMENT_MODE meas_mode, meas_mode2;
 	Configuration::CInstrumentLocation location;

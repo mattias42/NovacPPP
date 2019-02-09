@@ -10,6 +10,9 @@ add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
 # Add the common Evaluation classes
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
 
+# Add the common Spectrum property classes
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Spectra)
+
 set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
@@ -47,25 +50,23 @@ add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/CStdioFile.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/CString.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/DateTime.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/GPSData.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/PPPLib.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrometerModel.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
     ${PPPLIB_SPECTRA_HEADERS}
     ${PPPLIB_SPECTRUM_FORMAT_HEADERS}
     ${SPECTRUM_FIT_HEADERS}
     ${SPECTRUM_EVALUATION_HEADERS}
+    ${SPECTRUM_CLASS_HEADERS}
 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CStdioFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/DateTime.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/GPSData.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrometerModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
@@ -75,9 +76,11 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/MKPack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.cpp
     ${PPPLIB_SPECTRA_SOURCES}
     ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
     ${SPECTRUM_EVALUATION_SOURCES}
+    ${SPECTRUM_CLASS_SOURCES}
 )
 
 target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
@@ -89,12 +92,12 @@ ELSE()
     target_compile_options(PPPLib PRIVATE -Wall -std=c++14)
 ENDIF()
 
-source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS})
+source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS} ${SPECTRUM_CLASS_HEADERS})
 source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
 source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
 
-source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES})
+source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES} ${SPECTRUM_CLASS_SOURCES})
 source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
 source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})

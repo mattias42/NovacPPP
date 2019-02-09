@@ -126,16 +126,16 @@ namespace SpectrumIO
 				@return 1 - ...*/
 		int ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spec = NULL, char *headerBuffer = NULL, int headerBufferSize = 0);
 
-		/** Converts a time from std::uint32_t to novac::CDateTime */
-		void ParseTime(const std::uint32_t t, novac::CDateTime &time) const;
+		/** Converts a time from std::uint32_t to CDateTime */
+		void ParseTime(const std::uint32_t t, CDateTime &time) const;
 
-		/** Converts a time from novac::CDateTime to std::uint32_t */
-		void WriteTime(std::uint32_t &t, const novac::CDateTime &time) const;
+		/** Converts a time from CDateTime to std::uint32_t */
+		void WriteTime(std::uint32_t &t, const CDateTime &time) const;
 
-		/** Converts a date from std::uint32_t to novac::CDateTime */
-		void ParseDate(const std::uint32_t d, novac::CDateTime &day) const;
+		/** Converts a date from std::uint32_t to CDateTime */
+		void ParseDate(const std::uint32_t d, CDateTime &day) const;
 
-		/** Converts a date from novac::CDateTime to std::uint32_t */
-		void WriteDate(std::uint32_t &d, const novac::CDateTime &day) const;
+		/** Converts a date from CDateTime to std::uint32_t */
+		void WriteDate(std::uint32_t &d, const CDateTime &day) const;
 	};
 }

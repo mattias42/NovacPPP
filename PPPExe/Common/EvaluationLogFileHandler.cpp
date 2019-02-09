@@ -963,7 +963,7 @@ void CEvaluationLogFileHandler::SortScans() {
 
 /** Returns true if the scans are already ordered */
 bool	CEvaluationLogFileHandler::IsSorted() {
-    novac::CDateTime time1, time2;
+    CDateTime time1, time2;
 
     for (int k = 0; k < m_scanNum - 1; ++k) {
         // Get the start-times
@@ -988,7 +988,7 @@ bool	CEvaluationLogFileHandler::IsSorted() {
 RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString fileName) {
     novac::CString string, specieName;
     novac::CString wsSrc, wdSrc, phSrc, specModel;
-    novac::CDateTime startTime;
+    CDateTime startTime;
 
     // 1. Test if the file already exists, if so then return false
     if (IsExistingFile(fileName))
@@ -1200,7 +1200,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     return SUCCESS;
 }
 
-/** Sorts the novac::CDateTime-objects in the given array.
+/** Sorts the CDateTime-objects in the given array.
         Algorithm based on MergeSort (~O(NlogN)) */
 void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending) {
     unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
@@ -1244,7 +1244,7 @@ void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation:
 /** Merges the two arrays in a sorted way and stores the
         result in the output-array 'result' */
 void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending) {
-    novac::CDateTime	time1, time2;
+    CDateTime	time1, time2;
     unsigned long it1 = 0; // iterator for array1
     unsigned long it2 = 0; // iterator for array2
     unsigned long itr = 0; // iterator for result
@@ -1307,7 +1307,7 @@ void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluatio
         Quite efficient for small arrays since the elements does not have to be copied
             and thus uses very little memory */
 void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool /*ascending*/) {
-    novac::CDateTime time1, time2;
+    CDateTime time1, time2;
     bool change;
     unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
 

@@ -426,8 +426,8 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
 	windField.SetWindSpeedError(fabs(relativePlumeHeight.m_plumeAltitudeError / averageDelay) + fabs(relativePlumeHeight.m_plumeAltitude * stdDelay / (averageDelay * averageDelay)));
 
 	// Also set the time for which the measurement is valid.
-	novac::CDateTime validFrom = m_startTime;
-	novac::CDateTime validTo	= m_stopTime;
+	CDateTime validFrom = m_startTime;
+	CDateTime validTo	= m_stopTime;
 	validFrom.Decrement(g_userSettings.m_dualBeam_ValidTime / 2);
 	validTo.Increment(g_userSettings.m_dualBeam_ValidTime / 2);
 	windField.SetValidTimeFrame(validFrom, validTo);
@@ -439,7 +439,7 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
 		given evaluation-files. */
 RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &evalLog1, const novac::CString &evalLog2){
 	FileHandler::CEvaluationLogFileHandler reader[2];
-	novac::CDateTime time;
+	CDateTime time;
 	Meteorology::CWindField wf;
 	novac::CString errorMessage;
 	WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
@@ -564,7 +564,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 	FileHandler::CEvaluationLogFileHandler reader;
 	WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
 	Meteorology::CWindField wf;
-	novac::CDateTime time;
+	CDateTime time;
 	int scanIndex;
 	double delay;
 
@@ -660,7 +660,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 /** Writes the header of a dual-beam wind speed log file to the given
 	file. */
 void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileName){
-	novac::CDateTime now;
+	CDateTime now;
 
 	if(IsExistingFile(fileName))
 		return; // don't write the header if the file already exists..
@@ -683,11 +683,11 @@ void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileNam
 }
 
 /** Appends a dual-beam wind speed result to the given file */
-void CWindSpeedCalculator::AppendResultToFile(const novac::CString &fileName, const novac::CDateTime &startTime,
+void CWindSpeedCalculator::AppendResultToFile(const novac::CString &fileName, const CDateTime &startTime,
 	const Configuration::CInstrumentLocation& /*location*/,
 	const Geometry::CPlumeHeight &plumeHeight,
 	Meteorology::CWindField &windField){
-	novac::CDateTime validFrom, validTo;
+	CDateTime validFrom, validTo;
 
 	// try to open the file
 	FILE *f = fopen(fileName, "a");

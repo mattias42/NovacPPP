@@ -23,7 +23,7 @@ using namespace Stratosphere;
 CStratosphereCalculator::CZenithMeasurement::CZenithMeasurement(){
 	this->column	= 0;
 	this->AMF		= 0;
-	this->time = novac::CDateTime(0, 0, 0, 0, 0, 0);
+	this->time = CDateTime(0, 0, 0, 0, 0, 0);
 }
 
 CStratosphereCalculator::CZenithMeasurement::~CZenithMeasurement(){
@@ -161,7 +161,7 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
 /** Inserts the results in the supplied measurement day structure
 	into the appropriate place in the list of measurements */
 void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &mday){
-	novac::CDateTime measDate	= novac::CDateTime(mday.day.year, mday.day.month, mday.day.day, 0, 0, 0);
+	CDateTime measDate	= CDateTime(mday.day.year, mday.day.month, mday.day.day, 0, 0, 0);
 	CMeasurementDay r;
 	r = mday; // make a local copy of the results
 
@@ -195,7 +195,7 @@ void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &m
 
 /** Retrieves the Air Mass Factor for a zenith measuremnt performed
 	at the given location and at the given time of day (UTC). */
-double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData &location, const novac::CDateTime &gmtTime){
+double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData &location, const CDateTime &gmtTime){
 	double SZA, SAZ;
 	
 	if(SUCCESS != Common::GetSunPosition(gmtTime, location.m_latitude, location.m_longitude, SZA, SAZ))

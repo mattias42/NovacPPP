@@ -277,16 +277,16 @@ namespace Evaluation
 		        'index' was started.
 		    @param index - the zero based index into the list of evaluated spectra.
 		    @return SUCCESS if the index is valid */
-		RETURN_CODE GetStartTime(unsigned long index, novac::CDateTime &time) const;
+		RETURN_CODE GetStartTime(unsigned long index, CDateTime &time) const;
 
 		/** returns the time and date (UMT) when the sky-spectrum was started. */
-		void GetSkyStartTime(novac::CDateTime &t) const;
+		void GetSkyStartTime(CDateTime &t) const;
 
 		/** returns the time and date (UMT) when evaluated spectrum number 'index' 
 		        was stopped.
 		    @param index - the zero based index into the list of evaluated spectra.
 		    @return SUCCESS if the index is valid */
-		RETURN_CODE GetStopTime(unsigned long index, novac::CDateTime &time) const;
+		RETURN_CODE GetStopTime(unsigned long index, CDateTime &time) const;
 
 		/** returns the evaluated column for specie number 'specieNum' and 
 		        spectrum number 'specNum'
