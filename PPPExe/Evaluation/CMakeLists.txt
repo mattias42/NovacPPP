@@ -7,7 +7,6 @@ set(NPP_EVALUATION_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/Evaluation.h
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationResult.h
     ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.h
-    ${CMAKE_CURRENT_LIST_DIR}/FitWindow.h
     ${CMAKE_CURRENT_LIST_DIR}/MessageLog.h
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.h
     ${CMAKE_CURRENT_LIST_DIR}/ScanEvaluation.h
@@ -20,7 +19,6 @@ set(NPP_EVALUATION_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/Evaluation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationResult.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/FitWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MessageLog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ScanEvaluation.cpp

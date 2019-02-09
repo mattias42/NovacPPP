@@ -498,7 +498,7 @@ void CEvaluation::InitializeVectors(int sumChn){
 		vXData.SetAt(i, (TFitData)(1.0f + (double)i));
 }
 
-void CEvaluation::RemoveOffset(double *spectrum, int sumChn, BOOL UV){
+void CEvaluation::RemoveOffset(double *spectrum, int sumChn, bool UV){
 	int offsetFrom  = (UV) ? 50 : 2;
 	int offsetTo    = (UV) ? 200 : 20;
 

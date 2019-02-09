@@ -12,8 +12,8 @@
 
 #include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/CrossSectionData.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/FitWindow.h>
 #include "EvaluationResult.h"
-#include "FitWindow.h"
 
 #include <PPPLib/SpectralEvaluation/Fit/Vector.h>
 #include <PPPLib/SpectralEvaluation/Fit/ReferenceSpectrumFunction.h>
@@ -85,7 +85,7 @@ namespace Evaluation
 		int SetSkySpectrum(const CSpectrum &spec);
 
 		/** Removes the offset from the supplied spectrum */
-		void RemoveOffset(double *spectrum, int sumChn, BOOL UV = TRUE);
+		void RemoveOffset(double *spectrum, int sumChn, bool UV = true);
 	
 		void GetFitRange(int &fitLow, int &fitHigh){
 			fitLow = this->m_window.fitLow;

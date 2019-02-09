@@ -393,7 +393,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 	// we can also write an evaluation-summary log file
 	evalSummaryLog.Format("%s%c%s%cEvaluationSummary_%s.txt", 
 		(const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(),
-		(const char*)window->name, Poco::Path::separator(),
+		window->name.c_str(), Poco::Path::separator(),
 		(const char*)result->GetSerial());
 
 	if (!IsExistingFile(evalSummaryLog)) {

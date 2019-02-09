@@ -1,7 +1,7 @@
 #pragma once
 
 #include <PPPLib/DateTime.h>
-#include "../Evaluation/FitWindow.h"
+#include <PPPLib/SpectralEvaluation/Evaluation/FitWindow.h>
 #include <PPPLib/CArray.h>
 
 namespace Configuration{

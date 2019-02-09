@@ -133,7 +133,7 @@ int CEvaluationConfiguration::CheckSettings() const{
 		for(int j = k+1; j < nWindows; ++j){
 			if(m_fitWindows[j]->channel != m_fitWindows[k]->channel){
 				continue; // no use to compare master and slave...
-			}else if(!Equals(m_fitWindows[j]->name, m_fitWindows[k]->name)){
+			}else if(m_fitWindows[j]->name.compare(m_fitWindows[k]->name) != 0){
 				continue; // if the windows have different names, then don't compare...
 			}else{
 				if((*m_validFrom[k] < *m_validFrom[j]) && (*m_validTo[k] > *m_validFrom[j])){

@@ -97,7 +97,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 		fprintf(f, "\t\t<channel>%d</channel>\n", window.channel);
 
 		// the name of the fit-window
-		fprintf(f, "\t\t<name>%s</name>\n", (const char*)window.name);
+		fprintf(f, "\t\t<name>%s</name>\n", window.name.c_str());
 
 		// the time-range when the fit-window is valid
 		fprintf(f, "\t\t<validFrom>%04d.%02d.%02d</validFrom>\n", from.year, from.month, from.day);
@@ -268,12 +268,16 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
 		}
 
 		if(Equals(szToken, "fOptShift")){
-			Parse_IntItem("/fOptShift", window.findOptimalShift);
+            int flagToParse = 0;
+            Parse_IntItem("/fOptShift", flagToParse);
+            window.findOptimalShift = (flagToParse > 0);
 			continue;
 		}
 
 		if(Equals(szToken, "shiftSky")){
-			Parse_IntItem("/shiftSky", window.shiftSky);
+            int flagToParse = 0;
+            Parse_IntItem("/shiftSky", flagToParse);
+            window.shiftSky = (flagToParse > 0);
 			continue;
 		}
 
