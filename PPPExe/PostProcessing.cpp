@@ -566,12 +566,12 @@ int CPostProcessing::PrepareEvaluation() {
 			for (int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex) {
 				if (!IsExistingFile(window.ref[referenceIndex].m_path)) {
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), (const char*)window.ref[referenceIndex].m_path);
+					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), window.ref[referenceIndex].m_path.c_str());
 					if (IsExistingFile(fileName)) {
-						window.ref[referenceIndex].m_path.Format(fileName);
+						window.ref[referenceIndex].m_path = fileName.ToStdString();
 					}
 					else {
-						errorMessage.Format("Cannot read reference file %s", (const char*)window.ref[referenceIndex].m_path);
+						errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path.c_str());
 						ShowMessage(errorMessage);
 						failure = true;
 						continue;
@@ -580,7 +580,7 @@ int CPostProcessing::PrepareEvaluation() {
 
 				// Read in the cross section
 				if (window.ref[referenceIndex].ReadCrossSectionDataFromFile()) {
-					errorMessage.Format("Failed to read cross section file: %s", (const char*)window.ref[referenceIndex].m_path);
+					errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path.c_str());
 					ShowMessage(errorMessage);
 					failure = true;
 					continue;
@@ -590,31 +590,31 @@ int CPostProcessing::PrepareEvaluation() {
 				//	we should also high-pass filter the cross-sections
 				if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB) {
 					if (window.ref[referenceIndex].m_isFiltered == false) {
-						if (Equals(window.ref[referenceIndex].m_specieName, "ring")) {
-							window.ref[referenceIndex].m_data->HighPassFilter_Ring();
+						if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring")) {
+                            HighPassFilter_Ring(*window.ref[referenceIndex].m_data);
 						}
 						else {
-							window.ref[referenceIndex].m_data->HighPassFilter();
+                            HighPassFilter(*window.ref[referenceIndex].m_data);
 						}
 					}
 					else {
 						// The filtered cross sections are scaled to the unit of ppmm
 						//	rescale them to molecules/cm2 as all other cross sections
-						window.ref[referenceIndex].m_data->Multiply(1.0 / 2.5e15);
+                        Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
 					}
 				}// endif
 			}
 
 			// If the window also contains a fraunhofer-reference then read it too.
-			if (window.fraunhoferRef.m_path.GetLength() > 4) {
+			if (window.fraunhoferRef.m_path.size() > 4) {
 				if (!IsExistingFile(window.fraunhoferRef.m_path)) {
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), (const char*)window.fraunhoferRef.m_path);
+					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), window.fraunhoferRef.m_path.c_str());
 					if (IsExistingFile(fileName)) {
-						window.fraunhoferRef.m_path.Format(fileName);
+						window.fraunhoferRef.m_path = fileName.ToStdString();
 					}
 					else {
-						errorMessage.Format("Cannot read reference file %s", (const char*)window.fraunhoferRef.m_path);
+						errorMessage.Format("Cannot read reference file %s", window.fraunhoferRef.m_path.c_str());
 						ShowMessage(errorMessage);
 						failure = true;
 						continue;
@@ -622,16 +622,16 @@ int CPostProcessing::PrepareEvaluation() {
 				}
 
 				if (window.fraunhoferRef.ReadCrossSectionDataFromFile()) {
-					errorMessage.Format("Failed to read fraunhofer-reference file: %s", (const char*)window.fraunhoferRef.m_path);
+					errorMessage.Format("Failed to read fraunhofer-reference file: %s", window.fraunhoferRef.m_path.c_str());
 					ShowMessage(errorMessage);
 					failure = true;
 					continue;
 				}
 				if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB) {
-					window.fraunhoferRef.m_data->HighPassFilter_Ring();
+                    HighPassFilter_Ring(*window.fraunhoferRef.m_data);
 				}
 				else {
-					window.fraunhoferRef.m_data->Log();
+                    Log(*window.fraunhoferRef.m_data);
 				}
 			}
 

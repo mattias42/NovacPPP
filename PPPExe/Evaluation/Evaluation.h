@@ -11,9 +11,9 @@
 
 
 #include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include "EvaluationResult.h"
 #include "FitWindow.h"
-#include "CrossSectionData.h"
 
 #include <PPPLib/SpectralEvaluation/Fit/Vector.h>
 #include <PPPLib/SpectralEvaluation/Fit/ReferenceSpectrumFunction.h>

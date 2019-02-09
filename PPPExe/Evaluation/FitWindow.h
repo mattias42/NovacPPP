@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ReferenceFile.h"
+#include <PPPLib/SpectralEvaluation/Evaluation/ReferenceFile.h>
 #include "../Common/Common.h"
 #include "../stdafx.h"
 

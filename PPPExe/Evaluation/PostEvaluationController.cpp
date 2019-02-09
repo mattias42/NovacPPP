@@ -293,9 +293,9 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	string.AppendFormat("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tcounts_ms\tdelta\tchisquare\texposuretime\tnumspec\t");
 
 	for (itSpecie = 0; itSpecie < window->nRef; ++itSpecie) {
-		string.AppendFormat("column(%s)\tcolumnerror(%s)\t", (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
-		string.AppendFormat("shift(%s)\tshifterror(%s)\t", (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
-		string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", (const char*)window->ref[itSpecie].m_specieName, (const char*)window->ref[itSpecie].m_specieName);
+		string.AppendFormat("column(%s)\tcolumnerror(%s)\t",    window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
+		string.AppendFormat("shift(%s)\tshifterror(%s)\t",      window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
+		string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t",  window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
 	}
 	string.AppendFormat("isgoodpoint\toffset\tflag");
 

@@ -417,6 +417,16 @@ namespace novac
 		#endif
 	}
 
+    int Equals(const std::string &str1, const std::string &str2)
+    {
+        #ifdef _MSC_VER
+            return (0 == _strnicmp(str1.c_str(), str2.c_str(), std::max(strlen(str1.c_str()), strlen(str2.c_str()))));
+        #else
+            return (0 == strncasecmp(str1.c_str(), str2.c_str(), std::max(strlen(str1.c_str()), strlen(str2.c_str()))));
+        #endif
+    }
+
+
 	int Equals(const CString &str1, const CString &str2, size_t nCharacters) {
 		#ifdef _MSC_VER
 			return (0 == _strnicmp(str1, str2, std::min(nCharacters, std::max(strlen(str1), strlen(str2)))));

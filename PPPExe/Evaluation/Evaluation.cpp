@@ -201,7 +201,7 @@ int CEvaluation::Evaluate(const CSpectrum &measured, int numSteps){
 			// finally display the fit results for each reference spectrum including their appropriate error
 			for(i = 0; i < m_window.nRef; i++)
 			{
-				m_result.m_ref[i].m_specieName    = m_window.ref[i].m_specieName.ToStdString();
+				m_result.m_ref[i].m_specieName    = m_window.ref[i].m_specieName;
 
 				m_result.m_ref[i].m_column        = (double)ref[i]->GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
 				m_result.m_ref[i].m_columnError   = (double)ref[i]->GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
@@ -269,7 +269,7 @@ int CEvaluation::EvaluateShift(const CSpectrum &measured, double &shift, double 
 		return(1);
 
 	// Check that we have a solar-spectrum to check against
-	if(m_window.fraunhoferRef.m_path.GetLength() < 6)
+	if(m_window.fraunhoferRef.m_path.size() < 6)
 		return 1;
 
 	if(measured.m_info.m_startChannel != 0 || measured.m_length < m_window.specLength){

@@ -476,13 +476,14 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 		// the molecule
 		if (Equals(token, FLAG(str_molecule), strlen(FLAG(str_molecule)))) {
 			if (sscanf(token + strlen(FLAG(str_molecule)), "%s", buffer.data())) {
-				if (novac::Equals(buffer.data(), "BrO")) {
+                const std::string moleculeName = std::string(buffer.data());
+				if (novac::Equals(moleculeName, "BrO")) {
 					g_userSettings.m_molecule = MOLEC_BRO;
 				}
-				else if (novac::Equals(buffer.data(), "NO2")) {
+				else if (novac::Equals(moleculeName, "NO2")) {
 					g_userSettings.m_molecule = MOLEC_NO2;
 				}
-				else if (novac::Equals(buffer.data(), "O3")) {
+				else if (novac::Equals(moleculeName, "O3")) {
 					g_userSettings.m_molecule = MOLEC_O3;
 				}
 				else {

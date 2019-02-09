@@ -117,6 +117,24 @@ int CXMLFileReader::Parse_StringItem(const novac::CString &label, novac::CString
 	return 0;
 }
 
+int CXMLFileReader::Parse_StringItem(const novac::CString &label, std::string &string)
+{
+    string = "";
+
+    while (nullptr != (szToken = NextToken())) {
+
+        if (Equals(szToken, label))
+        {
+            return 1;
+        }
+
+        string = std::string(szToken);
+    }
+
+    return 0;
+}
+
+
 int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &path)
 {
  	int r = Parse_StringItem(label, path);
@@ -138,6 +156,29 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &
  	{
  		return 0;
  	}
+}
+
+int CXMLFileReader::Parse_PathItem(const novac::CString &label, std::string &path)
+{
+    int r = Parse_StringItem(label, path);
+    if (r != 0)
+    {
+        std::string p = Poco::Path::expand(path);
+
+        if (p.compare(path) != 0)
+        {
+            novac::CString message;
+            message.Format("Expanded path: '%s' into '%s'", path.c_str(), p.c_str());
+            ShowMessage(message);
+
+            path = p;
+        }
+        return r;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number){

@@ -119,17 +119,17 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 
 		// If we should use a pre-calibrated solar-spectrum to calibrate
 		//  the shift & squeeze of the spectra
-		if(window.fraunhoferRef.m_path.GetLength() > 3){
+		if(window.fraunhoferRef.m_path.size() > 3){
 			fprintf(f, "\t\t<wavelengthCalibration>\n");
-			fprintf(f, "\t\t<fraunhoferSpec>%s</fraunhoferSpec>\n", (const char*)window.fraunhoferRef.m_path);
+			fprintf(f, "\t\t<fraunhoferSpec>%s</fraunhoferSpec>\n", window.fraunhoferRef.m_path.c_str());
 			fprintf(f, "\t\t</wavelengthCalibration>\n");
 		}
 
 		// Each of the references...
 		for(int j = 0; j < window.nRef; ++j){
 			fprintf(f, "\t\t<Reference>\n");
-			fprintf(f, "\t\t\t<name>%s</name>\n", (const char*)window.ref[j].m_specieName);
-			fprintf(f, "\t\t\t<path>%s</path>\n", (const char*)window.ref[j].m_path);
+			fprintf(f, "\t\t\t<name>%s</name>\n", window.ref[j].m_specieName.c_str());
+			fprintf(f, "\t\t\t<path>%s</path>\n", window.ref[j].m_path.c_str());
 			
 			// The value for the shift
 			fprintf(f, "\t\t\t<shiftOption>%d</shiftOption>\n", window.ref[j].m_shiftOption);

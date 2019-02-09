@@ -25,10 +25,12 @@ namespace FileHandler
 
 		/** General parsing of a single, simple string item */
 		int Parse_StringItem(const novac::CString &label, novac::CString &string);
+        int Parse_StringItem(const novac::CString &label, std::string &string);
 
 		/** General parsing of a single, simple path. 
 			This both parses the path and converts it to a full, absolute path by expanding environment variables */
 		int Parse_PathItem(const novac::CString &label, novac::CString &path);
+        int Parse_PathItem(const novac::CString &label, std::string &path);
 
 		/** General parsing of a single, simple float item */
 		int Parse_FloatItem(const novac::CString &label, double &number);

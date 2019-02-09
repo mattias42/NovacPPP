@@ -53,7 +53,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 	//	2) find the optimal shift & squeeze from the spectrum with the highest column
 	//  3) do none of the above
 
-	if(adjustedFitWindow.fraunhoferRef.m_path.GetLength() > 4){
+	if(adjustedFitWindow.fraunhoferRef.m_path.size() > 4){
 		ShowMessage("  Determining shift from FraunhoferReference");
 
 		// If we have a solar-spectrum that we can use to determine the shift
@@ -525,7 +525,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 	fitWindow2.ref[0].m_squeezeOption = SHIFT_FIX;
 	fitWindow2.ref[0].m_squeezeValue  = 1.0;
 	for(k = 1; k < fitWindow2.nRef; ++k){
-		if(Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
+		if(novac::Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
 			continue;
 
 		fitWindow2.ref[k].m_shiftOption   = SHIFT_LINK;
@@ -571,7 +571,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 
 	// 5. Set the shift for all references to this value
 	for(k = 0; k < fitWindow2.nRef; ++k){
-		if(Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
+		if(novac::Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
 			continue;
 
 		fitWindow2.ref[k].m_shiftOption     = SHIFT_FIX;
