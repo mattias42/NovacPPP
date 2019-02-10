@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
+#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include "GeometryResult.h"
 #include "../Configuration/InstrumentLocation.h"
 

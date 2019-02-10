@@ -2,6 +2,7 @@
 #include <PPPLib/VolcanoInfo.h>
 
 #include "../Geometry/GeometryCalculator.h"
+#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 
 using namespace Evaluation;
 
@@ -10,7 +11,6 @@ extern novac::CVolcanoInfo g_volcanoes;	// <-- A list of all known volcanoes
 CScanResult::CScanResult(void)
 {
 	m_specNum = 0;
-	m_plumeProperties.Clear();
 	m_flux.Clear();
 	m_geomError = 30.0;	// best-case guess, 30%
 	m_spectroscopyError = 15.0;	// best-case guess, 15%
@@ -293,7 +293,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie) {
 bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProperty &plumeProperties) {
 	unsigned long i; // iterator
 	double offset = m_plumeProperties.m_offset;
-	m_plumeProperties.Clear(); // notify that the plume-centre position is unknown
+	m_plumeProperties = CPlumeInScanProperty(); // notify that the plume-centre position is unknown
 	m_plumeProperties.m_offset = offset; // we didn't mean to mess with the offset...
 
 	// if this is a wind-speed measurement, then there's no use to try to 
@@ -331,7 +331,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	plumeProperties.m_offset = Common::CalculateOffset(column.data(), badEval, m_specNum);
 
 	// Estimate the completeness of the plume (this will call on Common::FindPlume we don't need to do that here...)
-	bool ret = Common::CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
+	bool ret = CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
 
 	// Calculate the centre of the plume
 	//	bool ret = Common::FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);

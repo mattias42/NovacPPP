@@ -26,8 +26,6 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/NovacPPP.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.h
-    ${CMAKE_CURRENT_LIST_DIR}/PlumeInScanProperty.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/PlumeInScanProperty.h
     ${CMAKE_CURRENT_LIST_DIR}/PostProcessing.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PostProcessing.h
     ${CMAKE_CURRENT_LIST_DIR}/PostProcessingStatistics.cpp

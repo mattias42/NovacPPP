@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include "../Meteorology/WindField.h"
 
 #include "EvaluationResult.h"

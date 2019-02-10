@@ -13,6 +13,10 @@ add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
 # Add the common Spectrum property classes
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Spectra)
 
+# Add the common Flux classes
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
+
+
 set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
@@ -61,6 +65,7 @@ add_library(PPPLib
     ${SPECTRUM_FIT_HEADERS}
     ${SPECTRUM_EVALUATION_HEADERS}
     ${SPECTRUM_CLASS_HEADERS}
+    ${SPECTRUM_FLUX_HEADERS}
 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
@@ -81,6 +86,7 @@ add_library(PPPLib
     ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
     ${SPECTRUM_EVALUATION_SOURCES}
     ${SPECTRUM_CLASS_SOURCES}
+    ${SPECTRUM_FLUX_SOURCES}
 )
 
 target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
@@ -96,8 +102,12 @@ source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADE
 source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
 source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
+source_group("Header Files\\Flux"                   FILES ${SPECTRUM_FLUX_HEADERS})
+
+
 
 source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES} ${SPECTRUM_CLASS_SOURCES})
 source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
 source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})
+source_group("Source Files\\Flux"                   FILES ${SPECTRUM_FLUX_SOURCES})
