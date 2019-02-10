@@ -13,24 +13,15 @@
 #include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/FitWindow.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/FitParameter.h>
 #include "EvaluationResult.h"
 
 #include <PPPLib/SpectralEvaluation/Fit/Vector.h>
 #include <PPPLib/SpectralEvaluation/Fit/ReferenceSpectrumFunction.h>
-
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 
 namespace Evaluation
 {
-	/** constants for selection of fit-parameters*/
-	enum FIT_PARAMETER{ 
-			COLUMN, 
-			COLUMN_ERROR, 
-			SHIFT, 
-			SHIFT_ERROR, 
-			SQUEEZE, 
-			SQUEEZE_ERROR,
-			DELTA};
 
 	/** An object of the <b>CEvaluation</b>-class contains the settings to evaluate
 		spectra from <b>one</b> spectrometer. The class contains the parameters 

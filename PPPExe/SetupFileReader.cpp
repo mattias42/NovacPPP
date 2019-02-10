@@ -133,7 +133,7 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
 	Only the part regarding the instrument's location will be written to the file */
 RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup){
 	Configuration::CInstrumentLocation instrLocation;
-	novac::CString spectrometerModel;
+	std::string spectrometerModel;
 
 	// Open the file
 	FILE *f = fopen(fileName, "w");
@@ -175,7 +175,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 			fprintf(f, "\t\t\t<coneangle>%.0lf</coneangle>\n",          instrLocation.m_coneangle);
 			fprintf(f, "\t\t<tilt>%.0lf</tilt>\n",                      instrLocation.m_tilt);
 			fprintf(f, "\t\t<type>%d</type>\n",                         instrLocation.m_instrumentType);
-			fprintf(f, "\t\t<spec>%s</spec>\n", (const char*)spectrometerModel);
+			fprintf(f, "\t\t<spec>%s</spec>\n", spectrometerModel.c_str());
 
 			fprintf(f, "\t\t</location>\n");
 		}
@@ -201,7 +201,7 @@ void CSetupFileReader::Parse_SpectrometerModel(const novac::CString &label, SPEC
 		}
 
 		sscanf(szToken, "%s", buffer);
-		model = CSpectrometerModel::GetModel(novac::CString(buffer));
+		model = CSpectrometerModel::GetModel(buffer);
 	}
 
 	return;

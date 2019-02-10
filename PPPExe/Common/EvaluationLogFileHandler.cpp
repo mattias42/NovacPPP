@@ -1,5 +1,6 @@
 #include "EvaluationLogFileHandler.h"
-#include <PPPLib/SpectrometerModel.h>
+#include <PPPLib/SpectralEvaluation/Spectra/SpectrometerModel.h>
+#include <PPPLib/SpectralEvaluation/Utils.h>
 #include "../Common/Version.h"
 
 #include <PPPLib/CSingleLock.h>
@@ -444,7 +445,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
                 // Also check the name...
                 if (curCol == m_col.name) {
-                    m_specInfo.m_name.Format(szToken);
+                    m_specInfo.m_name = std::string(szToken);
                     szToken = NULL;
                     continue;
                 }
@@ -688,8 +689,8 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
         pt = strstr(szLine, "site=");
         if (nullptr != pt) {
-            scanInfo.m_site.Format("%s", pt + 5);
-            scanInfo.m_site.Remove('\n'); // Remove newline characters
+            scanInfo.m_site = std::string(pt+5);
+            Remove(scanInfo.m_site, '\n'); // Remove newline characters
             continue;
         }
 
@@ -761,12 +762,12 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
         pt = strstr(szLine, "serial=");
         if (nullptr != pt) {
-            scanInfo.m_device.Format("%s", pt + 7);
-            scanInfo.m_device.Remove('\n'); // remove remaining strange things in the serial-number
-            scanInfo.m_device.MakeUpper();	// Convert the serial-number to all upper case letters
+            scanInfo.m_device = std::string(pt + 7);
+            Remove(scanInfo.m_device, '\n'); // remove remaining strange things in the serial-number
+            MakeUpper(scanInfo.m_device);	// Convert the serial-number to all upper case letters
 
             // Extract the spectrometer-model from the serial-number of the spectrometer
-            scanInfo.m_specModel = CSpectrometerModel::GuessSpectrometerModelFromSerial(scanInfo.m_device);
+            scanInfo.m_specModel = CSpectrometerModel::GetModel(scanInfo.m_device);
 
             continue;
         }
@@ -779,15 +780,15 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
         pt = strstr(szLine, "volcano=");
         if (nullptr != pt) {
-            scanInfo.m_volcano.Format("%s", pt + 8);
-            scanInfo.m_volcano.Remove('\n'); // Remove newline characters
+            scanInfo.m_volcano = std::string(pt + 8);
+            Remove(scanInfo.m_volcano, '\n'); // Remove newline characters
             continue;
         }
 
         pt = strstr(szLine, "observatory=");
         if (nullptr != pt) {
-            scanInfo.m_observatory.Format("%s", pt + 12);
-            scanInfo.m_observatory.Remove('\n'); // Remove newline characters
+            scanInfo.m_observatory = std::string(pt + 12);
+            Remove(scanInfo.m_observatory, '\n'); // Remove newline characters
             continue;
         }
 
@@ -987,7 +988,8 @@ bool	CEvaluationLogFileHandler::IsSorted() {
 /** Writes the contents of the array 'm_scan' to a new evaluation-log file */
 RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString fileName) {
     novac::CString string, specieName;
-    novac::CString wsSrc, wdSrc, phSrc, specModel;
+    novac::CString wsSrc, wdSrc, phSrc;
+    std::string specModel;
     CDateTime startTime;
 
     // 1. Test if the file already exists, if so then return false
@@ -1013,15 +1015,16 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         string.AppendFormat("\tlong=%.6lf\n", scan.GetLongitude());
         string.AppendFormat("\talt=%ld\n", scan.GetAltitude());
 
-        string.AppendFormat("\tvolcano=%s\n", (const char*)m_specInfo.m_volcano);
-        string.AppendFormat("\tsite=%s\n", (const char*)m_specInfo.m_site);
-        string.AppendFormat("\tobservatory=%s\n", (const char*)m_specInfo.m_observatory);
+        string.AppendFormat("\tvolcano=%s\n", m_specInfo.m_volcano.c_str());
+        string.AppendFormat("\tsite=%s\n", m_specInfo.m_site.c_str());
+        string.AppendFormat("\tobservatory=%s\n", m_specInfo.m_observatory.c_str());
 
         string.AppendFormat("\tserial=%s\n", (const char*)scan.GetSerial());
 
         if (SUCCESS != CSpectrometerModel::ToString(m_specInfo.m_specModel, specModel))
-            specModel.Format("S2000");
-        string.AppendFormat("\tspectrometer=%s\n", (const char*)specModel.MakeLower());
+            specModel = "S2000";
+        MakeLower(specModel);
+        string.AppendFormat("\tspectrometer=%s\n", specModel.c_str());
 
         string.AppendFormat("\tchannel=%d\n", m_specInfo.m_channel);
         string.AppendFormat("\tconeangle=%.1lf\n", scan.GetConeAngle());

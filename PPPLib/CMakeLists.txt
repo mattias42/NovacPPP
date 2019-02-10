@@ -19,15 +19,11 @@ add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
 
 set(PPPLIB_SPECTRA_HEADERS
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/Spectrum.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumInfo.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumIO.h
 )
 
 set(PPPLIB_SPECTRA_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/Spectrum.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
 )
 
@@ -56,7 +52,6 @@ add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/PPPLib.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrometerModel.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
@@ -73,10 +68,7 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrometerModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/Spectrum.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/MKPack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp

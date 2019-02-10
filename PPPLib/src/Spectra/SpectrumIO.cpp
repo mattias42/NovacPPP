@@ -1,5 +1,6 @@
 #include <PPPLib/Spectra/SpectrumIO.h>
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/SpectrometerModel.h>
+#include <PPPLib/SpectralEvaluation/Utils.h>
 
 #include <algorithm>
 #include <cstring>
@@ -372,9 +373,9 @@ RETURN_CODE CSpectrumIO::ReadNextSpectrum(FILE *f, CSpectrum &spec, int &headerS
 
 	// We've managed to read the spectrum header, write that information
 	//	to the supplied spectrum data-structure
-	spec.m_info.m_device.Format("%s", MKZY.instrumentname);
-	spec.m_info.m_device.Trim(" ");  // remove spaces in the beginning or the end
-	spec.m_info.m_name.Format("%s", MKZY.name);
+	spec.m_info.m_device = std::string(MKZY.instrumentname);
+    Trim(spec.m_info.m_device, " ");  // remove spaces in the beginning or the end
+	spec.m_info.m_name = std::string(MKZY.name);
 
 	// Decompress the spectrum itself
 	outlen = mkPack.UnPack(buffer, MKZY.pixels, outbuf); //uncompress info(compressed buffer,num of sampling points, uncompressedinfo)
@@ -509,12 +510,12 @@ int CSpectrumIO::AddSpectrumToFile(const novac::CString &fileName, const CSpectr
 	MKZY.flag = info.m_flag;
 	MKZY.hdrsize = sizeof(struct MKZYhdr);
 	MKZY.hdrversion = hdr_version;
-	sprintf(MKZY.instrumentname, "%.16s", (const char*)spectrum.m_info.m_device);
+	sprintf(MKZY.instrumentname, "%.16s", spectrum.m_info.m_device.c_str());
 	MKZY.lat = spectrum.Latitude();
 	MKZY.lon = spectrum.Longitude();
 	MKZY.measurecnt = (char)info.m_scanSpecNum;
 	MKZY.measureidx = (char)info.m_scanIndex;
-	sprintf(MKZY.name, "%.12s", (const char*)spectrum.m_info.m_name);
+	sprintf(MKZY.name, "%.12s", spectrum.m_info.m_name.c_str());
 	MKZY.pixels = (std::uint16_t)spectrum.m_length;
 	MKZY.size = outsiz;
 	MKZY.startc = info.m_startChannel;
@@ -607,7 +608,7 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 
 	if (spec != NULL) {
 		// clear the spectrum
-		memset(spec->m_data, 0, MAX_SPECTRUM_LENGTH * sizeof(SpecData));
+		memset(spec->m_data, 0, MAX_SPECTRUM_LENGTH * sizeof(double));
 
 		CSpectrumInfo *info = &spec->m_info;
 		// save the spectrum information in the CSpectrum data structure
@@ -640,9 +641,9 @@ int CSpectrumIO::ReadNextSpectrumHeader(FILE *f, int &headerSize, CSpectrum *spe
 		ParseTime(MKZY.stoptime, info->m_stopTime);
 		ParseDate(MKZY.date, info->m_startTime);
 
-		info->m_device.Format("%s", MKZY.instrumentname);
-		info->m_device.Trim(" "); // remove spaces in the beginning or the end
-		info->m_name.Format("%s", MKZY.name);
+		info->m_device = std::string(MKZY.instrumentname);
+        Trim(info->m_device, " "); // remove spaces in the beginning or the end
+		info->m_name = std::string(MKZY.name);
 	}
 
 	return 0;

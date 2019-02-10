@@ -1,4 +1,5 @@
 #include <PPPLib/Spectra/ScanFileHandler.h>
+#include <PPPLib/SpectralEvaluation/Spectra/SpectrometerModel.h>
 
 using namespace SpectrumIO;
 using namespace FileHandler;
@@ -137,7 +138,7 @@ RETURN_CODE CScanFileHandler::CheckScanFile(const novac::CString *fileName){
 		this->m_stopTime  = tempSpec.m_info.m_stopTime;
 
 		// get the serial number of the spectrometer
-		m_device.Format(tempSpec.m_info.m_device);
+		m_device = novac::CString(tempSpec.m_info.m_device.c_str());
 
 		// get the channel of the spectrometer
 		m_channel = tempSpec.m_info.m_channel;
@@ -188,7 +189,7 @@ int CScanFileHandler::GetNextSpectrum(CSpectrum &spec){
 		this->m_startTime = spec.m_info.m_startTime;
 
 	// Extract the spectrometer-model from the serial-number of the spectrometer
-	spec.m_info.m_specModel = CSpectrometerModel::GuessSpectrometerModelFromSerial(spec.m_info.m_device);
+	spec.m_info.m_specModel = CSpectrometerModel::GetModel(spec.m_info.m_device);
 
 	return 1;
 }

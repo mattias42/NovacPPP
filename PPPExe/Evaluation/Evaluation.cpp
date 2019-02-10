@@ -697,7 +697,7 @@ int CEvaluation::SetSkySpectrum(const CSpectrum &spec){
 
 	// set the data
 	m_skySpectrum = spec;
-	memcpy(m_sky, m_skySpectrum.m_data, m_skySpectrum.m_length * sizeof(SpecData));
+	memcpy(m_sky, m_skySpectrum.m_data, m_skySpectrum.m_length * sizeof(double));
 
 	// --------- prepare the sky spectrum for evaluation ---------
 	// Remove any remaining offset of the sky-spectrum

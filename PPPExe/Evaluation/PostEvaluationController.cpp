@@ -165,7 +165,8 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName) {
 	novac::CString string, string1, string2, string3, string4;
 	long itSpectrum, itSpecie; // iterators
-	novac::CString pakFile, txtFile, specModel, evalSummaryLog;
+	novac::CString pakFile, txtFile, evalSummaryLog;
+    std::string specModel;
 	novac::CString wsSrc, wdSrc, phSrc;
 	CDateTime dateTime;
 
@@ -197,7 +198,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 	//	string.AppendFormat("\tobservatory=%s\n",							m_common.SimplifyString(spectrometer.m_scanner.observatory));
 
 	string.AppendFormat("\tserial=%s\n", (const char*)result->GetSerial());
-	string.AppendFormat("\tspectrometer=%s\n", (const char*)specModel);
+	string.AppendFormat("\tspectrometer=%s\n", specModel.c_str());
 	string.AppendFormat("\tchannel=%d\n", window->channel);
 	string.AppendFormat("\tconeangle=%.1lf\n", instrLocation->m_coneangle);
 	string.AppendFormat("\tinterlacesteps=%d\n", scan->GetInterlaceSteps());
@@ -517,7 +518,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	}
 
 	// 2. Get the serialNumber of the spectrometer
-	serialNumber.Format("%s", (const char*)info.m_device);
+	serialNumber.Format("%s", info.m_device.c_str());
 
 	// 3. Get the time and date when the scan started
 	dateStr.Format("%02d%02d%02d", info.m_startTime.year % 1000, info.m_startTime.month, info.m_startTime.day);
@@ -580,7 +581,7 @@ int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHan
 	// Get the sky-spectrum. Read out serial-number and start-time from this
 	scan->GetSky(skySpec);
 	day = skySpec.m_info.m_startTime;
-	serialNumber.Format(skySpec.m_info.m_device);
+	serialNumber = (skySpec.m_info.m_device);
 
 	// Find the instrument location that is valid for this date
 	if (g_setup.GetInstrumentLocation(serialNumber, day, instrLocation)) {
@@ -606,7 +607,7 @@ int CPostEvaluationController::GetDarkCurrentSettings(FileHandler::CScanFileHand
 
 	// Get the sky-spectrum. Read out serial-number and start-time from this
 	scan->GetSky(skySpec);
-	serialNumber.Format(skySpec.m_info.m_device);
+	serialNumber = skySpec.m_info.m_device;
 
 	return g_setup.GetDarkCorrection(serialNumber, skySpec.m_info.m_startTime, settings);
 }

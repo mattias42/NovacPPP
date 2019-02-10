@@ -1,5 +1,5 @@
 #include <PPPLib/SpectrumFormat/MKPack.h>
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 
 using namespace SpectrumIO;
 

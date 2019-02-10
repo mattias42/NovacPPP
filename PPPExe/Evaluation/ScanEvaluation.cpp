@@ -1,6 +1,6 @@
 #include "ScanEvaluation.h"
 
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 #include <PPPLib/Spectra/SpectrumIO.h>
 #include <PPPLib/SpectrumFormat/STDFile.h>
 #include <PPPLib/SpectrumFormat/TXTFile.h>
@@ -229,7 +229,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		// e. Evaluate the spectrum
 		if(eval->Evaluate(current)){
 			message.Format("Failed to evaluate spectrum %d out of %d in scan %s from spectrometer %s.",
-				current.ScanIndex(), current.SpectraPerScan(), (const char*)scan->GetFileName(), (const char*)current.m_info.m_device);
+				current.ScanIndex(), current.SpectraPerScan(), (const char*)scan->GetFileName(), current.m_info.m_device.c_str());
 			ShowMessage(message);
 		}
 
@@ -422,7 +422,7 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
 		CSpectrum tmp;
 		scan->GetSky(tmp);
 		scan->ResetCounter();
-		SpecData intens = tmp.MaxValue(fitLow, fitHigh);
+        double intens = tmp.MaxValue(fitLow, fitHigh);
 		if(intens < 4095*tmp.NumSpectra() && !tmp.IsDark())
 			sky = tmp;
 		else

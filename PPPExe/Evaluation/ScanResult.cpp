@@ -152,7 +152,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
 	}
 
 	// Calculate the offset
-	this->m_plumeProperties.m_offset = Common::CalculateOffset(columns.data(), badEval, m_specNum);
+	this->m_plumeProperties.m_offset = CalculatePlumeOffset(columns.data(), badEval, m_specNum);
 
 	delete[] badEval;
 
@@ -328,7 +328,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	}
 
 	// Calculate the offset of the scan
-	plumeProperties.m_offset = Common::CalculateOffset(column.data(), badEval, m_specNum);
+	plumeProperties.m_offset = CalculatePlumeOffset(column.data(), badEval, m_specNum);
 
 	// Estimate the completeness of the plume (this will call on Common::FindPlume we don't need to do that here...)
 	bool ret = CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
@@ -592,7 +592,7 @@ novac::CString CScanResult::GetName(int index) const {
 novac::CString CScanResult::GetSerial() const {
 	for (unsigned int k = 0; k < m_specNum; ++k) {
 		const CSpectrumInfo &info = m_specInfo.GetAt(k);
-		if (strlen(info.m_device) > 0)
+		if (info.m_device.size() > 0)
 			return info.m_device;
 	}
 	return novac::CString("");

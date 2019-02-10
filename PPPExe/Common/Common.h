@@ -11,7 +11,7 @@
 #include <PPPLib/CList.h>
 #include <PPPLib/Measurement.h>
 #include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 
 #include "../Geometry/PlumeHeight.h"
 #include "../Meteorology/WindField.h"
@@ -349,21 +349,6 @@ public:
 	/** Calculates the flux using the supplied data. Automatically decides which
 			algorithm to use based on the given cone angle. */
 	static double CalculateFlux(const double *scanAngle, const double *scanAngle2, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle = 90.0, double tilt = 0.0);
-
-	/** Calculates the flux for the supplied data using the old algorithm */
-	static double CalculateFlux_FlatFormula(const double *scanAngle, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass);
-
-	/** Calculates the flux for the supplied data using the new algorithm */
-	static double CalculateFlux_ConeFormula(const double *scanAngle, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle, double tilt);
-
-	/** Calculates the flux for the Heidelberg-instrument for the supplied data using the general algorithm */
-	static double CalculateFlux_HeidelbergFormula(const double *scanAngle1, const double *scanAngle2, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass);
-
-	// --------------------------------------------------------------------
-	// ------------- CALCULATING OFFSET FOR A SCAN ------------------------
-	// --------------------------------------------------------------------
-
-	static double CalculateOffset(const double *columns, const bool *badEvaluation, long numPoints);
 
 	// ---------------------------- MISC ----------------------------------
 

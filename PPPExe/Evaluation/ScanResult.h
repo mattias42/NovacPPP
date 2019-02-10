@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 #include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include "../Meteorology/WindField.h"
 
@@ -179,7 +179,7 @@ namespace Evaluation
 		void SetFlux(double flux) {this->m_flux.m_flux = flux; }
 
 		/** returns the offset of the measurement */
-		SpecData GetOffset() const {return m_plumeProperties.m_offset; } 
+		double GetOffset() const {return m_plumeProperties.m_offset; } 
 
 		/** returns the temperature of the system at the time of the measurement */
 		double	GetTemperature() const {return m_skySpecInfo.m_temperature; }
