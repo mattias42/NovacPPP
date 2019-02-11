@@ -566,8 +566,8 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 
 	// 4. See what the optimum value for the shift turned out to be.
 	CEvaluationResult newResult = eval2->GetEvaluationResult();
-	double optimumShift		= newResult.m_ref[0].m_shift;
-	double optimumSqueeze	= newResult.m_ref[0].m_squeeze;
+	double optimumShift		= newResult.m_referenceResult[0].m_shift;
+	double optimumSqueeze	= newResult.m_referenceResult[0].m_squeeze;
 
 	// 5. Set the shift for all references to this value
 	for(k = 0; k < fitWindow2.nRef; ++k){

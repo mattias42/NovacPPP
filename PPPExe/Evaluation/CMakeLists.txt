@@ -5,7 +5,6 @@ cmake_minimum_required (VERSION 3.6)
 set(NPP_EVALUATION_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/ColumnCorrection.h
     ${CMAKE_CURRENT_LIST_DIR}/Evaluation.h
-    ${CMAKE_CURRENT_LIST_DIR}/EvaluationResult.h
     ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.h
     ${CMAKE_CURRENT_LIST_DIR}/MessageLog.h
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.h
@@ -17,7 +16,6 @@ set(NPP_EVALUATION_HEADERS
 set(NPP_EVALUATION_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/ColumnCorrection.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Evaluation.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/EvaluationResult.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MessageLog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.cpp

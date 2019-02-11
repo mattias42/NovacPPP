@@ -9,12 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
-#include <PPPLib/SpectralEvaluation/Evaluation/BasicMath.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationBase.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/CrossSectionData.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/FitWindow.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/FitParameter.h>
-#include "EvaluationResult.h"
+#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationResult.h>
 
 #include <PPPLib/SpectralEvaluation/Fit/Vector.h>
 #include <PPPLib/SpectralEvaluation/Fit/ReferenceSpectrumFunction.h>
@@ -27,7 +25,7 @@ namespace Evaluation
 		spectra from <b>one</b> spectrometer. The class contains the parameters 
 		necessary to define the fit and a function to perform the actual evaluation. 
 	*/
-	class CEvaluation : public CBasicMath	
+	class CEvaluation : public CEvaluationBase
 	{
 	public:
 		/** Sets up the evaluation */
@@ -74,9 +72,6 @@ namespace Evaluation
 
 		/** Sets the sky-spectrum to use */
 		int SetSkySpectrum(const CSpectrum &spec);
-
-		/** Removes the offset from the supplied spectrum */
-		void RemoveOffset(double *spectrum, int sumChn, bool UV = true);
 	
 		void GetFitRange(int &fitLow, int &fitHigh){
 			fitLow = this->m_window.fitLow;
@@ -88,42 +83,10 @@ namespace Evaluation
 
 	private:
 
-		/** The fit window, defines the parameters for the fit */
-		CFitWindow m_window;
-
-		/** The result */
-		CEvaluationResult m_result;
-		
 		/** The sky spectrum to use in the evaluation */
 		double			m_sky[MAX_SPECTRUM_LENGTH];
 		CSpectrum		m_skySpectrum;
-
-		/** Simple vector for holding the channel number information */
-		CVector vXData;
-
-		/** Simple function for initializing the vectors used in the evaluation */
-		void InitializeVectors(int sumChn);
-
-		// Prepares the spectra for evaluation
-		void PrepareSpectra(double *sky, double *meas, const CFitWindow &window);
-
-		// Prepares the spectra for evaluation
-		void PrepareSpectra_HP_Div(double *sky, double *meas, const CFitWindow &window);
-
-		// Prepares the spectra for evaluation
-		void PrepareSpectra_HP_Sub(double *sky, double *meas, const CFitWindow &window);
-
-		// Prepares the spectra for evaluation
-		void PrepareSpectra_Poly(double *sky, double *meas, const CFitWindow &window);
-
-		// The CReferenceSpectrumFunctions are used in the evaluation process to model
-		// the reference spectra for the different species that are being fitted.
-		CReferenceSpectrumFunction *ref[MAX_N_REFERENCES];
-		CReferenceSpectrumFunction *solarSpec;
-
-		// Creates the appropriate CReferenceSpectrumFunction for the fitting
-		int CreateReferenceSpectrum();
-
+        
 	};
 }
 #endif // !defined(AFX_EVALUATION_H__DB88EE51_7ED0_4131_AE07_79F0F0C3106C__INCLUDED_)

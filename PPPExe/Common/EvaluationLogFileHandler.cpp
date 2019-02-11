@@ -172,19 +172,18 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
 
         // The column error (must be looked for before 'column')
         if (Equals(szToken, columnError, strlen(columnError))) {
-            m_col.columnError[m_evResult.m_speciesNum - 1] = curCol;
+            m_col.columnError[m_evResult.m_referenceResult.size() - 1] = curCol;
             szToken = NULL;
             continue;
         }
 
         // The column
         if (Equals(szToken, column, strlen(column))) {
-            m_col.column[m_evResult.m_speciesNum] = curCol;
+            m_col.column[m_evResult.m_referenceResult.size()] = curCol;
             char *pt = szToken + strlen(column) + 1;
             szToken[strlen(szToken) - 1] = 0;
-            novac::CString specie;
-            specie.Format("%s", pt);
-            m_evResult.InsertSpecie(specie);
+            std::string specieStr(pt);
+            m_evResult.InsertSpecie(specieStr);
             ++m_col.nSpecies;
             szToken = NULL;
             continue;
@@ -192,28 +191,28 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
 
         // The shift error (must be checked before 'shift')
         if (Equals(szToken, shiftError, strlen(shiftError))) {
-            m_col.shiftError[m_evResult.m_speciesNum - 1] = curCol;
+            m_col.shiftError[m_evResult.m_referenceResult.size() - 1] = curCol;
             szToken = NULL;
             continue;
         }
 
         // The shift
         if (Equals(szToken, shift, strlen(shift))) {
-            m_col.shift[m_evResult.m_speciesNum - 1] = curCol;
+            m_col.shift[m_evResult.m_referenceResult.size() - 1] = curCol;
             szToken = NULL;
             continue;
         }
 
         // The squeeze error (must be checked before 'squeeze')
         if (Equals(szToken, squeezeError, strlen(squeezeError))) {
-            m_col.squeezeError[m_evResult.m_speciesNum - 1] = curCol;
+            m_col.squeezeError[m_evResult.m_referenceResult.size() - 1] = curCol;
             szToken = NULL;
             continue;
         }
 
         // The squeeze
         if (Equals(szToken, squeeze, strlen(squeeze))) {
-            m_col.squeeze[m_evResult.m_speciesNum - 1] = curCol;
+            m_col.squeeze[m_evResult.m_referenceResult.size() - 1] = curCol;
             szToken = NULL;
             continue;
         }
@@ -265,9 +264,9 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
         szToken = NULL;
     }
 
-    m_specieNum = m_evResult.m_speciesNum;
+    m_specieNum = m_evResult.m_referenceResult.size();
     for (int k = 0; k < m_specieNum; ++k)
-        m_specie[k] = novac::CString(m_evResult.m_ref[k].m_specieName);
+        m_specie[k] = novac::CString(m_evResult.m_referenceResult[k].m_specieName);
 
     return;
 }
@@ -524,27 +523,27 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
                 for (int k = 0; k < m_col.nSpecies; ++k) {
                     if (curCol == m_col.column[k]) {
-                        m_evResult.m_ref[k].m_column = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_column = (float)fValue;
                         break;
                     }
                     if (curCol == m_col.columnError[k]) {
-                        m_evResult.m_ref[k].m_columnError = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_columnError = (float)fValue;
                         break;
                     }
                     if (curCol == m_col.shift[k]) {
-                        m_evResult.m_ref[k].m_shift = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_shift = (float)fValue;
                         break;
                     }
                     if (curCol == m_col.shiftError[k]) {
-                        m_evResult.m_ref[k].m_shiftError = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_shiftError = (float)fValue;
                         break;
                     }
                     if (curCol == m_col.squeeze[k]) {
-                        m_evResult.m_ref[k].m_squeeze = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_squeeze = (float)fValue;
                         break;
                     }
                     if (curCol == m_col.squeezeError[k]) {
-                        m_evResult.m_ref[k].m_squeezeError = (float)fValue;
+                        m_evResult.m_referenceResult[k].m_squeezeError = (float)fValue;
                         break;
                     }
                 }
@@ -910,7 +909,8 @@ void CEvaluationLogFileHandler::ResetColumns() {
         m_col.squeezeError[k] = -1;
     }
     m_col.delta = m_col.intensity = m_col.position = m_col.position2 = -1;
-    m_col.nSpecies = m_evResult.m_speciesNum = 0;
+    m_col.nSpecies = 0;
+    m_evResult.m_referenceResult.clear();
     m_col.expTime = m_col.nSpec = -1;
     m_col.name = -1;
     m_specieNum = m_curSpecie = 0;
@@ -1127,7 +1127,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     int itSpecie;
     Common common;
 
-    if (result != NULL && result->m_ref.GetCount() < nSpecies)
+    if (result != NULL && result->m_referenceResult.size() < nSpecies)
         return FAIL; // something's wrong here!
 
     // 1. The Scan angle
@@ -1179,9 +1179,9 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     // 10. The column/column error for each specie
     for (itSpecie = 0; itSpecie < nSpecies; ++itSpecie) {
         if (result != NULL) {
-            string.AppendFormat("%.2e\t%.2e\t", result->m_ref[itSpecie].m_column, result->m_ref[itSpecie].m_columnError);
-            string.AppendFormat("%.2lf\t%.2lf\t", result->m_ref[itSpecie].m_shift, result->m_ref[itSpecie].m_shiftError);
-            string.AppendFormat("%.2lf\t%.2lf\t", result->m_ref[itSpecie].m_squeeze, result->m_ref[itSpecie].m_squeezeError);
+            string.AppendFormat("%.2e\t%.2e\t", result->m_referenceResult[itSpecie].m_column, result->m_referenceResult[itSpecie].m_columnError);
+            string.AppendFormat("%.2lf\t%.2lf\t", result->m_referenceResult[itSpecie].m_shift, result->m_referenceResult[itSpecie].m_shiftError);
+            string.AppendFormat("%.2lf\t%.2lf\t", result->m_referenceResult[itSpecie].m_squeeze, result->m_referenceResult[itSpecie].m_squeezeError);
         }
         else {
             string.AppendFormat("0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t");

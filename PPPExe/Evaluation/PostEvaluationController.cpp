@@ -416,7 +416,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 	fprintf(f, "%ld\t", result->GetSkySpectrumInfo().m_exposureTime);
 
 	// the shift applied
-	fprintf(f, "%.2lf\t", result->GetResult(0)->m_ref[0].m_shift);
+	fprintf(f, "%.2lf\t", result->GetResult(0)->m_referenceResult[0].m_shift);
 
 	// the temperature of the spectrometer
 	fprintf(f, "%.2lf\t", result->GetTemperature());

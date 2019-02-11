@@ -1,15 +1,16 @@
 #pragma once
 
 #include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationResult.h>
 #include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include "../Meteorology/WindField.h"
 
-#include "EvaluationResult.h"
 #include "Evaluation.h"
 #include "../Flux/FluxResult.h"
 #include "../Geometry/PlumeHeight.h"
 #include "../Molecule.h"
 #include <PPPLib/CString.h>
+#include <PPPLib/CArray.h>
 
 namespace Evaluation
 {
@@ -43,18 +44,6 @@ namespace Evaluation
 
 		/** Removes the spectrum number 'specIndex' from the list of calcualted results */
 		int RemoveResult(unsigned int specIndex);
-
-		/** Applies the given correction to all or some evaluated references.
-		    @param corretionToApply - the correction to apply...
-		    @param parameters - The parameters for the corrections
-		    @param nParameters - the number of parameters (i.e. the 
-		        length of the array 'parameters')
-		    @param specie - The name of the specie for which to 
-		        apply the correction, if NULL then correction will be 
-		        applied to all species.
-		    @return zero if all is ok, otherwise a non-zero value
-		*/
-		int ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie = NULL);
 
 		/** Intializes the memory arrays to have, initially, space for 
 		    'specNum' spectra. */
@@ -248,13 +237,13 @@ namespace Evaluation
 
 		/** Marks the desired spectrum with the supplied mark_flag.
 		    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-		    @return SUCCESS on success. */
-		RETURN_CODE  MarkAs(unsigned long index, int MARK_FLAG);
+		    @return true on success. */
+        bool  MarkAs(unsigned long index, int MARK_FLAG);
 
 		/** Removes the desired mark from the desired spectrum
 		    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-		    @return SUCCESS on success. */
-		RETURN_CODE  RemoveMark(unsigned long index, int MARK_FLAG);
+		    @return true on success. */
+        bool RemoveMark(unsigned long index, int MARK_FLAG);
 
 		/** Returns a reference to the desired spectrum info-structure */
 		const CSpectrumInfo& GetSpectrumInfo(unsigned long index) const;
@@ -375,10 +364,10 @@ namespace Evaluation
 
 		/** returns the number of species that were used in the evaluation of a 
 		    given spectrum */
-		int GetSpecieNum(unsigned long spectrumNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_speciesNum : 0; }
+		int GetSpecieNum(unsigned long spectrumNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? (int)m_spec[spectrumNum].m_referenceResult.size() : 0; }
 
 		/** returns the specie name */
-		const novac::CString GetSpecieName(unsigned long spectrumNum, unsigned long specieNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_ref[specieNum].m_specieName : 0; }
+		const novac::CString GetSpecieName(unsigned long spectrumNum, unsigned long specieNum) const {return (IsValidSpectrumIndex(spectrumNum)) ? m_spec[spectrumNum].m_referenceResult[specieNum].m_specieName : 0; }
 
 		/** Sets the type of the instrument used */
 		void SetInstrumentType(INSTRUMENT_TYPE type);

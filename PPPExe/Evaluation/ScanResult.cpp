@@ -139,7 +139,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
 
 	// We then need to rearrange the column data a little bit. 
 	for (unsigned int i = 0; i < m_specNum; ++i) {
-		columns[i] = m_spec[i].m_ref[specieIndex].m_column;
+		columns[i] = m_spec[i].m_referenceResult[specieIndex].m_column;
 
 		// The spectrum is considered as bad if the goodness-of-fit checking
 		//	has marked it as bad or the user has marked it as deleted
@@ -167,12 +167,12 @@ int CScanResult::GetSpecieIndex(const novac::CString &specie) const
 		return -1;
 
 	// if there's only one specie, assume that this is the correct one
-	if (m_spec[0].m_speciesNum == 1)
+	if (m_spec[0].m_referenceResult.size() == 1)
 		return 0;
 
 	// find the index of the interesting specie
-	for (i = 0; i < m_spec[0].m_speciesNum; ++i) {
-		if (Equals(m_spec[0].m_ref[i].m_specieName, specie)) {
+	for (i = 0; i < m_spec[0].m_referenceResult.size(); ++i) {
+		if (Equals(m_spec[0].m_referenceResult[i].m_specieName, specie)) {
 			return i;
 		}
 	}
@@ -209,7 +209,7 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 
 		scanAngle[nDataPoints] = m_specInfo[i].m_scanAngle;
 		scanAngle2[nDataPoints] = m_specInfo[i].m_scanAngle2;
-		column[nDataPoints] = specie.Convert_MolecCm2_to_kgM2(m_spec[i].m_ref[specieIndex].m_column);
+		column[nDataPoints] = specie.Convert_MolecCm2_to_kgM2(m_spec[i].m_referenceResult[specieIndex].m_column);
 		++nDataPoints;
 	}
 
@@ -322,8 +322,8 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 			badEval[i] = false;
 			scanAngle[i] = m_specInfo[i].m_scanAngle;
 			phi[i] = m_specInfo[i].m_scanAngle2;
-			column[i] = m_spec[i].m_ref[specieIndex].m_column;
-			columnError[i] = m_spec[i].m_ref[specieIndex].m_columnError;
+			column[i] = m_spec[i].m_referenceResult[specieIndex].m_column;
+			columnError[i] = m_spec[i].m_referenceResult[specieIndex].m_columnError;
 		}
 	}
 
@@ -365,7 +365,7 @@ double CScanResult::GetMaxColumn(const novac::CString &specie) const {
 		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			continue;
 		}
-		maxColumn = std::max(maxColumn, m_spec[i].m_ref[specieIndex].m_column - m_plumeProperties.m_offset);
+		maxColumn = std::max(maxColumn, m_spec[i].m_referenceResult[specieIndex].m_column - m_plumeProperties.m_offset);
 	}
 
 	return maxColumn;
@@ -426,16 +426,16 @@ double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long speci
 	if (specIndex < 0 || specIndex > m_specNum)
 		return 0.0f;
 
-	if (specieIndex < 0 || specieIndex > this->m_spec[specIndex].m_speciesNum)
+	if (specieIndex < 0 || specieIndex > this->m_spec[specIndex].m_referenceResult.size())
 		return 0.0f;
 
 	switch (parameter) {
-	case COLUMN:        return this->m_spec[specIndex].m_ref[specieIndex].m_column;
-	case COLUMN_ERROR:  return this->m_spec[specIndex].m_ref[specieIndex].m_columnError;
-	case SHIFT:         return this->m_spec[specIndex].m_ref[specieIndex].m_shift;
-	case SHIFT_ERROR:   return this->m_spec[specIndex].m_ref[specieIndex].m_shiftError;
-	case SQUEEZE:       return this->m_spec[specIndex].m_ref[specieIndex].m_squeeze;
-	case SQUEEZE_ERROR: return this->m_spec[specIndex].m_ref[specieIndex].m_squeezeError;
+	case COLUMN:        return this->m_spec[specIndex].m_referenceResult[specieIndex].m_column;
+	case COLUMN_ERROR:  return this->m_spec[specIndex].m_referenceResult[specieIndex].m_columnError;
+	case SHIFT:         return this->m_spec[specIndex].m_referenceResult[specieIndex].m_shift;
+	case SHIFT_ERROR:   return this->m_spec[specIndex].m_referenceResult[specieIndex].m_shiftError;
+	case SQUEEZE:       return this->m_spec[specIndex].m_referenceResult[specieIndex].m_squeeze;
+	case SQUEEZE_ERROR: return this->m_spec[specIndex].m_referenceResult[specieIndex].m_squeezeError;
 	case DELTA:         return this->m_spec[specIndex].m_delta;
 	default:            return 0.0f;
 	}
@@ -488,7 +488,7 @@ CScanResult &CScanResult::operator=(const CScanResult &s2) {
 /** Marks the desired spectrum with the supplied mark_flag.
 	Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
 	@return SUCCESS on success. */
-RETURN_CODE  CScanResult::MarkAs(unsigned long index, int MARK_FLAG) {
+bool CScanResult::MarkAs(unsigned long index, int MARK_FLAG) {
 	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
@@ -498,7 +498,7 @@ RETURN_CODE  CScanResult::MarkAs(unsigned long index, int MARK_FLAG) {
 /** Removes the desired mark from the desired spectrum
 	Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
 	@return SUCCESS on success. */
-RETURN_CODE  CScanResult::RemoveMark(unsigned long index, int MARK_FLAG) {
+bool CScanResult::RemoveMark(unsigned long index, int MARK_FLAG) {
 	if (!IsValidSpectrumIndex(index))
 		return FAIL;
 
@@ -925,42 +925,4 @@ void	CScanResult::SetScatteringError(double err) {
 /** Getting the spectroscopical error */
 void	CScanResult::SetSpectroscopicalError(double err) {
 	m_spectroscopyError = err;
-}
-
-/** Applies the given correction to all or some evaluated references.
-		@param corretionToApply - the correction to apply...
-		@param parameters - The parameters for the corrections
-		@param nParameters - the number of parameters (i.e. the length of the array 'parameters'
-		@param specie - The name of the specie for which to apply the correction, if NULL then correction will be applied to all species.
-		@return zero if all is ok, otherwise a non-zero value
-*/
-int CScanResult::ApplyCorrection(CORRECTION correctionToApply, double *parameters, long nParameters, novac::CString *specie) {
-	unsigned int i, k;
-	double f; // the correction factor
-
-	for (i = 0; i < m_specNum; ++i) {
-		CEvaluationResult &evalRes = m_spec.GetAt(i); // a handle to the result.
-
-		// Loop through all evaluated species
-		for (k = 0; k < evalRes.m_speciesNum; ++k) {
-			// check if we should apply any correction to this specie
-			if (specie != NULL) {
-				if (!Equals(evalRes.m_ref[k].m_specieName, *specie)) {
-					continue;
-				}
-
-				// Correct this column...
-				f = CColumnCorrection::GetCorrectionFactor(correctionToApply, parameters, nParameters);
-				evalRes.m_ref[k].m_column *= f;
-
-				// Write the column-correction to the end of the list
-				CColumnCorrection &corrList = evalRes.m_correction.GetAt(k);
-				corrList.m_corrections.push_back(correctionToApply);
-				corrList.m_correctionValues.push_back(f);
-			}
-
-		}
-	}
-
-	return 0;
 }
