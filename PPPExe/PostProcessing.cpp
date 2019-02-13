@@ -264,15 +264,18 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 			novac::CString fileName, fullFileName;
 			fileName.Format("%s", dir.name().c_str());
 			fullFileName.Format("%s/%s", (const char*)path, dir.name().c_str());
+            const bool isDirectory = dir->isDirectory();
+
+            ++dir; // go to next file in the directory
 
 			if (novac::Equals(dir.name(), ".") || novac::Equals(dir.name(), "..")) {
-				continue;
+                continue;
 			}
 
 			// if this is a directory...
-			if (dir->isDirectory()) {
+			if (isDirectory) {
 				CheckForSpectraInDir(fullFileName, fileList);
-			}
+            }
 			else {
 				// if this is a .pak - file
 				if (novac::Equals(fileName.Right(4), ".pak")) {
@@ -292,7 +295,7 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
 
 					// We've passed all the tests for the .pak-file.
 					// Append the found file to the list of files to split and evaluate...
-					fileList.AddTail(fileName);
+					fileList.AddTail(fullFileName);
 				}
 			}
 		}
@@ -1684,7 +1687,7 @@ void CPostProcessing::UploadResultsToFTP() {
 	fileList.AddTail(fileName);
 
 	// upload the files
-	connection->UploadResults("129.16.35.206", "novacUser", "iht-1inks.", fileList);
+	connection->UploadResults(g_userSettings.m_FTPDirectory, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword, fileList);
 
 	delete connection;
 	return;
