@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Evaluation.h"
 #include "ScanResult.h"
 #include "../Configuration/DarkSettings.h"
 
@@ -9,6 +8,8 @@
 
 namespace Evaluation
 {
+    class CFitWindow;
+    class CEvaluationBase;
 
 	/** 
 		An object of the <b>CScanEvaluation</b>-class handles the evaluation of one
@@ -46,7 +47,7 @@ namespace Evaluation
 		/** Performs the evaluation using the supplied evaluator 
 			@return the number of spectra evaluated 
 			@return -1 if something goes wrong */
-		long EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluation *eval, const Configuration::CDarkSettings *darkSettings = NULL);
+		long EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings = NULL);
 
 		/** This returns the sky spectrum that is to be used in the fitting. */
 		RETURN_CODE GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky);
@@ -66,7 +67,7 @@ namespace Evaluation
 		/** Finds the optimum shift and squeeze for an evaluated scan 
 					by looking at the spectrum with the highest absorption of the evaluated specie
 					and evaluate it with shift and squeeze free */
-		void FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result);
+		void FindOptimumShiftAndSqueeze(CEvaluationBase *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result);
 
 		/** Finds the optimum shift and squeeze for an scan by evaluating
 			with a solar-reference spectrum and studying the shift of the 
@@ -75,7 +76,7 @@ namespace Evaluation
 				of the shift and squeeze then the shift and squeeze of the reference-files
 				in the CEvaluation-objects CFitWindow will be fixed to the optimum value found
 			@param scan - a handle to the spectrum file. */
-		CEvaluation *FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan);
+        CEvaluationBase *FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan);
 
 		// ------------------------ THE PARAMETERS FOR THE EVALUATION ------------------
 

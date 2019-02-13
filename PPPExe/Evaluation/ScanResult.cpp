@@ -4,6 +4,8 @@
 #include "../Geometry/GeometryCalculator.h"
 #include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 
+#include <algorithm>
+
 using namespace Evaluation;
 
 extern novac::CVolcanoInfo g_volcanoes;	// <-- A list of all known volcanoes

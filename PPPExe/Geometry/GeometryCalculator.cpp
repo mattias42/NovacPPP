@@ -10,6 +10,7 @@
 #include "../Configuration/UserConfiguration.h"
 
 #include <Poco/Path.h>
+#include <algorithm>
 
 #undef min
 #undef max

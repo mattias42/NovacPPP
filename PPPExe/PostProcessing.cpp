@@ -33,6 +33,7 @@
 #include <PPPLib/VolcanoInfo.h>
 #include <PPPLib/CFileUtils.h>
 #include <PPPLib/ThreadUtils.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/CrossSectionData.h>
 
 // we want to make some statistics on the processing
 #include "PostProcessingStatistics.h"

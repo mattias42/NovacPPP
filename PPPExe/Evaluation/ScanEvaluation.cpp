@@ -1,5 +1,6 @@
 #include "ScanEvaluation.h"
 
+#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationBase.h>
 #include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 #include <PPPLib/Spectra/SpectrumIO.h>
 #include <PPPLib/SpectrumFormat/STDFile.h>
@@ -35,7 +36,7 @@ CScanEvaluation::~CScanEvaluation(void)
 }
 
 long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CFitWindow &fitWindow, const Configuration::CDarkSettings *darkSettings){
-	CEvaluation *eval = NULL; // the evaluator
+    CEvaluationBase *eval = NULL; // the evaluator
 	CFitWindow adjustedFitWindow = fitWindow; // we may need to make some small adjustments to the fit-window. This is a modified copy
 
 	// Adjust the fit-low and fit-high parameters according to the spectra
@@ -72,7 +73,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 			window2.ref[k].m_shiftValue    = 0.0;
 			window2.ref[k].m_squeezeValue  = 1.0;
 		}
-		eval = new CEvaluation(window2);
+		eval = new CEvaluationBase(window2);
 		
 		// evaluate the scan one time
 		if(-1 == EvaluateOpenedScan(scan, eval, darkSettings)){
@@ -84,7 +85,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 	}else{
 		//  3) do none of the above
 
-		eval = new CEvaluation(adjustedFitWindow);
+		eval = new CEvaluationBase(adjustedFitWindow);
 	}
 
 	// Make the real evaluation of the scan
@@ -103,7 +104,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 
 /** Performs the evaluation using the supplied evaluator 
 	@return the number of spectra evaluated */
-long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluation *eval, const Configuration::CDarkSettings *darkSettings){
+long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings){
 	novac::CString message;	// used for ShowMessage messages
 	int	index = 0;		// keeping track of the index of the current spectrum into the .pak-file
 	double highestColumn = 0.0;	// the highest column-value in the evaluation
@@ -493,12 +494,12 @@ bool CScanEvaluation::Ignore(const CSpectrum &spec, const CSpectrum &dark, int f
 
 
 /** Finds the optimum shift and squeeze for an evaluated scan */
-void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result){
+void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluationBase *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result){
 	int k;
 	CSpectrum spec, sky, dark;
 	int specieNum = 0;
 	novac::CString message;
-	CEvaluation *eval2 = NULL;
+	CEvaluationBase *eval2 = NULL;
 	CFitWindow fitWindow2;
 
 	// 1. Find the spectrum with the highest column value
@@ -547,7 +548,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 	sky.Sub(dark);
 
 	// create the new evaluator
-	eval2 = new CEvaluation(fitWindow2);
+	eval2 = new CEvaluationBase(fitWindow2);
 	eval2->SetSkySpectrum(sky);
 
 	// Get the measured spectrum
@@ -580,7 +581,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 		fitWindow2.ref[k].m_squeezeValue    = optimumSqueeze;
 	}
 	delete eval;
-	eval = new CEvaluation(fitWindow2);
+	eval = new CEvaluationBase(fitWindow2);
 	eval->SetSkySpectrum(sky);
 
 	// 6. We're done!
@@ -589,7 +590,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluation *eval, const CFitWi
 	return;
 }
 
-CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan){
+CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan){
 	double shift, shiftError, squeeze, squeezeError;
 	CSpectrum sky, spectrum, dark;
 	novac::CString message;
@@ -670,7 +671,7 @@ CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWi
 	}
 
 	// 3. Do the evaluation.
-	CEvaluation *eval = new CEvaluation(improvedFitWindow);
+	CEvaluationBase *eval = new CEvaluationBase(improvedFitWindow);
 	eval->SetSkySpectrum(sky);
 	
 	if(eval->EvaluateShift(spectrum, shift, shiftError, squeeze, squeezeError)){
@@ -693,5 +694,5 @@ CEvaluation *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWi
 	}
 	delete eval;
 	
-	return new CEvaluation(improvedFitWindow);
+	return new CEvaluationBase(improvedFitWindow);
 }
