@@ -46,10 +46,7 @@ void CUserConfiguration::Clear(){
 	m_includeSubDirectories_Local = 1;
 	
 	// The FTP-directory where to search for data
-	m_FTPDirectory.Format("ftp://129.16.35.206/");
 	m_includeSubDirectories_FTP = 1;
-	m_FTPUsername.Format("novacUser");
-	m_FTPPassword.Format("iht-1inks.");
 	
 	// If we should upload the results to the ftp or not
 	m_uploadResults = 0;
