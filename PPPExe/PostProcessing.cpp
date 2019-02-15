@@ -435,13 +435,13 @@ void EvaluateScansThread() {
 
 			// Tell the user what is happening
 			novac::CString messageToUser;
-			messageToUser.Format(" + Inserted scan %s into list of evaluation logs", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
+			messageToUser.Format(" + Inserted scan %s into list of evaluation logs", fileName.c_str());
 			ShowMessage(messageToUser);
 		}
 		else
 		{
 			novac::CString messageToUser;
-			messageToUser.Format(" - Evaluation of scan %s failed", (const char*)evalLog[g_userSettings.m_mainFitWindow]);
+			messageToUser.Format(" - Evaluation of scan %s failed", fileName.c_str());
 			ShowMessage(messageToUser);
 		}
 	}

@@ -102,8 +102,6 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 	return m_result->GetEvaluatedNum();
 }
 
-/** Performs the evaluation using the supplied evaluator 
-	@return the number of spectra evaluated */
 long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings){
 	novac::CString message;	// used for ShowMessage messages
 	int	index = 0;		// keeping track of the index of the current spectrum into the .pak-file
@@ -671,10 +669,10 @@ CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CF
 	}
 
 	// 3. Do the evaluation.
-	CEvaluationBase *eval = new CEvaluationBase(improvedFitWindow);
-	eval->SetSkySpectrum(sky);
+	CEvaluationBase eval(improvedFitWindow);
+	eval.SetSkySpectrum(sky);
 	
-	if(eval->EvaluateShift(spectrum, shift, shiftError, squeeze, squeezeError)){
+	if(eval.EvaluateShift(spectrum, shift, shiftError, squeeze, squeezeError)){
 		// We failed to make the fit, what shall we do now??
 		ShowMessage("Failed to determine shift and squeeze in scan %s. Will proceed with default parameters.", scan->GetFileName());
 	}else{
@@ -692,7 +690,6 @@ CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CF
 			ShowMessage("Fit not good enough. Will proceed with default parameters.");
 		}
 	}
-	delete eval;
 	
 	return new CEvaluationBase(improvedFitWindow);
 }

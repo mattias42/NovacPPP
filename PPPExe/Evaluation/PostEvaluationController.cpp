@@ -69,11 +69,15 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
 	//		Find the information in the configuration about this instrument
 	if (GetLocationAndFitWindow(&scan, fitWindowName, instrLocation, fitWindow)) {
-		return 3;
+        errorMessage.Format("Could not read location and fit-window for pak-file %s. Will not evaulate.", (const char*)pakFileName);
+        ShowMessage(errorMessage);
+        return 3;
 	}
 	//	the settings for how to correct for dark
 	if (GetDarkCurrentSettings(&scan, darkSettings)) {
-		return 3;
+        errorMessage.Format("Could not read dark-settings for pak-file %s. Will not evaulate.", (const char*)pakFileName);
+        ShowMessage(errorMessage);
+        return 3;
 	}
 
 	// Check if we have already evaluated this scan. Only if this is a re-run of
@@ -107,7 +111,9 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
 	// ------------- Check that the measurement is good enough to evaluate -----------
 	if (!IsGoodEnoughToEvaluate(&scan, fitWindow, instrLocation)) {
-		return 5;
+        errorMessage.Format("Pak-file %s is not good enough qulity to evaluate. Will not evaulate.", (const char*)pakFileName);
+        ShowMessage(errorMessage);
+        return 5;
 	}
 
 	// 6. Evaluate the scan
@@ -118,7 +124,9 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
 	// 7. Check the reasonability of the evaluation
 	if (spectrumNum == 0) {
-		return 6;
+        errorMessage.Format("Zero spectra evaluated in recieved pak-file %s. Evaluation failed.", (const char*)pakFileName);
+        ShowMessage(errorMessage);
+        return 6;
 	}
 
 	// 8. Get the result from the evaluation
@@ -135,27 +143,29 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 	AppendToEvaluationSummaryFile(m_lastResult, &scan, &instrLocation, &fitWindow, windField);
 	AppendToPakFileSummaryFile(m_lastResult, &scan, &instrLocation, &fitWindow, windField);
 
-	// 10. If this was a flux-measurement then we need to see the plume for the measurement to be useful
+    // 10. Append the result to the log file of the corresponding scanningInstrument
+    if (SUCCESS != WriteEvaluationResult(m_lastResult, &scan, &instrLocation, &fitWindow, windField, txtFileName)) {
+        errorMessage.Format("Failed to write evaluation log file %s. No result produced", txtFileName);
+        ShowMessage(errorMessage);
+    }
+    
+    // 11. If this was a flux-measurement then we need to see the plume for the measurement to be useful
 	//		this check should only be performed on the main fit window.
 	if (Equals(fitWindow.name, g_userSettings.m_fitWindowsToUse[g_userSettings.m_mainFitWindow])) {
 		if (0 == CheckQualityOfFluxMeasurement(m_lastResult, pakFileName)) {
-			delete m_lastResult;	m_lastResult = nullptr;
+            errorMessage.Format("Flux-calculation of pak-file %s failed.", (const char*)pakFileName);
+            ShowMessage(errorMessage);
+            delete m_lastResult;	m_lastResult = nullptr;
 			return 6;
 		}
 	}
 
-	// 10. Append the result to the log file of the corresponding scanningInstrument
-	if (SUCCESS != WriteEvaluationResult(m_lastResult, &scan, &instrLocation, &fitWindow, windField, txtFileName)) {
-		errorMessage.Format("Failed to write evaluation log file %s. No result produced", txtFileName);
-		ShowMessage(errorMessage);
-	}
-
-	// 11. Return the properties of the scan
+	// 12. Return the properties of the scan
 	if (plumeProperties != nullptr) {
 		m_lastResult->GetCalculatedPlumeProperties(*plumeProperties);
 	}
 
-	// 18. Clean up
+	// 13. Clean up
 	delete m_lastResult;
 	m_lastResult = nullptr;
 
