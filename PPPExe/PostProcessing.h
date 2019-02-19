@@ -16,6 +16,10 @@
 	and 'DoPostProcessing_Geometry'
 */
 
+namespace Evaluation {
+    class CReferenceFile;
+}
+
 class CPostProcessing
 {
 public:
@@ -186,4 +190,11 @@ protected:
 	
 	/** Takes care of uploading the result files to the FTP server */
 	void UploadResultsToFTP();
+
+    novac::CString GetAbsolutePathFromRelative(const novac::CString& path);
+
+    /** Creates a reference file by convolving a high-res cross section with a slit-function and resamples it 
+        to a given wavelength calibration. The instrument serial is provided since the result is 
+        saved to a local file, for reference. */
+    bool ConvolveReference(Evaluation::CReferenceFile& ref, const novac::CString& instrumentSerial);
 };

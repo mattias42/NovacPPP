@@ -23,8 +23,7 @@ void CEvaluationConfiguration::Clear(){
 	@param validTo - the time to which this fit-window is valid, NULL if valid until the end of time */
 void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &window, const CDateTime *validFrom, const CDateTime *validTo){
 	// make a copy of the fit - window
-	Evaluation::CFitWindow *newWindow = new Evaluation::CFitWindow();
-	*newWindow = window;
+	Evaluation::CFitWindow *newWindow = new Evaluation::CFitWindow(window);
 	
 	// Get the time-range for which this window is valid
 	CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);

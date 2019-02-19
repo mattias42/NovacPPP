@@ -9,11 +9,8 @@ add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
 
 # Add the common Evaluation classes
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
-
-# Add the common Spectrum property classes
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Spectra)
-
-# Add the common Flux classes
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/File)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
 
 
@@ -61,6 +58,10 @@ add_library(PPPLib
     ${SPECTRUM_EVALUATION_HEADERS}
     ${SPECTRUM_CLASS_HEADERS}
     ${SPECTRUM_FLUX_HEADERS}
+    ${SPECTRUM_FILE_HEADERS}
+    ${SPECTRUM_FILE_SOURCES}
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.h
 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
@@ -74,6 +75,7 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.cpp
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.cpp
     ${PPPLIB_SPECTRA_SOURCES}
     ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
     ${SPECTRUM_EVALUATION_SOURCES}

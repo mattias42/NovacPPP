@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PostProcessing.h"
+#include <PPPLib/SpectralEvaluation/File/File.h>
 
 #undef min
 #undef max
@@ -543,14 +544,19 @@ int CPostProcessing::CheckSettings() {
 		}
 	}
 
-
-
 	return 0;
+}
+
+novac::CString CPostProcessing::GetAbsolutePathFromRelative(const novac::CString& path)
+{
+    novac::CString absolutePath;
+    absolutePath.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), path.c_str());
+    return absolutePath;
 }
 
 int CPostProcessing::PrepareEvaluation() {
 	CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
-	novac::CString errorMessage, fileName;
+	novac::CString errorMessage;
 
 	// this is true if we failed to prepare the evaluation...
 	bool failure = false;
@@ -568,9 +574,25 @@ int CPostProcessing::PrepareEvaluation() {
 
 			// For each reference in the fit-window, read it in and make sure that it exists...
 			for (int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex) {
+
+                if (window.ref[referenceIndex].m_path.empty()) {
+                    // The reference file was not given in the configuration. Try to generate a configuration
+                    //  from the cross section, slit-function and wavelength calibration. These three must then 
+                    //  exist or the evaluation fails.
+                    if (!ConvolveReference(window.ref[referenceIndex], g_setup.m_instrument[instrumentIndex].m_serial))
+                    {
+                        errorMessage.Format("Failed to create reference for fit window '%s' for spectrometer %s.",
+                            window.ref[referenceIndex].m_specieName.c_str(), (const char*)g_setup.m_instrument[instrumentIndex].m_serial);
+                        ShowMessage(errorMessage);
+                        failure = true;
+                        continue;
+                    }
+                }
+
 				if (!IsExistingFile(window.ref[referenceIndex].m_path)) {
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), window.ref[referenceIndex].m_path.c_str());
+                    novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
+
 					if (IsExistingFile(fileName)) {
 						window.ref[referenceIndex].m_path = fileName.ToStdString();
 					}
@@ -612,9 +634,11 @@ int CPostProcessing::PrepareEvaluation() {
 			// If the window also contains a fraunhofer-reference then read it too.
 			if (window.fraunhoferRef.m_path.size() > 4) {
 				if (!IsExistingFile(window.fraunhoferRef.m_path)) {
+
 					// the file does not exist, try to change it to include the path of the configuration-directory...
-					fileName.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), window.fraunhoferRef.m_path.c_str());
-					if (IsExistingFile(fileName)) {
+                    novac::CString fileName = GetAbsolutePathFromRelative(window.fraunhoferRef.m_path);
+					
+                    if (IsExistingFile(fileName)) {
 						window.fraunhoferRef.m_path = fileName.ToStdString();
 					}
 					else {
@@ -1668,7 +1692,7 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
 
 /** Takes care of uploading the result files to the FTP server */
 void CPostProcessing::UploadResultsToFTP() {
-	Communication::CFTPServerConnection *connection = new Communication::CFTPServerConnection();
+	Communication::CFTPServerConnection connection;
 	novac::CString fileName;
 
 	// Generate a list with all the files we want to upload.
@@ -1687,8 +1711,65 @@ void CPostProcessing::UploadResultsToFTP() {
 	fileList.AddTail(fileName);
 
 	// upload the files
-	connection->UploadResults(g_userSettings.m_FTPDirectory, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword, fileList);
+	connection.UploadResults(g_userSettings.m_FTPDirectory, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword, fileList);
 
-	delete connection;
 	return;
+}
+
+bool CPostProcessing::ConvolveReference(Evaluation::CReferenceFile& ref, const novac::CString& instrumentSerial)
+{
+    // Make sure the high-res section do exist.
+    if (!IsExistingFile(ref.m_crossSectionFile)) {
+        novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_crossSectionFile);
+        if (IsExistingFile(fullPath)) {
+            ref.m_crossSectionFile = fullPath.ToStdString();
+        }
+        else {
+            novac::CString errorMessage;
+            errorMessage.Format("Cannot find given cross section file '%s.", ref.m_crossSectionFile.c_str());
+            ShowMessage(errorMessage);
+            return false; // failed to find the file
+        }
+    }
+
+    // Make sure the slit-function do exist.
+    if (!IsExistingFile(ref.m_slitFunctionFile)) {
+        novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_slitFunctionFile);
+        if (IsExistingFile(fullPath)) {
+            ref.m_slitFunctionFile = fullPath.ToStdString();
+        }
+        else {
+            novac::CString errorMessage;
+            errorMessage.Format("Cannot find given slit-function file '%s.", ref.m_slitFunctionFile.c_str());
+            ShowMessage(errorMessage);
+            return false; // failed to find the file
+        }
+    }
+
+    // Make sure the wavelength calibration do exist.
+    if (!IsExistingFile(ref.m_wavelengthCalibrationFile)) {
+        novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_wavelengthCalibrationFile);
+        if (IsExistingFile(fullPath)) {
+            ref.m_wavelengthCalibrationFile = fullPath.ToStdString();
+        }
+        else {
+            novac::CString errorMessage;
+            errorMessage.Format("Cannot find given wavelength calibration file '%s.", ref.m_wavelengthCalibrationFile.c_str());
+            ShowMessage(errorMessage);
+            return false; // failed to find the file
+        }
+    }
+
+    // Now do the convolution
+    if (ref.ConvolveReference())
+    {
+        return false;
+    }
+    
+    // Save the resulting reference, for reference...
+    novac::CString tempFile;
+    tempFile.Format("%s%s_%s.xs", (const char*)g_userSettings.m_tempDirectory, (const char*)instrumentSerial, ref.m_specieName.c_str());
+    FileIo::SaveCrossSectionFile(tempFile.ToStdString(), *ref.m_data);
+
+    return true;
 }

@@ -64,8 +64,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 		}
 
 	}else if(fitWindow.findOptimalShift){
-		//	2) find the optimal shift & squeeze from the spectrum with the highest column
-
+		//	Find the optimal shift & squeeze from the spectrum with the highest column
 		CFitWindow window2 = adjustedFitWindow;
 		for(int k = 0; k < window2.nRef; ++k){
 			window2.ref[k].m_shiftOption   = SHIFT_FIX;
