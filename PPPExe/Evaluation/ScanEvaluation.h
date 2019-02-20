@@ -1,10 +1,9 @@
 #pragma once
 
 #include "ScanResult.h"
-#include "../Configuration/DarkSettings.h"
-
 #include "../Common/Common.h"
 #include <PPPLib/SpectralEvaluation/File/ScanFileHandler.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/SpectralEvaluationBase.h>
 
 namespace Evaluation
 {
@@ -17,7 +16,7 @@ namespace Evaluation
 		<b>EvaluateScan</b> with the name of the .pak-file that we want to evaluate,
 		an evaluator to use for the evaluation and parameters for the dark correction.
 	*/
-	class CScanEvaluation
+	class CScanEvaluation : public SpectralEvaluationBase
 	{
 
 	public:
@@ -32,14 +31,12 @@ namespace Evaluation
 		// CWnd *pView;
 
 		/** The evaluation results from the last scan evaluated */
-		CScanResult *m_result;
+		CScanResult *m_result = nullptr;
 
 		/** Called to evaluate one scan.
 				@return the number of spectra evaluated. */
 		long EvaluateScan(FileHandler::CScanFileHandler *scan, const CFitWindow &fitWindow, const Configuration::CDarkSettings *darkSettings = NULL);
 
-		/** Setting the option for wheather the spectra are averaged or not. */
-		void SetOption_AveragedSpectra(bool averaged);
 	private:
 
 		// ----------------------- PRIVATE METHODS ---------------------------
@@ -79,13 +76,6 @@ namespace Evaluation
         CEvaluationBase *FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan);
 
 		// ------------------------ THE PARAMETERS FOR THE EVALUATION ------------------
-
-		/** This is the fit region */
-		long m_fitLow;
-		long m_fitHigh;
-
-		/** True if the spectra are averaged, not summed */
-		bool m_averagedSpectra;
 
 		/** Remember the index of the spectrum with the highest absorption, to be able to
 			adjust the shift and squeeze with it later */

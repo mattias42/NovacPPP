@@ -8,21 +8,11 @@ set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib h
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
 
 # Add the common Evaluation classes
+add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Configuration)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Spectra)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/File)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
-
-
-set(PPPLIB_SPECTRUM_FORMAT_HEADERS
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/STDFile.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/TXTFile.h
-)
-
-set(PPPLIB_SPECTRUM_FORMAT_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
-)
 
 # Add the different components
 add_library(PPPLib
@@ -41,13 +31,14 @@ add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
     ${PPPLIB_SPECTRA_HEADERS}
-    ${PPPLIB_SPECTRUM_FORMAT_HEADERS}
     ${SPECTRUM_FIT_HEADERS}
     ${SPECTRUM_EVALUATION_HEADERS}
     ${SPECTRUM_CLASS_HEADERS}
     ${SPECTRUM_FLUX_HEADERS}
     ${SPECTRUM_FILE_HEADERS}
     ${SPECTRUM_FILE_SOURCES}
+    ${SPECTRUM_CONFIGURATION_HEADERS}
+    ${SPECTRUM_CONFIGURATION_SOURCES}
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.h
 
@@ -57,12 +48,9 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.cpp
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.cpp
     ${PPPLIB_SPECTRA_SOURCES}
-    ${PPPLIB_SPECTRUM_FORMAT_SOURCES}
     ${SPECTRUM_EVALUATION_SOURCES}
     ${SPECTRUM_CLASS_SOURCES}
     ${SPECTRUM_FLUX_SOURCES}
@@ -77,17 +65,18 @@ ELSE()
     target_compile_options(PPPLib PRIVATE -Wall -std=c++14)
 ENDIF()
 
+source_group("Header Files\\Configuration"          FILES ${SPECTRUM_CONFIGURATION_HEADERS})
 source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS} ${SPECTRUM_CLASS_HEADERS})
-source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_HEADERS})
+source_group("Header Files\\SpectrumFormat"         FILES ${})
 source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
 source_group("Header Files\\Flux"                   FILES ${SPECTRUM_FLUX_HEADERS})
 source_group("Header Files\\File"                   FILES ${SPECTRUM_FILE_HEADERS})
 
 
-
+source_group("Source Files\\Configuration"          FILES ${SPECTRUM_CONFIGURATION_SOURCES})
 source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES} ${SPECTRUM_CLASS_SOURCES})
-source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORMAT_SOURCES})
+source_group("Source Files\\SpectrumFormat"         FILES ${})
 source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})
 source_group("Source Files\\Flux"                   FILES ${SPECTRUM_FLUX_SOURCES})
