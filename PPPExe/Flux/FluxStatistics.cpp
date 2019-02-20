@@ -69,9 +69,9 @@ void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac:
 	while(p2 != nullptr){
 		novac::CString &serial = instruments.GetNext(p2);
 		nMeasurementsFromThisInstrument = 0;
-		auto p = fluxList.GetHeadPosition();
-		while(p != nullptr){
-			const CFluxResult &flux = fluxList.GetNext(p);
+		auto fluxPosition = fluxList.GetHeadPosition();
+		while(fluxPosition != nullptr){
+			const CFluxResult &flux = fluxList.GetNext(fluxPosition);
 			if(Equals(flux.m_instrument, serial)){
 				++nMeasurementsFromThisInstrument;
 			}

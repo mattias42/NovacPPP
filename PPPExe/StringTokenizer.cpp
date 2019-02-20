@@ -81,25 +81,25 @@ const char *CStringTokenizer::NextToken(){
 	// find the next separator character
 	size_t nextSep = m_strLen;
 	for(int k = 0; k < m_separatorNum; ++k){
-		char *pt = strchr(m_stringToInterpret + from, m_separators[k]);
-		if(pt != nullptr){
-			nextSep = std::min(nextSep, size_t(pt - m_stringToInterpret));
+		char *strPt = strchr(m_stringToInterpret + from, m_separators[k]);
+		if(strPt != nullptr){
+			nextSep = std::min(nextSep, size_t(strPt - m_stringToInterpret));
 		}
 	}
 
 	// check if the next separator is within a quotation
 	if(nextQuote != m_strLen && (nextQuote < nextSep)){
 		size_t previousQuote	= nextQuote;
-		char *pt = strchr(m_stringToInterpret + previousQuote + 1, '\"');
-		if(pt != nullptr){
-			nextQuote = (size_t)(pt - 	m_stringToInterpret);
+		const char *strPt = strchr(m_stringToInterpret + previousQuote + 1, '\"');
+		if(strPt != nullptr){
+			nextQuote = (size_t)(strPt - 	m_stringToInterpret);
 		}
 
 		nextSep = nextQuote + 1;
 		for(int k = 0; k < m_separatorNum; ++k){
-			char *pt = strchr(m_stringToInterpret + nextQuote, m_separators[k]);
-			if(pt != nullptr){
-				nextSep = std::min(nextSep, size_t(pt - m_stringToInterpret));
+			const char *strPt2 = strchr(m_stringToInterpret + nextQuote, m_separators[k]);
+			if(strPt2 != nullptr){
+				nextSep = std::min(nextSep, size_t(strPt2 - m_stringToInterpret));
 			}
 		}
 	}

@@ -73,11 +73,11 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
 	// If there's an item already at this location then delete it
 	int length = m_fitWindows.GetCount();
 	if(index < length){
-		Evaluation::CFitWindow *window = m_fitWindows.GetAt(index);
+		Evaluation::CFitWindow *thisWindow = m_fitWindows.GetAt(index);
 		CDateTime *from = m_validFrom.GetAt(index);
 		CDateTime *to   = m_validTo.GetAt(index);
 		
-		delete window;
+		delete thisWindow;
 		delete from;
 		delete to;
 	}
