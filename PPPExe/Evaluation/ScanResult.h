@@ -4,6 +4,7 @@
 #include <PPPLib/SpectralEvaluation/Evaluation/EvaluationResult.h>
 #include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/FitParameter.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/BasicScanEvaluationResult.h>
 
 #include "../Flux/FluxResult.h"
 #include "../Molecule.h"
@@ -23,7 +24,7 @@ namespace Evaluation
 	    or a judgement wheather each evaluated spectrum is judged to be an ok 
 	    spectrum or not. */
 
-	class CScanResult
+	class CScanResult : public BasicScanEvaluationResult
 	{
 	public:
 		CScanResult(void);
@@ -166,7 +167,7 @@ namespace Evaluation
 		void SetFlux(double flux) {this->m_flux.m_flux = flux; }
 
 		/** returns the offset of the measurement */
-		double GetOffset() const {return m_plumeProperties.m_offset; } 
+		double GetOffset() const {return m_plumeProperties.offset; } 
 
 		/** returns the temperature of the system at the time of the measurement */
 		double	GetTemperature() const {return m_skySpecInfo.m_temperature; }
@@ -175,16 +176,16 @@ namespace Evaluation
 		void GetCalculatedPlumeProperties(CPlumeInScanProperty &properties) const { properties = m_plumeProperties; }
 	
 		/** Returns the calculated plume-centre position */
-		double	GetCalculatedPlumeCentre(int motor = 0) const {return m_plumeProperties.m_plumeCentre[motor];; }
+		double	GetCalculatedPlumeCentre(int motor = 0) const;
 
 		/** Returns the calculated plume edges */
 		void GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const;
 
 		/** Returns the calculated plume-completeness */
-		double	GetCalculatedPlumeCompleteness() const {return m_plumeProperties.m_completeness; }
+		double	GetCalculatedPlumeCompleteness() const {return m_plumeProperties.completeness; }
 
 		/** Sets the offset of the measurement */
-		void SetOffset(double offset) {m_plumeProperties.m_offset = offset; } 
+		void SetOffset(double offset) {m_plumeProperties.offset = offset; } 
 
 		/** returns the number of spectra evaluated */
 		long  GetEvaluatedNum() const {return m_specNum; }
@@ -419,28 +420,6 @@ namespace Evaluation
 			in this scan, such as the completeness or the centre angle of 
 			the plume. */
 		CPlumeInScanProperty m_plumeProperties;
-
-		/** result of evaluating the spectra */
-		novac::CArray<CEvaluationResult, CEvaluationResult&> m_spec;
-
-		/** information about the collected spectra */
-		novac::CArray<CSpectrumInfo, CSpectrumInfo&> m_specInfo;
-
-		/** information about the sky-spectrum used */
-		CSpectrumInfo	m_skySpecInfo;
-
-		/** information about the dark-spectrum used, if any */
-		CSpectrumInfo	m_darkSpecInfo;
-
-		/** information about the offset-spectrum used, if any */
-		CSpectrumInfo	m_offsetSpecInfo;
-
-		/** information about the dark-current spectrum used, if any */
-		CSpectrumInfo	m_darkCurSpecInfo;
-
-		/** A list of which spectra were corrupted and could not be evaluated */
-		novac::CArray <unsigned int, unsigned int &>		m_corruptedSpectra;
-		int											m_corruptedNum;
 
 		/** The number of evaluations */
 		unsigned long m_specNum;

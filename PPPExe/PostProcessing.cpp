@@ -859,7 +859,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 		}
 
 		// if this scan does not see a large enough portion of the plume, then ignore it...
-		if (plume1.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
+		if (plume1.completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
 			continue;
 		}
 
@@ -885,7 +885,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
 			++nFilesChecked2; // for debugging...
 
 			// if this scan does not see a large enough portion of the plume, then ignore it...
-			if (plume2.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
+			if (plume2.completeness < g_userSettings.m_calcGeometry_CompletenessLimit) {
 				continue;
 			}
 
@@ -1078,8 +1078,8 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
 		const CPlumeInScanProperty &plume = evalLogFiles.GetNext(pos).m_scanProperties;
 
 		// if the completeness is too low then ignore this scan.
-		if (plume.m_completeness < (g_userSettings.m_completenessLimitFlux + 0.01)) {
-			messageToUser.Format(" - Scan %s has completeness = %.2lf which is less than limit of %.2lf. Rejected!", (const char*)evalLog, plume.m_completeness, g_userSettings.m_completenessLimitFlux);
+		if (plume.completeness < (g_userSettings.m_completenessLimitFlux + 0.01)) {
+			messageToUser.Format(" - Scan %s has completeness = %.2lf which is less than limit of %.2lf. Rejected!", (const char*)evalLog, plume.completeness, g_userSettings.m_completenessLimitFlux);
 			ShowMessage(messageToUser);
 			continue;
 		}

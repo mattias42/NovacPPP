@@ -403,7 +403,7 @@ bool CGeometryCalculator::CalculateGeometry(const novac::CString &evalLog1, int 
 		if(false == reader[k].m_scan[index[k]].CalculatePlumeCentre(CMolecule(g_userSettings.m_molecule), plume[k])){
 			return false; // <-- cannot see the plume
 		}
-		if(plume[k].m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
+		if(plume[k].completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
 			return false; // <-- cannot see enough of the plume
 		}
 	}
@@ -430,7 +430,7 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 	source.m_altitude  = (long)g_volcanoes.GetPeakAltitude(volcanoIndex1);
 
 	// 4. Get the scan-angles around which the plumes are centred and the start-times of the scans
-	double plumeCentre[2] = {plume1.m_plumeCentre[0], plume2.m_plumeCentre[0]};
+	double plumeCentre[2] = {plume1.plumeCenter, plume2.plumeCenter2};
 
 	// 5. Calculate the plume-height
 	if(false == CGeometryCalculator::GetPlumeHeight_Fuzzy(source, locations, plumeCentre, result.m_plumeAltitude, result.m_windDirection)){
@@ -446,8 +446,8 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 	double ph_perp[4], wd_perp[4];
 	for(k = 0; k < 4; ++k){
 		// make a small perturbation to the plume centre angles
-		plumeCentre_perturbated[0] = plumeCentre[0] + plume1.m_plumeCentreError[0] * ((k % 2 == 0)? -1.0 : +1.0);
-		plumeCentre_perturbated[1] = plumeCentre[1] + plume2.m_plumeCentreError[0] * ((k < 2)?	  -1.0 : +1.0);
+		plumeCentre_perturbated[0] = plumeCentre[0] + plume1.plumeCenterError * ((k % 2 == 0)? -1.0 : +1.0);
+		plumeCentre_perturbated[1] = plumeCentre[1] + plume2.plumeCenterError * ((k < 2)?	  -1.0 : +1.0);
 
 		// make sure that the perturbation is not too large...
 		if((fabs(plumeCentre_perturbated[0]) > 89.0) || (fabs(plumeCentre_perturbated[1]) > 89.0)){
@@ -489,10 +489,10 @@ bool CGeometryCalculator::CalculateGeometry(const CPlumeInScanProperty &plume1, 
 	result.m_startTimeDifference	= (int)fabs(timeDifference);
 	
 	// 9. The parameters about the scans that were combined
-	result.m_plumeCentre1		= (float)plume1.m_plumeCentre[0];
-	result.m_plumeCentreError1	= (float)plume1.m_plumeCentreError[0];
-	result.m_plumeCentre2		= (float)plume2.m_plumeCentre[0];
-	result.m_plumeCentreError2	= (float)plume2.m_plumeCentreError[0];
+	result.m_plumeCentre1		= (float)plume1.plumeCenter;
+	result.m_plumeCentreError1	= (float)plume1.plumeCenterError;
+	result.m_plumeCentre2		= (float)plume2.plumeCenter2;       // changed 2019-02-20: Was plumeCenter
+	result.m_plumeCentreError2	= (float)plume2.plumeCenterError2;  // changed 2019-02-20: Was plumeCenterError
 
 	return true;
 }
@@ -621,12 +621,12 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	if(false == reader.m_scan[scanIndex].CalculatePlumeCentre(CMolecule(g_userSettings.m_molecule), plume)){
 		return false; // <-- cannot see the plume
 	}
-	if(plume.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
+	if(plume.completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
 		return false; // <-- cannot see enough of the plume
 	}
 
 	// calculate the plume height
-	double plumeHeight = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(), scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
+	double plumeHeight = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(), scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
 
 	// Check that the plume height is reasonable
 	if(plumeHeight < 0)
@@ -637,12 +637,12 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	double windDirection_minus = windField.GetWindDirection() - std::max(windField.GetWindDirectionError(), 5.0);
 	
 	// the error in plume height due to the uncertainty in wind direction
-	double plumeHeight_plus_wd  = CGeometryCalculator::GetPlumeHeight(source, windDirection_plus,  scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
-	double plumeHeight_minus_wd = CGeometryCalculator::GetPlumeHeight(source, windDirection_minus, scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
+	double plumeHeight_plus_wd  = CGeometryCalculator::GetPlumeHeight(source, windDirection_plus,  scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
+	double plumeHeight_minus_wd = CGeometryCalculator::GetPlumeHeight(source, windDirection_minus, scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
 
 	// the error in plume height due to the uncertainty in the plume centre position
-	double plumeHeight_plus_pc  = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(),  scannerPos, location.m_compass, plume.m_plumeCentre[0] + plume.m_plumeCentreError[0], location.m_coneangle, location.m_tilt);
-	double plumeHeight_minus_pc = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(),  scannerPos, location.m_compass, plume.m_plumeCentre[0] - plume.m_plumeCentreError[0], location.m_coneangle, location.m_tilt);
+	double plumeHeight_plus_pc  = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(),  scannerPos, location.m_compass, plume.plumeCenter + plume.plumeCenterError, location.m_coneangle, location.m_tilt);
+	double plumeHeight_minus_pc = CGeometryCalculator::GetPlumeHeight(source, windField.GetWindDirection(),  scannerPos, location.m_compass, plume.plumeCenter - plume.plumeCenterError, location.m_coneangle, location.m_tilt);
 	
 	// the total error in plume height
 	double plumeHeightErr = sqrt( pow(plumeHeight_plus_wd - plumeHeight_minus_wd, 2.0) + pow(plumeHeight_plus_pc - plumeHeight_minus_pc, 2.0) );
@@ -652,7 +652,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 		fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
-			fprintf(f, "%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], plumeHeight, plumeHeightErr);
+			fprintf(f, "%.1lf\t%.2lf\t%.2lf\n", plume.plumeCenter, plumeHeight, plumeHeightErr);
 			fclose(f);
 		}
 	#endif
@@ -665,8 +665,8 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString &evalLog, in
 	result.m_plumeAltitudeError = plumeHeightErr;
 	result.m_windDirection		= NOT_A_NUMBER;
 	result.m_windDirectionError	= 0.0;
-	result.m_plumeCentre1		= (float)plume.m_plumeCentre[0];
-	result.m_plumeCentreError1	= (float)plume.m_plumeCentreError[0];
+	result.m_plumeCentre1		= (float)plume.plumeCenter;
+	result.m_plumeCentreError1	= (float)plume.plumeCenterError;
 	result.m_calculationType	= Meteorology::MET_GEOMETRY_CALCULATION_SINGLE_INSTR;
 
 	return true;
@@ -703,7 +703,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 	if(false == reader.m_scan[scanIndex].CalculatePlumeCentre(CMolecule(g_userSettings.m_molecule), plume)){
 		return false; // <-- cannot see the plume
 	}
-	if(plume.m_completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
+	if(plume.completeness < g_userSettings.m_calcGeometry_CompletenessLimit + 0.01){
 		return false; // <-- cannot see enough of the plume
 	}
 
@@ -713,19 +713,19 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 		return false; // failure!
 
 	// calculate the wind direction
-	double windDirection = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
+	double windDirection = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
 
 	// Check that the wind direction is reasonable
 	if(windDirection <= NOT_A_NUMBER)
 		return false;
 
 	// the error in wind direction due to the uncertainty in plume height
-	double windDirection_plus_ph  = CGeometryCalculator::GetWindDirection(source, plumeHeight + absolutePlumeHeight.m_plumeAltitudeError, scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
-	double windDirection_minus_ph = CGeometryCalculator::GetWindDirection(source, plumeHeight - absolutePlumeHeight.m_plumeAltitudeError, scannerPos, location.m_compass, plume.m_plumeCentre[0], location.m_coneangle, location.m_tilt);
+	double windDirection_plus_ph  = CGeometryCalculator::GetWindDirection(source, plumeHeight + absolutePlumeHeight.m_plumeAltitudeError, scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
+	double windDirection_minus_ph = CGeometryCalculator::GetWindDirection(source, plumeHeight - absolutePlumeHeight.m_plumeAltitudeError, scannerPos, location.m_compass, plume.plumeCenter, location.m_coneangle, location.m_tilt);
 
 	// the error in wind direction due to the uncertainty in the plume centre position
-	double windDirection_plus_pc  = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.m_plumeCentre[0] + plume.m_plumeCentreError[0], location.m_coneangle, location.m_tilt);
-	double windDirection_minus_pc = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.m_plumeCentre[0] - plume.m_plumeCentreError[0], location.m_coneangle, location.m_tilt);
+	double windDirection_plus_pc  = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.plumeCenter + plume.plumeCenterError, location.m_coneangle, location.m_tilt);
+	double windDirection_minus_pc = CGeometryCalculator::GetWindDirection(source, plumeHeight, scannerPos, location.m_compass, plume.plumeCenter - plume.plumeCenterError, location.m_coneangle, location.m_tilt);
 	
 	// the total error in wind direction
 	double windDirectionErr = sqrt( pow(windDirection_plus_ph - windDirection_minus_ph, 2.0) + pow(windDirection_plus_pc - windDirection_minus_pc, 2.0) );
@@ -736,7 +736,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 		fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 		FILE *f = fopen(fileName, "a");
 		if(f > 0){
-			fprintf(f, "wd\t%.1lf\t%.2lf\t%.2lf\n", plume.m_plumeCentre[0], windDirection, windDirectionErr);
+			fprintf(f, "wd\t%.1lf\t%.2lf\t%.2lf\n", plume.plumeCenter, windDirection, windDirectionErr);
 			fclose(f);
 		}
 	#endif
@@ -749,8 +749,8 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString &evalLog, 
 	result.m_plumeAltitudeError = 0.0;
 	result.m_windDirection		= windDirection;
 	result.m_windDirectionError	= windDirectionErr;
-	result.m_plumeCentre1		= (float)plume.m_plumeCentre[0];
-	result.m_plumeCentreError1	= (float)plume.m_plumeCentreError[0];
+	result.m_plumeCentre1		= (float)plume.plumeCenter;
+	result.m_plumeCentreError1	= (float)plume.plumeCenterError;
 	result.m_calculationType	= Meteorology::MET_GEOMETRY_CALCULATION_SINGLE_INSTR;
 
 	return true;

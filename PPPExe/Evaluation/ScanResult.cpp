@@ -19,17 +19,10 @@ CScanResult::CScanResult(void)
 	m_scatteringError = 30.0;	// best-case guess, 30%
 	m_measurementMode = MODE_UNKNOWN;
 	m_instrumentType = INSTR_GOTHENBURG;
-	m_corruptedNum = 0;
 }
 
 CScanResult::~CScanResult(void)
 {
-	m_spec.RemoveAll();
-	m_spec.FreeExtra();
-	m_specInfo.RemoveAll();
-	m_specInfo.FreeExtra();
-	m_corruptedSpectra.RemoveAll();
-	m_corruptedSpectra.FreeExtra();
 }
 
 /** Intializes the memory arrays to have, initially, space for
@@ -39,18 +32,18 @@ void CScanResult::InitializeArrays(long specNum) {
 		return;
 	}
 
-	m_spec.SetSize(specNum);
-	m_specInfo.SetSize(specNum);
+	m_spec.reserve(specNum);
+	m_specInfo.reserve(specNum);
 }
 
 /** Appends the result to the list of calculated results */
 int CScanResult::AppendResult(const CEvaluationResult &evalRes, const CSpectrumInfo &specInfo) {
 
 	// Append the evaluationresult to the end of the 'm_spec'-vector
-	m_spec.SetAtGrow(m_specNum, CEvaluationResult(evalRes));
+	m_spec.push_back(CEvaluationResult(evalRes));
 
 	// Append the spectral information to the end of the 'm_specInfo'-vector
-	m_specInfo.SetAtGrow(m_specNum, CSpectrumInfo(specInfo));
+	m_specInfo.push_back(CSpectrumInfo(specInfo));
 
 	// Increase the numbers of spectra in this result-set.
 	++m_specNum;
@@ -61,27 +54,26 @@ const CEvaluationResult *CScanResult::GetResult(unsigned int specIndex) const {
 	if (specIndex >= m_specNum)
 		return NULL; // not a valid index
 
-	return &m_spec.GetAt(specIndex);
+	return &m_spec.at(specIndex);
 }
 
-/** Adds spectrum number 'specIndex' into the list of spectra in the .pak -file
-		which are corrupted and could not be evaluated */
 void	CScanResult::MarkAsCorrupted(unsigned int specIndex) {
-	m_corruptedSpectra.SetAtGrow(m_corruptedNum++, specIndex);
+	m_corruptedSpectra.push_back(specIndex);
 }
 
-/** Retrieves how many spectra are corrupted in the scan */
 int CScanResult::GetCorruptedNum() const {
-	return m_corruptedNum;
+	return (int)m_corruptedSpectra.size();
 }
 
-/** Removes the spectrum number 'specIndex' from the list of calcualted results */
-int CScanResult::RemoveResult(unsigned int specIndex) {
+int CScanResult::RemoveResult(unsigned int specIndex)
+{
 	if (specIndex >= m_specNum)
 		return 1; // not a valid index
 
 	// Remove the desired value
-	m_specInfo.RemoveAt(specIndex, 1);
+    auto it = m_specInfo.begin() + specIndex;
+    m_specInfo.erase(it);
+	// m_specInfo.RemoveAt(specIndex, 1);
 
 	// Decrease the number of values in the list
 	m_specNum -= 1;
@@ -154,7 +146,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
 	}
 
 	// Calculate the offset
-	this->m_plumeProperties.m_offset = CalculatePlumeOffset(columns.data(), badEval, m_specNum);
+	this->m_plumeProperties.offset = CalculatePlumeOffset(columns.data(), badEval, m_specNum);
 
 	delete[] badEval;
 
@@ -240,7 +232,7 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 	m_flux.m_instrument.Format(GetSerial());
 
 	// Calculate the flux
-	m_flux.m_flux = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, wind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+	m_flux.m_flux = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.offset), nDataPoints, wind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
 	m_flux.m_windField = wind;
 	m_flux.m_plumeHeight = relativePlumeHeight;
 	m_flux.m_compass = compass;
@@ -251,10 +243,10 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 	// calculate the completeness and centre of the plume
 	CalculatePlumeCentre(specie);
 
-	m_flux.m_scanOffset = m_plumeProperties.m_offset;
-	m_flux.m_completeness = m_plumeProperties.m_completeness;
-	m_flux.m_plumeCentre[0] = m_plumeProperties.m_plumeCentre[0];
-	m_flux.m_plumeCentre[1] = m_plumeProperties.m_plumeCentre[1];
+	m_flux.m_scanOffset = m_plumeProperties.offset;
+	m_flux.m_completeness = m_plumeProperties.completeness;
+	m_flux.m_plumeCentre[0] = m_plumeProperties.plumeCenter;
+	m_flux.m_plumeCentre[1] = m_plumeProperties.plumeCenter2;
 	m_flux.m_instrumentType = m_instrumentType;
 
 	// Try to make an estimation of the error in flux from the
@@ -263,10 +255,10 @@ int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWind
 	// 1. the wind field
 	modifiedWind = wind;
 	modifiedWind.SetWindDirection(wind.GetWindDirection() - wind.GetWindDirectionError(), wind.GetWindDirectionSource());
-	double flux1 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+	double flux1 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
 
 	modifiedWind.SetWindDirection(wind.GetWindDirection() + wind.GetWindDirectionError(), wind.GetWindDirectionSource());
-	double flux2 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.m_offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
+	double flux2 = Common::CalculateFlux(scanAngle.data(), scanAngle2.data(), column.data(), specie.Convert_MolecCm2_to_kgM2(m_plumeProperties.offset), nDataPoints, modifiedWind, relativePlumeHeight, compass, m_instrumentType, coneAngle, tilt);
 
 	double fluxErrorDueToWindDirection = std::max(fabs(flux2 - m_flux.m_flux), fabs(flux1 - m_flux.m_flux));
 
@@ -294,9 +286,9 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie) {
 
 bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProperty &plumeProperties) {
 	unsigned long i; // iterator
-	double offset = m_plumeProperties.m_offset;
+	double offset = m_plumeProperties.offset;
 	m_plumeProperties = CPlumeInScanProperty(); // notify that the plume-centre position is unknown
-	m_plumeProperties.m_offset = offset; // we didn't mean to mess with the offset...
+	m_plumeProperties.offset = offset; // we didn't mean to mess with the offset...
 
 	// if this is a wind-speed measurement, then there's no use to try to 
 	//		calculate the plume-centre
@@ -330,13 +322,13 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	}
 
 	// Calculate the offset of the scan
-	plumeProperties.m_offset = CalculatePlumeOffset(column.data(), badEval, m_specNum);
+	plumeProperties.offset = CalculatePlumeOffset(column.data(), badEval, m_specNum);
 
 	// Estimate the completeness of the plume (this will call on Common::FindPlume we don't need to do that here...)
 	bool ret = CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
 
 	// Calculate the centre of the plume
-	//	bool ret = Common::FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);
+	// bool ret = FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);
 
 	if (ret) {
 		// Remember the calculated value of the plume centre
@@ -367,16 +359,24 @@ double CScanResult::GetMaxColumn(const novac::CString &specie) const {
 		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			continue;
 		}
-		maxColumn = std::max(maxColumn, m_spec[i].m_referenceResult[specieIndex].m_column - m_plumeProperties.m_offset);
+		maxColumn = std::max(maxColumn, m_spec[i].m_referenceResult[specieIndex].m_column - m_plumeProperties.offset);
 	}
 
 	return maxColumn;
 }
 
+double CScanResult::GetCalculatedPlumeCentre(int motor) const
+{
+    if(motor == 1)
+        return m_plumeProperties.plumeCenter2;
+    else
+        return m_plumeProperties.plumeCenter;
+}
+
 /** Returns the calculated plume edges */
 void CScanResult::GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const {
-	lowEdge = m_plumeProperties.m_plumeEdge_low;
-	highEdge = m_plumeProperties.m_plumeEdge_high;
+	lowEdge = m_plumeProperties.plumeEdgeLow;
+	highEdge = m_plumeProperties.plumeEdgeHigh;
 }
 
 double CScanResult::GetColumn(unsigned long spectrumNum, unsigned long specieNum) const {
@@ -472,10 +472,9 @@ CScanResult &CScanResult::operator=(const CScanResult &s2) {
 
 	// The calculated wind-direction and plume-centre
 
-	this->m_spec.Copy(s2.m_spec);
-	this->m_specInfo.Copy(s2.m_specInfo);
-	this->m_corruptedSpectra.Copy(s2.m_corruptedSpectra);
-	this->m_corruptedNum = s2.m_corruptedNum;
+	this->m_spec = s2.m_spec;
+	this->m_specInfo = m_specInfo;
+	this->m_corruptedSpectra = s2.m_corruptedSpectra;
 	this->m_specNum = s2.m_specNum;
 
 	this->m_skySpecInfo = s2.m_skySpecInfo;
@@ -510,7 +509,7 @@ bool CScanResult::RemoveMark(unsigned long index, int MARK_FLAG) {
 /** Returns the latitude of the system */
 double	CScanResult::GetLatitude() const {
 	for (unsigned int k = 0; k < m_specNum; ++k) {
-		const CSpectrumInfo &info = m_specInfo.GetAt(k);
+		const CSpectrumInfo &info = m_specInfo[k];
 		if (fabs(info.m_gps.m_latitude) > 1e-2)
 			return info.m_gps.m_latitude;
 	}
@@ -520,7 +519,7 @@ double	CScanResult::GetLatitude() const {
 /** Returns the longitude of the system */
 double	CScanResult::GetLongitude() const {
 	for (unsigned int k = 0; k < m_specNum; ++k) {
-		const CSpectrumInfo &info = m_specInfo.GetAt(k);
+		const CSpectrumInfo &info = m_specInfo[k];
 		if (fabs(info.m_gps.m_longitude) > 1e-2)
 			return info.m_gps.m_longitude;
 	}
@@ -529,7 +528,7 @@ double	CScanResult::GetLongitude() const {
 /** Returns the altitude of the system */
 double	CScanResult::GetAltitude() const {
 	for (unsigned int k = 0; k < m_specNum; ++k) {
-		const CSpectrumInfo &info = m_specInfo.GetAt(k);
+		const CSpectrumInfo &info = m_specInfo[k];
 		if (fabs(info.m_gps.m_altitude) > 1e-2)
 			return info.m_gps.m_altitude;
 	}
@@ -541,7 +540,7 @@ double	CScanResult::GetCompass() const {
 	if (m_specNum == 0)
 		return 0.0;
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(0);
+	const CSpectrumInfo &info = m_specInfo.front();
 	return info.m_compass;
 }
 
@@ -550,7 +549,7 @@ float	CScanResult::GetBatteryVoltage() const {
 	if (m_specNum == 0)
 		return 0.0;
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(0);
+	const CSpectrumInfo &info = m_specInfo.front();
 	return info.m_batteryVoltage;
 }
 
@@ -559,7 +558,7 @@ double	CScanResult::GetConeAngle() const {
 	if (m_specNum == 0)
 		return 90.0;
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(0);
+	const CSpectrumInfo &info = m_specInfo.front();
 	return info.m_coneAngle;
 }
 
@@ -568,7 +567,7 @@ double	CScanResult::GetPitch() const {
 	if (m_specNum == 0)
 		return 90.0;
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(0);
+	const CSpectrumInfo &info = m_specInfo.front();
 	return info.m_pitch;
 }
 
@@ -577,7 +576,7 @@ double	CScanResult::GetRoll() const {
 	if (m_specNum == 0)
 		return 90.0;
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(0);
+	const CSpectrumInfo &info = m_specInfo.front();
 	return info.m_roll;
 }
 
@@ -586,14 +585,14 @@ novac::CString CScanResult::GetName(int index) const {
 	if (!IsValidSpectrumIndex(index))
 		return novac::CString("");
 
-	const CSpectrumInfo &info = m_specInfo.GetAt(index);
+	const CSpectrumInfo &info = m_specInfo[index];
 	return info.m_name;
 }
 
 /** Returns the serial-number of the spectrometer that collected this scan */
 novac::CString CScanResult::GetSerial() const {
 	for (unsigned int k = 0; k < m_specNum; ++k) {
-		const CSpectrumInfo &info = m_specInfo.GetAt(k);
+		const CSpectrumInfo &info = m_specInfo[k];
 		if (info.m_device.size() > 0)
 			return info.m_device;
 	}
