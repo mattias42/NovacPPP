@@ -21,7 +21,6 @@
         <wavlengthCalibration>D:/NOVAC/Spectrometers/D2J2200_Master.clb</wavlengthCalibration>
 		<Reference>
 			<name>SO2</name>
-			<__path>C:\NOVAC\novacP3\Cross sections\I2J8552_SO2_298K.xs</__path>
             <crossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</crossSection>
 			<shiftOption>0</shiftOption>
 			<shiftValue>0.000000</shiftValue>

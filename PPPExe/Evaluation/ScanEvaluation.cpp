@@ -2,7 +2,7 @@
 
 #include <PPPLib/SpectralEvaluation/Evaluation/EvaluationBase.h>
 #include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
-#include <PPPLib/Spectra/SpectrumIO.h>
+#include <PPPLib/SpectralEvaluation/File/SpectrumIO.h>
 #include <PPPLib/SpectrumFormat/STDFile.h>
 #include <PPPLib/SpectrumFormat/TXTFile.h>
 
@@ -165,7 +165,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 				break;
 			}else{
 				novac::CString errMsg;
-				errMsg.Format("Faulty spectrum found in %s", (const char*)scan->GetFileName());
+				errMsg.Format("Faulty spectrum found in %s", scan->GetFileName().c_str());
 				switch(scan->m_lastError){
 					case SpectrumIO::CSpectrumIO::ERROR_CHECKSUM_MISMATCH:
 						errMsg.AppendFormat(", Checksum mismatch. Spectrum ignored"); break;
@@ -216,7 +216,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
 		// e. Check if this spectrum is worth evaluating
 		if(Ignore(current, dark, m_fitLow, m_fitHigh)){
-			message.Format("  - Ignoring spectrum %d in scan %s.", current.ScanIndex(), (const char*)scan->GetFileName());
+			message.Format("  - Ignoring spectrum %d in scan %s.", current.ScanIndex(), scan->GetFileName().c_str());
 			ShowMessage(message);
 			continue;
 		}
@@ -227,7 +227,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 		// e. Evaluate the spectrum
 		if(eval->Evaluate(current)){
 			message.Format("Failed to evaluate spectrum %d out of %d in scan %s from spectrometer %s.",
-				current.ScanIndex(), current.SpectraPerScan(), (const char*)scan->GetFileName(), current.m_info.m_device.c_str());
+				current.ScanIndex(), current.SpectraPerScan(), scan->GetFileName().c_str(), current.m_info.m_device.c_str());
 			ShowMessage(message);
 		}
 
@@ -257,7 +257,7 @@ RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const 
 	//		as the second spectrum in the scan.
 	if(darkSettings == NULL || darkSettings->m_darkSpecOption == MEASURE || darkSettings->m_darkSpecOption == MODEL_SOMETIMES){
 		if(0 != scan->GetDark(dark)){
-			message.Format("Could not read dark-spectrum from scan %s", (const char*)scan->GetFileName());
+			message.Format("Could not read dark-spectrum from scan %s", scan->GetFileName().c_str());
 			ShowMessage(message);
 			return FAIL;
 		}
@@ -454,7 +454,11 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
 		if(Equals(g_userSettings.m_skySpectrumFromUser.Right(4), ".pak", 4)){
 			// If the spectrum is in .pak format
 			SpectrumIO::CSpectrumIO reader;
-			return reader.ReadSpectrum(g_userSettings.m_skySpectrumFromUser, 0, sky);
+            const std::string userSkySpectrumFil((const char*)g_userSettings.m_skySpectrumFromUser);
+			if(reader.ReadSpectrum(userSkySpectrumFil, 0, sky))
+                return SUCCESS;
+            else
+                return FAIL;
 		}else if(Equals(g_userSettings.m_skySpectrumFromUser.Right(4), ".std", 4)){
 			// If the spectrum is in .std format
 			return SpectrumIO::CSTDFile::ReadSpectrum(sky, g_userSettings.m_skySpectrumFromUser);
