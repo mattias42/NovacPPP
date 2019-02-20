@@ -14,24 +14,12 @@ add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/File)
 add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
 
 
-set(PPPLIB_SPECTRA_HEADERS
-    ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/ScanFileHandler.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/Spectra/SpectrumIO.h
-)
-
-set(PPPLIB_SPECTRA_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
-)
-
 set(PPPLIB_SPECTRUM_FORMAT_HEADERS
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/MKPack.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/STDFile.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrumFormat/TXTFile.h
 )
 
 set(PPPLIB_SPECTRUM_FORMAT_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/MKPack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
 )
@@ -69,9 +57,6 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/ScanFileHandler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/Spectra/SpectrumIO.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/MKPack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/STDFile.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/SpectrumFormat/TXTFile.cpp
     ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.cpp
@@ -97,6 +82,7 @@ source_group("Header Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORM
 source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
 source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
 source_group("Header Files\\Flux"                   FILES ${SPECTRUM_FLUX_HEADERS})
+source_group("Header Files\\File"                   FILES ${SPECTRUM_FILE_HEADERS})
 
 
 
@@ -105,3 +91,4 @@ source_group("Source Files\\SpectrumFormat"         FILES ${PPPLIB_SPECTRUM_FORM
 source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
 source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})
 source_group("Source Files\\Flux"                   FILES ${SPECTRUM_FLUX_SOURCES})
+source_group("Source Files\\File"                   FILES ${SPECTRUM_FILE_SOURCES})

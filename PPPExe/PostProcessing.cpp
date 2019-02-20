@@ -588,46 +588,47 @@ int CPostProcessing::PrepareEvaluation() {
                         continue;
                     }
                 }
+                else {
+				    if (!IsExistingFile(window.ref[referenceIndex].m_path)) {
+					    // the file does not exist, try to change it to include the path of the configuration-directory...
+                        novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
 
-				if (!IsExistingFile(window.ref[referenceIndex].m_path)) {
-					// the file does not exist, try to change it to include the path of the configuration-directory...
-                    novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
+					    if (IsExistingFile(fileName)) {
+						    window.ref[referenceIndex].m_path = fileName.ToStdString();
+					    }
+					    else {
+						    errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path.c_str());
+						    ShowMessage(errorMessage);
+						    failure = true;
+						    continue;
+					    }
+				    }
 
-					if (IsExistingFile(fileName)) {
-						window.ref[referenceIndex].m_path = fileName.ToStdString();
-					}
-					else {
-						errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path.c_str());
-						ShowMessage(errorMessage);
-						failure = true;
-						continue;
-					}
-				}
+				    // Read in the cross section
+				    if (window.ref[referenceIndex].ReadCrossSectionDataFromFile()) {
+					    errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path.c_str());
+					    ShowMessage(errorMessage);
+					    failure = true;
+					    continue;
+				    }
 
-				// Read in the cross section
-				if (window.ref[referenceIndex].ReadCrossSectionDataFromFile()) {
-					errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path.c_str());
-					ShowMessage(errorMessage);
-					failure = true;
-					continue;
-				}
-
-				// If we are supposed to high-pass filter the spectra then
-				//	we should also high-pass filter the cross-sections
-				if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB) {
-					if (window.ref[referenceIndex].m_isFiltered == false) {
-						if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring")) {
-                            HighPassFilter_Ring(*window.ref[referenceIndex].m_data);
-						}
-						else {
-                            HighPassFilter(*window.ref[referenceIndex].m_data);
-						}
-					}
-					else {
-						// The filtered cross sections are scaled to the unit of ppmm
-						//	rescale them to molecules/cm2 as all other cross sections
-                        Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
-					}
+				    // If we are supposed to high-pass filter the spectra then
+				    //	we should also high-pass filter the cross-sections
+				    if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB) {
+					    if (window.ref[referenceIndex].m_isFiltered == false) {
+						    if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring")) {
+                                HighPassFilter_Ring(*window.ref[referenceIndex].m_data);
+						    }
+						    else {
+                                HighPassFilter(*window.ref[referenceIndex].m_data);
+						    }
+					    }
+					    else {
+						    // The filtered cross sections are scaled to the unit of ppmm
+						    //	rescale them to molecules/cm2 as all other cross sections
+                            Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
+					    }
+                    }
 				}// endif
 			}
 

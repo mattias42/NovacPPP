@@ -57,7 +57,8 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
 	// ------------------ Read the scan file -----------------------
 	// --- this to make sure that the spectra in the file are ok ---
-	if (SUCCESS != scan.CheckScanFile(&pakFileName)) {
+    const std::string pakFileNameStr((const char*)pakFileName);
+	if (SUCCESS != scan.CheckScanFile(pakFileNameStr)) {
 		errorMessage.Format("Could not read recieved pak-file %s. Will not evaulate.", (const char*)pakFileName);
 		ShowMessage(errorMessage);
 		return 2;
@@ -514,7 +515,8 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	txtFile.Format("%s%cUnknownScans%c%d.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), i);
 
 	// 1. Read the first spectrum in the scan
-	if (SUCCESS != reader.ReadSpectrum(temporaryScanFile, 0, tmpSpec))
+    const std::string temporaryScanFileStr((const char*)temporaryScanFile);
+	if (SUCCESS != reader.ReadSpectrum(temporaryScanFileStr, 0, tmpSpec))
 		return FAIL;
 	CSpectrumInfo &info = tmpSpec.m_info;
 	int channel = info.m_channel;
@@ -523,7 +525,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
 	//			then try to find a spectrum in the file for which it had connection...
 	i = 1;
 	while (info.m_startTime.year == 2004 && info.m_startTime.month == 3 && info.m_startTime.second == 22) {
-		if (SUCCESS != reader.ReadSpectrum(temporaryScanFile, i++, tmpSpec))
+		if (SUCCESS != reader.ReadSpectrum(temporaryScanFileStr, i++, tmpSpec))
 			break;
 		info = tmpSpec.m_info;
 	}
@@ -651,7 +653,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 	// Check that the sky-spectrum is ok
 	scan->GetSky(skySpectrum);
 	if (skySpectrum.IsDark()) {
-		errorMessage.Format(" - Sky spectrum in scan %s is dark. Will not evaluate scan", (const char*)scan->GetFileName());
+		errorMessage.Format(" - Sky spectrum in scan %s is dark. Will not evaluate scan", scan->GetFileName().c_str());
 		ShowMessage(errorMessage);
 
 		// update the statistics
@@ -662,7 +664,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 
 	if ((instrLocation.m_instrumentType == INSTR_GOTHENBURG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_got) ||
 		(instrLocation.m_instrumentType == INSTR_HEIDELBERG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_hei)) {
-		errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", (const char*)scan->GetFileName(), skySpectrum.ExposureTime());
+		errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", scan->GetFileName().c_str(), skySpectrum.ExposureTime());
 		ShowMessage(errorMessage);
 
 		// update the statistics
@@ -673,7 +675,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 
 	double dynamicRange = skySpectrum.NumSpectra() * CSpectrometerModel::GetMaxIntensity(instrLocation.m_spectrometerModel);
 	if (skySpectrum.MaxValue(fitWindow.fitLow, fitWindow.fitHigh) >= dynamicRange) {
-		errorMessage.Format(" - Sky spectrum in scan %s is saturated in fit region. Will not evaluate scan", (const char*)scan->GetFileName());
+		errorMessage.Format(" - Sky spectrum in scan %s is saturated in fit region. Will not evaluate scan", scan->GetFileName().c_str());
 		ShowMessage(errorMessage);
 
 		// update the statistics

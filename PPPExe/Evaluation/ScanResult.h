@@ -4,10 +4,8 @@
 #include <PPPLib/SpectralEvaluation/Evaluation/EvaluationResult.h>
 #include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include <PPPLib/SpectralEvaluation/Evaluation/FitParameter.h>
-#include "../Meteorology/WindField.h"
 
 #include "../Flux/FluxResult.h"
-#include "../Geometry/PlumeHeight.h"
 #include "../Molecule.h"
 #include <PPPLib/CString.h>
 #include <PPPLib/CArray.h>

@@ -19,7 +19,6 @@ CEvaluationConfigurationParser::~CEvaluationConfigurationParser(void)
 int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings) {
     novac::CFileException exceFile;
     novac::CStdioFile file;
-    Evaluation::CFitWindow tmpWindow;
 
     // 1. Open the file
     if (!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
@@ -443,8 +442,6 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
     }
 
     return FAIL;
-
-    return 1;
 }
 
 /** Reads a 'dark-correction' section */
