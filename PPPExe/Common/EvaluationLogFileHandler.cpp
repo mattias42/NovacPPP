@@ -2,11 +2,9 @@
 #include <PPPLib/SpectralEvaluation/Spectra/SpectrometerModel.h>
 #include <PPPLib/SpectralEvaluation/Utils.h>
 #include "../Common/Version.h"
+#include <cstring>
 
 #include <PPPLib/CSingleLock.h>
-
-// Include synchronization classes
-// #include <afxmt.h>
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"

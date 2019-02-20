@@ -2,6 +2,7 @@
 #include "WindSpeedCalculator.h"
 #include "../Common/EvaluationLogFileHandler.h"
 #include "../Meteorology/WindField.h"
+#include <cstring>
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"

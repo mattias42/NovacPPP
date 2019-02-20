@@ -2,6 +2,7 @@
 #include <PPPLib/CString.h>
 #include <algorithm>
 #include <cstring>
+#include <cmath>
 
 #undef min
 #undef max
