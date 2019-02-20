@@ -4,7 +4,6 @@ cmake_minimum_required (VERSION 3.6)
 
 set(NPP_CONFIGURATION_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/DarkCorrectionConfiguration.h
-    ${CMAKE_CURRENT_LIST_DIR}/DarkSettings.h
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationConfiguration.h
     ${CMAKE_CURRENT_LIST_DIR}/InstrumentConfiguration.h
     ${CMAKE_CURRENT_LIST_DIR}/InstrumentLocation.h
@@ -16,7 +15,6 @@ set(NPP_CONFIGURATION_HEADERS
     
 set(NPP_CONFIGURATION_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/DarkCorrectionConfiguration.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/DarkSettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationConfiguration.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstrumentConfiguration.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstrumentLocation.cpp

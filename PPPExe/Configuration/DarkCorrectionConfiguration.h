@@ -1,6 +1,7 @@
 #pragma once
 
-#include "DarkSettings.h"
+#include <PPPLib/SpectralEvaluation/Configuration/DarkSettings.h>
+#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
 #include <PPPLib/CArray.h>
 
 namespace Configuration{

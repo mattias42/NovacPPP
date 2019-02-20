@@ -3,8 +3,8 @@
 #include <PPPLib/SpectralEvaluation/Evaluation/EvaluationBase.h>
 #include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
 #include <PPPLib/SpectralEvaluation/File/SpectrumIO.h>
-#include <PPPLib/SpectrumFormat/STDFile.h>
-#include <PPPLib/SpectrumFormat/TXTFile.h>
+#include <PPPLib/SpectralEvaluation/File/STDFile.h>
+#include <PPPLib/SpectralEvaluation/File/TXTFile.h>
 
 // we want to make some statistics on the processing
 #include "../PostProcessingStatistics.h"
@@ -19,12 +19,8 @@ extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of
 
 using namespace Evaluation;
 
-CScanEvaluation::CScanEvaluation(void)
+CScanEvaluation::CScanEvaluation()
 {
-	m_result = NULL;
-
-	// default is that the spectra are summed, not averaged
-	m_averagedSpectra = false;
 }
 
 CScanEvaluation::~CScanEvaluation(void)
@@ -248,152 +244,22 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 }
 
 
-RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings){
-	novac::CString message;
-	CSpectrum offset, darkCurrent, offset_dc;
-	bool offsetCorrectDC = true; // this is true if the dark current spectrum should be offset corrected
+RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings)
+{
+    m_lastErrorMessage = "";
+    const bool successs = SpectralEvaluationBase::GetDark(*scan, spec, dark, darkSettings);
 
-	// 1. The user wants to take the dark spectrum directly from the measurement
-	//		as the second spectrum in the scan.
-	if(darkSettings == NULL || darkSettings->m_darkSpecOption == MEASURE || darkSettings->m_darkSpecOption == MODEL_SOMETIMES){
-		if(0 != scan->GetDark(dark)){
-			message.Format("Could not read dark-spectrum from scan %s", scan->GetFileName().c_str());
-			ShowMessage(message);
-			return FAIL;
-		}
+    if (m_lastErrorMessage.size() > 0)
+    {
+        novac::CString message;
+        message.Format("%s", m_lastErrorMessage.c_str());
+        ShowMessage(message);
+    }
 
-		// if there is no dark spectrum but one offset and one dark-current spectrum,
-		//	then read those instead and model the dark spectrum
-		if(dark.m_length == 0){
-			scan->GetOffset(offset);
-			scan->GetDarkCurrent(darkCurrent);
-			if(offset.m_length == darkCurrent.m_length && offset.m_length > 0){
-				// 3c-1 Scale the offset spectrum to the measured
-				offset.Mult(spec.NumSpectra() / (double)offset.NumSpectra());
-				offset.m_info.m_numSpec = spec.NumSpectra();
-
-				// 3c-2 Remove offset from the dark-current spectrum
-				if(offsetCorrectDC){
-					offset_dc.Mult(darkCurrent.NumSpectra() / (double)offset_dc.NumSpectra());
-					darkCurrent.Sub(offset_dc);
-				}
-
-				// 3c-3 Scale the dark-current spectrum to the measured
-				darkCurrent.Mult((spec.NumSpectra() * spec.ExposureTime()) / (double)(darkCurrent.NumSpectra() * darkCurrent.ExposureTime()));
-				darkCurrent.m_info.m_numSpec = spec.NumSpectra();
-
-				// 3d. Make the dark-spectrum
-				dark.Clear();
-				dark.m_length = offset.m_length;
-				dark.Add(offset);
-				dark.Add(darkCurrent);
-
-				ShowMessage("Warning: Incorrect settings: check settings for dark current correction");
-				return SUCCESS;
-			}else{
-				ShowMessage("WARNING: NO DARK SPECTRUM FOUND IN SCAN. INCORRECT DARK CURRENT CORRECTION");
-				return SUCCESS;
-			}
-		}
-
-		// If the dark-spectrum is read out in an interlaced way then interpolate it back to it's original state
-		if(dark.m_info.m_interlaceStep > 1){
-			dark.InterpolateSpectrum();
-		}
-
-		// Check so that the exposure-time of the dark-spectrum is same as the 
-		//	exposure time of the measured spectrum
-		if(dark.ExposureTime() != spec.ExposureTime()){
-			ShowMessage("WARNING: EXPOSURE-TIME OF DARK-SPECTRUM IS NOT SAME AS FOR MEASURED SPECTRUM. INCORRECT DARK-CORRECTION!! (%s)", scan->GetFileName());
-		}
-
-		// Make sure that there are the same number of exposures in the
-		//	dark-spectrum as in the measured spectrum
-		if(dark.NumSpectra() != spec.NumSpectra()){
-			dark.Mult(spec.NumSpectra() / (double)dark.NumSpectra());
-		}
-
-		return SUCCESS;
-	}
-
-	// 3. The user wants to model the dark spectrum
-	if(darkSettings->m_darkSpecOption == MODEL_ALWAYS){
-		// 3a. Get the offset spectrum
-		if(darkSettings->m_offsetOption == USER_SUPPLIED){
-			if(strlen(darkSettings->m_offsetSpec) < 3)
-				return FAIL;
-			if(FAIL == SpectrumIO::CSTDFile::ReadSpectrum(offset, darkSettings->m_offsetSpec)){
-				if(FAIL == SpectrumIO::CTXTFile::ReadSpectrum(offset, darkSettings->m_offsetSpec))
-					return FAIL;
-			}
-		}else{
-			scan->GetOffset(offset);
-		}
-		offset_dc = offset;
-
-		// 3b. Get the dark-current spectrum
-		if(darkSettings->m_darkCurrentOption == USER_SUPPLIED){
-			if(strlen(darkSettings->m_darkCurrentSpec) < 3)
-				return FAIL;
-			if(FAIL == SpectrumIO::CSTDFile::ReadSpectrum(darkCurrent, darkSettings->m_darkCurrentSpec)){
-				if(FAIL == SpectrumIO::CTXTFile::ReadSpectrum(darkCurrent, darkSettings->m_darkCurrentSpec))
-					return FAIL;
-			}
-			offsetCorrectDC = false;
-		}else{
-			scan->GetDarkCurrent(darkCurrent);
-		}
-
-		// 3c-1 Scale the offset spectrum to the measured
-		offset.Mult(spec.NumSpectra() / (double)offset.NumSpectra());
-		offset.m_info.m_numSpec = spec.NumSpectra();
-
-		// 3c-2 Remove offset from the dark-current spectrum
-		if(offsetCorrectDC){
-			offset_dc.Mult(darkCurrent.NumSpectra() / (double)offset_dc.NumSpectra());
-			darkCurrent.Sub(offset_dc);
-		}
-
-		// 3c-3 Scale the dark-current spectrum to the measured
-		darkCurrent.Mult((spec.NumSpectra() * spec.ExposureTime()) / (double)(darkCurrent.NumSpectra() * darkCurrent.ExposureTime()));
-		darkCurrent.m_info.m_numSpec = spec.NumSpectra();
-
-		// 3d. Make the dark-spectrum
-		dark.Clear();
-		dark.m_length								= offset.m_length;
-		dark.m_info.m_interlaceStep = offset.m_info.m_interlaceStep;
-		dark.m_info.m_channel				= offset.m_info.m_channel;
-		dark.Add(offset);
-		dark.Add(darkCurrent);
-
-		// If the dark-spectrum is read out in an interlaced way then interpolate it back to it's original state
-		if(dark.m_info.m_interlaceStep > 1){
-			dark.InterpolateSpectrum();
-		}
-
-		return SUCCESS;
-	}
-
-	// 4. The user has his own favourite dark-spectrum that he wants to use
-	if(darkSettings->m_darkSpecOption == DARK_USER_SUPPLIED){
-		// Try to read the spectrum
-		if(strlen(darkSettings->m_offsetSpec) < 3)
-			return FAIL;
-		if(FAIL == SpectrumIO::CSTDFile::ReadSpectrum(dark, darkSettings->m_offsetSpec)){
-			if(FAIL == SpectrumIO::CTXTFile::ReadSpectrum(dark, darkSettings->m_offsetSpec))
-				return FAIL;
-		}
-
-		// If the dark-spectrum is read out in an interlaced way then interpolate it back to it's original state
-		if(dark.m_info.m_interlaceStep > 1){
-			dark.InterpolateSpectrum();
-		}
-
-		return SUCCESS;
-	}
-
-	// something is not implemented
-	return FAIL;
+    if(successs)
+        return SUCCESS;
+    else
+        return FAIL;
 }
 
 /** This returns the sky spectrum that is to be used in the fitting. */
@@ -461,7 +327,11 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
                 return FAIL;
 		}else if(Equals(g_userSettings.m_skySpectrumFromUser.Right(4), ".std", 4)){
 			// If the spectrum is in .std format
-			return SpectrumIO::CSTDFile::ReadSpectrum(sky, g_userSettings.m_skySpectrumFromUser);
+            const std::string fileNameStr((const char*)g_userSettings.m_skySpectrumFromUser);
+			if(SpectrumIO::CSTDFile::ReadSpectrum(sky, fileNameStr))
+                return SUCCESS;
+            else
+                return FAIL;
 		}else{
 			// If we don't recognize the sky-spectrum format
 			errorMsg.Format("Unknown format for sky spectrum. Please use .pak or .std");
@@ -471,11 +341,6 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
 	}
 
 	return FAIL;
-}
-
-/** Setting the option for wheather the spectra are averaged or not. */
-void	CScanEvaluation::SetOption_AveragedSpectra(bool averaged){
-	this->m_averagedSpectra = averaged;
 }
 
 /** Returns true if the spectrum should be ignored */
