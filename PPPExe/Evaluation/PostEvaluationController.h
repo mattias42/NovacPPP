@@ -8,9 +8,6 @@
 #include <PPPLib/SpectralEvaluation/File/ScanFileHandler.h>
 #include "../Configuration/NovacPPPConfiguration.h"
 
-extern UINT primaryLanguage;
-extern UINT subLanguage;
-
 namespace Evaluation
 {
 	/** <b>CPostEvaluationController</b> is used to to perform the 

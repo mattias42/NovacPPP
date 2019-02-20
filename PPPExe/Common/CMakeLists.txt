@@ -3,7 +3,6 @@
 cmake_minimum_required (VERSION 3.6)
 
 set(NPP_COMMON_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/ASCII.h
     ${CMAKE_CURRENT_LIST_DIR}/Common.h
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationConfigurationParser.h
     ${CMAKE_CURRENT_LIST_DIR}/EvaluationLogFileHandler.h
