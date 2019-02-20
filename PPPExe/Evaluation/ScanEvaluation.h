@@ -3,7 +3,7 @@
 #include "ScanResult.h"
 #include "../Common/Common.h"
 #include <PPPLib/SpectralEvaluation/File/ScanFileHandler.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/SpectralEvaluationBase.h>
+#include <PPPLib/SpectralEvaluation/Evaluation/ScanEvaluationBase.h>
 
 namespace Evaluation
 {
@@ -16,7 +16,7 @@ namespace Evaluation
 		<b>EvaluateScan</b> with the name of the .pak-file that we want to evaluate,
 		an evaluator to use for the evaluation and parameters for the dark correction.
 	*/
-	class CScanEvaluation : public SpectralEvaluationBase
+	class CScanEvaluation : public ScanEvaluationBase
 	{
 
 	public:
