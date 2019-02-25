@@ -129,7 +129,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
 	}
 
 	std::vector<double> columns(m_specNum);
-	bool* badEval = new bool[m_specNum];
+    std::vector<bool> badEval(m_specNum);
 
 	// We then need to rearrange the column data a little bit. 
 	for (unsigned int i = 0; i < m_specNum; ++i) {
@@ -146,9 +146,7 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
 	}
 
 	// Calculate the offset
-	this->m_plumeProperties.offset = CalculatePlumeOffset(columns.data(), badEval, m_specNum);
-
-	delete[] badEval;
+	this->m_plumeProperties.offset = CalculatePlumeOffset(columns, badEval, m_specNum);
 
 	return 0;
 }
@@ -307,7 +305,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	std::vector<double> phi(m_specNum);
 	std::vector<double> column(m_specNum);
 	std::vector<double> columnError(m_specNum);
-	bool	 *badEval = new bool[m_specNum];
+    std::vector<bool> badEval(m_specNum);
 	for (i = 0; i < m_specNum; ++i) {
 		if (m_spec[i].IsBad() || m_spec[i].IsDeleted()) {
 			badEval[i] = true;
@@ -322,10 +320,10 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	}
 
 	// Calculate the offset of the scan
-	plumeProperties.offset = CalculatePlumeOffset(column.data(), badEval, m_specNum);
+	plumeProperties.offset = CalculatePlumeOffset(column, badEval, m_specNum);
 
-	// Estimate the completeness of the plume (this will call on Common::FindPlume we don't need to do that here...)
-	bool ret = CalculatePlumeCompleteness(scanAngle.data(), phi.data(), column.data(), columnError.data(), badEval, offset, m_specNum, m_plumeProperties);
+	// Estimate the completeness of the plume (this will call on FindPlume we don't need to do that here...)
+	bool ret = CalculatePlumeCompleteness(scanAngle, phi, column, columnError, badEval, offset, m_specNum, m_plumeProperties);
 
 	// Calculate the centre of the plume
 	// bool ret = FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);
@@ -337,8 +335,6 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
 	else {
 		// If there's no plume, then the flux is probably not very good
 	}
-
-	delete[] badEval;
 
 	return ret;
 }
