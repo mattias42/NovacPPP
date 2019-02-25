@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <SpectralEvaluation/DateTime.h>
 
 #include "../Common/Common.h"
 #include "../Molecule.h"

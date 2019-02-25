@@ -1,6 +1,6 @@
 #pragma once
 #include "../Common/Common.h"
-#include <PPPLib/SpectralEvaluation/Spectra/SpectrometerModel.h>
+#include <SpectralEvaluation/Spectra/SpectrometerModel.h>
 
 /** 
 	The class <b>CInstrumentLocation</b> is used to store information

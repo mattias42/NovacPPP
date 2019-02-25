@@ -1,10 +1,10 @@
 #pragma once
 
-#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationResult.h>
-#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/FitParameter.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/BasicScanEvaluationResult.h>
+#include <SpectralEvaluation/Spectra/Spectrum.h>
+#include <SpectralEvaluation/Evaluation/EvaluationResult.h>
+#include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <SpectralEvaluation/Evaluation/FitParameter.h>
+#include <SpectralEvaluation/Evaluation/BasicScanEvaluationResult.h>
 
 #include "../Flux/FluxResult.h"
 #include "../Molecule.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
+#include <SpectralEvaluation/GPSData.h>
 #include "../Meteorology/WindField.h"
 
 #ifndef PLUMEHEIGHT_H

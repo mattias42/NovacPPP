@@ -10,8 +10,8 @@
 #include <PPPLib/CString.h>
 #include <PPPLib/CList.h>
 #include <PPPLib/Measurement.h>
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
-#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
+#include <SpectralEvaluation/DateTime.h>
+#include <SpectralEvaluation/Spectra/Spectrum.h>
 
 #include "../Geometry/PlumeHeight.h"
 #include "../Meteorology/WindField.h"

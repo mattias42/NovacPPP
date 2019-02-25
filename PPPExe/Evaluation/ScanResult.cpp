@@ -2,7 +2,7 @@
 #include <PPPLib/VolcanoInfo.h>
 
 #include "../Geometry/GeometryCalculator.h"
-#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
 
 #include <algorithm>
 

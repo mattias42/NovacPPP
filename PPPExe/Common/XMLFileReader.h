@@ -2,7 +2,7 @@
 
 #include "../stdafx.h"
 
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/CString.h>
 #include <PPPLib/CStdioFile.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/FitWindow.h>
+#include <SpectralEvaluation/DateTime.h>
+#include <SpectralEvaluation/Evaluation/FitWindow.h>
 #include <PPPLib/CArray.h>
 #include <PPPLib/CString.h>
 

@@ -4,16 +4,6 @@ cmake_minimum_required (VERSION 3.6)
 
 set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib headers")
 
-# Add the DOAS-fit files from DOASIS
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Fit)
-
-# Add the common Evaluation classes
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Configuration)
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Evaluation)
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Spectra)
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/File)
-add_subdirectory(${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Flux)
-
 # Add the different components
 add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/CArray.h
@@ -29,7 +19,6 @@ add_library(PPPLib
     ${PppLib_INCLUDE_DIRS}/PPPLib/PPPLib.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
     ${PPPLIB_SPECTRA_HEADERS}
     ${SPECTRUM_FIT_HEADERS}
     ${SPECTRUM_EVALUATION_HEADERS}
@@ -39,8 +28,6 @@ add_library(PPPLib
     ${SPECTRUM_FILE_SOURCES}
     ${SPECTRUM_CONFIGURATION_HEADERS}
     ${SPECTRUM_CONFIGURATION_SOURCES}
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.h
 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
@@ -48,15 +35,14 @@ add_library(PPPLib
     ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/Utils.cpp
-    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectralEvaluation/VectorUtils.cpp
     ${PPPLIB_SPECTRA_SOURCES}
     ${SPECTRUM_EVALUATION_SOURCES}
     ${SPECTRUM_CLASS_SOURCES}
     ${SPECTRUM_FLUX_SOURCES}
 )
 
-target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS})
+target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS} ${SPECTRALEVAUATION_INCLUDE_DIRS})
+target_link_libraries(PPPLib PUBLIC NovacSpectralEvaluation)
 
 IF(WIN32)
     target_compile_options(PPPLib PRIVATE /W4 /WX /sdl)

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <PPPLib/CString.h>
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
-#include <PPPLib/SpectralEvaluation/Spectra/GPSData.h>
+#include <SpectralEvaluation/DateTime.h>
+#include <SpectralEvaluation/GPSData.h>
 
 #include "../MeteorologySource.h"
 

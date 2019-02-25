@@ -1,10 +1,10 @@
 #include "ScanEvaluation.h"
 
-#include <PPPLib/SpectralEvaluation/Evaluation/EvaluationBase.h>
-#include <PPPLib/SpectralEvaluation/Spectra/Spectrum.h>
-#include <PPPLib/SpectralEvaluation/File/SpectrumIO.h>
-#include <PPPLib/SpectralEvaluation/File/STDFile.h>
-#include <PPPLib/SpectralEvaluation/File/TXTFile.h>
+#include <SpectralEvaluation/Evaluation/EvaluationBase.h>
+#include <SpectralEvaluation/Spectra/Spectrum.h>
+#include <SpectralEvaluation/File/SpectrumIO.h>
+#include <SpectralEvaluation/File/STDFile.h>
+#include <SpectralEvaluation/File/TXTFile.h>
 
 // we want to make some statistics on the processing
 #include "../PostProcessingStatistics.h"

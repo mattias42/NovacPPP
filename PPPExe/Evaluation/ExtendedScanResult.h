@@ -2,7 +2,7 @@
 
 #include "../Common/Common.h"
 #include <PPPLib/CString.h>
-#include <PPPLib/SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
 
 #ifndef EXTENDEDSCANRESULT_H
 #define EXTENDEDSCANRESULT_H

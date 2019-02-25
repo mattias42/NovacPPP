@@ -13,8 +13,8 @@
 // include the global settings
 #include <PPPLib/VolcanoInfo.h>
 
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
-#include <PPPLib/SpectralEvaluation/Flux/Flux.h>
+#include <SpectralEvaluation/DateTime.h>
+#include <SpectralEvaluation/Flux/Flux.h>
 
 extern novac::CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
 

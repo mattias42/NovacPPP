@@ -2,7 +2,7 @@
 #define NOVAC_PPPLIB_CFILE_UTILS_H
 
 #include <PPPLib/CString.h>
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/Measurement.h>
 
 namespace novac

@@ -2,7 +2,7 @@
 
 #include "PlumeHeight.h"
 #include "GeometryResult.h"
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/CString.h>
 
 // include the list-template from the C++ standard library

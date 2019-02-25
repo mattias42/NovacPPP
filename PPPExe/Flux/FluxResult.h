@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Common/Common.h"
-#include <PPPLib/SpectralEvaluation/Spectra/DateTime.h>
+#include <SpectralEvaluation/DateTime.h>
 #include "../Meteorology/WindField.h"
 #include <PPPLib/CString.h>
 

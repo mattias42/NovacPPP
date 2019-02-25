@@ -2,8 +2,8 @@
 
 #include "ScanResult.h"
 #include "../Common/Common.h"
-#include <PPPLib/SpectralEvaluation/File/ScanFileHandler.h>
-#include <PPPLib/SpectralEvaluation/Evaluation/ScanEvaluationBase.h>
+#include <SpectralEvaluation/File/ScanFileHandler.h>
+#include <SpectralEvaluation/Evaluation/ScanEvaluationBase.h>
 
 namespace Evaluation
 {
