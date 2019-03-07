@@ -1,4 +1,6 @@
-# This is the main project of Novac Post Processing Program (NovacPPP)
+##########################################################################
+## This is the main project of Novac Post Processing Program (NovacPPP) ##
+##########################################################################
 
 cmake_minimum_required (VERSION 3.6)
 
@@ -13,6 +15,7 @@ add_subdirectory(Meteorology)
 add_subdirectory(Stratosphere)
 add_subdirectory(WindMeasurement)
 
+## --------- Creating NovacPPP ---------
 
 # Add the different components
 add_executable(NovacPPP
@@ -61,40 +64,62 @@ add_executable(NovacPPP
 
 target_include_directories(NovacPPP PRIVATE 
     ${PppLib_INCLUDE_DIRS}
+    ${SPECTRALEVAUATION_INCLUDE_DIRS}
     ${PocoNet_DIR}
     ${PocoFoundation_DIR})
 
 target_link_libraries(NovacPPP PRIVATE PPPLib ${Poco_LIBRARIES})
 
 IF(WIN32)
-    # TODO: Also include /sdl and /WX
-    target_compile_options(NovacPPP PUBLIC /W4)
+    # TODO: Also include /WX
+    target_compile_options(NovacPPP PUBLIC /W4 /sdl)
     target_compile_definitions(NovacPPP PUBLIC _CRT_SECURE_NO_WARNINGS)
 ELSE()
     target_compile_options(NovacPPP PUBLIC -Wall -std=c++14)
 ENDIF()
 
 
-#Organize the files into folders, for ease of use
-source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
-source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
-source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
-source_group("Header Files\\Evaluation"             FILES ${NPP_EVALUATION_HEADERS})
-source_group("Header Files\\Flux"                   FILES ${NPP_FLUX_HEADERS})
-source_group("Header Files\\Geometry"               FILES ${NPP_GEOMETRY_HEADERS})
-source_group("Header Files\\Meteorology"            FILES ${NPP_METEOROLOGY_HEADERS})
-source_group("Header Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_HEADERS})
-source_group("Header Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_HEADERS})
+IF(WIN32)
+    #Organize the files into folders, for ease of use (Windows and Visual Studio only)
+    source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
+    source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
+    source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
+    source_group("Header Files\\Evaluation"             FILES ${NPP_EVALUATION_HEADERS})
+    source_group("Header Files\\Flux"                   FILES ${NPP_FLUX_HEADERS})
+    source_group("Header Files\\Geometry"               FILES ${NPP_GEOMETRY_HEADERS})
+    source_group("Header Files\\Meteorology"            FILES ${NPP_METEOROLOGY_HEADERS})
+    source_group("Header Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_HEADERS})
+    source_group("Header Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_HEADERS})
+
+    source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
+    source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
+    source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})
+    source_group("Source Files\\Evaluation"             FILES ${NPP_EVALUATION_SOURCES})
+    source_group("Source Files\\Flux"                   FILES ${NPP_FLUX_SOURCES})
+    source_group("Source Files\\Geometry"               FILES ${NPP_GEOMETRY_SOURCES})
+    source_group("Source Files\\Meteorology"            FILES ${NPP_METEOROLOGY_SOURCES})
+    source_group("Source Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_SOURCES})
+    source_group("Source Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_SOURCES})
+endif()
 
 
-source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
-source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
-source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})
-source_group("Source Files\\Evaluation"             FILES ${NPP_EVALUATION_SOURCES})
-source_group("Source Files\\Flux"                   FILES ${NPP_FLUX_SOURCES})
-source_group("Source Files\\Geometry"               FILES ${NPP_GEOMETRY_SOURCES})
-source_group("Source Files\\Meteorology"            FILES ${NPP_METEOROLOGY_SOURCES})
-source_group("Source Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_SOURCES})
-source_group("Source Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_SOURCES})
+## --------- Creating The Reference Convolution Tool ---------
 
+add_executable(ConvolutionTool
+    ${CMAKE_CURRENT_LIST_DIR}/ConvolutionTool.cpp
+)
+
+target_include_directories(ConvolutionTool PRIVATE 
+    ${SPECTRALEVAUATION_INCLUDE_DIRS}
+    ${RAPID_XML_INCLUDE_DIR}
+)
+
+target_link_libraries(ConvolutionTool PRIVATE NovacSpectralEvaluation)
+
+IF(WIN32)
+    target_compile_options(ConvolutionTool PUBLIC /W4 /WX /sdl)
+    target_compile_definitions(ConvolutionTool PUBLIC _CRT_SECURE_NO_WARNINGS)
+ELSE()
+    target_compile_options(ConvolutionTool PUBLIC -Wall -std=c++14)
+ENDIF()
 

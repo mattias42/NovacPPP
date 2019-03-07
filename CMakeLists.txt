@@ -10,7 +10,14 @@ project (NovacPPP)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_package(Poco REQUIRED COMPONENTS Foundation Net XML Util PATHS "${CMAKE_CURRENT_LIST_DIR}/../poco/install" "${CMAKE_CURRENT_LIST_DIR}/../poco")
+# ------------------- Dependencies -------------------
+
+find_package(Poco REQUIRED COMPONENTS Foundation Net XML Util 
+    PATHS "${CMAKE_CURRENT_LIST_DIR}/../poco/install" "${CMAKE_CURRENT_LIST_DIR}/../poco")
+
+set(RAPID_XML_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/rapidxml/)
+    
+# ------------------- Components -------------------
 
 # Add the different components
 add_subdirectory(SpectralEvaluation)
