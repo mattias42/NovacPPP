@@ -13,6 +13,7 @@
             <!-- CrossSection is the high resolved cross section which we want to convolve -->
             <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
             <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master.txt</Output>
+
             <!-- Defines the slit-function to use for this convolution, 'File' corresponds to the SlitFunction defined above -->
             <SlitFunctionType>File</SlitFunctionType>
             <HighPassFilter>false</HighPassFilter>
@@ -21,10 +22,11 @@
         <Reference>
             <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
             <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_Gauss_2.0nm.txt</Output>
+
             <!-- Defines the slit-function to use for this convolution, here a Gaussian to use as slit-function (instead of file) -->
             <SlitFunctionType>
-                <!-- A Gaussian with Fwhm of 2.0 nm -->
-                <Gaussian Fwhm="2.0"></Gaussian>
+                <!-- A Gaussian with Sigma of 0.5 nm -->
+                <Gaussian Sigma="0.5"></Gaussian>
            </SlitFunctionType>
             <HighPassFilter>false</HighPassFilter>
         </Reference>
@@ -32,6 +34,7 @@
         <Reference>
             <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
             <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_Gauss_1.0nm.txt</Output>
+
             <!-- Defines the slit-function to use for this convolution, here a Gaussian to use as slit-function (instead of file) -->
             <SlitFunctionType>
                 <!-- A Gaussian with Fwhm of 1.0 nm -->
@@ -39,41 +42,6 @@
            </SlitFunctionType>
             <HighPassFilter>false</HighPassFilter>
         </Reference>
-
-        <Reference>
-            <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
-            <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_Gauss_0.1nm.txt</Output>
-            <!-- Defines the slit-function to use for this convolution, here a Gaussian to use as slit-function (instead of file) -->
-            <SlitFunctionType>
-                <!-- A Gaussian with Fwhm of 2.0 nm -->
-                <Gaussian Fwhm="0.1"></Gaussian>
-           </SlitFunctionType>
-            <HighPassFilter>false</HighPassFilter>
-        </Reference>
-
-        <Reference>
-            <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
-            <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_Gauss_0.5nm.txt</Output>
-            <!-- Defines the slit-function to use for this convolution, here a Gaussian to use as slit-function (instead of file) -->
-            <SlitFunctionType>
-                <!-- A Gaussian with Fwhm of 2.0 nm -->
-                <Gaussian Fwhm="0.5"></Gaussian>
-           </SlitFunctionType>
-            <HighPassFilter>false</HighPassFilter>
-        </Reference>
-
-        <Reference>
-            <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
-            <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_Gauss_0.7nm.txt</Output>
-            <!-- Defines the slit-function to use for this convolution, here a Gaussian to use as slit-function (instead of file) -->
-            <SlitFunctionType>
-                <!-- A Gaussian with Fwhm of 2.0 nm -->
-                <Gaussian Fwhm="0.7"></Gaussian>
-           </SlitFunctionType>
-            <HighPassFilter>false</HighPassFilter>
-        </Reference>
-        
-
         
     </Spectrometer>
 </ReferenceConvolution>
