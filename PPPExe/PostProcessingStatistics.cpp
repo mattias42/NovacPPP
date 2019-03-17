@@ -171,9 +171,9 @@ void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file){
 		// open the file
 		FILE *f = NULL;
 		if(IsExistingFile(file)){
-			fopen(file, "a");
+			f = fopen(file, "a");
 		}else{
-			fopen(file, "w");
+			f = fopen(file, "w");
 		}
 		if(f == NULL){
 			singleLock.Unlock();
