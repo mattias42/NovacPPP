@@ -31,6 +31,9 @@ struct ConvolutionToolSettings
 
         // Set to true if the reference should be scaled to ppmm and high-pass-filtered
         bool highPassFilter = false;
+
+        // The type of wavelength conversion to perform, default is None.
+        WavelengthConversion wavelengthConversion = WavelengthConversion::None;
     };
 
     // Instrument settings for the convolution
@@ -62,6 +65,27 @@ std::vector<char> ReadEntireFile(FILE* fileStream)
     vBuffer.push_back(0); // end-of-string
 
     return vBuffer;
+}
+
+void ParseWavelengthConversion(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::ConvolutionSettings& data)
+{
+    if (strlen(refNode->value()) == 0)
+    {
+        throw std::invalid_argument("Failed to parse wavelength conversion, only accepted values are 'None' and 'VacToAir'.");
+    }
+
+    if (EqualsIgnoringCase(refNode->value(), "None"))
+    {
+        data.wavelengthConversion = WavelengthConversion::None;
+    }
+    else if(EqualsIgnoringCase(refNode->value(), "VacToAir"))
+    {
+        data.wavelengthConversion = WavelengthConversion::VacuumToAir;
+    }
+    else
+    {
+        throw std::invalid_argument("Failed to parse wavelength conversion, only accepted values are 'None' and 'VacToAir'.");
+    }
 }
 
 void ParseSlitFunction(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::ConvolutionSettings& data)
@@ -134,6 +158,10 @@ void ParseReference(rapidxml::xml_node<> *node, ConvolutionToolSettings::Convolu
         else if (EqualsIgnoringCase(refNode->name(), "SlitFunctionType"))
         {
             ParseSlitFunction(refNode, data);
+        }
+        else if (EqualsIgnoringCase(refNode->name(), "Conversion"))
+        {
+            ParseWavelengthConversion(refNode, data);
         }
 
         refNode = refNode->next_sibling();
@@ -238,11 +266,11 @@ int main(int argc, char* argv[])
 
             if (data.type == ConvolutionToolSettings::SLIT_FUNCTION_TYPE::FILE)
             {
-                success = Evaluation::ConvolveReference(spectrometer.wavelengthCalibrationFile, spectrometer.slitFunctionFile, data.highResolutionCrossSectionFile, result);
+                success = Evaluation::ConvolveReference(spectrometer.wavelengthCalibrationFile, spectrometer.slitFunctionFile, data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
             }
             else if (data.type == ConvolutionToolSettings::SLIT_FUNCTION_TYPE::GAUSSIAN)
             {
-                success = Evaluation::ConvolveReferenceGaussian(spectrometer.wavelengthCalibrationFile, data.params[0], data.highResolutionCrossSectionFile, result);
+                success = Evaluation::ConvolveReferenceGaussian(spectrometer.wavelengthCalibrationFile, data.params[0], data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
             }
 
             if (success)

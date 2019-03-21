@@ -5,7 +5,7 @@
     <Spectrometer>
         <!-- SlitFunction is the instrument line shape which defines the resolution of the instrument. -->
         <SlitFunction>D:/NOVAC/Spectrometers/D2J2200_Master.slf</SlitFunction>
-        
+
         <!-- WavlengthCalibration defines the pixel to wavelength mapping of the device. -->
         <WavlengthCalibration>D:/NOVAC/Spectrometers/D2J2200_Master.clb</WavlengthCalibration>
 
@@ -17,6 +17,28 @@
             <!-- Defines the slit-function to use for this convolution, 'File' corresponds to the SlitFunction defined above -->
             <SlitFunctionType>File</SlitFunctionType>
             <HighPassFilter>false</HighPassFilter>
+        </Reference>
+
+        <Reference>
+            <!-- CrossSection is the high resolved cross section which we want to convolve -->
+            <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
+            <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_HP500_Vac.txt</Output>
+
+            <!-- Defines the slit-function to use for this convolution, 'File' corresponds to the SlitFunction defined above -->
+            <SlitFunctionType>File</SlitFunctionType>
+            <HighPassFilter>true</HighPassFilter>
+            <Conversion>None</Conversion>
+        </Reference>
+
+        <Reference>
+            <!-- CrossSection is the high resolved cross section which we want to convolve -->
+            <CrossSection>D:/NOVAC/CrossSections/SO2_Bogumil(2003)_293K_239-395nm.txt</CrossSection>
+            <Output>D:/NOVAC/Spectrometers/D2J2200/D2J22200_SO2_293K_Master_HP500_Air.txt</Output>
+
+            <!-- Defines the slit-function to use for this convolution, 'File' corresponds to the SlitFunction defined above -->
+            <SlitFunctionType>File</SlitFunctionType>
+            <HighPassFilter>true</HighPassFilter>
+            <Conversion>VacToAir</Conversion>
         </Reference>
 
         <Reference>
@@ -42,6 +64,6 @@
            </SlitFunctionType>
             <HighPassFilter>false</HighPassFilter>
         </Reference>
-        
+
     </Spectrometer>
 </ReferenceConvolution>
