@@ -7,76 +7,76 @@
 #ifndef EXTENDEDSCANRESULT_H
 #define EXTENDEDSCANRESULT_H
 
-namespace Evaluation{
-	/** The class <b>CExtendedScanResult</b> is a container class used to 
-		store the result of the evaluation of one .pak - file using several 
-		fit-windows.
-		
-		This is used in the PostProcessing, each scan can be evaluated in different
-			wavelength regions and using different settings for the fit. The results
-			in these different wavelength regions can then be compared for other purposes
-			such as studying the radiative transfer...
-		
-		To save memory does	this not contain the column datas, only the names of the .txt files
-			where they can be found.
-			
-		To reduce the number of times we need to read data from the evaluation-log files
-			this also contains the calculated properties of the plume in the scan, such as the
-			completeness, the angle of centre of mass of the plume etc.
-	*/	
+namespace Evaluation {
+    /** The class <b>CExtendedScanResult</b> is a container class used to
+        store the result of the evaluation of one .pak - file using several
+        fit-windows.
 
-	class CExtendedScanResult
-	{
-	public:
-		/** Default constructor */
-		CExtendedScanResult(void);
+        This is used in the PostProcessing, each scan can be evaluated in different
+            wavelength regions and using different settings for the fit. The results
+            in these different wavelength regions can then be compared for other purposes
+            such as studying the radiative transfer...
 
-		/** Default destructor */
-		~CExtendedScanResult(void);
-		
-		// ----------------------------------------------------------------------
-		// ---------------------- PUBLIC DATA -----------------------------------
-		// ----------------------------------------------------------------------
-		
-		/** The full path and file-name to the .pak-file containing the spectra 
-			from which this result was computed.
-		*/
-		novac::CString m_pakFile;
-		
-		/** The full path and file-name of the evaluation log file that was generated.
-			The file itself contains the result of the evaluation */
-		novac::CString m_evalLogFile[MAX_FIT_WINDOWS];
-		
-		/** The full name of the fit-window that was used to generate each evaluation
-			result, this is typically a name such as 'SO2', 'SO2_low' or 'O4'
+        To save memory does	this not contain the column datas, only the names of the .txt files
+            where they can be found.
 
-			 m_fitWindowName[i] is the name of the fit-window behind the result in m_evalLogFile[i].
-			*/
-		novac::CString m_fitWindowName[MAX_FIT_WINDOWS];
-		
-		/** The date and time that the scan was generated. In UTC, taken from the .pak-file  */
-		CDateTime m_startTime;
-		
-		/** The properties of this scan. This is only evaluated in the main-fit window */
-		CPlumeInScanProperty m_scanProperties;
+        To reduce the number of times we need to read data from the evaluation-log files
+            this also contains the calculated properties of the plume in the scan, such as the
+            completeness, the angle of centre of mass of the plume etc.
+    */
 
-		// ----------------------------------------------------------------------
-		// --------------------- PUBLIC METHODS ---------------------------------
-		// ----------------------------------------------------------------------
+    class CExtendedScanResult
+    {
+    public:
+        /** Default constructor */
+        CExtendedScanResult(void);
 
-	protected:
+        /** Default destructor */
+        ~CExtendedScanResult(void);
 
-		// ----------------------------------------------------------------------
-		// ---------------------- PRIVATE DATA ----------------------------------
-		// ----------------------------------------------------------------------
-		
+        // ----------------------------------------------------------------------
+        // ---------------------- PUBLIC DATA -----------------------------------
+        // ----------------------------------------------------------------------
 
-		// ----------------------------------------------------------------------
-		// --------------------- PRIVATE METHODS --------------------------------
-		// ----------------------------------------------------------------------
+        /** The full path and file-name to the .pak-file containing the spectra
+            from which this result was computed.
+        */
+        novac::CString m_pakFile;
+
+        /** The full path and file-name of the evaluation log file that was generated.
+            The file itself contains the result of the evaluation */
+        novac::CString m_evalLogFile[MAX_FIT_WINDOWS];
+
+        /** The full name of the fit-window that was used to generate each evaluation
+            result, this is typically a name such as 'SO2', 'SO2_low' or 'O4'
+
+             m_fitWindowName[i] is the name of the fit-window behind the result in m_evalLogFile[i].
+            */
+        novac::CString m_fitWindowName[MAX_FIT_WINDOWS];
+
+        /** The date and time that the scan was generated. In UTC, taken from the .pak-file  */
+        CDateTime m_startTime;
+
+        /** The properties of this scan. This is only evaluated in the main-fit window */
+        CPlumeInScanProperty m_scanProperties;
+
+        // ----------------------------------------------------------------------
+        // --------------------- PUBLIC METHODS ---------------------------------
+        // ----------------------------------------------------------------------
+
+    protected:
+
+        // ----------------------------------------------------------------------
+        // ---------------------- PRIVATE DATA ----------------------------------
+        // ----------------------------------------------------------------------
 
 
-	};
+        // ----------------------------------------------------------------------
+        // --------------------- PRIVATE METHODS --------------------------------
+        // ----------------------------------------------------------------------
+
+
+    };
 }
 
 #endif

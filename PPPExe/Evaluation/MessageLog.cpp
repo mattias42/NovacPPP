@@ -22,19 +22,19 @@ int CMessageLog::mMode = CMessageLog::LOGMODECONSOLE;
  */
 bool Info(const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGINFO, szFormat, vaVarList);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGINFO, szFormat, vaVarList);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -50,19 +50,19 @@ bool Info(const char* szFormat, ...)
  */
 bool Info(int iLineNo, const char* szModule, const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGINFO, szFormat, vaVarList, szModule, iLineNo);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGINFO, szFormat, vaVarList, szModule, iLineNo);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -75,19 +75,19 @@ bool Info(int iLineNo, const char* szModule, const char* szFormat, ...)
  */
 bool Warning(const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGWARNING, szFormat, vaVarList);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGWARNING, szFormat, vaVarList);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -103,19 +103,19 @@ bool Warning(const char* szFormat, ...)
  */
 bool Warning(int iLineNo, const char* szModule, const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGWARNING, szFormat, vaVarList, szModule, iLineNo);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGWARNING, szFormat, vaVarList, szModule, iLineNo);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -128,19 +128,19 @@ bool Warning(int iLineNo, const char* szModule, const char* szFormat, ...)
  */
 bool Critical(const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGCRITICAL, szFormat, vaVarList);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGCRITICAL, szFormat, vaVarList);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -156,19 +156,19 @@ bool Critical(const char* szFormat, ...)
  */
 bool Critical(int iLineNo, const char* szModule, const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGCRITICAL, szFormat, vaVarList, szModule, iLineNo);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGCRITICAL, szFormat, vaVarList, szModule, iLineNo);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -181,19 +181,19 @@ bool Critical(int iLineNo, const char* szModule, const char* szFormat, ...)
  */
 bool Error(const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGERROR, szFormat, vaVarList);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGERROR, szFormat, vaVarList);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 
 /**
@@ -209,18 +209,18 @@ bool Error(const char* szFormat, ...)
  */
 bool Error(int iLineNo, const char* szModule, const char* szFormat, ...)
 {
-	// the pointer to the variable argument list
-	va_list vaVarList;
+    // the pointer to the variable argument list
+    va_list vaVarList;
 
-	// get the pointer to the beginning of the variable argument list
-	va_start(vaVarList, szFormat);
+    // get the pointer to the beginning of the variable argument list
+    va_start(vaVarList, szFormat);
 
-	// output message
-	bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGERROR, szFormat, vaVarList, szModule, iLineNo);
+    // output message
+    bool bRet = CMessageLog::mGlobal.OutputMessage(CMessageLog::LOGERROR, szFormat, vaVarList, szModule, iLineNo);
 
-	// end access to the variable argument list
-	va_end(vaVarList);
+    // end access to the variable argument list
+    va_end(vaVarList);
 
-	return(bRet);
+    return(bRet);
 }
 

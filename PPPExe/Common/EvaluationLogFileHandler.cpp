@@ -686,7 +686,7 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
 
         pt = strstr(szLine, "site=");
         if (nullptr != pt) {
-            scanInfo.m_site = std::string(pt+5);
+            scanInfo.m_site = std::string(pt + 5);
             Remove(scanInfo.m_site, '\n'); // Remove newline characters
             continue;
         }

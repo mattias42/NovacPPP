@@ -4,13 +4,13 @@
 class CVersion
 {
 public:
-  CVersion(void);
-  ~CVersion(void);
+    CVersion(void);
+    ~CVersion(void);
 
 
-  /** The major version number */
-  static const int majorNumber = 1;
+    /** The major version number */
+    static const int majorNumber = 1;
 
-  /** The minor version number */
-  static const int minorNumber = 60;
+    /** The minor version number */
+    static const int minorNumber = 60;
 };
