@@ -43,6 +43,7 @@
 #include "Communication/FTPServerConnection.h"
 
 #include <Poco/DirectoryIterator.h>
+#include <Poco/Exception.h>
 
 #undef min
 #undef max
@@ -254,88 +255,94 @@ void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CL
     userMessage.Format("Searching for .pak - files in directory %s", (const char*)path);
     ShowMessage(userMessage);
 
-    // ------------------------------------ OPTION 1 -----------------------------------------
-    // ------ If we want to search for sub-directories, then search for all directories... ---
-    // ---------------------------------------------------------------------------------------
-    if (g_userSettings.m_includeSubDirectories_Local) {
+    try
+    {
+
+        // ------------------------------------ OPTION 1 -----------------------------------------
+        // ------ If we want to search for sub-directories, then search for all directories... ---
+        // ---------------------------------------------------------------------------------------
+        if (g_userSettings.m_includeSubDirectories_Local) {
+            Poco::DirectoryIterator dir{ path.std_str() };
+            Poco::DirectoryIterator end;
+
+            while (dir != end) {
+                novac::CString fileName, fullFileName;
+                fileName.Format("%s", dir.name().c_str());
+                fullFileName.Format("%s/%s", (const char*)path, dir.name().c_str());
+                const bool isDirectory = dir->isDirectory();
+
+                ++dir; // go to next file in the directory
+
+                if (novac::Equals(dir.name(), ".") || novac::Equals(dir.name(), "..")) {
+                    continue;
+                }
+
+                // if this is a directory...
+                if (isDirectory) {
+                    CheckForSpectraInDir(fullFileName, fileList);
+                }
+                else {
+                    // if this is a .pak - file
+                    if (novac::Equals(fileName.Right(4), ".pak")) {
+                        // if this is a incomplete scan, then don't process it.
+                        if (novac::CFileUtils::IsIncompleteFile(fileName))
+                        {
+                            continue;
+                        }
+
+                        // check that this file is in the time-interval that we should evaluate spectra...
+                        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
+
+                        if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
+                        {
+                            continue;
+                        }
+
+                        // We've passed all the tests for the .pak-file.
+                        // Append the found file to the list of files to split and evaluate...
+                        fileList.AddTail(fullFileName);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        // ------------------------------------ OPTION 2 -----------------------------------------
+        // --------------------- Find all .pak-files in the specified directory ------------------
+        // ---------------------------------------------------------------------------------------
+
         Poco::DirectoryIterator dir{ path.std_str() };
         Poco::DirectoryIterator end;
 
+        // Search for the file
         while (dir != end) {
             novac::CString fileName, fullFileName;
             fileName.Format("%s", dir.name().c_str());
-            fullFileName.Format("%s/%s", (const char*)path, dir.name().c_str());
-            const bool isDirectory = dir->isDirectory();
+            fullFileName.Format("%s%c%s", (const char*)path, Poco::Path::separator(), dir.name().c_str());
 
-            ++dir; // go to next file in the directory
-
-            if (novac::Equals(dir.name(), ".") || novac::Equals(dir.name(), "..")) {
+            // if this is a incomplete scan, then don't process it.
+            if (novac::CFileUtils::IsIncompleteFile(fileName))
+            {
                 continue;
             }
 
-            // if this is a directory...
-            if (isDirectory) {
-                CheckForSpectraInDir(fullFileName, fileList);
+            // check that this file is in the time-interval that we should evaluate spectra...
+            novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
+
+            if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime) {
+                continue;
             }
-            else {
-                // if this is a .pak - file
-                if (novac::Equals(fileName.Right(4), ".pak")) {
-                    // if this is a incomplete scan, then don't process it.
-                    if (novac::CFileUtils::IsIncompleteFile(fileName))
-                    {
-                        continue;
-                    }
 
-                    // check that this file is in the time-interval that we should evaluate spectra...
-                    novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
-
-                    if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
-                    {
-                        continue;
-                    }
-
-                    // We've passed all the tests for the .pak-file.
-                    // Append the found file to the list of files to split and evaluate...
-                    fileList.AddTail(fullFileName);
-                }
-            }
+            // We've passed all the tests for the .pak-file.
+            // Append the found file to the list of files to split and evaluate...
+            fileList.AddTail(fileName);
         }
-
-        return;
     }
-
-    // ------------------------------------ OPTION 2 -----------------------------------------
-    // --------------------- Find all .pak-files in the specified directory ------------------
-    // ---------------------------------------------------------------------------------------
-
-    Poco::DirectoryIterator dir{ path.std_str() };
-    Poco::DirectoryIterator end;
-
-    // Search for the file
-    while (dir != end) {
-        novac::CString fileName, fullFileName;
-        fileName.Format("%s", dir.name().c_str());
-        fullFileName.Format("%s%c%s", (const char*)path, Poco::Path::separator(), dir.name().c_str());
-
-        // if this is a incomplete scan, then don't process it.
-        if (novac::CFileUtils::IsIncompleteFile(fileName))
-        {
-            continue;
-        }
-
-        // check that this file is in the time-interval that we should evaluate spectra...
-        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
-
-        if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime) {
-            continue;
-        }
-
-        // We've passed all the tests for the .pak-file.
-        // Append the found file to the list of files to split and evaluate...
-        fileList.AddTail(fileName);
+    catch (Poco::PathNotFoundException& e)
+    {
+        ShowMessage(e.what());
     }
-
-    return;
 }
 
 /** Scans through the given FTP-server in search for .pak-files

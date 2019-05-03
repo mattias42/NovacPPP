@@ -313,7 +313,6 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     while (nullptr != token)
     {
-
         // The first date which we should analyze data from
         if (Equals(token, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
             parameter.Format(token + strlen(FLAG(str_fromDate)));

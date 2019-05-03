@@ -3,21 +3,21 @@
 <NovacPostProcessing>
 	<MaxThreadNum>1</MaxThreadNum>
 	<StartNow>0</StartNow>
-	<outputdirectory>D:\NovacPostProcessingProgram\AfterRefactoringTest_2019_02_13\OutputFeb2017UTC\</outputdirectory>
-	<tempdirectory>D:\NovacPostProcessingProgram\AfterRefactoringTest_2019_02_13\Temp\</tempdirectory>
+	<outputdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\OutputFeb2017UTC\</outputdirectory>
+	<tempdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp\</tempdirectory>
 	<mode>Flux</mode>
 	<molecule>SO2</molecule>
 	<Volcano>0303-02=</Volcano>
-	<FromDate>2017.01.29</FromDate>
-	<ToDate>2017.02.14</ToDate>
-	<LocalDirectory>D:\NovacPostProcessingProgram\AfterRefactoringTest_2019_02_13\Temp</LocalDirectory>
+	<FromDate>2017.02.01</FromDate>
+	<ToDate>2017.02.07</ToDate>
+	<LocalDirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp</LocalDirectory>
 	<IncludeSubDirs_Local>1</IncludeSubDirs_Local>
-	<__FTPDirectory>ftp://129.16.35.206/cotopaxi/</__FTPDirectory>
+	<FTPDirectory>ftp://129.16.35.206/cotopaxi/</FTPDirectory>
 	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
-	<__FTPUsername>novacUser</__FTPUsername>
-	<__FTPPassword>iht-1inks.</__FTPPassword>
+	<FTPUsername>novacUser</FTPUsername>
+	<FTPPassword>iht-1inks.</FTPPassword>
 	<UploadResults>0</UploadResults>
-	<WindFieldFile>D:\NovacPostProcessingProgram\AfterRefactoringTest_2019_02_13\WindMeteoFrance\wind_pdf_2017_meteoFrance_UTC_novac.wxml</WindFieldFile>
+	<WindFieldFile>D:\NovacPostProcessingProgram\TestRun_2019_05_03\WindMeteoFrance\wind_pdf_2017_meteoFrance_UTC_novac.wxml</WindFieldFile>
 	<WindFileOption>0</WindFileOption>
 	<PlumeAltitudeFile>S2000</PlumeAltitudeFile>
 	<GeometryCalc>
