@@ -16,6 +16,7 @@
 #include <Poco/Net/FTPClientSession.h>
 #include <Poco/Net/NetException.h>
 #include <Poco/Path.h>
+#include <Poco/StreamCopier.h>
 
 #include <fstream>
 #include <chrono>
@@ -132,19 +133,16 @@ bool DownloadAFile(Poco::Net::FTPClientSession& ftp, const std::string& fullRemo
         std::istream& srcStream = ftp.beginDownload(fullRemoteFileName);
         std::ofstream dstStream{ localFileName, std::ios::binary | std::ios::out };
 
-        while (!srcStream.eof())
-        {
-            dstStream.put(srcStream.get());
-        }
-
-        ftp.endDownload();
-        return true;
+        const std::streamsize downloadedSize = Poco::StreamCopier::copyStream(srcStream, dstStream, 524288);
     }
     catch (std::exception& e)
     {
+        ftp.endDownload();
         ShowMessage(e.what());
         return false;
     }
+    ftp.endDownload();
+    return true;
 }
 
 bool UploadAFile(Poco::Net::FTPClientSession& ftp, const std::string& localFileName, const std::string& fullRemoteFileName) {
@@ -164,15 +162,25 @@ bool DownloadFileList(Poco::Net::FTPClientSession& ftp, const std::string& direc
 {
     novac::CFtpUtils ftpHelper{ g_volcanoes, g_userSettings.m_volcano };
 
-    std::istream& fileListStream = ftp.beginList(directory, true);
-    for (std::string line; std::getline(fileListStream, line); )
+    try
     {
-        novac::CFileInfo result;
-        if (ftpHelper.ReadFtpDirectoryListing(line, result))
+        ftp.setTimeout(Poco::Timespan(10, 0));
+        std::istream& fileListStream = ftp.beginList(directory, true);
+        for (std::string line; std::getline(fileListStream, line); )
         {
-            result.path = directory;
-            filesFound.push_back(result);
+            novac::CFileInfo result;
+            if (ftpHelper.ReadFtpDirectoryListing(line, result))
+            {
+                result.path = directory;
+                filesFound.push_back(result);
+            }
         }
+    }
+    catch(std::exception& e)
+    {
+        std::cout << "Failed to download file list: " << e.what() << std::endl;
+        ftp.endList();
+        return false;
     }
     ftp.endList();
 
@@ -183,17 +191,25 @@ bool DownloadFileList(Poco::Net::FTPClientSession& ftp, const std::string& direc
 {
     novac::CFtpUtils ftpHelper{ g_volcanoes, g_userSettings.m_volcano };
 
-    std::istream& fileListStream = ftp.beginList(directory, true);
-    for (std::string line; std::getline(fileListStream, line); )
+    try
     {
-        novac::CFileInfo result;
-        if (ftpHelper.ReadFtpDirectoryListing(line, result))
+        std::istream& fileListStream = ftp.beginList(directory, true);
+        for (std::string line; std::getline(fileListStream, line); )
         {
-            filesFound.push_back(result.fileName);
+            novac::CFileInfo result;
+            if (ftpHelper.ReadFtpDirectoryListing(line, result))
+            {
+                filesFound.push_back(result.fileName);
+            }
         }
     }
+    catch (std::exception& e)
+    {
+        std::cout << "Failed to download file list: " << e.what() << std::endl;
+        ftp.endList();
+        return false;
+    }
     ftp.endList();
-
     return true;
 }
 
@@ -210,10 +226,15 @@ std::vector<novac::CFileInfo> ListContentsOfDir(ftpLogin login, std::string dire
         {
             ShowMessage("Failed to retrieve file list in directory: " + directory);
         }
+        ftp.close();
     }
     catch (Poco::Net::FTPException& ex)
     {
         ShowMessage("Failed to connect: " + ex.message());
+    }
+    catch (std::exception& e)
+    {
+        ShowMessage(e.what());
     }
 
     return filesFound;
@@ -222,56 +243,64 @@ std::vector<novac::CFileInfo> ListContentsOfDir(ftpLogin login, std::string dire
 /** Downloads all the data-files from the provided directory on the given FTP server */
 void LoginAndDownloadDataFromDir(ftpLogin login, std::string directory, novac::GuardedList<std::string>& downloadedFiles) {
 
-    novac::CString userMessage;
-    userMessage.Format("Started thread #%d", nFTPThreadsRunning.GetValue());
-    ShowMessage(userMessage);
+    try
+    {
+        novac::CString userMessage;
+        userMessage.Format("Started thread #%d", nFTPThreadsRunning.GetValue());
+        ShowMessage(userMessage);
 
-    // Search for files in the specified directory
-    std::vector<novac::CFileInfo> filesFound = ListContentsOfDir(login, directory);
+        // Search for files in the specified directory
+        std::vector<novac::CFileInfo> filesFound = ListContentsOfDir(login, directory);
 
-    if (filesFound.size() == 0) {
-        return; // nothing mroe to do..
-    }
-
-    // Generate the download queue
-    novac::GuardedList<novac::CFileInfo> downloadQueue;
-    for (novac::CFileInfo file : filesFound) {
-        downloadQueue.AddItem(file);
-    }
-
-    // Fork into a number of threads and start downloading the files
-    std::vector<std::shared_ptr<std::thread>> downloadThreads;
-    std::vector<std::shared_ptr<Poco::Net::FTPClientSession>> connections;
-
-    for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
-
-        // Create the connection
-        try {
-            std::shared_ptr<Poco::Net::FTPClientSession> ftp = std::make_shared<Poco::Net::FTPClientSession>();
-            ftp->open(login.server, login.port, login.userName, login.password);
-            ftp->setTimeout(Poco::Timespan(60, 0)); // 60 seconds timeout
-
-            auto t = std::make_shared<std::thread>(DownloadData, std::ref(*ftp), std::ref(downloadQueue), std::ref(downloadedFiles));
-
-            downloadThreads.push_back(t);
-            connections.push_back(ftp);
+        if (filesFound.size() == 0) {
+            nFTPThreadsRunning.DecrementValue();
+            return; // nothing more to do..
         }
-        catch (Poco::Net::FTPException& ex) {
-            ShowMessage("Failed to connect to ftp server. Message was: " + ex.message());
+
+        // Generate the download queue
+        novac::GuardedList<novac::CFileInfo> downloadQueue;
+        for (novac::CFileInfo file : filesFound) {
+            downloadQueue.AddItem(file);
         }
-    }
 
-    // Wait for all the threads to terminate
-    for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
-        downloadThreads[threadIdx]->join();
-    }
+        // Fork into a number of threads and start downloading the files
+        std::vector<std::shared_ptr<std::thread>> downloadThreads;
+        std::vector<std::unique_ptr<Poco::Net::FTPClientSession>> connections{ g_userSettings.m_maxThreadNum};
 
-    // Close the connections
-    for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
-        connections[threadIdx]->close();
-    }
+        for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
 
-    nFTPThreadsRunning.DecrementValue();
+            // Create the connection
+            try {
+                connections[threadIdx].reset(new Poco::Net::FTPClientSession());
+                connections[threadIdx]->open(login.server, login.port, login.userName, login.password);
+                connections[threadIdx]->setTimeout(Poco::Timespan(60, 0)); // 60 seconds timeout
+
+                auto t = std::make_shared<std::thread>(DownloadData, std::ref(*connections[threadIdx]), std::ref(downloadQueue), std::ref(downloadedFiles));
+
+                downloadThreads.push_back(t);
+            }
+            catch (Poco::Net::FTPException& ex) {
+                ShowMessage("Failed to connect to ftp server. Message was: " + ex.message());
+            }
+        }
+
+        // Wait for all the threads to terminate
+        for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
+            downloadThreads[threadIdx]->join();
+        }
+
+        // Close the connections
+        for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
+            connections[threadIdx]->close();
+        }
+
+        nFTPThreadsRunning.DecrementValue();
+    }
+    catch (std::exception& ex)
+    {
+        ShowMessage(ex.what());
+        nFTPThreadsRunning.DecrementValue();
+    }
 }
 
 bool ParseDate(const std::string& str, CDateTime& result)
