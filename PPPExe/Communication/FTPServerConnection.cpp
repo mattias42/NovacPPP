@@ -127,16 +127,24 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 
 
 bool DownloadAFile(Poco::Net::FTPClientSession& ftp, const std::string& fullRemoteFileName, const std::string& localFileName) {
-    std::istream& srcStream = ftp.beginDownload(fullRemoteFileName);
-    std::ofstream dstStream{ localFileName, std::ios::binary | std::ios::out };
-
-    while (!srcStream.eof())
+    try
     {
-        dstStream.put(srcStream.get());
-    }
+        std::istream& srcStream = ftp.beginDownload(fullRemoteFileName);
+        std::ofstream dstStream{ localFileName, std::ios::binary | std::ios::out };
 
-    ftp.endDownload();
-    return true;
+        while (!srcStream.eof())
+        {
+            dstStream.put(srcStream.get());
+        }
+
+        ftp.endDownload();
+        return true;
+    }
+    catch (std::exception& e)
+    {
+        ShowMessage(e.what());
+        return false;
+    }
 }
 
 bool UploadAFile(Poco::Net::FTPClientSession& ftp, const std::string& localFileName, const std::string& fullRemoteFileName) {
@@ -241,6 +249,7 @@ void LoginAndDownloadDataFromDir(ftpLogin login, std::string directory, novac::G
         try {
             std::shared_ptr<Poco::Net::FTPClientSession> ftp = std::make_shared<Poco::Net::FTPClientSession>();
             ftp->open(login.server, login.port, login.userName, login.password);
+            ftp->setTimeout(Poco::Timespan(60, 0)); // 60 seconds timeout
 
             auto t = std::make_shared<std::thread>(DownloadData, std::ref(*ftp), std::ref(downloadQueue), std::ref(downloadedFiles));
 
@@ -295,7 +304,7 @@ void DownloadData(Poco::Net::FTPClientSession& ftp, novac::GuardedList<novac::CF
                     DownloadDataFromDir(ftp, nextDownloadItem.path + nextDownloadItem.fileName, downloadedFiles);
                 }
                 else {
-                    ShowMessage("Ignoring directory '" + nextDownloadItem.path + nextDownloadItem.fileName + "'. The date is out of scope");
+                    // ShowMessage("Ignoring directory '" + nextDownloadItem.path + nextDownloadItem.fileName + "'. The date is out of scope");
                 }
             }
             else {
