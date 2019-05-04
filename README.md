@@ -1,0 +1,21 @@
+# NovacPPP
+This is the code for the Novac Post Processing Program (aka NovacPPP or NovacP3), 
+which is a program used to batch-process spectra after they have been collected in order to improve
+the spectral evaluation and/or the estimated fluxes. Compared to the NovacProgram is the NovacPPP allowed
+to take some  more time evaluating the spectra in order to achieve a better analysis, it has more and more advanced
+options for performing the evaluations and it is possible to run the program on all collected Novac data in one
+run.
+
+The program has during 2018 been modified to be platform independent and has been tested to build on both:
+* Windows 10, using Visual Studio 2017 (community edition)
+* Ubuntu 16.04, using gcc and make
+The build system used to achieve this is [CMake](https://cmake.org/) and scripts are included to build the program in
+Windows using visual Studio 2017 and in Ubuntu using gcc and make. 
+
+The program depends on [Poco libraries](https://pocoproject.org/) for performing common networking and filesystem tasks 
+and Poco must therefore be installed on the system prior to building.
+
+The main tool is the NovacPPP executable, which is found in the PPPExe folder. The NovacPPP tool is configured by a set of 
+xml-files which must reside in a sub directory named _configuration_ in the same directory as the executable. 
+Examples of such configurations can be found in the directories _Debug/configuration_ and _Release/configuration_ in the
+source tree. 
