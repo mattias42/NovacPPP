@@ -41,12 +41,6 @@ namespace Configuration {
         unsigned long				m_maxThreadNum;
 #define str_maxThreadNum	"MaxThreadNum"
 
-
-        /** If this is non-zero then the software will start automatically,
-            without waiting for the user to press the button */
-        unsigned int				m_startNow;
-#define	str_startNow		"StartNow"
-
         // ------------------------------------------------------------------------
         // ------------- IS THIS THE CONTINUATION OF A BROKEN RUN ? ---------------
         // ------------------------------------------------------------------------

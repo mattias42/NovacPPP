@@ -20,7 +20,6 @@ CUserConfiguration::~CUserConfiguration(void)
 void CUserConfiguration::Clear() {
 
     m_maxThreadNum = 2;
-    m_startNow = 0;
 
     m_fIsContinuation = false;
 

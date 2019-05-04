@@ -358,18 +358,6 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
             continue;
         }
 
-        // if we should start the program immediately
-        if (Equals(token, FLAG(str_startNow), strlen(FLAG(str_startNow)))) {
-            sscanf(token + strlen(FLAG(str_startNow)), "%d", &g_userSettings.m_startNow);
-            token = tokenizer.NextToken();
-            continue;
-        }
-        else if (Equals(token, "--" + novac::CString(str_startNow), strlen("--" + novac::CString(str_startNow)))) {
-            g_userSettings.m_startNow = 1;
-            token = tokenizer.NextToken();
-            continue;
-        }
-
         // The options for the local directory
         if (Equals(token, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local)))) {
             sscanf(token + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &g_userSettings.m_includeSubDirectories_Local);

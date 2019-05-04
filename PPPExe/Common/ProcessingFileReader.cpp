@@ -58,14 +58,6 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
             continue;
         }
 
-        // This is the option wheter we should start the post-processing without waiting for the user
-        if (Equals(szToken, str_startNow, strlen(str_startNow))) {
-            int number = 1;
-            Parse_IntItem(ENDTAG(str_startNow), number);
-            settings.m_startNow = (unsigned int)std::max(0, number);
-            continue;
-        }
-
         // If we've found the beginning date
         if (Equals(szToken, str_fromDate, strlen(str_fromDate))) {
             Parse_Date(ENDTAG(str_fromDate), settings.m_fromDate);
@@ -446,7 +438,6 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
     fprintf(f, "<NovacPostProcessing>\n");
 
     PrintParameter(f, 1, str_maxThreadNum, settings.m_maxThreadNum);
-    PrintParameter(f, 1, str_startNow, settings.m_startNow);
 
     // the output and temp directories
     PrintParameter(f, 1, str_outputDirectory, settings.m_outputDirectory);
