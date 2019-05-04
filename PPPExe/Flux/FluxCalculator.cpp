@@ -72,22 +72,21 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     }
 
     // 5. Read in the evaluation log file 
-    FileHandler::CEvaluationLogFileHandler *reader = new FileHandler::CEvaluationLogFileHandler();
-    reader->m_evaluationLog.Format(evalLogFileName);
-    reader->ReadEvaluationLog();
-    if (reader->m_scan.size() == 0) {
+    FileHandler::CEvaluationLogFileHandler reader;
+    reader.m_evaluationLog.Format(evalLogFileName);
+    reader.ReadEvaluationLog();
+    if (reader.m_scan.size() == 0) {
         errorMessage.Format("Recieved evaluation log file (%s) with no scans inside. Cannot calculate flux", (const char*)evalLogFileName);
         ShowMessage(errorMessage);
-        delete reader;
         return 2;
     }
-    else if (reader->m_scan.size() > 1) {
+    else if (reader.m_scan.size() > 1) {
         errorMessage.Format("Recieved evaluation log file (%s) with more than one scans inside. Can only calculate flux for the first scan.", (const char*)evalLogFileName);
         ShowMessage(errorMessage);
     }
 
     // 6. extract the scan
-    Evaluation::CScanResult &result = reader->m_scan[0];
+    Evaluation::CScanResult &result = reader.m_scan[0];
 
     // 6b. Improve on the start-time of the scan...
     result.GetSkyStartTime(skyStartTime);
@@ -95,28 +94,24 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     // 7. Calculate the offset of the scan
     if (result.CalculateOffset(CMolecule(g_userSettings.m_molecule))) {
         ShowMessage("Could not calculate offset for scan. No flux can be calculated.");
-        delete reader;
         return 7;
     }
 
     // 8. Check that the completeness is higher than our limit...
     if (!result.CalculatePlumeCentre(CMolecule(g_userSettings.m_molecule))) {
         ShowMessage(" - Scan does not see the plume, no flux can be calculated");
-        delete reader;
         return 8;
     }
     double completeness = result.GetCalculatedPlumeCompleteness();
     if (completeness < (g_userSettings.m_completenessLimitFlux + 0.01)) {
         errorMessage.Format(" - Scan has completeness = %.2lf which is less than limit of %.2lf. Rejected!", completeness, g_userSettings.m_completenessLimitFlux);
         ShowMessage(errorMessage);
-        delete reader;
         return 8;
     }
 
     // 9. Calculate the flux
     if (result.CalculateFlux(CMolecule(g_userSettings.m_molecule), windField, relativePlumeHeight, instrLocation.m_compass, instrLocation.m_coneangle, instrLocation.m_tilt)) {
         ShowMessage("Flux calculation failed. No flux generated");
-        delete reader;
         return 9;
     }
     fluxResult = result.GetFluxResult();
@@ -163,11 +158,6 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     else {
         fluxResult.m_fluxQualityFlag = FLUX_QUALITY_GREEN;
     }
-
-
-    // clean up a little bit...
-    delete reader;
-    reader = NULL;
 
     // ok
     return 0;

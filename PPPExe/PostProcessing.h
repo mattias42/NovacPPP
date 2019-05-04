@@ -155,8 +155,7 @@ protected:
             of an evaluation-log file. Only the measurements containing a
             dual-beam measurement will be considered.
         The plume heights are taken from the database 'm_plumeDataBase' and the
-            results are written to the database 'm_windDataBase'
-    */
+            results are written to the database 'm_windDataBase' */
     void CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult,
         Evaluation::CExtendedScanResult &> &evalLogs);
 

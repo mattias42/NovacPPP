@@ -198,8 +198,6 @@ void CPostProcessing::DoPostProcessing_Flux()
     }
 }
 
-/** Performs an post processing of the data in order to extract
-    good stratospheric data */
 void CPostProcessing::DoPostProcessing_Strat() {
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
     novac::CString messageToUser, statFileName;
@@ -265,8 +263,6 @@ void CPostProcessing::DoPostProcessing_Strat() {
     g_processingStats.WriteStatToFile(statFileName);
 }
 
-/** Performs an post processing of already evaluated data in order
-    to generate plume heights and wind directions */
 void CPostProcessing::DoPostProcessing_Geometry() {
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
     novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
@@ -597,9 +593,6 @@ int CPostProcessing::PrepareEvaluation() {
     }
 }
 
-/** Prepares for the flux calculations by reading in the relevant
-    wind-field file.
-    @return 0 on success, otherwise non-zero */
 int CPostProcessing::ReadWindField() {
     novac::CString name1, name2, name3, path1, path2, path3, messageToUser;
     Common common;
@@ -700,9 +693,6 @@ int CPostProcessing::ReadWindField() {
     return 1;
 }
 
-/** Prepares for the flux calculation by setting up a reasonable
-    set of plume heights. This could also read in a set from file...?
-    @return 0 on success, otherwese non-zero */
 int CPostProcessing::PreparePlumeHeights() {
     // we need to construct a default plume height to use, if there's nothing else...
     Geometry::CPlumeHeight plumeHeight;
@@ -738,15 +728,6 @@ int CPostProcessing::PreparePlumeHeights() {
     return 0;
 }
 
-/** Runs through the supplied list of evaluation - logs and performs
-    geometry calculations on the ones which does match. The results
-    are returned in the list geometryResults.
-    @param evalLogs - list of CStrings, each holding the full path and filename
-        of an evaluation-log file that should be considered for geometrical
-        calculations
-    @param geometryResults - will on successfull return be filled with the
-        calculated plume heights and wind-directions.
-    */
 void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
     novac::CString serial1, serial2, messageToUser;
     CDateTime startTime1, startTime2;
@@ -941,20 +922,6 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
     ShowMessage(messageToUser);
 }
 
-/** Runs through the supplied list of evaluation - logs and performs
-    AC-DC corrections on the derived columns. The results are not
-    returned, instead the files are re-written with the updated
-    column values.
-    @param evalLogs - list of CStrings, each holding the full path and filename
-        of an evaluation-log file that should be considered for geometrical
-        calculations
-    @param geometryResults - list of calculated geometrical results. These will
-        be used to apply the radiative corrections to the columns. For scans when
-        no plume-height can be taken from the calculations - a default plume height equal
-        to the altitude of the summit of the volcano will be used.
-    @return - true if so large changes are made that the geometries would need to
-        be re-calculated. Otherwise false.
-    */
 bool CPostProcessing::ApplyACDCCorrections(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& /*evalLogs*/, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& /*geometryResults*/) {
 
     ShowMessage("Applying ACDC corrections - This is not yet implemented!!");
@@ -962,17 +929,6 @@ bool CPostProcessing::ApplyACDCCorrections(novac::CList <Evaluation::CExtendedSc
     return false;
 }
 
-/** Runs through the supplied list of evaluation-logs and
-    calculates the flux for each scan. The resulting fluxes are written
-    to a flux-log file in the output directory.
-    @param evalLogs - list of CStrings, each holding the full path and filename
-        of an evaluation-log file that should be considered for geometrical
-        calculations
-    @param geometryResults - list of calculated geometrical results. These will
-        be used to calculate the fluxes. For scans when no plume-height can be
-        taken from the calculations - a default plume height equal to the
-        altitude of the summit of the volcano will be used.
-    */
 void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles) {
     CDateTime scanStartTime;
     novac::CString serial, messageToUser;
@@ -1343,7 +1299,6 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
     fclose(f);
 }
 
-// 5. Insert the calculated geometries into the plume height database
 void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults) {
     Meteorology::CWindField windField;
     CDateTime validFrom, validTo;
@@ -1374,13 +1329,6 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geome
     }
 }
 
-/** This calculates the wind speeds from the dual-beam measurements that has been made
-    @param evalLogs - list of CStrings, each holding the full path and filename
-        of an evaluation-log file. Only the measurements containing a dual-beam measurement
-        will be considered.
-    The plume heights are taken from the database 'm_plumeDataBase' and the results are written
-    to the database 'm_windDataBase'
-*/
 void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs) {
     novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
     novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
@@ -1557,7 +1505,6 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     }
 }
 
-/** Sorts the evaluation logs in order of increasing time */
 void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs) {
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> left;
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> right;
@@ -1610,8 +1557,6 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
     return;
 }
 
-
-/** Takes care of uploading the result files to the FTP server */
 void CPostProcessing::UploadResultsToFTP() {
     Communication::CFTPServerConnection connection;
     novac::CString fileName;
