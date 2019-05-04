@@ -5,10 +5,7 @@
 	<tempdirectory>D:\NovacPostProcessingProgram\CotopaxiTest\Temp\</tempdirectory>
 	<LocalDirectory></LocalDirectory>
 
-	<FTPDirectory>ftp://129.16.35.206/cotopaxi/</FTPDirectory>
 	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
-	<FTPUsername>novacUser</FTPUsername>
-	<FTPPassword>iht-1inks.</FTPPassword>
 	<mode>Flux</mode>
 	<molecule>SO2</molecule>
 	<Volcano>1502-05=</Volcano>
