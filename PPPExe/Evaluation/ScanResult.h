@@ -23,12 +23,13 @@ namespace Evaluation
         of evaluation results such as the offset or the calculated flux of the scan,
         or a judgement wheather each evaluated spectrum is judged to be an ok
         spectrum or not. */
-
     class CScanResult : public BasicScanEvaluationResult
     {
     public:
-        CScanResult(void);
-        ~CScanResult(void);
+        CScanResult();
+
+        CScanResult(const CScanResult& );
+        CScanResult &operator=(const CScanResult &s2);
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------
@@ -55,10 +56,10 @@ namespace Evaluation
 
         /** Adds spectrum number 'specIndex' into the list of spectra in the .pak -file
                 which are corrupted and could not be evaluated */
-        void	MarkAsCorrupted(unsigned int specIndex);
+        void MarkAsCorrupted(unsigned int specIndex);
 
         /** Retrieves how many spectra are corrupted in the scan */
-        int		GetCorruptedNum() const;
+        int GetCorruptedNum() const;
 
         /** Stores the information about the sky-spectrum used */
         void SetSkySpecInfo(const CSpectrumInfo &skySpecInfo);
@@ -170,19 +171,19 @@ namespace Evaluation
         double GetOffset() const { return m_plumeProperties.offset; }
 
         /** returns the temperature of the system at the time of the measurement */
-        double	GetTemperature() const { return m_skySpecInfo.m_temperature; }
+        double GetTemperature() const { return m_skySpecInfo.m_temperature; }
 
         /** Fills in the supplied CPlumeInScanProperty object with the calculated properties of this scan */
         void GetCalculatedPlumeProperties(CPlumeInScanProperty &properties) const { properties = m_plumeProperties; }
 
         /** Returns the calculated plume-centre position */
-        double	GetCalculatedPlumeCentre(int motor = 0) const;
+        double GetCalculatedPlumeCentre(int motor = 0) const;
 
         /** Returns the calculated plume edges */
         void GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const;
 
         /** Returns the calculated plume-completeness */
-        double	GetCalculatedPlumeCompleteness() const { return m_plumeProperties.completeness; }
+        double GetCalculatedPlumeCompleteness() const { return m_plumeProperties.completeness; }
 
         /** Sets the offset of the measurement */
         void SetOffset(double offset) { m_plumeProperties.offset = offset; }
@@ -191,28 +192,28 @@ namespace Evaluation
         long  GetEvaluatedNum() const { return m_specNum; }
 
         /** Returns the latitude of the system */
-        double	GetLatitude() const;
+        double GetLatitude() const;
 
         /** Returns the longitude of the system */
-        double	GetLongitude() const;
+        double GetLongitude() const;
 
         /** Returns the altitude of the system */
-        double	GetAltitude() const;
+        double GetAltitude() const;
 
         /** Returns the compass-direction of the system */
-        double	GetCompass() const;
+        double GetCompass() const;
 
         /** Returns the cone angle of the scanning instrument */
-        double	GetConeAngle() const;
+        double GetConeAngle() const;
 
         /** Returns the pitch (tilt) of the scanning instrument */
-        double	GetPitch() const;
+        double GetPitch() const;
 
         /** Returns the roll (scan-angle offset) of the scanning instrument */
-        double	GetRoll() const;
+        double GetRoll() const;
 
         /** Returns the battery-voltage of the sky spectrum */
-        float	GetBatteryVoltage() const;
+        float GetBatteryVoltage() const;
 
         /** Returns the name of the requested spectrum */
         novac::CString GetName(int index) const;
@@ -374,26 +375,23 @@ namespace Evaluation
         /** Returns the type of the instrument used */
         INSTRUMENT_TYPE GetInstrumentType() const;
 
-        /** Assignment operator */
-        CScanResult &operator=(const CScanResult &s2);
-
         /** Getting the estimated geometrical error */
-        double	GetGeometricalError() const;
+        double GetGeometricalError() const;
 
         /** Getting the scattering Error */
-        double	GetScatteringError() const;
+        double GetScatteringError() const;
 
         /** Getting the spectroscopical error */
-        double	GetSpectroscopicalError() const;
+        double GetSpectroscopicalError() const;
 
         /** Getting the estimated geometrical error */
-        void	SetGeometricalError(double err);
+        void SetGeometricalError(double err);
 
         /** Getting the scattering Error */
-        void	SetScatteringError(double err);
+        void SetScatteringError(double err);
 
         /** Getting the spectroscopical error */
-        void	SetSpectroscopicalError(double err);
+        void SetSpectroscopicalError(double err);
     private:
 
         // ----------------------------------------------------------------------
@@ -406,15 +404,15 @@ namespace Evaluation
 
         /** The estimated error (in percent) in the geometrical setup for
             this flux-calculation. */
-        double	m_geomError;
+        double m_geomError;
 
         /** The estimated error (in percent) due to scattering inside or below the
             plume for this flux-calculation */
-        double	m_scatteringError;
+        double m_scatteringError;
 
         /** The estimated error (in percent) of the spectral results due
             to incertainties in cross-sections, slit-functions, stray-light etc. */
-        double	m_spectroscopyError;
+        double m_spectroscopyError;
 
         /** This contains the parameters of the plume that is seen
             in this scan, such as the completeness or the centre angle of

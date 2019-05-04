@@ -132,9 +132,9 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     }
 
     // 8. Get the result from the evaluation
-    if (ev.m_result != nullptr) {
-        m_lastResult = new CScanResult();
-        *m_lastResult = *ev.m_result;
+    if (ev.m_result != nullptr)
+    {
+        m_lastResult = new CScanResult(*ev.m_result);
     }
 
     // 9. Get the mode of the evaluation

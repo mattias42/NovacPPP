@@ -5,7 +5,7 @@
 
 	<!-- The following instruments are for Piton_de_la_Fournaise -->
 
-	<!instrument>
+	<instrument>
 		<serial>D2J2134</serial>
 		<location>
 			<name>Enclos0</name>

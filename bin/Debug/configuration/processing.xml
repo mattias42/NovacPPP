@@ -2,7 +2,6 @@
 <!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
 <NovacPostProcessing>
 	<MaxThreadNum>1</MaxThreadNum>
-	<StartNow>0</StartNow>
 	<outputdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\OutputFeb2017UTC\</outputdirectory>
 	<tempdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp\</tempdirectory>
 	<mode>Flux</mode>
