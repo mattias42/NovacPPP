@@ -271,6 +271,7 @@ namespace Evaluation
 
         /** returns the time and date (UMT) when the sky-spectrum was started. */
         void GetSkyStartTime(CDateTime &t) const;
+        CDateTime GetSkyStartTime() const;
 
         /** returns the time and date (UMT) when evaluated spectrum number 'index'
                 was stopped.

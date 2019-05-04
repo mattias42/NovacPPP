@@ -5,6 +5,7 @@
 	<outputdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\OutputFeb2017UTC\</outputdirectory>
 	<tempdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp\</tempdirectory>
 	<mode>Flux</mode>
+    <doEvaluations>false</doEvaluations>
 	<molecule>SO2</molecule>
 	<Volcano>0303-02=</Volcano>
 	<FromDate>2017.02.08</FromDate>

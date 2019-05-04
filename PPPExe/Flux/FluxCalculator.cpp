@@ -75,13 +75,13 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     FileHandler::CEvaluationLogFileHandler *reader = new FileHandler::CEvaluationLogFileHandler();
     reader->m_evaluationLog.Format(evalLogFileName);
     reader->ReadEvaluationLog();
-    if (reader->m_scanNum == 0) {
+    if (reader->m_scan.size() == 0) {
         errorMessage.Format("Recieved evaluation log file (%s) with no scans inside. Cannot calculate flux", (const char*)evalLogFileName);
         ShowMessage(errorMessage);
         delete reader;
         return 2;
     }
-    else if (reader->m_scanNum > 1) {
+    else if (reader->m_scan.size() > 1) {
         errorMessage.Format("Recieved evaluation log file (%s) with more than one scans inside. Can only calculate flux for the first scan.", (const char*)evalLogFileName);
         ShowMessage(errorMessage);
     }

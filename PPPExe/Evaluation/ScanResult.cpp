@@ -881,10 +881,14 @@ RETURN_CODE CScanResult::GetStartTime(unsigned long index, CDateTime &t) const {
     return SUCCESS;
 }
 
-void CScanResult::GetSkyStartTime(CDateTime &t) const {
-
+void CScanResult::GetSkyStartTime(CDateTime &t) const
+{
     t = m_skySpecInfo.m_startTime;
     return;
+}
+CDateTime CScanResult::GetSkyStartTime() const
+{
+    return m_skySpecInfo.m_startTime;
 }
 
 /** returns the time and date (UMT) when evaluated spectrum number 'index' was stopped.

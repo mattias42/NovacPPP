@@ -3,6 +3,7 @@
 #include <SpectralEvaluation/Utils.h>
 #include "../Common/Version.h"
 #include <cstring>
+#include <algorithm>
 
 #include <PPPLib/CSingleLock.h>
 
@@ -45,19 +46,7 @@ CEvaluationLogFileHandler::CEvaluationLogFileHandler(void)
     }
 
     m_instrumentType = INSTR_GOTHENBURG;
-    m_scanNum = 0;
-    m_scan.SetSize(ORIGINAL_ARRAY_LENGTH);
-    m_windField.SetSize(ORIGINAL_ARRAY_LENGTH);
 }
-
-CEvaluationLogFileHandler::~CEvaluationLogFileHandler(void)
-{
-    m_scan.RemoveAll();
-    m_scan.SetSize(0);
-    m_windField.RemoveAll();
-    m_windField.SetSize(0);
-}
-
 
 void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
     // reset some old information
@@ -279,7 +268,6 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
     char szLine[8192];
     int measNr = 0;
     double fValue;
-    m_scanNum = -1;
     bool fReadingScan = false;
     double flux = 0.0;
 
@@ -289,11 +277,13 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
     // First count the number of scans in the file.
     //	This to speed up the initialization of the arrays
-    long nScans = CountScansInFile();
+    const long nScans = CountScansInFile();
     if (nScans > 0) {
-        m_scan.SetSize(nScans);
-        m_windField.SetSize(nScans + 1);
+        m_scan.reserve(nScans);
+        m_windField.reserve(nScans + 1);
     }
+
+    Evaluation::CScanResult newResult; // this is the scan we're reading in right now
 
     // Open the evaluation log
     novac::CSingleLock singleLock(&g_evalLogCritSect);
@@ -336,8 +326,11 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
             }
 
             // find the next flux-information section
-            if (NULL != strstr(szLine, fluxInformation)) {
-                ParseFluxInformation(m_windField[m_scanNum + 1], flux, f);
+            if (NULL != strstr(szLine, fluxInformation))
+            {
+                Meteorology::CWindField windField;
+                ParseFluxInformation(windField, flux, f);
+                m_windField.push_back(windField);
                 continue;
             }
 
@@ -355,8 +348,8 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
                 // check so that there was some information in the last scan read
                 //	if not the re-use the memory space
-                if ((measNr > 0) || (measNr == 0 && m_scanNum < 0)) {
-
+                if (measNr > 0)
+                {
                     // The current measurement position inside the scan
                     measNr = 0;
 
@@ -364,22 +357,17 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
                     // the old one
 
                     // 1. If the sky and dark were specified, remove them from the measurement
-                    if (m_scanNum >= 0 && fabs(m_scan[m_scanNum].GetScanAngle(1) - 180.0) < 1) {
-                        m_scan[m_scanNum].RemoveResult(0); // remove sky
-                        m_scan[m_scanNum].RemoveResult(0); // remove dark
+                    if (m_scan.size() >= 0 && fabs(m_scan.back().GetScanAngle(1) - 180.0) < 1) {
+                        m_scan.back().RemoveResult(0); // remove sky
+                        m_scan.back().RemoveResult(0); // remove dark
                     }
 
                     // 2. Calculate the offset
-                    if (m_scanNum >= 0) {
-                        m_scan[m_scanNum].CalculateOffset(CMolecule(g_userSettings.m_molecule));
+                    if (m_scan.size() >= 0) {
+                        m_scan.back().CalculateOffset(CMolecule(g_userSettings.m_molecule));
                     }
 
                     // start the next scan.
-                    ++m_scanNum;
-                    if (m_scanNum >= m_scan.GetSize()) {
-                        m_scan.SetSize(m_scanNum + 1);
-                        m_windField.SetSize(m_scanNum + 2);
-                    }
                 }
 
                 // This line is the header line which says what each column represents.
@@ -552,37 +540,29 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
             //  spectrum in the scan). Insert the data from this spectrum into the 
             //  CScanResult structure
 
-            // If this is the first spectrum in the new scan, then make
-            //	an initial guess for how large the arrays are going to be...
-            if (measNr == 0 && m_scanNum > 1) {
-                // If this is the first spectrum in a new scan, then initialize the 
-                //	size of the arrays, to save some time on re-allocating memory
-                m_scan[m_scanNum].InitializeArrays(m_scan[m_scanNum - 1].GetEvaluatedNum());
-            }
-
-            m_specInfo.m_scanIndex = (short)measNr;
+             m_specInfo.m_scanIndex = (short)measNr;
             if (Equals(m_specInfo.m_name, "sky")) {
-                m_scan[m_scanNum].SetSkySpecInfo(m_specInfo);
+                newResult.SetSkySpecInfo(m_specInfo);
             }
             else if (Equals(m_specInfo.m_name, "dark")) {
-                m_scan[m_scanNum].SetDarkSpecInfo(m_specInfo);
+                newResult.SetDarkSpecInfo(m_specInfo);
             }
             else if (Equals(m_specInfo.m_name, "offset")) {
-                m_scan[m_scanNum].SetOffsetSpecInfo(m_specInfo);
+                newResult.SetOffsetSpecInfo(m_specInfo);
             }
             else if (Equals(m_specInfo.m_name, "dark_cur")) {
-                m_scan[m_scanNum].SetDarkCurrentSpecInfo(m_specInfo);
+                newResult.SetDarkCurrentSpecInfo(m_specInfo);
             }
             else {
-                m_scan[m_scanNum].AppendResult(m_evResult, m_specInfo);
-                m_scan[m_scanNum].SetFlux(flux);
-                m_scan[m_scanNum].SetInstrumentType(m_instrumentType);
+                newResult.AppendResult(m_evResult, m_specInfo);
+                newResult.SetFlux(flux);
+                newResult.SetInstrumentType(m_instrumentType);
             }
 
             if (m_col.peakSaturation != -1) { // If the intensity is specified as a saturation ratio...
                 double dynamicRange = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
             }
-            m_scan[m_scanNum].CheckGoodnessOfFit(m_specInfo);
+            newResult.CheckGoodnessOfFit(m_specInfo);
             ++measNr;
         }
 
@@ -592,18 +572,18 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
     singleLock.Unlock();
 
     // If the sky and dark were specified, remove them from the measurement
-    if (m_scanNum >= 0 && fabs(m_scan[m_scanNum].GetScanAngle(1) - 180.0) < 1) {
-        m_scan[m_scanNum].RemoveResult(0); // remove sky
-        m_scan[m_scanNum].RemoveResult(0); // remove dark
+    if (fabs(newResult.GetScanAngle(1) - 180.0) < 1) {
+        newResult.RemoveResult(0); // remove sky
+        newResult.RemoveResult(0); // remove dark
     }
 
     // Calculate the offset
-    if (m_scanNum >= 0) {
-        m_scan[m_scanNum].CalculateOffset(CMolecule(g_userSettings.m_molecule));
-    }
+    newResult.CalculateOffset(CMolecule(g_userSettings.m_molecule));
 
-    // make sure that scan num is correct
-    ++m_scanNum;
+    // Insert the new scan
+    m_scan.push_back(newResult);
+
+    newResult = Evaluation::CScanResult();
 
     // Sort the scans in order of collection
     SortScans();
@@ -923,9 +903,9 @@ void CEvaluationLogFileHandler::ResetScanInformation() {
 
 /** Returns true if the most recently read evaluation log file is a
             wind speed measurement. */
-bool	CEvaluationLogFileHandler::IsWindSpeedMeasurement(int scanNo) {
+bool CEvaluationLogFileHandler::IsWindSpeedMeasurement(int scanNo) {
     // check so that there are some scans read, and that the scan index is ok
-    if (m_scanNum < 1 || scanNo > m_scanNum || scanNo < 0)
+    if (m_scan.size() < 1 || scanNo > m_scan.size() || scanNo < 0)
         return false;
 
     return m_scan[scanNo].IsWindMeasurement();
@@ -935,27 +915,28 @@ bool	CEvaluationLogFileHandler::IsWindSpeedMeasurement(int scanNo) {
         evaluation log file is a wind speed measurement of heidelberg type. */
 bool	CEvaluationLogFileHandler::IsWindSpeedMeasurement_Heidelberg(int scanNo) {
     // check so that there are some scans read, and that the scan index is ok
-    if (m_scanNum < 1 || scanNo > m_scanNum || scanNo < 0)
+    if (m_scan.size() < 1 || scanNo > m_scan.size() || scanNo < 0)
         return false;
 
     return m_scan[scanNo].IsWindMeasurement_Heidelberg();
 }
 
-/** Sorts the scans in order of collection */
-void CEvaluationLogFileHandler::SortScans() {
-
-    // make sure that the array is just big enough...
-    m_scan.SetSize(m_scanNum);
-
+void CEvaluationLogFileHandler::SortScans()
+{
     // If the scans are already in order then we don't need to sort them
     //	or if there is only one scan then we don't need to fix it.
-    if (IsSorted() || m_scanNum <= 1) {
+    if (IsSorted() || m_scan.size() <= 1) {
         return;
     }
 
     // Then sort the array
+    std::sort(begin(m_scan), end(m_scan), [&](const Evaluation::CScanResult& r1, const Evaluation::CScanResult& r2) 
+        { 
+            return r1.GetSkyStartTime() < r2.GetSkyStartTime();
+        });
+
     //	CEvaluationLogFileHandler::SortScans(m_scan);
-    CEvaluationLogFileHandler::BubbleSortScans(m_scan);
+    // CEvaluationLogFileHandler::BubbleSortScans(m_scan);
 
     return;
 }
@@ -964,7 +945,7 @@ void CEvaluationLogFileHandler::SortScans() {
 bool	CEvaluationLogFileHandler::IsSorted() {
     CDateTime time1, time2;
 
-    for (int k = 0; k < m_scanNum - 1; ++k) {
+    for (int k = 0; k < m_scan.size() - 1; ++k) {
         // Get the start-times
         m_scan[k].GetStartTime(0, time1);
         m_scan[k + 1].GetStartTime(0, time2);
@@ -997,9 +978,9 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
     // 2. Write the file
     FILE *f = fopen(fileName, "w");
 
-    for (int scanIndex = 0; scanIndex < this->m_scanNum; ++scanIndex) {
+    for (int scanIndex = 0; scanIndex < this->m_scan.size(); ++scanIndex) {
         Evaluation::CScanResult &scan = this->m_scan[scanIndex];
-        Meteorology::CWindField							&wind = this->m_windField[scanIndex];
+        Meteorology::CWindField &wind = this->m_windField[scanIndex];
 
         scan.GetStartTime(0, startTime);
 

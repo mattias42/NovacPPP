@@ -8,7 +8,7 @@ void ShowMessage(const char message[]);
 
 namespace Filesystem
 {
-    void CheckForSpectraInDir(const novac::CString &path, bool includeSubdirectories, std::vector<std::string>& fileList, PakFileSearchCriterion* criteria)
+    void SearchDirectoryForFiles(const novac::CString &path, bool includeSubdirectories, std::vector<std::string>& fileList, FileSearchCriterion* criteria)
     {
         try
         {
@@ -30,38 +30,46 @@ namespace Filesystem
                 // if this is a directory...
                 if (isDirectory && includeSubdirectories)
                 {
-                    CheckForSpectraInDir(fullFileName, includeSubdirectories, fileList, criteria);
+                    SearchDirectoryForFiles(fullFileName, includeSubdirectories, fileList, criteria);
+                    continue;
                 }
-                else
+
+                // check that this file is in the time-interval that we should evaluate spectra.
+                if (nullptr != criteria)
                 {
-                    // if this is a .pak - file
-                    if (novac::Equals(fileName.Right(4), ".pak"))
+                    if (criteria->endTime > criteria->startTime)
                     {
-                        if (novac::CFileUtils::IsIncompleteFile(fileName))
+                        int channel;
+                        CDateTime startTime;
+                        MEASUREMENT_MODE mode;
+                        novac::CString serial;
+                        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
+
+                        if (startTime < criteria->startTime || criteria->endTime < startTime)
                         {
                             continue;
                         }
+                    }
 
-                        // check that this file is in the time-interval that we should evaluate spectra.
-                        if (nullptr != criteria)
+                    if (criteria->fileExtension.size() > 0)
+                    {
+                        if (!novac::Equals(fileName.Right(criteria->fileExtension.size()), criteria->fileExtension))
                         {
-                            int channel;
-                            CDateTime startTime;
-                            MEASUREMENT_MODE mode;
-                            novac::CString serial;
-                            novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
-
-                            if (startTime < criteria->startTime || criteria->endTime < startTime)
+                            continue;
+                        }
+                        if (novac::Equals(criteria->fileExtension, ".pak"))
+                        {
+                            if (novac::CFileUtils::IsIncompleteFile(fileName))
                             {
                                 continue;
                             }
                         }
-
-                        // We've passed all the tests for the .pak-file.
-                        // Append the found file to the list of files to split and evaluate...
-                        std::string filenameStr = fullFileName.ToStdString();
-                        fileList.push_back(filenameStr);
                     }
+
+                    // We've passed all the tests for the .pak-file.
+                    // Append the found file to the list of files to split and evaluate...
+                    std::string filenameStr = fullFileName.ToStdString();
+                    fileList.push_back(filenameStr);
                 }
             }
         }

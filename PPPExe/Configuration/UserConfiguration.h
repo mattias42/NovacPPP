@@ -21,11 +21,7 @@ namespace Configuration {
     class CUserConfiguration
     {
     public:
-        /** Default constructor */
-        CUserConfiguration(void);
-
-        /** Default destructor */
-        ~CUserConfiguration(void);
+        CUserConfiguration();
 
         /** Restores all values to their defaults */
         void Clear();
@@ -38,8 +34,8 @@ namespace Configuration {
         // ------------------------------------------------------------------------
 
         /** The maximum number of threads that we can split up a task into */
-        unsigned long				m_maxThreadNum;
-#define str_maxThreadNum	"MaxThreadNum"
+        unsigned long    m_maxThreadNum;
+#define str_maxThreadNum "MaxThreadNum"
 
         // ------------------------------------------------------------------------
         // ------------- IS THIS THE CONTINUATION OF A BROKEN RUN ? ---------------
@@ -53,7 +49,7 @@ namespace Configuration {
                 to use.
 
             If this is true, then the scan-files will not be evaluated again */
-        bool	m_fIsContinuation;
+        bool m_fIsContinuation;
 
 
         // ------------------------------------------------------------------------
@@ -61,25 +57,32 @@ namespace Configuration {
         // ------------------------------------------------------------------------
 
         /** The directory that we should use for temporary files */
-        novac::CString			m_tempDirectory;
-#define			str_tempDirectory "tempdirectory"
+        novac::CString   m_tempDirectory;
+#define   str_tempDirectory "tempdirectory"
 
         /** The directory that we should use to store the results */
-        novac::CString			m_outputDirectory;
-#define			str_outputDirectory "outputdirectory"
+        novac::CString   m_outputDirectory;
+#define str_outputDirectory "outputdirectory"
 
         // ------------------------------------------------------------------------
         // --------------- WHAT WE WANT TO DO WITH THE PROCESSING  ----------------
         // ------------------------------------------------------------------------
 
         /** This determines the processing mode of the program. */
-        PROCESSING_MODE		m_processingMode;
-#define				str_processingMode "mode"
+        PROCESSING_MODE  m_processingMode;
+#define str_processingMode "mode"
+
+
+        /** Set to false to disable spectrum evaluations and thus only re-calculating 
+            the results from already produced evaluation-logs. */
+        bool m_doEvaluations = true;
+#define str_doEvaluations "doEvaluations"
+
 
         /** The molecule of main interest.
             This is the one the fluxes will be calculated for if the processing mode is 'flux' */
-        STANDARD_MOLECULE	m_molecule;
-#define				str_molecule "molecule"
+        STANDARD_MOLECULE m_molecule;
+#define str_molecule "molecule"
 
         // ------------------------------------------------------------------------
         // ----------------- SETTINGS FOR THE VOLCANO TO PROCESS ------------------
@@ -88,20 +91,20 @@ namespace Configuration {
         /** The volcano that we're processing at the moment.
             This is an index into the global array 'g_volcanoes'.
          */
-        int					m_volcano;
-#define				str_volcano "Volcano"
+        int     m_volcano;
+#define    str_volcano "Volcano"
 
         // ------------------------------------------------------------------------
         // -------------- SETTINGS FOR THE TIME PERIOD TO PROCESS ----------------
         // ------------------------------------------------------------------------
 
         /** The first day that we should look for data (inclusive) */
-        CDateTime		m_fromDate;
-#define			str_fromDate "FromDate"
+        CDateTime  m_fromDate;
+#define   str_fromDate "FromDate"
 
         /** The last day that we should look for data (inclusive) */
-        CDateTime		m_toDate;
-#define			str_toDate "ToDate"
+        CDateTime  m_toDate;
+#define   str_toDate "ToDate"
 
         // ------------------------------------------------------------------------
         // ------- SETTINGS FOR THE LOCATION OF THE .PAK-FILES TO PROCESS ---------
@@ -109,28 +112,28 @@ namespace Configuration {
 
         /** The path to a directory on the location computer which we should scan for
             data files. */
-        novac::CString			m_LocalDirectory;
-#define			str_LocalDirectory "LocalDirectory"
+        novac::CString   m_LocalDirectory;
+#define   str_LocalDirectory "LocalDirectory"
 
         /** This is non-zero if we should include sub-directories to 'm_LocalDirectory'
             in our search for data */
-        int				m_includeSubDirectories_Local;
-#define			str_includeSubDirectories_Local "IncludeSubDirs_Local"
+        int    m_includeSubDirectories_Local;
+#define   str_includeSubDirectories_Local "IncludeSubDirs_Local"
 
         /** The full path to a directory on a FTP - server where we should scan for
             data files */
-        novac::CString			m_FTPDirectory;
-#define			str_FTPDirectory "FTPDirectory"
+        novac::CString   m_FTPDirectory;
+#define   str_FTPDirectory "FTPDirectory"
 
         /** This is non-zero if we should include sub-directories to 'm_FTPDirectory'
             in our search for data */
-        int				m_includeSubDirectories_FTP;
-#define			str_includeSubDirectories_FTP "IncludeSubDirs_FTP"
+        int    m_includeSubDirectories_FTP;
+#define   str_includeSubDirectories_FTP "IncludeSubDirs_FTP"
 
         /** The username and password to log in to the FTP-server */
-        novac::CString		m_FTPUsername, m_FTPPassword;
-#define		str_FTPUsername "FTPUsername"
-#define		str_FTPPassword "FTPPassword"
+        novac::CString  m_FTPUsername, m_FTPPassword;
+#define  str_FTPUsername "FTPUsername"
+#define  str_FTPPassword "FTPPassword"
 
 
         // ------------------------------------------------------------------------
@@ -139,24 +142,24 @@ namespace Configuration {
 
         /** This is true if we should upload the results (FluxLogs etc) to the
             NovacFTP server.*/
-        int			m_uploadResults;
-#define		str_uploadResults "UploadResults"
+        int   m_uploadResults;
+#define  str_uploadResults "UploadResults"
 
         // ------------------------------------------------------------------------
         // -------------------- SETTINGS FOR THE WIND FIELD -----------------------
         // ------------------------------------------------------------------------
 
         /** The file where to search for the wind field */
-        novac::CString			m_windFieldFile;
-#define			str_windFieldFile "WindFieldFile"
+        novac::CString   m_windFieldFile;
+#define   str_windFieldFile "WindFieldFile"
 
         /** How to interpret the m_windFieldFile
             0 <=> m_windFieldFile is an ordinary .wxml file
             1 <=> m_windFieldFile is a directory containing .wxml files
                     with the name "VOLCANO_analysis_YYYYMMDD.wxml"
         */
-        int				m_windFieldFileOption;
-#define			str_windFieldFileOption "WindFileOption"
+        int    m_windFieldFileOption;
+#define   str_windFieldFileOption "WindFileOption"
 
         // ------------------------------------------------------------------------
         // ------------- SETTINGS FOR THE GEOMETRY CALCULATIONS  ------------------
@@ -164,82 +167,82 @@ namespace Configuration {
 
         /** Only scans with calculated completeness higher than this
                 given value will be used to calculate the geometries. */
-        double			m_calcGeometry_CompletenessLimit;
-#define			str_calcGeometry_CompletenessLimit "completenessLimit"
+        double   m_calcGeometry_CompletenessLimit;
+#define   str_calcGeometry_CompletenessLimit "completenessLimit"
 
         /** The time a geometry measurement is valid. In seconds.
             Half of this time is before the measurement is made and half is after */
-        int				m_calcGeometryValidTime;
-#define			str_calcGeometryValidTime "validTime"
+        int    m_calcGeometryValidTime;
+#define   str_calcGeometryValidTime "validTime"
 
         /** The maximum time difference (in seconds) between the start-time
             of two scans that can be combined to make a plume altitude
             calculation */
-        int				m_calcGeometry_MaxTimeDifference;
-#define			str_calcGeometry_MaxTimeDifference "maxStartTimeDifference"
+        int    m_calcGeometry_MaxTimeDifference;
+#define   str_calcGeometry_MaxTimeDifference "maxStartTimeDifference"
 
         /** The minimum distance between two instruments that can be used
             to make a geometry calculation. In meters */
-        int				m_calcGeometry_MinDistance;
-#define			str_calcGeometry_MinDistance "minInstrumentDistance"
+        int    m_calcGeometry_MinDistance;
+#define   str_calcGeometry_MinDistance "minInstrumentDistance"
 
         /** The maximum distance between two instruments that can be used
             to make a geometry calculation. In meters */
-        int				m_calcGeometry_MaxDistance;
-#define			str_calcGeometry_MaxDistance "maxInstrumentDistance"
+        int    m_calcGeometry_MaxDistance;
+#define   str_calcGeometry_MaxDistance "maxInstrumentDistance"
 
         /** The maximum error in the plume altitude calculation that
             we can tolerate */
-        double			m_calcGeometry_MaxPlumeAltError;
-#define			str_calcGeometry_MaxPlumeAltError "maxPlumeAltitudeError"
+        double   m_calcGeometry_MaxPlumeAltError;
+#define   str_calcGeometry_MaxPlumeAltError "maxPlumeAltitudeError"
 
         /** The maximum error in the wind direction calculation that
             we can tolerate */
-        double			m_calcGeometry_MaxWindDirectionError;
-#define			str_calcGeometry_MaxWindDirectionError "maxWindDirectionError"
+        double   m_calcGeometry_MaxWindDirectionError;
+#define   str_calcGeometry_MaxWindDirectionError "maxWindDirectionError"
 
         // ------------------------------------------------------------------------
         // ------------- SETTINGS FOR THE DUAL BEAM CALCULATIONS  -----------------
         // ------------------------------------------------------------------------
 
         /** true if we should use the maximum test length possible */
-        bool			m_fUseMaxTestLength_DualBeam;
-#define			str_fUseMaxTestLength_DualBeam "useMaximumTestLength"
+        bool   m_fUseMaxTestLength_DualBeam;
+#define   str_fUseMaxTestLength_DualBeam "useMaximumTestLength"
 
         /** The maximum acceptable error in the wind-speed as determined
             from the dual-beam measurements */
-        double			m_dualBeam_MaxWindSpeedError;
-#define			str_dualBeam_MaxWindSpeedError "maxWindSpeedError"
+        double   m_dualBeam_MaxWindSpeedError;
+#define   str_dualBeam_MaxWindSpeedError "maxWindSpeedError"
 
         /** The time a geometry measurement is valid. In seconds.
             Half of this time is before the measurement is made and half is after */
-        int				m_dualBeam_ValidTime;
-#define			str_dualBeam_ValidTime "validTime"
+        int    m_dualBeam_ValidTime;
+#define   str_dualBeam_ValidTime "validTime"
 
         // ------------------------------------------------------------------------
         // ------------------- SETTINGS FOR THE FIT WINDOWS  -----------------------
         // ------------------------------------------------------------------------
 
         /** The names of the fit-windows that we should evaluate for */
-        novac::CString			m_fitWindowsToUse[MAX_FIT_WINDOWS];
-        long			m_nFitWindowsToUse;
-#define			m_str_fitWindowToUse "FitWindow_Item"
+        novac::CString   m_fitWindowsToUse[MAX_FIT_WINDOWS];
+        long   m_nFitWindowsToUse;
+#define   m_str_fitWindowToUse "FitWindow_Item"
 
         /** The name of the most important fit-window
             In processing for fluxes, this is the window that will be used
                 to calculate the flux.
         */
-        int				m_mainFitWindow;
-#define			str_mainFitWindow "main"
+        int    m_mainFitWindow;
+#define   str_mainFitWindow "main"
 
         /** The settings for the sky spectrum to use
         */
-        SKY_OPTION		m_skyOption;
-#define			str_skyOption ""
-        long			m_skyIndex;
-#define			str_skyIndex ""
-        novac::CString			m_skySpectrumFromUser; // the sky-spectrum, only used if m_skyOption is SKY_USER
-#define			str_skySpectrumFromUser ""
+        SKY_OPTION  m_skyOption;
+#define   str_skyOption ""
+        long   m_skyIndex;
+#define   str_skyIndex ""
+        novac::CString   m_skySpectrumFromUser; // the sky-spectrum, only used if m_skyOption is SKY_USER
+#define   str_skySpectrumFromUser ""
 
 // ------------------------------------------------------------------------
 // ---------------- SETTINGS FOR THE QUALITY CONTROL  ---------------------
@@ -247,8 +250,8 @@ namespace Configuration {
 
 /** Only flux measurements with a calculated completeness higher than this
         given value will be used to calculate a flux. */
-        double			m_completenessLimitFlux;
-#define			str_completenessLimitFlux "completenessLimit"
+        double   m_completenessLimitFlux;
+#define   str_completenessLimitFlux "completenessLimit"
 
         /** All spectra with so little light that the pixel with the highest
             intensity in the fit-region has a saturation level less than this
@@ -256,16 +259,16 @@ namespace Configuration {
             This judgement is done after the dark-current & offset has been removed.
 
             Range is 0.0 (reject none) to 1.0 (reject all spectra) */
-        double			m_minimumSaturationInFitRegion;
-#define			str_minimumSaturationInFitRegion "minimumSaturationInFitRegion"
+        double   m_minimumSaturationInFitRegion;
+#define   str_minimumSaturationInFitRegion "minimumSaturationInFitRegion"
 
         /** The maximum exposure-time for a spectrum for us to consider it good
             and to evaluate it */
-        int				m_maxExposureTime_got;
-#define			str_maxExposureTime_got "MaxExpTime_Got"
+        int    m_maxExposureTime_got;
+#define   str_maxExposureTime_got "MaxExpTime_Got"
 
-        int				m_maxExposureTime_hei;
-#define			str_maxExposureTime_hei "MaxExpTime_Hei"
+        int    m_maxExposureTime_hei;
+#define   str_maxExposureTime_hei "MaxExpTime_Hei"
 
     };
 }

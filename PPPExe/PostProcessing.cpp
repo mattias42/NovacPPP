@@ -32,6 +32,7 @@
 
 #include "Meteorology/XMLWindFileReader.h"
 #include "Filesystem/Filesystem.h"
+#include "Common/EvaluationLogFileHandler.h"
 
 #include <PPPLib/VolcanoInfo.h>
 #include <PPPLib/CFileUtils.h>
@@ -99,7 +100,7 @@ void CPostProcessing::DoPostProcessing_Flux()
 
     // --------------- DOING THE EVALUATIONS -----------
 
-    if(g_userSettings.m_doEvaluations) {
+    if (g_userSettings.m_doEvaluations) {
         // Prepare for the evaluation by reading in the reference files
         ShowMessage("--- Reading References --- ");
         if (PrepareEvaluation()) {
@@ -116,10 +117,11 @@ void CPostProcessing::DoPostProcessing_Flux()
             ShowMessage(messageToUser);
 
             const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
-            Filesystem::PakFileSearchCriterion limits;
+            Filesystem::FileSearchCriterion limits;
             limits.startTime = g_userSettings.m_fromDate;
-            limits.endTime   = g_userSettings.m_toDate;
-            Filesystem::CheckForSpectraInDir(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
+            limits.endTime = g_userSettings.m_toDate;
+            limits.fileExtension = ".pak";
+            Filesystem::SearchDirectoryForFiles(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
         }
 
         if (g_userSettings.m_FTPDirectory.GetLength() > 9) {
@@ -140,7 +142,7 @@ void CPostProcessing::DoPostProcessing_Flux()
     else
     {
         // Don't evaluate the scans, just read the log-files and calculate fluxes from there.
-        // LocateEvaluationLogFiles(evalLogFiles);
+        LocateEvaluationLogFiles(g_userSettings.m_outputDirectory, evalLogFiles);
     }
 
     // Sort the evaluation-logs in order of increasing start-time, this to make
@@ -227,10 +229,11 @@ void CPostProcessing::DoPostProcessing_Strat() {
         ShowMessage(messageToUser);
 
         const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
-        Filesystem::PakFileSearchCriterion limits;
+        Filesystem::FileSearchCriterion limits;
         limits.startTime = g_userSettings.m_fromDate;
         limits.endTime = g_userSettings.m_toDate;
-        Filesystem::CheckForSpectraInDir(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
+        limits.fileExtension = ".pak";
+        Filesystem::SearchDirectoryForFiles(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
     }
     if (g_userSettings.m_FTPDirectory.GetLength() > 9) {
         CheckForSpectraOnFTPServer(pakFileList);
@@ -299,7 +302,7 @@ void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList,
     novac::CString messageToUser;
 
     // share the list of pak-files with the other functions around here
-    for(const std::string& file : pakFileList)
+    for (const std::string& file : pakFileList)
     {
         s_pakFilesRemaining.AddItem(file);
     }
@@ -1690,4 +1693,53 @@ bool CPostProcessing::ConvolveReference(Evaluation::CReferenceFile& ref, const n
     FileIo::SaveCrossSectionFile(tempFile.ToStdString(), *ref.m_data);
 
     return true;
+}
+
+void CPostProcessing::LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles)
+{
+    std::vector<std::string> evalLogFiles;
+
+    novac::CString messageToUser;
+    messageToUser.Format("Searching for evaluation log - files in directory %s", (const char*)g_userSettings.m_outputDirectory);
+    ShowMessage(messageToUser);
+
+    const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
+    Filesystem::FileSearchCriterion limits;
+    limits.startTime = g_userSettings.m_fromDate;
+    limits.endTime = g_userSettings.m_toDate;
+    limits.fileExtension = "_flux.txt";
+    Filesystem::SearchDirectoryForFiles(directory, includeSubDirs, evalLogFiles, &limits);
+
+
+    messageToUser.Format("%d Evaluation log files found, starting reading", evalLogFiles.size());
+    ShowMessage(messageToUser);
+
+    size_t nofFailedLogReads = 0;
+
+    for (std::string& f : evalLogFiles)
+    {
+        int channel;
+        CDateTime startTime;
+        MEASUREMENT_MODE mode;
+        novac::CString serial;
+        novac::CFileUtils::GetInfoFromFileName(f, startTime, serial, channel, mode);
+
+        Evaluation::CExtendedScanResult result;
+        result.m_evalLogFile[0] = f;
+        result.m_startTime      = startTime;
+
+        FileHandler::CEvaluationLogFileHandler logReader;
+        logReader.m_evaluationLog = novac::CString(f);
+        if (SUCCESS != logReader.ReadEvaluationLog() || logReader.m_scan.size() == 0)
+        {
+            ++nofFailedLogReads;
+            continue;
+        }
+        Evaluation::CScanResult scanResult = logReader.m_scan[0];
+
+        evaluationLogFiles.AddTail(result);
+    }
+
+    messageToUser.Format("%d Evaluation log files read successfully.", evalLogFiles.size() - nofFailedLogReads);
+    ShowMessage(messageToUser);
 }

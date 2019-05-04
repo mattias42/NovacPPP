@@ -184,7 +184,7 @@ protected:
     void UploadResultsToFTP();
 
     /** Locates evaluation log files in the output directory */
-    void LocateEvaluationLogFiles(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles);
+    void LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles);
 
     novac::CString GetAbsolutePathFromRelative(const novac::CString& path);
 

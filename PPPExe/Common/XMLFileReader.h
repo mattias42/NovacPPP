@@ -11,8 +11,8 @@ namespace FileHandler
     class CXMLFileReader
     {
     public:
-        CXMLFileReader(void);
-        ~CXMLFileReader(void);
+        CXMLFileReader();
+        virtual ~CXMLFileReader();
 
         /** Retrieve the next token from the xml file.
             Returns nullptr if no more tokens are available.  */

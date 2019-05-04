@@ -12,14 +12,9 @@ extern novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 using namespace FileHandler;
 using namespace novac;
 
-CProcessingFileReader::CProcessingFileReader(void)
+CProcessingFileReader::CProcessingFileReader()
 {
 }
-
-CProcessingFileReader::~CProcessingFileReader(void)
-{
-}
-
 
 RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &filename, Configuration::CUserConfiguration &settings) {
     novac::CFileException exceFile;
@@ -104,6 +99,12 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
                 settings.m_processingMode = PROCESSING_MODE_FLUX;
             }
             continue;
+        }
+
+        if (Equals(szToken, str_doEvaluations, strlen(str_doEvaluations))) {
+            novac::CString boolStr;
+            Parse_StringItem(ENDTAG(str_doEvaluations), boolStr);
+            settings.m_doEvaluations = !Equals(boolStr, "false"); // this is better than 'Equals(boolStr, "true") since any other string the user may have entered (wrongly) is ignored
         }
 
         // If we've found the main gas

@@ -23,11 +23,7 @@ namespace Evaluation
     class CPostEvaluationController
     {
     public:
-        /** Default constructor */
-        CPostEvaluationController(void);
-
-        /** Default destructor */
-        ~CPostEvaluationController(void);
+        CPostEvaluationController();
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------

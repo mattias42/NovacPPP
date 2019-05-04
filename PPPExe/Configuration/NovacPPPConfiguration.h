@@ -12,12 +12,12 @@
         This also defines the directories that we should use to store
         the output data and the temporary files.
 */
-namespace Configuration {
+namespace Configuration
+{
     class CNovacPPPConfiguration
     {
     public:
-        CNovacPPPConfiguration(void);
-        ~CNovacPPPConfiguration(void);
+        CNovacPPPConfiguration();
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------

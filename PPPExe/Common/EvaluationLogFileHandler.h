@@ -7,22 +7,17 @@
 
 namespace FileHandler
 {
-
-    //#define MAX_N_SCANS 800
-
     class CEvaluationLogFileHandler
     {
-        static const int ORIGINAL_ARRAY_LENGTH = 50;
     public:
-        CEvaluationLogFileHandler(void);
-        ~CEvaluationLogFileHandler(void);
+        CEvaluationLogFileHandler();
 
         /** The evaluation log */
         novac::CString m_evaluationLog;
 
         // ------------------- PUBLIC METHODS -------------------------
 
-        /** Reads the evaluation log */
+        /** Reads the conents of the provided evaluation log and fills in all the members of this class. */
         RETURN_CODE ReadEvaluationLog();
 
         /** Writes the contents of the array 'm_scan' to a new evaluation-log file */
@@ -30,11 +25,11 @@ namespace FileHandler
 
         /** Returns true if the scan number 'scanNo' in the most recently read
                 evaluation log file is a wind speed measurement. */
-        bool	IsWindSpeedMeasurement(int scanNo);
+        bool IsWindSpeedMeasurement(int scanNo);
 
         /** Returns true if the scan number 'scanNo' in the most recently read
                 evaluation log file is a wind speed measurement of heidelberg type. */
-        bool	IsWindSpeedMeasurement_Heidelberg(int scanNo);
+        bool IsWindSpeedMeasurement_Heidelberg(int scanNo);
 
         /** Appends the evaluation result of one spectrum to the given string.
                 @param info - the information about the spectrum
@@ -46,13 +41,10 @@ namespace FileHandler
         // ------------------- PUBLIC DATA -------------------------
 
         /** Information from the evaluated scans */
-        novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> m_scan;
+        std::vector<Evaluation::CScanResult> m_scan;
 
         /** Information of the wind field used to calculate the flux of each scan */
-        novac::CArray<Meteorology::CWindField, Meteorology::CWindField &> m_windField;
-
-        /** How many scans that have been read from the evaluation log */
-        long  m_scanNum;
+        std::vector<Meteorology::CWindField> m_windField;
 
         /** The species that were found in this evaluation log */
         novac::CString m_specie[20];
@@ -68,6 +60,7 @@ namespace FileHandler
 
         /** The additional spectrum information of one spectrum. */
         CSpectrumInfo m_specInfo;
+
     protected:
 
         typedef struct LogColumns {
@@ -80,10 +73,10 @@ namespace FileHandler
             int intensity;
             int fitIntensity;
             int peakSaturation;
-            int	fitSaturation;
+            int fitSaturation;
             int offset;
             int delta;
-            int	chiSquare;
+            int chiSquare;
             int nSpec;
             int expTime;
             int position;
@@ -91,7 +84,7 @@ namespace FileHandler
             int nSpecies;
             int starttime;
             int stoptime;
-            int	name;
+            int name;
         }LogColumns;
 
         /** Data structure to remember what column corresponds to which value in the evaluation log */
@@ -118,13 +111,13 @@ namespace FileHandler
 
         /** Makes a quick scan through the evaluation-log
             to count the number of scans in it */
-        long	CountScansInFile();
+        long CountScansInFile();
 
         /** Sorts the scans in order of collection */
         void SortScans();
 
         /** Returns true if the scans are already ordered */
-        bool	IsSorted();
+        bool IsSorted();
 
         /** Sorts the CScanResult-objects in the given array.
                 Algorithm based on MergeSort (~O(NlogN)) */

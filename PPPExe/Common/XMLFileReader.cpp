@@ -6,7 +6,7 @@
 
 using namespace FileHandler;
 
-CXMLFileReader::CXMLFileReader(void)
+CXMLFileReader::CXMLFileReader()
 {
     this->m_File = nullptr;
     this->nLinesRead = 0;
@@ -16,7 +16,7 @@ CXMLFileReader::CXMLFileReader(void)
     m_tokenPt = nullptr;
 }
 
-CXMLFileReader::~CXMLFileReader(void)
+CXMLFileReader::~CXMLFileReader()
 {
     m_tokenPt = nullptr;
 }
