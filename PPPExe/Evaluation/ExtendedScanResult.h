@@ -7,8 +7,9 @@
 #ifndef EXTENDEDSCANRESULT_H
 #define EXTENDEDSCANRESULT_H
 
-namespace Evaluation {
-    /** The class <b>CExtendedScanResult</b> is a container class used to
+namespace Evaluation
+{
+    /** The struct <b>CExtendedScanResult</b> is a container used to
         store the result of the evaluation of one .pak - file using several
         fit-windows.
 
@@ -24,24 +25,12 @@ namespace Evaluation {
             this also contains the calculated properties of the plume in the scan, such as the
             completeness, the angle of centre of mass of the plume etc.
     */
-
-    class CExtendedScanResult
+    struct CExtendedScanResult
     {
     public:
-        /** Default constructor */
-        CExtendedScanResult(void);
-
-        /** Default destructor */
-        ~CExtendedScanResult(void);
-
-        // ----------------------------------------------------------------------
-        // ---------------------- PUBLIC DATA -----------------------------------
-        // ----------------------------------------------------------------------
-
         /** The full path and file-name to the .pak-file containing the spectra
-            from which this result was computed.
-        */
-        novac::CString m_pakFile;
+            from which this result was computed. */
+        novac::CString m_pakFile = "";
 
         /** The full path and file-name of the evaluation log file that was generated.
             The file itself contains the result of the evaluation */
@@ -49,9 +38,7 @@ namespace Evaluation {
 
         /** The full name of the fit-window that was used to generate each evaluation
             result, this is typically a name such as 'SO2', 'SO2_low' or 'O4'
-
-             m_fitWindowName[i] is the name of the fit-window behind the result in m_evalLogFile[i].
-            */
+             m_fitWindowName[i] is the name of the fit-window behind the result in m_evalLogFile[i]. */
         novac::CString m_fitWindowName[MAX_FIT_WINDOWS];
 
         /** The date and time that the scan was generated. In UTC, taken from the .pak-file  */
@@ -59,22 +46,6 @@ namespace Evaluation {
 
         /** The properties of this scan. This is only evaluated in the main-fit window */
         CPlumeInScanProperty m_scanProperties;
-
-        // ----------------------------------------------------------------------
-        // --------------------- PUBLIC METHODS ---------------------------------
-        // ----------------------------------------------------------------------
-
-    protected:
-
-        // ----------------------------------------------------------------------
-        // ---------------------- PRIVATE DATA ----------------------------------
-        // ----------------------------------------------------------------------
-
-
-        // ----------------------------------------------------------------------
-        // --------------------- PRIVATE METHODS --------------------------------
-        // ----------------------------------------------------------------------
-
 
     };
 }

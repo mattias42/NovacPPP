@@ -12,7 +12,6 @@ set(NPP_EVALUATION_HEADERS
     
     
 set(NPP_EVALUATION_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MessageLog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ScanEvaluation.cpp
