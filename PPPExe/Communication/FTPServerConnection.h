@@ -26,7 +26,7 @@ namespace Communication {
             @return 0 on successful connection and completion of the list
         */
         int DownloadDataFromFTP(const novac::CString &server, const novac::CString &username,
-            const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList);
+            const novac::CString &password, std::vector<std::string>& pakFileList);
 
         /** Downloads a single file from the given FTP-server
             @return 0 on successful connection and completion of the download

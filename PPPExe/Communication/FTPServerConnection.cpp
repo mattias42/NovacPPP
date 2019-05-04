@@ -67,7 +67,7 @@ static novac::GuardedValue nFTPThreadsRunning;
 
 
 int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, const novac::CString &username,
-    const novac::CString &password, novac::CList <novac::CString, novac::CString &> &pakFileList) {
+    const novac::CString &password, std::vector<std::string>& pakFileList) {
 
     unsigned int nRounds = 0;
 
@@ -121,7 +121,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
     downloadThread.join();
 
     // copy the data to the output list
-    downloadedFiles.CopyTo<novac::CString>(pakFileList);
+    downloadedFiles.CopyTo<std::string>(pakFileList);
 
     return 0;
 }

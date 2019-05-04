@@ -31,6 +31,8 @@
 #include "WindMeasurement/WindSpeedCalculator.h"
 
 #include "Meteorology/XMLWindFileReader.h"
+#include "Filesystem/Filesystem.h"
+
 #include <PPPLib/VolcanoInfo.h>
 #include <PPPLib/CFileUtils.h>
 #include <PPPLib/ThreadUtils.h>
@@ -48,29 +50,26 @@
 #undef min
 #undef max
 
-extern Configuration::CNovacPPPConfiguration		g_setup;	   // <-- The settings
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-extern novac::CVolcanoInfo							g_volcanoes;   // <-- A list of all known volcanoes
-CPostProcessingStatistics							g_processingStats; // <-- The statistics of the processing itself
+extern Configuration::CNovacPPPConfiguration    g_setup;    // <-- The settings
+extern Configuration::CUserConfiguration        g_userSettings;// <-- The settings of the user
+extern novac::CVolcanoInfo                      g_volcanoes;   // <-- A list of all known volcanoes
+CPostProcessingStatistics                       g_processingStats; // <-- The statistics of the processing itself
 
 
 // this is the working-thread that takes care of evaluating a portion of the scans
 void EvaluateScansThread();
 
 // this takes care of adding the evaluated log-files to the list in an synchronized way
-//	 the parameter passed in a reference to an array of strings holding the names of the 
-//	 eval-log files generated
+//  the parameter passed in a reference to an array of strings holding the names of the 
+//  eval-log files generated
 void AddResultToList(const novac::CString &pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties);
 
-CPostProcessing::CPostProcessing(void)
+CPostProcessing::CPostProcessing()
 {
 }
 
-CPostProcessing::~CPostProcessing(void)
+void CPostProcessing::DoPostProcessing_Flux()
 {
-}
-
-void CPostProcessing::DoPostProcessing_Flux() {
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
     novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
     novac::CString messageToUser, statFileName, windFileName;
@@ -81,13 +80,6 @@ void CPostProcessing::DoPostProcessing_Flux() {
     // Checks that the evaluation is ok and that all settings makes sense.
     ShowMessage("--- Validating settings --- ");
     if (CheckSettings()) {
-        ShowMessage("Exiting post processing");
-        return;
-    }
-
-    // Prepare for the evaluation by reading in the reference files
-    ShowMessage("--- Reading References --- ");
-    if (PrepareEvaluation()) {
         ShowMessage("Exiting post processing");
         return;
     }
@@ -105,35 +97,60 @@ void CPostProcessing::DoPostProcessing_Flux() {
         return;
     }
 
-    // --------------- DOING THE PROCESSING -----------
+    // --------------- DOING THE EVALUATIONS -----------
 
-    // 1. Find all .pak files in the directory.
-    novac::CList <novac::CString, novac::CString&> pakFileList;
-    if (g_userSettings.m_LocalDirectory.GetLength() > 3) {
-        CheckForSpectraInDir(g_userSettings.m_LocalDirectory, pakFileList);
-    }
-    if (g_userSettings.m_FTPDirectory.GetLength() > 9) {
-        CheckForSpectraOnFTPServer(pakFileList);
-    }
-    if (pakFileList.GetCount() == 0) {
-        ShowMessage("No spectrum files found. Exiting");
-        return;
-    }
+    if(g_userSettings.m_doEvaluations) {
+        // Prepare for the evaluation by reading in the reference files
+        ShowMessage("--- Reading References --- ");
+        if (PrepareEvaluation()) {
+            ShowMessage("Exiting post processing");
+            return;
+        }
 
-    // Evaluate the scans. This at the same time generates a list of evaluation-log
-    //	files with the evaluated results
-    EvaluateScans(pakFileList, evalLogFiles);
-    messageToUser.Format("%d evaluation log files accepted", evalLogFiles.GetCount());
-    ShowMessage(messageToUser);
+        // 1. Find all .pak files in the directory.
+        ShowMessage("--- Locating Pak Files --- ");
+        std::vector<std::string> pakFileList;
+        if (g_userSettings.m_LocalDirectory.GetLength() > 3)
+        {
+            messageToUser.Format("Searching for .pak - files in directory %s", (const char*)g_userSettings.m_LocalDirectory);
+            ShowMessage(messageToUser);
+
+            const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
+            Filesystem::PakFileSearchCriterion limits;
+            limits.startTime = g_userSettings.m_fromDate;
+            limits.endTime   = g_userSettings.m_toDate;
+            Filesystem::CheckForSpectraInDir(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
+        }
+
+        if (g_userSettings.m_FTPDirectory.GetLength() > 9) {
+            CheckForSpectraOnFTPServer(pakFileList);
+        }
+        if (pakFileList.size() == 0) {
+            ShowMessage("No spectrum files found. Exiting");
+            return;
+        }
+
+        // Evaluate the scans. This at the same time generates a list of evaluation-log
+        // files with the evaluated results
+        ShowMessage("--- Running Evaluations --- ");
+        EvaluateScans(pakFileList, evalLogFiles);
+        messageToUser.Format("%d evaluation log files accepted", evalLogFiles.GetCount());
+        ShowMessage(messageToUser);
+    }
+    else
+    {
+        // Don't evaluate the scans, just read the log-files and calculate fluxes from there.
+        // LocateEvaluationLogFiles(evalLogFiles);
+    }
 
     // Sort the evaluation-logs in order of increasing start-time, this to make
-    //	the looking for matching files in 'CalculateGeometries' faster
+    // the looking for matching files in 'CalculateGeometries' faster
     ShowMessage("Evaluation done. Sorting the evaluation log files");
     SortEvaluationLogs(evalLogFiles);
     ShowMessage("Sort done.");
 
     // 3. Loop through list with output text files from evaluation and calculate
-    //		the geometries
+    //      the geometries
     CalculateGeometries(evalLogFiles, geometryResults);
 
     // 4. Apply correction from AC-DC model
@@ -148,7 +165,7 @@ void CPostProcessing::DoPostProcessing_Flux() {
     InsertCalculatedGeometriesIntoDataBase(geometryResults);
 
     // 5. Calculate the wind-speeds from the wind-speed measurements
-    //		the plume heights are taken from the database
+    //  the plume heights are taken from the database
     CalculateDualBeamWindSpeeds(evalLogFiles);
 
     // 6. Calculate flux from evaluation text files
@@ -203,32 +220,40 @@ void CPostProcessing::DoPostProcessing_Strat() {
     // --------------- DOING THE PROCESSING -----------
 
     // 1. Find all .pak files in the directory.
-    novac::CList <novac::CString, novac::CString&> pakFileList;
-    if (g_userSettings.m_LocalDirectory.GetLength() > 3) {
-        CheckForSpectraInDir(g_userSettings.m_LocalDirectory, pakFileList);
+    std::vector<std::string> pakFileList;
+    if (g_userSettings.m_LocalDirectory.GetLength() > 3)
+    {
+        messageToUser.Format("Searching for .pak - files in directory %s", (const char*)g_userSettings.m_LocalDirectory);
+        ShowMessage(messageToUser);
+
+        const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
+        Filesystem::PakFileSearchCriterion limits;
+        limits.startTime = g_userSettings.m_fromDate;
+        limits.endTime = g_userSettings.m_toDate;
+        Filesystem::CheckForSpectraInDir(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
     }
     if (g_userSettings.m_FTPDirectory.GetLength() > 9) {
         CheckForSpectraOnFTPServer(pakFileList);
     }
-    if (pakFileList.GetCount() == 0) {
+    if (pakFileList.size() == 0) {
         ShowMessage("No spectrum files found. Exiting");
         return;
     }
 
     // Evaluate the scans. This at the same time generates a list of evaluation-log
-    //	files with the evaluated results
+    // files with the evaluated results
     EvaluateScans(pakFileList, evalLogFiles);
     messageToUser.Format("%d evaluation log files accepted", evalLogFiles.GetCount());
     ShowMessage(messageToUser);
 
     // Sort the evaluation-logs in order of increasing start-time, this to make
-    //	the looking for matching files in 'CalculateGeometries' faster
+    // the looking for matching files in 'CalculateGeometries' faster
     ShowMessage("Evaluation done. Sorting the evaluation log files");
     SortEvaluationLogs(evalLogFiles);
     ShowMessage("Sort done.");
 
     ShowMessage("Calculating stratospheric columns");
-    //	strat.CalculateVCDs(evalLogFiles);
+    // strat.CalculateVCDs(evalLogFiles);
     ShowMessage("Calculation Done");
 
     // 7. Write the statistics
@@ -246,115 +271,8 @@ void CPostProcessing::DoPostProcessing_Geometry() {
 
 }
 
-void CPostProcessing::CheckForSpectraInDir(const novac::CString &path, novac::CList <novac::CString, novac::CString&> &fileList) {
-    int channel;
-    CDateTime startTime;
-    novac::CString serial, userMessage;
-    MEASUREMENT_MODE mode;
-
-    userMessage.Format("Searching for .pak - files in directory %s", (const char*)path);
-    ShowMessage(userMessage);
-
-    try
-    {
-
-        // ------------------------------------ OPTION 1 -----------------------------------------
-        // ------ If we want to search for sub-directories, then search for all directories... ---
-        // ---------------------------------------------------------------------------------------
-        if (g_userSettings.m_includeSubDirectories_Local) {
-            Poco::DirectoryIterator dir{ path.std_str() };
-            Poco::DirectoryIterator end;
-
-            while (dir != end) {
-                novac::CString fileName, fullFileName;
-                fileName.Format("%s", dir.name().c_str());
-                fullFileName.Format("%s/%s", (const char*)path, dir.name().c_str());
-                const bool isDirectory = dir->isDirectory();
-
-                ++dir; // go to next file in the directory
-
-                if (novac::Equals(dir.name(), ".") || novac::Equals(dir.name(), "..")) {
-                    continue;
-                }
-
-                // if this is a directory...
-                if (isDirectory) {
-                    CheckForSpectraInDir(fullFileName, fileList);
-                }
-                else {
-                    // if this is a .pak - file
-                    if (novac::Equals(fileName.Right(4), ".pak")) {
-                        // if this is a incomplete scan, then don't process it.
-                        if (novac::CFileUtils::IsIncompleteFile(fileName))
-                        {
-                            continue;
-                        }
-
-                        // check that this file is in the time-interval that we should evaluate spectra...
-                        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
-
-                        if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime)
-                        {
-                            continue;
-                        }
-
-                        // We've passed all the tests for the .pak-file.
-                        // Append the found file to the list of files to split and evaluate...
-                        fileList.AddTail(fullFileName);
-                    }
-                }
-            }
-
-            return;
-        }
-
-        // ------------------------------------ OPTION 2 -----------------------------------------
-        // --------------------- Find all .pak-files in the specified directory ------------------
-        // ---------------------------------------------------------------------------------------
-
-        Poco::DirectoryIterator dir{ path.std_str() };
-        Poco::DirectoryIterator end;
-
-        // Search for the file
-        while (dir != end) {
-            novac::CString fileName, fullFileName;
-            fileName.Format("%s", dir.name().c_str());
-            fullFileName.Format("%s%c%s", (const char*)path, Poco::Path::separator(), dir.name().c_str());
-
-            // if this is a incomplete scan, then don't process it.
-            if (novac::CFileUtils::IsIncompleteFile(fileName))
-            {
-                continue;
-            }
-
-            // check that this file is in the time-interval that we should evaluate spectra...
-            novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode);
-
-            if (startTime < g_userSettings.m_fromDate || g_userSettings.m_toDate < startTime) {
-                continue;
-            }
-
-            // We've passed all the tests for the .pak-file.
-            // Append the found file to the list of files to split and evaluate...
-            fileList.AddTail(fileName);
-        }
-    }
-    catch (Poco::PathNotFoundException& e)
-    {
-        ShowMessage(e.what());
-    }
-}
-
-/** Scans through the given FTP-server in search for .pak-files
-    The files will be downloaded to the local computer (to the
-    temporary directory) and the returned path's will be pointing
-    there.
-
-    @param path - the directory (on the local computer) where
-        to search for files
-    @param fileList - will be appended with the path's and
-    file-names of the found .pak-files */
-void CPostProcessing::CheckForSpectraOnFTPServer(novac::CList <novac::CString, novac::CString&> &fileList) {
+void CPostProcessing::CheckForSpectraOnFTPServer(std::vector<std::string>& fileList)
+{
     Communication::CFTPServerConnection serverDownload;
 
     int ret = serverDownload.DownloadDataFromFTP(g_userSettings.m_FTPDirectory,
@@ -375,21 +293,15 @@ novac::GuardedList<Evaluation::CExtendedScanResult> s_evalLogs;
 
 volatile unsigned long s_nFilesToProcess;
 
-/** Runs through the supplied list of .pak-files and evaluates each one
-    using the setups found in the global settings.
-    @param pakFiles - the list of pak-files to evaluate.
-    @param evalLogs - will on successful return be filled with the path's and
-        filenames of each evaluation log file generated.
-    */
-void CPostProcessing::EvaluateScans(novac::CList<novac::CString, novac::CString &>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evalLogFiles) {
-    s_nFilesToProcess = (long)pakFileList.GetCount();
+void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evalLogFiles)
+{
+    s_nFilesToProcess = (long)pakFileList.size();
     novac::CString messageToUser;
 
     // share the list of pak-files with the other functions around here
-    auto pos = pakFileList.GetHeadPosition();
-    while (pos != nullptr) {
-        const novac::CString& file = pakFileList.GetNext(pos);
-        s_pakFilesRemaining.AddItem(file.std_str());
+    for(const std::string& file : pakFileList)
+    {
+        s_pakFilesRemaining.AddItem(file);
     }
 
     // Keep the user informed about what we're doing
@@ -427,7 +339,7 @@ void EvaluateScansThread() {
         CPlumeInScanProperty scanProperties[MAX_FIT_WINDOWS];
 
         // evaluate the .pak-file in all the specified fit-windows and retrieve the name of the 
-        //	eval-logs. If any of the fit-windows fails then the scan is not inserted.
+        // eval-logs. If any of the fit-windows fails then the scan is not inserted.
         bool evaluationSucceeded = true;
         for (int fitWindowIndex = 0; fitWindowIndex < g_userSettings.m_nFitWindowsToUse; ++fitWindowIndex) {
             if (0 != eval.EvaluateScan(fileName, g_userSettings.m_fitWindowsToUse[fitWindowIndex], &evalLog[fitWindowIndex], &scanProperties[fitWindowIndex])) {
@@ -455,9 +367,6 @@ void EvaluateScansThread() {
     }
 }
 
-// this function takes care of adding filenames to the list
-//	in a synchronized way so that no two threads access
-//	the list at the same time...
 void AddResultToList(const novac::CString &pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties) {
     // these are not used...
     novac::CString serial;
@@ -499,7 +408,7 @@ int CPostProcessing::CheckSettings() {
 
 
     // Check that, for each spectrometer, there's only one fit-window defined
-    //	at each instant
+    // at each instant
     for (j = 0; j < g_setup.m_instrumentNum; ++j) {
         if (g_setup.m_instrument[j].m_eval.GetFitWindowNum() == 1) {
             continue;
@@ -526,7 +435,7 @@ int CPostProcessing::CheckSettings() {
 
 
     // Check that, for each spectrometer, there's only one location defined
-    //	at each instant
+    // at each instant
     for (j = 0; j < g_setup.m_instrumentNum; ++j) {
         if (g_setup.m_instrument[j].m_location.GetLocationNum() == 1) {
             continue;
@@ -620,7 +529,7 @@ int CPostProcessing::PrepareEvaluation() {
                     }
 
                     // If we are supposed to high-pass filter the spectra then
-                    //	we should also high-pass filter the cross-sections
+                    // we should also high-pass filter the cross-sections
                     if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB) {
                         if (window.ref[referenceIndex].m_isFiltered == false) {
                             if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring")) {
@@ -632,7 +541,7 @@ int CPostProcessing::PrepareEvaluation() {
                         }
                         else {
                             // The filtered cross sections are scaled to the unit of ppmm
-                            //	rescale them to molecules/cm2 as all other cross sections
+                            // rescale them to molecules/cm2 as all other cross sections
                             Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
                         }
                     }
@@ -672,7 +581,7 @@ int CPostProcessing::PrepareEvaluation() {
             }
 
             // If we've made it this far, then we've managed to read in all the references. Now
-            //	store the data in g_setup
+            // store the data in g_setup
             g_setup.m_instrument[instrumentIndex].m_eval.SetFitWindow(fitWindowIndex, window, &fromTime, &toTime);
         }
     }
@@ -800,7 +709,7 @@ int CPostProcessing::PreparePlumeHeights() {
     plumeHeight.m_validTo = CDateTime(9999, 12, 31, 23, 59, 59);
 
     // the estimated plume height is half of the altitude difference between the highest
-    //	instrument for this volcano and the volcano altitude
+    // instrument for this volcano and the volcano altitude
     double maxInstrumentAltitude = -1e6;
     Configuration::CInstrumentLocation location;
     novac::CString volcanoName;
@@ -860,7 +769,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
         ++nFilesChecked1; // for debugging...
 
         // if this is the last file in the list, then
-        //	quit. There's nothing more to compare to...
+        // quit. There's nothing more to compare to...
         if (pos1 == nullptr) {
             break;
         }
@@ -900,7 +809,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             novac::CFileUtils::GetInfoFromFileName(evalLog2, startTime2, serial2, channel, measMode2);
 
             // The time elapsed between the two measurements must not be more than 
-            //	the user defined time-limit (in seconds)
+            // the user defined time-limit (in seconds)
             double timeDifference = fabs(CDateTime::Difference(startTime1, startTime2));
             if (timeDifference > g_userSettings.m_calcGeometry_MaxTimeDifference) {
                 pos2 = nullptr;
@@ -971,8 +880,8 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
         } // end while(pos2 != nullptr)
 
         // if it was not possible to combine this scan with any other to generate an
-        //	estimated plume height and wind direction we might still be able to use it to calculate
-        //	a wind direction given the plume height at the time of the measurement.
+        // estimated plume height and wind direction we might still be able to use it to calculate
+        // a wind direction given the plume height at the time of the measurement.
         if (!successfullyCombined) {
             Meteorology::CWindField windField;
             Geometry::CPlumeHeight plumeHeight;
@@ -984,8 +893,8 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             Geometry::CGeometryResult *result = new Geometry::CGeometryResult();
 
             // Get the altitude of the plume at this moment. First look into the
-            //	general database. Then have a look in the list of geometry-results
-            //	that we just generated to see if there's anything better there...
+            // general database. Then have a look in the list of geometry-results
+            // that we just generated to see if there's anything better there...
             m_plumeDataBase.GetPlumeHeight(startTime1, plumeHeight);
             auto gp = geometryResults.GetTailPosition();
             while (gp != nullptr) {
@@ -1005,7 +914,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
                 result->m_instr1.Format(serial1);
                 geometryResults.AddTail(result);
 
-                // tell the user			
+                // tell the user   
                 messageToUser.Format(" + Calculated a wind direction of %.0lf +- %.0lf degrees from a scan by instrument %s",
                     result->m_windDirection, result->m_windDirectionError, (const char*)serial1);
                 ShowMessage(messageToUser);
@@ -1076,8 +985,8 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
     Flux::CFluxCalculator fluxCalc;
 
     // Loop through the list of evaluation log files. For each of them, find
-    //	the best available wind-speed, wind-direction and plume height and
-    //	calculate the flux.
+    // the best available wind-speed, wind-direction and plume height and
+    // calculate the flux.
     auto pos = evalLogFiles.GetHeadPosition();
     while (pos != nullptr) {
         // Get the name of this eval-log
@@ -1106,7 +1015,7 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
         ShowMessage(messageToUser);
 
         // Calculate the flux. This also takes care of writing
-        //	the results to file
+        // the results to file
         Flux::CFluxResult fluxResult;
         if (0 == fluxCalc.CalculateFlux(evalLog, m_windDataBase, plumeHeight, fluxResult)) {
             calculatedFluxes.AddTail(fluxResult);
@@ -1492,7 +1401,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
         const novac::CString &fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[g_userSettings.m_mainFitWindow];
 
         // to know the start-time of the measurement, we need to 
-        //	extract just the file-name, i.e. remove the path
+        // extract just the file-name, i.e. remove the path
         fileName = novac::CString(fileNameAndPath);
         Common::GetFileName(fileName);
 
@@ -1534,13 +1443,13 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 
     // -------------------------------- step 2. -------------------------------------
     // loop through each of the measurements from the heidelberg instruments
-    //	and calculate the wind speed for each measurement
+    // and calculate the wind speed for each measurement
     auto instrPos = heidelbergList.GetHeadPosition();
     while (instrPos != nullptr) {
         const novac::CString &fileNameAndPath = heidelbergList.GetNext(instrPos);
 
         // to know the start-time of the measurement, we need to 
-        //	extract just the file-name, i.e. remove the path
+        // extract just the file-name, i.e. remove the path
         fileName = novac::CString(fileNameAndPath);
         Common::GetFileName(fileName);
         novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
@@ -1582,7 +1491,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
 
     // -------------------------------- step 3. -------------------------------------
     // loop through each of the measurements from a master-channel and try to match them with a measurement
-    //	from a slave channel...
+    // from a slave channel...
     auto masterPos = masterList.GetHeadPosition();
     while (masterPos != nullptr) {
         const novac::CString &fileNameAndPath = masterList.GetNext(masterPos);
@@ -1686,13 +1595,14 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
             left.GetNext(pos3);
         }
     }
+
     while (pos3 != nullptr) {
         evalLogs.AddTail(left.GetNext(pos3));
     }
+
     while (pos2 != nullptr) {
         evalLogs.AddTail(right.GetNext(pos2));
     }
-
 
     return;
 }

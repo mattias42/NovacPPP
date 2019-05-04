@@ -23,8 +23,7 @@ namespace Evaluation {
 class CPostProcessing
 {
 public:
-    CPostProcessing(void);
-    ~CPostProcessing(void);
+    CPostProcessing();
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
@@ -48,6 +47,7 @@ public:
     /** Performs an post processing of already evaluated data in order
         to generate plume heights and wind directions */
     void DoPostProcessing_Geometry();
+
 protected:
 
     // ----------------------------------------------------------------------
@@ -90,14 +90,6 @@ protected:
         @return 0 on success, otherwese non-zero */
     int PreparePlumeHeights();
 
-    /** Scans through the given directory in search for .pak-files
-        @param path - the directory (on the local computer) where
-            to search for files
-        @param fileList - will be appended with the path's and
-        file-names of the found .pak-files */
-    void CheckForSpectraInDir(const novac::CString &path,
-        novac::CList <novac::CString, novac::CString&> &fileList);
-
     /** Scans through the FTP-server (using the IP,username and password
         found in g_userSettings) in search for .pak-files
         The files will be downloaded to the local computer (to the
@@ -106,7 +98,7 @@ protected:
 
         @param fileList - will be appended with the path's and
         file-names of the found .pak-files (these will be in the TEMP directory) */
-    void CheckForSpectraOnFTPServer(novac::CList <novac::CString, novac::CString&> &fileList);
+    void CheckForSpectraOnFTPServer(std::vector<std::string>& fileList);
 
     /** Runs through the supplied list of .pak-files and evaluates
         each one using the setups found in the global settings.
@@ -115,7 +107,7 @@ protected:
             with the path's and filenames of each evaluation log
             file generated and the properties of each scan.
         */
-    void EvaluateScans(novac::CList <novac::CString, novac::CString &> &pakFileList,
+    void EvaluateScans(const std::vector<std::string>& pakFileList,
         novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles);
 
     /** Runs through the supplied list of evaluation - logs and performs
@@ -190,6 +182,9 @@ protected:
 
     /** Takes care of uploading the result files to the FTP server */
     void UploadResultsToFTP();
+
+    /** Locates evaluation log files in the output directory */
+    void LocateEvaluationLogFiles(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles);
 
     novac::CString GetAbsolutePathFromRelative(const novac::CString& path);
 
