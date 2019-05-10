@@ -15,14 +15,13 @@ CSetupFileReader::~CSetupFileReader(void)
 }
 
 RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Configuration::CNovacPPPConfiguration &setup) {
-    novac::CStdioFile file;
 
     // 1. Open the file
-    if (!file.Open(filename, novac::CStdioFile::ModeFlag::modeRead | novac::CStdioFile::ModeFlag::typeText)) {
+    if (!Open(filename))
+    {
         ShowMessage(std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'"));
         return FAIL;
     }
-    this->m_File = &file;
 
     // Parse the file
     while (nullptr != (szToken = NextToken())) {
@@ -41,7 +40,8 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Conf
 
 
     }//end while
-    file.Close();
+
+    Close();
 
     return SUCCESS;
 }

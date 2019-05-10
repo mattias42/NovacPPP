@@ -14,6 +14,10 @@ namespace FileHandler
         CXMLFileReader();
         virtual ~CXMLFileReader();
 
+        // Non copyable object, since we are managing a file pointer
+        CXMLFileReader(const CXMLFileReader&) = delete;
+        CXMLFileReader& operator=(const CXMLFileReader&) = delete;
+
         /** Retrieve the next token from the xml file.
             Returns nullptr if no more tokens are available.  */
         char *NextToken();
@@ -47,22 +51,26 @@ namespace FileHandler
         /** General parsing of a date */
         int Parse_Date(const novac::CString &label, CDateTime &datum);
 
-        /**set the opened file pointer*/
-        void SetFile(novac::CStdioFile* file);
-
-        /**variables*/
-
-        /** A handle to the file to read from. */
-        novac::CStdioFile *m_File;
+    protected:
+        /** The tokenizer */
+        char *szToken = nullptr;
 
         /** The name of the currently opened file. For debugging reasons */
-        novac::CString m_filename;
+        novac::CString m_filename = "";
 
-        /** The number of lines that has been read from the file */
-        long nLinesRead;
+        /** Opens the provided file for reading.
+            @return true if successful */
+        bool Open(const novac::CString &fileName);
 
-        /** The tokenizer */
-        char *szToken;
+        /** Closes m_File */
+        void Close();
+
+    private:
+        /** Pointer to the next token. Should only be modified by 'NextToken()' */
+        char* m_tokenPt = nullptr;
+
+        /** A handle to the file to read from. */
+        novac::CStdioFile* m_File = nullptr;
 
         /** The string that was read from the file */
         char szLine[4096];
@@ -70,9 +78,8 @@ namespace FileHandler
         /** String representing the value of the last retrieved attribute */
         char attributeValue[4096];
 
-    protected:
-        /** Pointer to the next token. Should only be modified by 'NextToken()' */
-        char *m_tokenPt;
+        /** The number of lines that has been read from the file */
+        long nLinesRead = 0;
 
     };
 }

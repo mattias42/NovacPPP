@@ -17,14 +17,11 @@ CProcessingFileReader::CProcessingFileReader()
 }
 
 RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &filename, Configuration::CUserConfiguration &settings) {
-    novac::CFileException exceFile;
-    novac::CStdioFile file;
 
     // 1. Open the file
-    if (!file.Open(filename, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
+    if (!Open(filename)) {
         return FAIL;
     }
-    this->m_File = &file;
 
     // Parse the file
     while (szToken = NextToken()) {
@@ -197,7 +194,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
         }
 
     }//end while
-    file.Close();
+    Close();
 
     return SUCCESS;
 }

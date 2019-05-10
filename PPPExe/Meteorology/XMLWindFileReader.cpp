@@ -28,8 +28,6 @@ CXMLWindFileReader::~CXMLWindFileReader(void)
     In the format specified for the NovacPostProcessingProgram (NPPP)
     @return 0 on sucess */
 int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology::CWindDataBase &dataBase) {
-    novac::CFileException exceFile;
-    novac::CStdioFile file;
     novac::CString localFileName, userMessage;
 
     // 0. If the file is on the server, then download it first
@@ -59,12 +57,10 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
 
 
     // 1. Open the file
-    if (!file.Open(localFileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
+    if (!Open(localFileName)) {
         ShowMessage(std::string("Failed to open wind field file for reading: '") + localFileName.std_str());
         return 1;
     }
-    this->m_File = &file;
-    this->m_filename.Format(localFileName);
 
     // parse the file
     while (nullptr != (szToken = NextToken())) {
@@ -91,7 +87,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString &fileName, Meteorology
         }
     }
 
-    file.Close();
+    Close();
 
     return 0;
 }

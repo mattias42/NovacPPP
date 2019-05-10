@@ -461,10 +461,10 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 
     // 2. Find the wind-speed measurement series in the log-files
     for (k = 0; k < 2; ++k) {
-        for (scanIndex[k] = 0; scanIndex[k] < reader[k].m_scanNum; ++scanIndex[k])
+        for (scanIndex[k] = 0; scanIndex[k] < reader[k].m_scan.size(); ++scanIndex[k])
             if (reader[k].IsWindSpeedMeasurement(scanIndex[k]))
                 break;
-        if (scanIndex[k] == reader[k].m_scanNum)
+        if (scanIndex[k] == reader[k].m_scan.size())
             return FAIL;		// <-- no wind-speed measurement found
     }
 
@@ -579,11 +579,11 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
         return FAIL;
 
     // 2. Find the wind-speed measurement series in the log-files
-    for (scanIndex = 0; scanIndex < reader.m_scanNum; ++scanIndex)
+    for (scanIndex = 0; scanIndex < reader.m_scan.size(); ++scanIndex)
         if (reader.IsWindSpeedMeasurement_Heidelberg(scanIndex))
             break;
-    if (scanIndex == reader.m_scanNum)
-        return FAIL;		// <-- no wind-speed measurement found
+    if (scanIndex == reader.m_scan.size())
+        return FAIL; // <-- no wind-speed measurement found
 
     // 3. Create the wind-speed measurement series
 

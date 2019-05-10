@@ -8,8 +8,7 @@ namespace FileHandler {
     class CEvaluationConfigurationParser : public CXMLFileReader
     {
     public:
-        CEvaluationConfigurationParser(void);
-        ~CEvaluationConfigurationParser(void);
+        CEvaluationConfigurationParser();
 
         /** Reads in an evaluation-configuration file.
             In the format specified for the NovacPostProcessingProgram (NPPP)

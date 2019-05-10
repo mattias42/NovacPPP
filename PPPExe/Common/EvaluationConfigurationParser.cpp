@@ -6,26 +6,17 @@
 using namespace FileHandler;
 using namespace novac;
 
-CEvaluationConfigurationParser::CEvaluationConfigurationParser(void)
+CEvaluationConfigurationParser::CEvaluationConfigurationParser()
 {
 }
 
-CEvaluationConfigurationParser::~CEvaluationConfigurationParser(void)
-{
-}
-
-/** Reads in an evaluation-configuration file.
-    In the format specified for the NovacPostProcessingProgram (NPPP)
-    @return 0 on sucess */
 int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings) {
-    novac::CFileException exceFile;
-    novac::CStdioFile file;
 
     // 1. Open the file
-    if (!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
+    if(!Open(fileName))
+    {
         return FAIL;
     }
-    this->m_File = &file;
 
     // parse the file
     while (szToken = NextToken()) {
@@ -60,12 +51,11 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
             darkSettings->InsertDarkCurrentCorrectionSettings(dSettings, &validFrom, &validTo);
         }
     }
+    Close();
 
     return 0;
 }
 
-/** Writes an evaluation configuration file in the NPPP-format
-    @return 0 on success */
 int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings) {
     novac::CString indent, str;
     Evaluation::CFitWindow window;
@@ -224,7 +214,6 @@ void SaveSlitFunctionAndWavelengthCalibration(Evaluation::CFitWindow &window, no
     }
 }
 
-/** Reads a 'fitWindow' section */
 int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo) {
     window.Clear();
     novac::CString slitfunctionFile, wavelengthCalibFile;
@@ -343,7 +332,6 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
     return 1;
 }
 
-/** Reads a 'Reference' section */
 int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &window) {
     int nRef = window.nRef;
 
@@ -445,7 +433,6 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
     return FAIL;
 }
 
-/** Reads a 'dark-correction' section */
 int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo) {
     dSettings.Clear();
     novac::CString str;

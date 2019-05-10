@@ -8,23 +8,40 @@ using namespace FileHandler;
 
 CXMLFileReader::CXMLFileReader()
 {
-    this->m_File = nullptr;
-    this->nLinesRead = 0;
-    this->szToken = nullptr;
-    this->m_filename.Format("");
-
-    m_tokenPt = nullptr;
 }
 
 CXMLFileReader::~CXMLFileReader()
 {
     m_tokenPt = nullptr;
+    Close();
 }
 
-void CXMLFileReader::SetFile(novac::CStdioFile *file)
+bool CXMLFileReader::Open(const novac::CString &fileName)
 {
-    m_File = file;
+    novac::CStdioFile file;
+    novac::CFileException exceFile;
+
+    if (!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
+        return false;
+    }
+    this->m_File = &file;
+    this->m_filename = fileName;
+    this->nLinesRead = 0;
+
+    return true;
 }
+
+void CXMLFileReader::Close()
+{
+    if (nullptr != m_File)
+    {
+        m_File->Close();
+        m_File = nullptr;
+    }
+
+    m_filename = "";
+}
+
 
 char *CXMLFileReader::NextToken() {
     char separators[] = "<>\t";
@@ -67,10 +84,8 @@ char *CXMLFileReader::NextToken() {
     }
 }
 
-/** Retrieves the value of the given attribute from the current token
-    @return nullptr if this attribute does not exist or the current token is not
-        a valid element */
-const char *CXMLFileReader::GetAttributeValue(const novac::CString &label) {
+const char *CXMLFileReader::GetAttributeValue(const novac::CString &label)
+{
     novac::CString toSearchFor;
 
     if (nLinesRead == 0 || szToken == nullptr) {
@@ -224,7 +239,6 @@ int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number) {
     return 0;
 }
 
-/** General parsing of a single, simple long integer item */
 int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3) {
     while (nullptr != (szToken = NextToken())) {
         int i0, i1, i2, i3;
@@ -234,10 +248,10 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE 
         }
 
         sscanf(szToken, "%d.%d.%d.%d", &i0, &i1, &i2, &i3);
-        ip0 = i0;
-        ip1 = i1;
-        ip2 = i2;
-        ip3 = i3;
+        ip0 = (BYTE)i0;
+        ip1 = (BYTE)i1;
+        ip2 = (BYTE)i2;
+        ip3 = (BYTE)i3;
     }
 
     return 0;
@@ -262,18 +276,18 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum) {
 
         if (pt == nullptr) {
             nFields = sscanf(szToken, "%d.%d.%d", &i0, &i1, &i2);
-            datum.year = i0;
-            datum.month = i1;
-            datum.day = i2;
+            datum.year = (unsigned short)i0;
+            datum.month = (unsigned char)i1;
+            datum.day = (unsigned char)i2;
         }
         else {
             nFields = sscanf(szToken, "%d.%d.%dT%d:%d:%d", &i0, &i1, &i2, &i3, &i4, &i5);
-            datum.year = i0;
-            datum.month = i1;
-            datum.day = i2;
-            datum.hour = i3;
-            datum.minute = i4;
-            datum.second = i5;
+            datum.year = (unsigned short)i0;
+            datum.month = (unsigned char)i1;
+            datum.day = (unsigned char)i2;
+            datum.hour = (unsigned char)i3;
+            datum.minute = (unsigned char)i4;
+            datum.second = (unsigned char)i5;
         }
 
         if (nFields == 0) {
