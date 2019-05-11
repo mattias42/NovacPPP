@@ -1,10 +1,12 @@
 #pragma once
 
-#include <SpectralEvaluation/Configuration/DarkSettings.h>
 #include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/CArray.h>
 
-namespace Configuration {
+namespace Configuration
+{
+    struct CDarkSettings;
+
     class CDarkCorrectionConfiguration
     {
     public:

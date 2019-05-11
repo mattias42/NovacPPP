@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <memory>
 #include <cstring>
+#include <SpectralEvaluation/Configuration/DarkSettings.h>
 
 using namespace FileHandler;
 using namespace novac;
@@ -152,7 +153,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
         fprintf(f, "\t\t<validFrom>%04d.%02d.%02d</validFrom>\n", from.year, from.month, from.day);
         fprintf(f, "\t\t<validTo>%04d.%02d.%02d</validTo>\n", to.year, to.month, to.day);
 
-        if (dSettings.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::MEASURE) {
+        if (dSettings.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::MEASURED_IN_SCAN) {
             // only use a dark-spectrum with the same exp.-time
             fprintf(f, "\t\t<dark>SCAN</dark>\n");
         }
@@ -161,7 +162,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
             fprintf(f, "\t\t<dark>MODEL</dark>\n");
 
             // dark-current
-            if (dSettings.m_darkCurrentOption == Configuration::DARK_MODEL_OPTION::MEASURED) {
+            if (dSettings.m_darkCurrentOption == Configuration::DARK_MODEL_OPTION::MEASURED_IN_SCAN) {
                 fprintf(f, "\t\t<darkCurrent>SCAN</darkCurrent>\n");
             }
             else {
@@ -170,7 +171,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
             }
 
             // offset
-            if (dSettings.m_offsetOption == Configuration::DARK_MODEL_OPTION::MEASURED) {
+            if (dSettings.m_offsetOption == Configuration::DARK_MODEL_OPTION::MEASURED_IN_SCAN) {
                 fprintf(f, "\t\t<offset>SCAN</offset>\n");
             }
             else {
@@ -179,7 +180,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
             }
 
         }
-        else if (dSettings.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::DARK_USER_SUPPLIED) {
+        else if (dSettings.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::USER_SUPPLIED) {
             fprintf(f, "\t\t<dark>USER</dark>\n");
             fprintf(f, "\t\t<darkCurrentSpec>%s</darkCurrentSpec>\n", dSettings.m_darkCurrentSpec.c_str());
             fprintf(f, "\t\t<offsetSpec>%s</offsetSpec>\n", dSettings.m_offsetSpec.c_str());
@@ -471,10 +472,10 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
                 dSettings.m_darkSpecOption = Configuration::DARK_SPEC_OPTION::MODEL_ALWAYS;
             }
             else if (Equals(str, "USER")) {
-                dSettings.m_darkSpecOption = Configuration::DARK_SPEC_OPTION::DARK_USER_SUPPLIED;
+                dSettings.m_darkSpecOption = Configuration::DARK_SPEC_OPTION::USER_SUPPLIED;
             }
             else {
-                dSettings.m_darkSpecOption = Configuration::DARK_SPEC_OPTION::MEASURE;
+                dSettings.m_darkSpecOption = Configuration::DARK_SPEC_OPTION::MEASURED_IN_SCAN;
             }
             continue;
         }
@@ -491,7 +492,7 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
                 dSettings.m_darkCurrentOption = Configuration::DARK_MODEL_OPTION::USER_SUPPLIED;
             }
             else {
-                dSettings.m_darkCurrentOption = Configuration::DARK_MODEL_OPTION::MEASURED;
+                dSettings.m_darkCurrentOption = Configuration::DARK_MODEL_OPTION::MEASURED_IN_SCAN;
             }
             continue;
         }
@@ -508,7 +509,7 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
                 dSettings.m_offsetOption = Configuration::DARK_MODEL_OPTION::USER_SUPPLIED;
             }
             else {
-                dSettings.m_offsetOption = Configuration::DARK_MODEL_OPTION::MEASURED;
+                dSettings.m_offsetOption = Configuration::DARK_MODEL_OPTION::MEASURED_IN_SCAN;
             }
             continue;
         }

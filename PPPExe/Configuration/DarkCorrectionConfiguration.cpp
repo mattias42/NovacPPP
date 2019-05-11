@@ -1,4 +1,5 @@
 #include "DarkCorrectionConfiguration.h"
+#include <SpectralEvaluation/Configuration/DarkSettings.h>
 
 using namespace Configuration;
 

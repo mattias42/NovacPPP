@@ -1,6 +1,7 @@
 #include "PostEvaluationController.h"
 #include "ScanEvaluation.h"
 #include <cstring>
+#include <SpectralEvaluation/Configuration/DarkSettings.h>
 
 // This is the information we need to continue an old processing
 #include "../ContinuationOfProcessing.h"
