@@ -118,7 +118,8 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
     if (g_userSettings.m_skyOption != SKY_USER) {
         // Get the dark-spectrum and remove it from the sky
-        if (SUCCESS != GetDark(scan, sky, dark, darkSettings)) {
+        if (SUCCESS != GetDark(scan, sky, dark, darkSettings))
+        {
             return -1;
         }
         sky.Sub(dark);
@@ -194,7 +195,8 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
             current.InterpolateSpectrum();
 
         // b. Get the dark spectrum for this measured spectrum
-        if (SUCCESS != GetDark(scan, current, dark, darkSettings)) {
+        if (SUCCESS != GetDark(scan, current, dark, darkSettings))
+        {
             delete scan;
             delete eval;
             return 0;
