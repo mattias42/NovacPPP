@@ -102,8 +102,8 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
 
 long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings) {
     novac::CString message;	// used for ShowMessage messages
-    int	index = 0;		// keeping track of the index of the current spectrum into the .pak-file
-    double highestColumn = 0.0;	// the highest column-value in the evaluation
+    int	curSpectrumIndex = 0;		// keeping track of the index of the current spectrum into the .pak-file
+    double highestColumnInScan = 0.0;	// the highest column-value in the evaluation
 
     // variables for storing the sky, dark and the measured spectra
     CSpectrum sky, dark, current;
@@ -137,7 +137,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     m_fitLow -= sky.m_info.m_startChannel;
     m_fitHigh -= sky.m_info.m_startChannel;
 
-    index = -1; // we're at spectrum number 0 in the .pak-file
+    curSpectrumIndex = -1; // we're at spectrum number 0 in the .pak-file
     m_indexOfMostAbsorbingSpectrum = -1;	// as far as we know, there's no absorption in any spectrum...
 
     // the data structure to keep track of the evaluation results
@@ -182,7 +182,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
             }
         }
 
-        ++index;	// we'have just read the next spectrum in the .pak-file
+        ++curSpectrumIndex;	// we'have just read the next spectrum in the .pak-file
 
         // If the read spectrum is the sky or the dark spectrum, 
         //	then don't evaluate it...
@@ -240,9 +240,9 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
         m_result->CheckGoodnessOfFit(current.m_info);
 
         // g. If it is ok, then check if the value is higher than any of the previous ones
-        if (m_result->IsOk(m_result->GetEvaluatedNum() - 1) && fabs(m_result->GetColumn(m_result->GetEvaluatedNum() - 1, 0)) > highestColumn) {
-            highestColumn = fabs(m_result->GetColumn(m_result->GetEvaluatedNum() - 1, 0));
-            m_indexOfMostAbsorbingSpectrum = index;
+        if (m_result->IsOk(m_result->GetEvaluatedNum() - 1) && fabs(m_result->GetColumn(m_result->GetEvaluatedNum() - 1, 0)) > highestColumnInScan) {
+            highestColumnInScan = fabs(m_result->GetColumn(m_result->GetEvaluatedNum() - 1, 0));
+            m_indexOfMostAbsorbingSpectrum = curSpectrumIndex;
         }
     } // end while(1)
 
@@ -268,84 +268,57 @@ RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const 
         return FAIL;
 }
 
-/** This returns the sky spectrum that is to be used in the fitting. */
-RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky) {
+RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky)
+{
     novac::CString errorMsg;
 
     // If the sky spectrum is the first spectrum in the scan
-    if (g_userSettings.m_skyOption == SKY_SCAN) {
+    if (g_userSettings.m_skyOption == SKY_SCAN)
+    {
         scan->GetSky(sky);
 
         if (sky.m_info.m_interlaceStep > 1)
+        {
             sky.InterpolateSpectrum();
+        }
 
         return SUCCESS;
     }
 
     // If the sky spectrum is the average of all credible spectra
-    if (g_userSettings.m_skyOption == SKY_AVERAGE_OF_GOOD) {
-        int interlaceSteps = scan->GetInterlaceSteps();
-        int startChannel = scan->GetStartChannel();
-        int fitLow = m_fitLow / interlaceSteps - startChannel;
-        int fitHigh = m_fitHigh / interlaceSteps - startChannel;
-
-        CSpectrum tmp;
-        scan->GetSky(tmp);
-        scan->ResetCounter();
-        double intens = tmp.MaxValue(fitLow, fitHigh);
-        if (intens < 4095 * tmp.NumSpectra() && !tmp.IsDark())
-            sky = tmp;
-        else
-            sky.Clear();
-        while (scan->GetNextSpectrum(tmp)) {
-            intens = tmp.MaxValue(fitLow, fitHigh);
-            if (intens < 4095 * tmp.NumSpectra() && !tmp.IsDark())
-                sky.Add(tmp);
+    if (g_userSettings.m_skyOption == SKY_AVERAGE_OF_GOOD)
+    {
+        if (GetSkySpectrumFromAverageOfGoodSpectra(*scan, sky))
+        {
+            return SUCCESS;
         }
-        scan->ResetCounter();
-
-        if (sky.m_info.m_interlaceStep > 1)
-            sky.InterpolateSpectrum();
-
-        return SUCCESS;
+        return FAIL;
     }
 
     // If the user wants to use another spectrum than 'sky' as reference-spectrum...
-    if (g_userSettings.m_skyOption == SKY_INDEX) {
+    if (g_userSettings.m_skyOption == SKY_INDEX)
+    {
         if (0 == scan->GetSpectrum(sky, g_userSettings.m_skyIndex))
+        {
             return FAIL;
+        }
 
         if (sky.m_info.m_interlaceStep > 1)
+        {
             sky.InterpolateSpectrum();
+        }
 
         return SUCCESS;
     }
 
     // If the user has supplied a special sky-spectrum to use
-    if (g_userSettings.m_skyOption == SKY_USER) {
-        if (Equals(g_userSettings.m_skySpectrumFromUser.Right(4), ".pak", 4)) {
-            // If the spectrum is in .pak format
-            SpectrumIO::CSpectrumIO reader;
-            const std::string userSkySpectrumFil((const char*)g_userSettings.m_skySpectrumFromUser);
-            if (reader.ReadSpectrum(userSkySpectrumFil, 0, sky))
-                return SUCCESS;
-            else
-                return FAIL;
+    if (g_userSettings.m_skyOption == SKY_USER)
+    {
+        if (GetSkySpectrumFromFile(g_userSettings.m_skySpectrumFromUser.std_str(), sky))
+        {
+            return SUCCESS;
         }
-        else if (Equals(g_userSettings.m_skySpectrumFromUser.Right(4), ".std", 4)) {
-            // If the spectrum is in .std format
-            const std::string fileNameStr((const char*)g_userSettings.m_skySpectrumFromUser);
-            if (SpectrumIO::CSTDFile::ReadSpectrum(sky, fileNameStr))
-                return SUCCESS;
-            else
-                return FAIL;
-        }
-        else {
-            // If we don't recognize the sky-spectrum format
-            errorMsg.Format("Unknown format for sky spectrum. Please use .pak or .std");
-            ShowError(errorMsg);
-            return FAIL;
-        }
+        return FAIL;
     }
 
     return FAIL;
