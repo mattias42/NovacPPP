@@ -46,15 +46,18 @@ namespace Evaluation
             @return -1 if something goes wrong */
         long EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings = NULL);
 
-        /** This returns the sky spectrum that is to be used in the fitting. */
-        RETURN_CODE GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky);
+        /** This returns the sky spectrum that is to be used in the fitting.
+            Which spectrum to be used is taken from the given settings.
+            @return true on success. */
+        bool GetSky(FileHandler::CScanFileHandler& scan, const Configuration::CSkySettings& settings, CSpectrum &sky);
 
         /** This returns the dark spectrum that is to be used in the fitting.
             @param scan - the scan-file handler from which to get the dark spectrum
             @param spec - the spectrum for which the dark spectrum should be retrieved
             @param dark - will on return be filled with the dark spectrum
-            @param darkSettings - the settings for how to get the dark spectrum from this spectrometer */
-        RETURN_CODE GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings = NULL);
+            @param darkSettings - the settings for how to get the dark spectrum from this spectrometer.
+            @return true on success. */
+        bool GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings = NULL);
 
         /** checks the spectrum to the settings and returns 'true' if the spectrum should not be evaluated.
             The spectra 'spec' and 'dark' should be divided by the number of co-adds before calling this function.

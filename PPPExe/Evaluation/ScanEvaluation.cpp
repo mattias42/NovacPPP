@@ -105,20 +105,21 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     int	curSpectrumIndex = 0;		// keeping track of the index of the current spectrum into the .pak-file
     double highestColumnInScan = 0.0;	// the highest column-value in the evaluation
 
-    // variables for storing the sky, dark and the measured spectra
-    CSpectrum sky, dark, current;
+    CSpectrum dark, current;
 
     // ----------- Get the sky spectrum --------------
     // Get the sky and dark spectra and divide them by the number of 
     //     co-added spectra in it
-    if (SUCCESS != GetSky(scan, sky)) {
+    CSpectrum sky;
+    if (!GetSky(*scan, g_userSettings.sky, sky)) {
         return -1;
     }
-    CSpectrum original_sky = sky; // original_sky is the sky-spectrum without dark-spectrum corrections...
+    CSpectrum skySpecBeforeDarkCorrection = sky;
 
-    if (g_userSettings.sky.skyOption != Configuration::SKY_OPTION::USER_SUPPLIED) {
+    if (g_userSettings.sky.skyOption != Configuration::SKY_OPTION::USER_SUPPLIED)
+    {
         // Get the dark-spectrum and remove it from the sky
-        if (SUCCESS != GetDark(scan, sky, dark, darkSettings))
+        if (!GetDark(scan, sky, dark, darkSettings))
         {
             return -1;
         }
@@ -127,7 +128,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
     if (sky.NumSpectra() > 0 && !m_averagedSpectra) {
         sky.Div(sky.NumSpectra());
-        original_sky.Div(original_sky.NumSpectra());
+        skySpecBeforeDarkCorrection.Div(skySpecBeforeDarkCorrection.NumSpectra());
     }
 
     // tell the evaluator which sky-spectrum to use
@@ -144,7 +145,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     if (m_result != NULL)
         delete m_result;
     m_result = new CScanResult();
-    m_result->SetSkySpecInfo(original_sky.m_info);
+    m_result->SetSkySpecInfo(skySpecBeforeDarkCorrection.m_info);
     m_result->SetDarkSpecInfo(dark.m_info);
 
     // Make sure that we'll start with the first spectrum in the scan
@@ -195,7 +196,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
             current.InterpolateSpectrum();
 
         // b. Get the dark spectrum for this measured spectrum
-        if (SUCCESS != GetDark(scan, current, dark, darkSettings))
+        if (!GetDark(scan, current, dark, darkSettings))
         {
             delete scan;
             delete eval;
@@ -249,8 +250,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     return m_result->GetEvaluatedNum();
 }
 
-
-RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings)
+bool CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings)
 {
     m_lastErrorMessage = "";
     const bool successs = ScanEvaluationBase::GetDark(*scan, spec, dark, darkSettings);
@@ -262,66 +262,22 @@ RETURN_CODE CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const 
         ShowMessage(message);
     }
 
-    if (successs)
-        return SUCCESS;
-    else
-        return FAIL;
+    return successs;
 }
 
-RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectrum &sky)
+bool CScanEvaluation::GetSky(FileHandler::CScanFileHandler& scan, const Configuration::CSkySettings& settings, CSpectrum &sky)
 {
-    novac::CString errorMsg;
+    m_lastErrorMessage = "";
+    const bool successs = ScanEvaluationBase::GetSky(scan, settings, sky);
 
-    // If the sky spectrum is the first spectrum in the scan
-    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::MEASURED_IN_SCAN)
+    if (m_lastErrorMessage.size() > 0)
     {
-        scan->GetSky(sky);
-
-        if (sky.m_info.m_interlaceStep > 1)
-        {
-            sky.InterpolateSpectrum();
-        }
-
-        return SUCCESS;
+        novac::CString message;
+        message.Format("%s", m_lastErrorMessage.c_str());
+        ShowMessage(message);
     }
 
-    // If the sky spectrum is the average of all credible spectra
-    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::AVERAGE_OF_GOOD_SPECTRA_IN_SCAN)
-    {
-        if (GetSkySpectrumFromAverageOfGoodSpectra(*scan, sky))
-        {
-            return SUCCESS;
-        }
-        return FAIL;
-    }
-
-    // If the user wants to use another spectrum than 'sky' as reference-spectrum...
-    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN)
-    {
-        if (0 == scan->GetSpectrum(sky, g_userSettings.sky.indexInScan))
-        {
-            return FAIL;
-        }
-
-        if (sky.m_info.m_interlaceStep > 1)
-        {
-            sky.InterpolateSpectrum();
-        }
-
-        return SUCCESS;
-    }
-
-    // If the user has supplied a special sky-spectrum to use
-    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::USER_SUPPLIED)
-    {
-        if (GetSkySpectrumFromFile(g_userSettings.sky.skySpectrumFile, sky))
-        {
-            return SUCCESS;
-        }
-        return FAIL;
-    }
-
-    return FAIL;
+    return successs;
 }
 
 /** Returns true if the spectrum should be ignored */
@@ -382,7 +338,7 @@ void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluationBase *eval, const CF
         fitWindow2.ref[k].m_squeezeValue = 0.0;
     }
     // Get the sky-spectrum
-    GetSky(scan, sky);
+    GetSky(*scan, g_userSettings.sky, sky);
     if (sky.NumSpectra() > 0 && !m_averagedSpectra)
         sky.Div(sky.NumSpectra());
 
@@ -505,7 +461,7 @@ CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CF
     }
     if (spectrum.NumSpectra() > 0 && !m_averagedSpectra)
         spectrum.Div(spectrum.NumSpectra());
-    if (SUCCESS != GetDark(scan, spectrum, dark)) {
+    if (!GetDark(scan, spectrum, dark)) {
         return NULL; // fail
     }
     if (dark.NumSpectra() > 0 && !m_averagedSpectra)
