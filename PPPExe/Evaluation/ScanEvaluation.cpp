@@ -20,6 +20,7 @@ extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of
 using namespace Evaluation;
 
 CScanEvaluation::CScanEvaluation()
+    : ScanEvaluationBase()
 {
 }
 
@@ -50,17 +51,21 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
     //	2) find the optimal shift & squeeze from the spectrum with the highest column
     //  3) do none of the above
 
-    if (adjustedFitWindow.fraunhoferRef.m_path.size() > 4) {
+    if (adjustedFitWindow.fraunhoferRef.m_path.size() > 4)
+    {
         ShowMessage("  Determining shift from FraunhoferReference");
 
         // If we have a solar-spectrum that we can use to determine the shift
         //	& squeeze then fit that first so that we know the wavelength calibration
-        if (NULL == (eval = FindOptimumShiftAndSqueeze_Fraunhofer(adjustedFitWindow, scan))) {
+        eval = FindOptimumShiftAndSqueezeFromFraunhoferReference(adjustedFitWindow, *darkSettings, *scan);
+        if (nullptr == eval)
+        {
+            ShowMessage(this->m_lastErrorMessage);
             return 0;
         }
-
     }
-    else if (fitWindow.findOptimalShift) {
+    else if (fitWindow.findOptimalShift)
+    {
         //	Find the optimal shift & squeeze from the spectrum with the highest column
         CFitWindow window2 = adjustedFitWindow;
         for (int k = 0; k < window2.nRef; ++k) {
@@ -420,116 +425,4 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &f
     ShowMessage(message);
 
     return newEvaluator;
-}
-
-CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan) {
-    double shift, shiftError, squeeze, squeezeError;
-    CSpectrum sky, spectrum, dark;
-    novac::CString message;
-    double fitIntensity, fitSaturation, maxInt;
-    double bestSaturation = -1.0;
-    int curIndex = 0;
-    const int INDEX_OF_SKYSPECTRUM = -1;
-    const int NO_SPECTRUM_INDEX = -2;
-    CFitWindow improvedFitWindow = fitWindow;
-
-    // 1. Find the spectrum for which we should determine shift & squeeze
-    //			This spectrum should have high enough intensity in the fit-region
-    //			without being saturated.
-    int indexOfMostSuitableSpectrum = NO_SPECTRUM_INDEX;
-    scan->GetSky(sky);
-    fitIntensity = sky.MaxValue(fitWindow.fitLow, fitWindow.fitHigh);
-    maxInt = CSpectrometerModel::GetMaxIntensity(sky.m_info.m_specModel);
-    if (sky.NumSpectra() > 0) {
-        fitSaturation = fitIntensity / (sky.NumSpectra() * maxInt);
-    }
-    else {
-        fitSaturation = fitIntensity / (maxInt * sky.NumSpectra());
-    }
-    if (fitSaturation < 0.9 && fitSaturation > 0.1) {
-        indexOfMostSuitableSpectrum = INDEX_OF_SKYSPECTRUM; // sky-spectrum
-        bestSaturation = fitSaturation;
-    }
-    scan->ResetCounter(); // start from the beginning
-    while (scan->GetNextSpectrum(spectrum)) {
-        fitIntensity = spectrum.MaxValue(fitWindow.fitLow, fitWindow.fitHigh);
-        maxInt = CSpectrometerModel::GetMaxIntensity(spectrum.m_info.m_specModel);
-
-        // Get the saturation-ratio for this spectrum
-        if (spectrum.NumSpectra() > 0) {
-            fitSaturation = fitIntensity / (spectrum.NumSpectra() * maxInt);
-        }
-        else {
-            fitSaturation = fitIntensity / (maxInt * spectrum.NumSpectra());
-        }
-
-        // Check if this spectrum is good...
-        if (fitSaturation < 0.9 && fitSaturation > 0.1) {
-            if (fitSaturation > bestSaturation) {
-                indexOfMostSuitableSpectrum = curIndex;
-                bestSaturation = fitSaturation;
-            }
-        }
-
-        // Go to the next spectrum
-        ++curIndex;
-    }
-
-    // 2. Get the spectrum we should evaluate...
-    if (indexOfMostSuitableSpectrum == NO_SPECTRUM_INDEX) {
-        ShowMessage("  Could not find any suitable spectrum to determine shift from.");
-        return NULL; // we could not find any good spectrum to use...
-    }
-    else if (indexOfMostSuitableSpectrum == INDEX_OF_SKYSPECTRUM) {
-        scan->GetSky(spectrum);
-        message.Format("Determining shift and squeeze from sky-spectrum");
-    }
-    else {
-        scan->GetSpectrum(spectrum, indexOfMostSuitableSpectrum);
-        message.Format("Determining shift and squeeze from spectrum %d", indexOfMostSuitableSpectrum);
-    }
-    if (spectrum.NumSpectra() > 0 && !m_averagedSpectra)
-        spectrum.Div(spectrum.NumSpectra());
-    if (!GetDark(scan, spectrum, dark)) {
-        return NULL; // fail
-    }
-    if (dark.NumSpectra() > 0 && !m_averagedSpectra)
-        dark.Div(dark.NumSpectra());
-    spectrum.Sub(dark);
-
-    ShowMessage(message);
-
-    // 3a. Release the shift of all the references
-    for (int it = 0; it < improvedFitWindow.nRef; ++it) {
-        improvedFitWindow.ref[it].m_shiftOption = SHIFT_FREE;
-        improvedFitWindow.ref[it].m_squeezeOption = SHIFT_FIX;
-        improvedFitWindow.ref[it].m_squeezeValue = 1.0;
-    }
-
-    // 3. Do the evaluation.
-    CEvaluationBase eval(improvedFitWindow);
-    eval.SetSkySpectrum(sky);
-
-    if (eval.EvaluateShift(spectrum, shift, shiftError, squeeze, squeezeError)) {
-        // We failed to make the fit, what shall we do now??
-        ShowMessage("Failed to determine shift and squeeze in scan %s. Will proceed with default parameters.", scan->GetFileName());
-    }
-    else {
-        if (fabs(shiftError) < 1 && fabs(squeezeError) < 0.01) {
-            // The fit is good enough to use the values
-            for (int it = 0; it < improvedFitWindow.nRef; ++it) {
-                improvedFitWindow.ref[it].m_shiftOption = SHIFT_FIX;
-                improvedFitWindow.ref[it].m_squeezeOption = SHIFT_FIX;
-                improvedFitWindow.ref[it].m_shiftValue = shift;
-                improvedFitWindow.ref[it].m_squeezeValue = squeeze;
-            }
-            message.Format("  Shift: %.2lf +- %.2lf; Squeeze: %.2lf +- %.2lf", shift, shiftError, squeeze, squeezeError);
-            ShowMessage(message);
-        }
-        else {
-            ShowMessage("Fit not good enough. Will proceed with default parameters.");
-        }
-    }
-
-    return new CEvaluationBase(improvedFitWindow);
 }

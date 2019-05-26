@@ -67,6 +67,11 @@ void ShowMessage(const novac::CString &message) {
     Poco::Logger& log = Poco::Logger::get("NovacPPP");
     log.information(message.std_str());
 }
+void ShowMessage(const std::string& message)
+{
+    Poco::Logger& log = Poco::Logger::get("NovacPPP");
+    log.information(message);
+}
 void ShowMessage(const novac::CString &message, novac::CString connectionID) {
     novac::CString msg;
 

@@ -75,15 +75,6 @@ namespace Evaluation
             @return nullptr if the evaluation failed. */
         CEvaluationBase* FindOptimumShiftAndSqueeze(const CFitWindow &fitWindow, int indexOfMostAbsorbingSpectrum, FileHandler::CScanFileHandler& scan);
 
-        /** Finds the optimum shift and squeeze for an scan by evaluating
-            with a solar-reference spectrum and studying the shift of the
-            Fraunhofer-lines.
-            @param eval - the evaluator to use for the evaluation. On successful determination
-                of the shift and squeeze then the shift and squeeze of the reference-files
-                in the CEvaluation-objects CFitWindow will be fixed to the optimum value found
-            @param scan - a handle to the spectrum file. */
-        CEvaluationBase *FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan);
-
         // ------------------------ THE PARAMETERS FOR THE EVALUATION ------------------
 
         /** Remember the index of the spectrum with the highest absorption, to be able to
