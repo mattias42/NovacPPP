@@ -91,13 +91,6 @@ enum PROCESSING_MODE {
     */
 #define NOT_A_NUMBER -9999.0
 
-    // The options for the sky spectrum
-enum SKY_OPTION {
-    SKY_SCAN,
-    SKY_AVERAGE_OF_GOOD,
-    SKY_INDEX,
-    SKY_USER
-};
 
 // ----------------------------------------------------------------
 // ---------------- MATHEMATICAL CONSTANTS ------------------------

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SpectralEvaluation/DateTime.h>
+#include <SpectralEvaluation/Configuration/SkySettings.h>
 
 #include "../Common/Common.h"
 #include "../Molecule.h"
@@ -235,13 +236,10 @@ namespace Configuration {
         int    m_mainFitWindow;
 #define   str_mainFitWindow "main"
 
-        /** The settings for the sky spectrum to use
-        */
-        SKY_OPTION  m_skyOption;
+        /** The settings for the sky spectrum to use */
+        CSkySettings sky;
 #define   str_skyOption ""
-        long   m_skyIndex;
 #define   str_skyIndex ""
-        novac::CString   m_skySpectrumFromUser; // the sky-spectrum, only used if m_skyOption is SKY_USER
 #define   str_skySpectrumFromUser ""
 
 // ------------------------------------------------------------------------

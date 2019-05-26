@@ -53,9 +53,9 @@ namespace Configuration
         m_mainFitWindow = 0;
 
         // The settings for the sky-spectrum
-        m_skyOption = SKY_SCAN;
-        m_skyIndex = 0;
-        m_skySpectrumFromUser.Format("");
+        sky.skyOption = Configuration::SKY_OPTION::MEASURED_IN_SCAN;
+        sky.indexInScan = 0;
+        sky.skySpectrumFile = "";
 
         // the wind field
         m_windFieldFile.Format("");
@@ -150,11 +150,11 @@ namespace Configuration
         }
 
         // The settings for the sky-spectrum
-        if (settings2.m_skyOption != m_skyOption)
+        if (settings2.sky.skyOption != sky.skyOption)
             return false;
-        if (settings2.m_skyIndex != m_skyIndex)
+        if (settings2.sky.indexInScan != sky.indexInScan)
             return false;
-        if (!Equals(m_skySpectrumFromUser, settings2.m_skySpectrumFromUser))
+        if (sky.skySpectrumFile.compare(settings2.sky.skySpectrumFile) != 0)
             return false;
 
         // the wind field

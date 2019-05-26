@@ -254,11 +254,11 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration 
     while (szToken = NextToken()) {
 
         if (Equals(szToken, "/SkySpectrum", 12)) {
-            if (settings.m_skyOption == SKY_INDEX) {
-                settings.m_skyIndex = atoi(parsedValueStr);
+            if (settings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN) {
+                settings.sky.indexInScan = atoi(parsedValueStr);
             }
-            else if (settings.m_skyOption == SKY_USER) {
-                settings.m_skySpectrumFromUser.Format(parsedValueStr);
+            else if (settings.sky.skyOption == Configuration::SKY_OPTION::USER_SUPPLIED) {
+                settings.sky.skySpectrumFile = parsedValueStr.std_str();
             }
 
             return;
@@ -269,19 +269,19 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration 
         if (Equals(szToken, option, option.GetLength())) {
             this->Parse_StringItem("/" + option, tmpString);
             if (Equals(tmpString, "SCAN")) {
-                settings.m_skyOption = SKY_SCAN;
+                settings.sky.skyOption = Configuration::SKY_OPTION::MEASURED_IN_SCAN;
             }
             else if (Equals(tmpString, "AverageOfGood")) {
-                settings.m_skyOption = SKY_AVERAGE_OF_GOOD;
+                settings.sky.skyOption = Configuration::SKY_OPTION::AVERAGE_OF_GOOD_SPECTRA_IN_SCAN;
             }
             else if (Equals(tmpString, "Index")) {
-                settings.m_skyOption = SKY_INDEX;
+                settings.sky.skyOption = Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN;
             }
             else if (Equals(tmpString, "User")) {
-                settings.m_skyOption = SKY_USER;
+                settings.sky.skyOption = Configuration::SKY_OPTION::USER_SUPPLIED;
             }
             else {
-                settings.m_skyOption = SKY_SCAN;
+                settings.sky.skyOption = Configuration::SKY_OPTION::MEASURED_IN_SCAN;
             }
             continue;
         }
@@ -511,19 +511,19 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
 
     // the sky-spectrum to use
     fprintf(f, "\t<SkySpectrum>\n");
-    if (settings.m_skyOption == SKY_SCAN) {
+    if (settings.sky.skyOption == Configuration::SKY_OPTION::MEASURED_IN_SCAN) {
         fprintf(f, "\t\t<option>SCAN</option>\n");
     }
-    else if (settings.m_skyOption == SKY_AVERAGE_OF_GOOD) {
+    else if (settings.sky.skyOption == Configuration::SKY_OPTION::AVERAGE_OF_GOOD_SPECTRA_IN_SCAN) {
         fprintf(f, "\t\t<option>AverageOfGood</option>\n");
     }
-    else if (settings.m_skyOption == SKY_INDEX) {
+    else if (settings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN) {
         fprintf(f, "\t\t<option>Index</option>\n");
-        fprintf(f, "\t\t<value>%ld</value>\n", settings.m_skyIndex);
+        fprintf(f, "\t\t<value>%ld</value>\n", settings.sky.indexInScan);
     }
-    else if (settings.m_skyOption == SKY_USER) {
+    else if (settings.sky.skyOption == Configuration::SKY_OPTION::USER_SUPPLIED) {
         fprintf(f, "\t\t<option>User</option>\n");
-        fprintf(f, "\t\t<value>%s</value>\n", (const char*)settings.m_skySpectrumFromUser);
+        fprintf(f, "\t\t<value>%s</value>\n", settings.sky.skySpectrumFile.c_str());
     }
     fprintf(f, "\t</SkySpectrum>\n");
 

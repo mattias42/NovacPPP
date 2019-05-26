@@ -116,7 +116,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     }
     CSpectrum original_sky = sky; // original_sky is the sky-spectrum without dark-spectrum corrections...
 
-    if (g_userSettings.m_skyOption != SKY_USER) {
+    if (g_userSettings.sky.skyOption != Configuration::SKY_OPTION::USER_SUPPLIED) {
         // Get the dark-spectrum and remove it from the sky
         if (SUCCESS != GetDark(scan, sky, dark, darkSettings))
         {
@@ -273,7 +273,7 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
     novac::CString errorMsg;
 
     // If the sky spectrum is the first spectrum in the scan
-    if (g_userSettings.m_skyOption == SKY_SCAN)
+    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::MEASURED_IN_SCAN)
     {
         scan->GetSky(sky);
 
@@ -286,7 +286,7 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
     }
 
     // If the sky spectrum is the average of all credible spectra
-    if (g_userSettings.m_skyOption == SKY_AVERAGE_OF_GOOD)
+    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::AVERAGE_OF_GOOD_SPECTRA_IN_SCAN)
     {
         if (GetSkySpectrumFromAverageOfGoodSpectra(*scan, sky))
         {
@@ -296,9 +296,9 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
     }
 
     // If the user wants to use another spectrum than 'sky' as reference-spectrum...
-    if (g_userSettings.m_skyOption == SKY_INDEX)
+    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN)
     {
-        if (0 == scan->GetSpectrum(sky, g_userSettings.m_skyIndex))
+        if (0 == scan->GetSpectrum(sky, g_userSettings.sky.indexInScan))
         {
             return FAIL;
         }
@@ -312,9 +312,9 @@ RETURN_CODE CScanEvaluation::GetSky(FileHandler::CScanFileHandler *scan, CSpectr
     }
 
     // If the user has supplied a special sky-spectrum to use
-    if (g_userSettings.m_skyOption == SKY_USER)
+    if (g_userSettings.sky.skyOption == Configuration::SKY_OPTION::USER_SUPPLIED)
     {
-        if (GetSkySpectrumFromFile(g_userSettings.m_skySpectrumFromUser.std_str(), sky))
+        if (GetSkySpectrumFromFile(g_userSettings.sky.skySpectrumFile, sky))
         {
             return SUCCESS;
         }
