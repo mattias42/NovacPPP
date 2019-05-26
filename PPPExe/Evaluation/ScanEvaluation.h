@@ -64,10 +64,16 @@ namespace Evaluation
          */
         bool Ignore(const CSpectrum &spec, const CSpectrum &dark, int fitLow, int fitHigh);
 
-        /** Finds the optimum shift and squeeze for an evaluated scan
-                    by looking at the spectrum with the highest absorption of the evaluated specie
-                    and evaluate it with shift and squeeze free */
-        void FindOptimumShiftAndSqueeze(CEvaluationBase *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result);
+        /** Finds the optimum shift and squeeze for an evaluated scan by looking at 
+                the spectrum with the highest absorption of the evaluated specie 
+                and evaluate it with shift and squeeze free
+            @param fitWindow The old fit-window where we should try to improve the settings.
+            @param index indexOfMostAbsorbingSpectrum The index of the spectrum which has the highest absorption, 
+                this is the spectrum to evaluate again.
+            @param scan The scan to improve the evaluation for.
+            @return a new evaluator with the fit-window set to the new optimum values.
+            @return nullptr if the evaluation failed. */
+        CEvaluationBase* FindOptimumShiftAndSqueeze(const CFitWindow &fitWindow, int indexOfMostAbsorbingSpectrum, FileHandler::CScanFileHandler& scan);
 
         /** Finds the optimum shift and squeeze for an scan by evaluating
             with a solar-reference spectrum and studying the shift of the

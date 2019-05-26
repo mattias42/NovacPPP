@@ -72,17 +72,40 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
         eval = new CEvaluationBase(window2);
 
         // evaluate the scan one time
-        if (-1 == EvaluateOpenedScan(scan, eval, darkSettings)) {
+        if (-1 == EvaluateOpenedScan(scan, eval, darkSettings))
+        {
             delete eval;
             return 0;
         }
-        else {
-            FindOptimumShiftAndSqueeze(eval, adjustedFitWindow, scan, m_result);
-        }
-    }
-    else {
-        //  3) do none of the above
 
+        if (m_indexOfMostAbsorbingSpectrum < 0)
+        {
+            ShowMessage("Could not determine optimal shift & squeeze. No good spectra in scan. %s", scan->GetFileName());
+            return 0;
+        }
+
+        // Make sure that this spectrum was ok and that the column-value is high enough
+        int specieNum = 0; // TODO: Is this the correct specie to check for?
+        double columnError = m_result->GetColumnError(m_indexOfMostAbsorbingSpectrum, specieNum); // <-- the column error that corresponds to the highest column-value
+        double highestColumn = m_result->GetColumn(m_indexOfMostAbsorbingSpectrum, specieNum);
+        if (highestColumn < 2 * columnError)
+        {
+            ShowMessage("Could not determine optimal shift & squeeze. Maximum column is too low.");
+            return 0;
+        }
+
+        CEvaluationBase* newEval = FindOptimumShiftAndSqueeze(adjustedFitWindow, m_indexOfMostAbsorbingSpectrum, *scan);
+        if(nullptr == newEval)
+        {
+            return 0;
+        }
+
+        delete eval;
+        eval = newEval;
+    }
+    else
+    {
+        //  3) do none of the above
         eval = new CEvaluationBase(adjustedFitWindow);
     }
 
@@ -92,7 +115,8 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
     // Clean up
     delete eval;
 
-    if (nSpectra == -1) {
+    if (nSpectra == -1)
+    {
         return 0;
     }
 
@@ -296,101 +320,106 @@ bool CScanEvaluation::Ignore(const CSpectrum &spec, const CSpectrum &dark, int f
 }
 
 
-/** Finds the optimum shift and squeeze for an evaluated scan */
-void CScanEvaluation::FindOptimumShiftAndSqueeze(CEvaluationBase *eval, const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan, CScanResult *result) {
-    int k;
+CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &fitWindow, int indexOfMostAbsorbingSpectrum, FileHandler::CScanFileHandler& scan)
+{
     CSpectrum spec, sky, dark;
-    int specieNum = 0;
+
+    // Tell the user
     novac::CString message;
-    CEvaluationBase *eval2 = NULL;
-    CFitWindow fitWindow2;
-
-    // 1. Find the spectrum with the highest column value
-    if (m_indexOfMostAbsorbingSpectrum < 0) {
-        ShowMessage("Could not determine optimal shift & squeeze. No good spectra in scan. %s", scan->GetFileName());
-        return; // <-- no good data-point found. Quit it!
-    }
-
-    // 2. Make sure that this spectrum was ok and that the column-value is high enough
-    double columnError = result->GetColumnError(m_indexOfMostAbsorbingSpectrum, specieNum); // <-- the column error that corresponds to the highest column-value
-    double highestColumn = result->GetColumn(m_indexOfMostAbsorbingSpectrum, specieNum);
-    if (highestColumn < 2 * columnError) {
-        ShowMessage("Could not determine optimal shift & squeeze. Maximum column is too low.");
-        return;
-    }
-
-    // 2. Tell the user
-    message.Format("ReEvaluating spectrum number %d to determine optimum shift and squeeze", m_indexOfMostAbsorbingSpectrum);
+    message.Format("ReEvaluating spectrum number %d to determine optimum shift and squeeze", indexOfMostAbsorbingSpectrum);
     ShowMessage(message);
 
-    // 3. Evaluate this spectrum again with free (and linked) shift
-    fitWindow2 = fitWindow;
+    // Evaluate this spectrum again with free (and linked) shift
+    CFitWindow fitWindow2 = fitWindow;
     fitWindow2.ref[0].m_shiftOption = SHIFT_FREE;
     fitWindow2.ref[0].m_squeezeOption = SHIFT_FIX;
     fitWindow2.ref[0].m_squeezeValue = 1.0;
-    for (k = 1; k < fitWindow2.nRef; ++k) {
+    for (int k = 1; k < fitWindow2.nRef; ++k)
+    {
         if (novac::Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
+        {
             continue;
+        }
 
         fitWindow2.ref[k].m_shiftOption = SHIFT_LINK;
         fitWindow2.ref[k].m_squeezeOption = SHIFT_LINK;
         fitWindow2.ref[k].m_shiftValue = 0.0;
         fitWindow2.ref[k].m_squeezeValue = 0.0;
     }
+
     // Get the sky-spectrum
-    GetSky(*scan, g_userSettings.sky, sky);
+    if (!GetSky(scan, g_userSettings.sky, sky))
+    {
+        return nullptr;
+    }
     if (sky.NumSpectra() > 0 && !m_averagedSpectra)
+    {
         sky.Div(sky.NumSpectra());
+    }
 
     // Get the dark-spectrum
-    GetDark(scan, sky, dark);
+    if (!GetDark(&scan, sky, dark))
+    {
+        return nullptr;
+    }
     if (dark.NumSpectra() > 0 && !m_averagedSpectra)
+    {
         dark.Div(dark.NumSpectra());
+    }
 
     // Subtract the dark...
     sky.Sub(dark);
 
     // create the new evaluator
-    eval2 = new CEvaluationBase(fitWindow2);
-    eval2->SetSkySpectrum(sky);
+    CEvaluationBase* intermediateEvaluator = new CEvaluationBase(fitWindow2);
+    intermediateEvaluator->SetSkySpectrum(sky);
 
     // Get the measured spectrum
-    scan->GetSpectrum(spec, 2 + m_indexOfMostAbsorbingSpectrum); // The two comes from the sky and the dark spectra in the beginning
+    scan.GetSpectrum(spec, 2 + indexOfMostAbsorbingSpectrum); // The two comes from the sky and the dark spectra in the beginning
     if (spec.m_info.m_interlaceStep > 1)
+    {
         spec.InterpolateSpectrum();
+    }
     if (spec.NumSpectra() > 0 && !m_averagedSpectra)
+    {
         spec.Div(spec.NumSpectra());
+    }
 
     // Get the dark-spectrum and remove it
-    GetDark(scan, spec, dark);
+    GetDark(&scan, spec, dark);
     spec.Sub(dark);
 
     // Evaluate
-    eval2->Evaluate(spec, 5000);
+    intermediateEvaluator->Evaluate(spec, 5000);
 
     // 4. See what the optimum value for the shift turned out to be.
-    CEvaluationResult newResult = eval2->GetEvaluationResult();
+    CEvaluationResult newResult = intermediateEvaluator->GetEvaluationResult();
     double optimumShift = newResult.m_referenceResult[0].m_shift;
     double optimumSqueeze = newResult.m_referenceResult[0].m_squeeze;
 
     // 5. Set the shift for all references to this value
-    for (k = 0; k < fitWindow2.nRef; ++k) {
+    for (int k = 0; k < fitWindow2.nRef; ++k)
+    {
         if (novac::Equals(fitWindow2.ref[k].m_specieName, "FraunhoferRef"))
+        {
             continue;
+        }
 
         fitWindow2.ref[k].m_shiftOption = SHIFT_FIX;
         fitWindow2.ref[k].m_squeezeOption = SHIFT_FIX;
         fitWindow2.ref[k].m_shiftValue = optimumShift;
         fitWindow2.ref[k].m_squeezeValue = optimumSqueeze;
     }
-    delete eval;
-    eval = new CEvaluationBase(fitWindow2);
-    eval->SetSkySpectrum(sky);
+    delete intermediateEvaluator;
+
+    CEvaluationBase* newEvaluator = new CEvaluationBase(fitWindow2);
+    newEvaluator->SetSkySpectrum(sky);
 
     // 6. We're done!
     message.Format("Optimum shift set to : %.2lf. Optimum squeeze set to: %.2lf ", optimumShift, optimumSqueeze);
     ShowMessage(message);
-    return;
+
+    return newEvaluator;
 }
 
 CEvaluationBase *CScanEvaluation::FindOptimumShiftAndSqueeze_Fraunhofer(const CFitWindow &fitWindow, FileHandler::CScanFileHandler *scan) {
