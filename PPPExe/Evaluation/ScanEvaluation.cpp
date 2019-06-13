@@ -2,6 +2,7 @@
 
 #include <SpectralEvaluation/Evaluation/EvaluationBase.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
+#include <SpectralEvaluation/Spectra/SpectrometerModel.h>
 #include <SpectralEvaluation/File/SpectrumIO.h>
 #include <SpectralEvaluation/File/STDFile.h>
 #include <SpectralEvaluation/File/TXTFile.h>
@@ -313,11 +314,12 @@ bool CScanEvaluation::GetSky(FileHandler::CScanFileHandler& scan, const Configur
 bool CScanEvaluation::Ignore(const CSpectrum &spec, const CSpectrum &dark, int fitLow, int fitHigh) {
 
     // check if the intensity is below the given limit
-    double maxIntensity = spec.MaxValue(fitLow, fitHigh) - dark.MinValue(fitLow, fitHigh);
+    const double maxIntensity = spec.MaxValue(fitLow, fitHigh) - dark.MinValue(fitLow, fitHigh);
 
-    double dynamicRange = CSpectrometerModel::GetMaxIntensity(spec.m_info.m_specModel);
+    const double dynamicRange = CSpectrometerDatabase::GetInstance().GetModel(spec.m_info.m_specModelName).maximumIntensity;
 
-    if (maxIntensity < (dynamicRange * g_userSettings.m_minimumSaturationInFitRegion)) {
+    if (maxIntensity < (dynamicRange * g_userSettings.m_minimumSaturationInFitRegion))
+    {
         return true;
     }
 

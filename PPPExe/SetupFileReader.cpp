@@ -110,8 +110,18 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
             Parse_IntItem("/type", (int &)location.m_instrumentType);
             continue;
         }
+        if (Equals(szToken, "spectrometerModel", 17))
+        {
+            SpectrometerModel newSpectrometer;
+            Parse_CustomSpectrometer(newSpectrometer);
+            if (!newSpectrometer.IsUnknown())
+            {
+                CSpectrometerDatabase::GetInstance().AddModel(newSpectrometer);
+            }
+            continue;
+        }
         if (Equals(szToken, "spec", 4)) {
-            Parse_SpectrometerModel("/spec", location.m_spectrometerModel);
+            Parse_StringItem("/spec", location.m_spectrometerModel);
             continue;
         }
         if (Equals(szToken, "volcano", 7)) {
@@ -133,7 +143,6 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
     Only the part regarding the instrument's location will be written to the file */
 RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup) {
     Configuration::CInstrumentLocation instrLocation;
-    std::string spectrometerModel;
 
     // Open the file
     FILE *f = fopen(fileName, "w");
@@ -157,9 +166,9 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
         fprintf(f, "\t\t<serial>%s</serial>\n", (const char*)instr.m_serial);
 
         // loop through the locations
-        for (unsigned int j = 0; j < instr.m_location.GetLocationNum(); ++j) {
+        for (unsigned int j = 0; j < instr.m_location.GetLocationNum(); ++j)
+        {
             instr.m_location.GetLocation(j, instrLocation);
-            CSpectrometerModel::ToString(instrLocation.m_spectrometerModel, spectrometerModel);
 
             // The location
             fprintf(f, "\t\t<location>\n");
@@ -175,7 +184,15 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
             fprintf(f, "\t\t\t<coneangle>%.0lf</coneangle>\n", instrLocation.m_coneangle);
             fprintf(f, "\t\t<tilt>%.0lf</tilt>\n", instrLocation.m_tilt);
             fprintf(f, "\t\t<type>%d</type>\n", instrLocation.m_instrumentType);
-            fprintf(f, "\t\t<spec>%s</spec>\n", spectrometerModel.c_str());
+
+            const SpectrometerModel currentSpectrometer = CSpectrometerDatabase::GetInstance().GetModel(instrLocation.m_spectrometerModel);
+            {
+                fprintf(f, "\t\t<spectrometerModel>\n");
+                fprintf(f, "\t\t\t<name>%s</name>\n", currentSpectrometer.modelName.c_str());
+                fprintf(f, "\t\t\t<maxIntensity>%lf</maxIntensity>\n", currentSpectrometer.maximumIntensity);
+                fprintf(f, "\t\t\t<numberOfPixels>%d</numberOfPixels>\n", currentSpectrometer.numberOfPixels);
+                fprintf(f, "\t\t</spectrometerModel>\n");
+            }
 
             fprintf(f, "\t\t</location>\n");
         }
@@ -191,18 +208,31 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
     return SUCCESS;
 }
 
-void CSetupFileReader::Parse_SpectrometerModel(const novac::CString &label, SPECTROMETER_MODEL &model) {
-    char buffer[2048];
-
-    while (nullptr != (szToken = NextToken())) {
-
-        if (Equals(szToken, label)) {
+void CSetupFileReader::Parse_CustomSpectrometer(SpectrometerModel& model)
+{
+    while (nullptr != (szToken = NextToken()))
+    {
+        if (novac::Equals(szToken, "/spectrometerModel", 8))
+        {
             return;
         }
 
-        sscanf(szToken, "%s", buffer);
-        model = CSpectrometerModel::GetModel(buffer);
-    }
+        if (novac::Equals(szToken, "name", 4))
+        {
+            Parse_StringItem("/name", model.modelName);
+            continue;
+        }
 
-    return;
+        if (novac::Equals(szToken, "maxIntensity", 12))
+        {
+            Parse_FloatItem("/maxIntensity", model.maximumIntensity);
+            continue;
+        }
+
+        if (novac::Equals(szToken, "numberOfPixels", 14))
+        {
+            Parse_IntItem("/numberOfPixels", model.numberOfPixels);
+            continue;
+        }
+    }
 }

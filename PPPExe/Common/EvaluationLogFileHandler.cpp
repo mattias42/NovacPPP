@@ -560,7 +560,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
             }
 
             if (m_col.peakSaturation != -1) { // If the intensity is specified as a saturation ratio...
-                double dynamicRange = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
+                // double dynamicRange = CSpectrometerModel::GetMaxIntensity(m_specInfo.m_specModel);
             }
             newResult.CheckGoodnessOfFit(m_specInfo);
             ++measNr;
@@ -744,14 +744,15 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
             MakeUpper(scanInfo.m_device);	// Convert the serial-number to all upper case letters
 
             // Extract the spectrometer-model from the serial-number of the spectrometer
-            scanInfo.m_specModel = CSpectrometerModel::GetModel(scanInfo.m_device);
+            scanInfo.m_specModelName = CSpectrometerDatabase::GetInstance().GuessModelFromSerial(scanInfo.m_device).modelName;
 
             continue;
         }
 
         pt = strstr(szLine, "spectrometer=");
-        if (nullptr != pt) {
-            // TODO:: read in the spectrometer model somewhere
+        if (nullptr != pt)
+        {
+            scanInfo.m_specModelName = std::string(pt + 13);
             continue;
         }
 
@@ -968,7 +969,6 @@ bool	CEvaluationLogFileHandler::IsSorted() {
 RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString fileName) {
     novac::CString string, specieName;
     novac::CString wsSrc, wdSrc, phSrc;
-    std::string specModel;
     CDateTime startTime;
 
     // 1. Test if the file already exists, if so then return false
@@ -1000,10 +1000,14 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 
         string.AppendFormat("\tserial=%s\n", (const char*)scan.GetSerial());
 
-        if (SUCCESS != CSpectrometerModel::ToString(m_specInfo.m_specModel, specModel))
-            specModel = "S2000";
-        MakeLower(specModel);
-        string.AppendFormat("\tspectrometer=%s\n", specModel.c_str());
+        string.AppendFormat("\tspectrometer=%s\n", m_specInfo.m_specModelName.c_str());
+
+        const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(m_specInfo.m_specModelName);
+        if (!spectrometerModel.IsUnknown())
+        {
+            string.AppendFormat("\tspectrometer_maxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+            string.AppendFormat("\tspectrometer_numPixels=%d\n", spectrometerModel.numberOfPixels);
+        }
 
         string.AppendFormat("\tchannel=%d\n", m_specInfo.m_channel);
         string.AppendFormat("\tconeangle=%.1lf\n", scan.GetConeAngle());

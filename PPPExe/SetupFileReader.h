@@ -38,9 +38,7 @@ namespace FileHandler {
         /** Parses an individual instrument section */
         void Parse_Instrument(Configuration::CInstrumentConfiguration &instr);
 
-        /** Parses an spectrometer model  */
-        void Parse_SpectrometerModel(const novac::CString &label, SPECTROMETER_MODEL &model);
-
-
+        /** Parses a custom spectrometer model */
+        void Parse_CustomSpectrometer(SpectrometerModel& model);
     };
 }

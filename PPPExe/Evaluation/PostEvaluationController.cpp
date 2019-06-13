@@ -174,7 +174,6 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     novac::CString string, string1, string2, string3, string4;
     long itSpectrum, itSpecie; // iterators
     novac::CString pakFile, txtFile, evalSummaryLog;
-    std::string specModel;
     novac::CString wsSrc, wdSrc, phSrc;
     CDateTime dateTime;
 
@@ -185,8 +184,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     }
 
     // the spectrometer 
-    CSpectrometerModel::ToString(instrLocation->m_spectrometerModel, specModel);
-    double maxIntensity = CSpectrometerModel::GetMaxIntensity(instrLocation->m_spectrometerModel);
+    const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(instrLocation->m_spectrometerModel);
 
     // The date of the measurement & the serial-number of the spectrometer
     result->GetSkyStartTime(dateTime);
@@ -206,7 +204,9 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     // string.AppendFormat("\tobservatory=%s\n",       m_common.SimplifyString(spectrometer.m_scanner.observatory));
 
     string.AppendFormat("\tserial=%s\n", (const char*)result->GetSerial());
-    string.AppendFormat("\tspectrometer=%s\n", specModel.c_str());
+    string.AppendFormat("\tspectrometer=%s\n", instrLocation->m_spectrometerModel.c_str());
+    string.AppendFormat("\spectrometerMaxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+
     string.AppendFormat("\tchannel=%d\n", window->channel);
     string.AppendFormat("\tconeangle=%.1lf\n", instrLocation->m_coneangle);
     string.AppendFormat("\tinterlacesteps=%d\n", scan->GetInterlaceSteps());
@@ -326,7 +326,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         sky.m_info.m_fitIntensity = (float)(sky.MaxValue(window->fitLow, window->fitHigh));
         if (sky.NumSpectra() > 0)
             sky.Div(sky.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&sky.m_info, nullptr, instrLocation->m_instrumentType, maxIntensity*sky.NumSpectra(), window->nRef, string1);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&sky.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*sky.NumSpectra(), window->nRef, string1);
     }
     scan->GetDark(dark);
     if (dark.m_info.m_interlaceStep > 1)
@@ -335,7 +335,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         dark.m_info.m_fitIntensity = (float)(dark.MaxValue(window->fitLow, window->fitHigh));
         if (dark.NumSpectra() > 0)
             dark.Div(dark.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&dark.m_info, nullptr, instrLocation->m_instrumentType, maxIntensity*dark.NumSpectra(), window->nRef, string2);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&dark.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*dark.NumSpectra(), window->nRef, string2);
     }
     scan->GetOffset(offset);
     if (offset.m_info.m_interlaceStep > 1)
@@ -343,7 +343,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     if (offset.m_length > 0) {
         offset.m_info.m_fitIntensity = (float)(offset.MaxValue(window->fitLow, window->fitHigh));
         offset.Div(offset.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&offset.m_info, nullptr, instrLocation->m_instrumentType, maxIntensity * offset.NumSpectra(), window->nRef, string3);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&offset.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity * offset.NumSpectra(), window->nRef, string3);
     }
     scan->GetDarkCurrent(darkCurrent);
     if (darkCurrent.m_info.m_interlaceStep > 1)
@@ -351,7 +351,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     if (darkCurrent.m_length > 0) {
         darkCurrent.m_info.m_fitIntensity = (float)(darkCurrent.MaxValue(window->fitLow, window->fitHigh));
         darkCurrent.Div(darkCurrent.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&darkCurrent.m_info, nullptr, instrLocation->m_instrumentType, maxIntensity*darkCurrent.NumSpectra(), window->nRef, string4);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&darkCurrent.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*darkCurrent.NumSpectra(), window->nRef, string4);
     }
 
     // 2b. Write it all to the evaluation log file
@@ -378,7 +378,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         int nSpectra = result->GetSpectrumInfo(itSpectrum).m_numSpec;
 
         // 3a. Pretty print the result and the spectral info into a string
-        CEvaluationLogFileHandler::FormatEvaluationResult(&result->GetSpectrumInfo(itSpectrum), result->GetResult(itSpectrum), instrLocation->m_instrumentType, maxIntensity * nSpectra, window->nRef, string);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&result->GetSpectrumInfo(itSpectrum), result->GetResult(itSpectrum), instrLocation->m_instrumentType, spectrometerModel.maximumIntensity * nSpectra, window->nRef, string);
 
         // 3b. Write it all to the evaluation log file
         if (f != nullptr) {
@@ -669,7 +669,9 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
         return false;
     }
 
-    double dynamicRange = skySpectrum.NumSpectra() * CSpectrometerModel::GetMaxIntensity(instrLocation.m_spectrometerModel);
+    const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(instrLocation.m_spectrometerModel);
+    const double dynamicRange = skySpectrum.NumSpectra() * spectrometerModel.maximumIntensity;
+
     if (skySpectrum.MaxValue(fitWindow.fitLow, fitWindow.fitHigh) >= dynamicRange) {
         errorMessage.Format(" - Sky spectrum in scan %s is saturated in fit region. Will not evaluate scan", scan->GetFileName().c_str());
         ShowMessage(errorMessage);

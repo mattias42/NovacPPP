@@ -18,7 +18,11 @@
 			<compass>93.0</compass>
 			<coneangle>60.0</coneangle>
 			<type>0</type>
-			<spec>S2000</spec>
+			<spectrometerModel>
+                <name>S2000</name>
+                <maxIntensity>4095</maxIntensity>
+                <numberOfPixels>2048</numberOfPixels>
+            </spectrometerModel>
 		</location>
 	</instrument>
 

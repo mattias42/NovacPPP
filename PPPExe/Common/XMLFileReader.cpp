@@ -18,13 +18,17 @@ CXMLFileReader::~CXMLFileReader()
 
 bool CXMLFileReader::Open(const novac::CString &fileName)
 {
-    novac::CStdioFile file;
     novac::CFileException exceFile;
 
-    if (!file.Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile)) {
+    this->m_File = new novac::CStdioFile();
+
+    if (!m_File->Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile))
+    {
+        delete m_File;
+        m_File = nullptr;
         return false;
     }
-    this->m_File = &file;
+
     this->m_filename = fileName;
     this->nLinesRead = 0;
 

@@ -52,7 +52,7 @@ namespace Configuration {
         INSTRUMENT_TYPE m_instrumentType;
 
         /** The type of spectrometer */
-        SPECTROMETER_MODEL m_spectrometerModel;
+        std::string m_spectrometerModel;
 
         /** Time stamps, during which this location information
             is resonable/useful */

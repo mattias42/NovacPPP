@@ -24,7 +24,7 @@ void CInstrumentLocation::Clear() {
     this->m_validTo = CDateTime(9999, 12, 31, 23, 59, 59);
     this->m_volcano.Format("");
     this->m_instrumentType = INSTR_GOTHENBURG;
-    this->m_spectrometerModel = S2000;
+    this->m_spectrometerModel = "S2000";
 }
 
 CInstrumentLocation &CInstrumentLocation::operator =(const CInstrumentLocation &l2) {
