@@ -14,6 +14,10 @@ namespace novac
 	{
 	public:
 		CStdioFile();
+        ~CStdioFile();
+
+        CStdioFile(const CStdioFile& ) = delete;
+        CStdioFile& operator=(const CStdioFile&) = delete;
 
 		enum ModeFlag
 		{
@@ -40,9 +44,10 @@ namespace novac
 		// This reads until a new-line is encountered.
 		bool ReadString(CString& destination);
 
-		
 	private:
 		std::ifstream m_f;
+
+
 	};
 }
 

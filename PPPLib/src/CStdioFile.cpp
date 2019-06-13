@@ -5,8 +5,12 @@ namespace novac
 {
 	CStdioFile::CStdioFile()
 	{
-
 	}
+
+    CStdioFile::~CStdioFile()
+    {
+        Close();
+    }
 
 	bool CStdioFile::Open(const char* fileName, unsigned nOpenFlags)
 	{
@@ -19,7 +23,6 @@ namespace novac
 
 		return m_f.is_open();
 	}
-
 
 	void CStdioFile::Close()
 	{
@@ -34,7 +37,7 @@ namespace novac
 		}
 		else
 		{
-			m_f.getline(destination, nMax);
+			m_f.getline(destination, nMax, '\n');
 			return true;
 		}
 	}
