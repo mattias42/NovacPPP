@@ -577,10 +577,17 @@ double Common::CalculateFlux(const double *scanAngle, const double *scanAngle2, 
     }
     else if (type == INSTR_GOTHENBURG)
     {
+        // In the NovacPPP, the gas factor isn't used. However the flux-calculation formula, shared with the NovacProgram, requires the gas factor.
+        //  This compensation factor is used to compensate for how the gas factor is weighted into the calculation...
+        const double gasFactorCompensation = 1e6;
         if (fabs(coneAngle - 90.0) < 1.0)
-            return CalculateFluxFlatScanner(scanAngle, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass);
+        {
+            return CalculateFluxFlatScanner(scanAngle, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass, gasFactorCompensation);
+        }
         else
-            return CalculateFluxConicalScanner(scanAngle, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass, coneAngle, tilt);
+        {
+            return CalculateFluxConicalScanner(scanAngle, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass, coneAngle, tilt, gasFactorCompensation);
+        }
     }
     else
     {
