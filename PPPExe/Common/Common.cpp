@@ -29,9 +29,20 @@ void GetSysTempFolder(novac::CString& folderPath)
     folderPath = novac::CString(Poco::Path::temp());
 }
 
-bool IsExistingFile(const novac::CString &fileName) {
-    Poco::File file(fileName.c_str());
-    return file.exists();
+bool IsExistingFile(const novac::CString &fileName)
+{
+    try
+    {
+        Poco::File file(fileName.c_str());
+        return file.exists();
+    }
+    catch (const std::exception& e)
+    {
+        novac::CString message;
+        message.Format("Exception happened when searching for file: '%s', message: '%s'", fileName, e.what());
+        ShowMessage(message);
+        return false;
+    }
 }
 
 int CreateDirectoryStructure(const novac::CString &path)
