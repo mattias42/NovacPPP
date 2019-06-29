@@ -360,6 +360,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
                 s_exePath = std::string(buffer.data());
                 Trim(s_exePath, " \t\"");
             }
+            token = tokenizer.NextToken();
             continue;
         }
 
