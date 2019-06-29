@@ -185,8 +185,8 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
         }
 
         for (const std::string& fName : filesFound) {
-            localFileName.Format("%s%c%s", (const char*)directory, Poco::Path::separator(), fName.c_str());
-            localFileList.AddTail(localFileName);
+            // localFileName.Format("%s%c%s", (const char*)directory, Poco::Path::separator(), fName.c_str());
+            localFileList.AddTail(fName);
         }
     }
 
