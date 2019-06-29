@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <SpectralEvaluation/Utils.h>
 #include <PPPLib/CString.h>
 #include <PPPLib/CStringTokenizer.h>
 #include <PPPLib/VolcanoInfo.h>
@@ -86,6 +87,10 @@ protected:
             splitterChannel->addChannel(new Poco::ConsoleChannel());
             Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
             Poco::Logger& log = Poco::Logger::get("NovacPPP");
+
+            // Get the options from the command line
+            std::cout << " Getting command line arguments" << std::endl;
+            ParseCommandLineOptions(arguments);
             ShowMessage(novac::CString::FormatString(" Executing %s in '%s'", s_exeFileName.c_str(), s_exePath.c_str()));
 
             // Read the configuration files
@@ -94,10 +99,6 @@ protected:
 
             splitterChannel->addChannel(new Poco::FileChannel(g_userSettings.m_outputDirectory.std_str() + "StatusLog.txt"));
             log.setChannel(splitterChannel);
-
-            // Get the options from the command line
-            std::cout << " Getting command line arguments" << std::endl;
-            ParseCommandLineOptions(arguments);
 
             // Start calculating the fluxes, this is the old button handler
             std::cout << " Setup done: starting calculations" << std::endl;
@@ -302,7 +303,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     // a local copy of the command line parameters
     novac::CString commandLine;
-    for (size_t arg = 1; arg < arguments.size(); ++arg)
+    for (size_t arg = 0; arg < arguments.size(); ++arg)
     {
         commandLine = commandLine + " " + novac::CString(arguments[arg]);
     }
@@ -313,8 +314,11 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     while (nullptr != token)
     {
+        std::string currentToken{token};
+        Trim(currentToken);
+
         // The first date which we should analyze data from
-        if (Equals(token, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
+        if (Equals(currentToken, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
             parameter.Format(token + strlen(FLAG(str_fromDate)));
             if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
                 errorMessage.Format("Could not parse date: %s", (const char*)parameter);
@@ -325,7 +329,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The last date which we should analyze data from
-        if (Equals(token, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
+        if (Equals(currentToken, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
             parameter.Format(token + strlen(FLAG(str_toDate)));
             if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
                 errorMessage.Format("Could not parse date: %s", (const char*)parameter);
@@ -336,7 +340,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // the volcano to process data from 
-        if (Equals(token, FLAG(str_volcano), strlen(FLAG(str_volcano)))) {
+        if (Equals(currentToken, FLAG(str_volcano), strlen(FLAG(str_volcano)))) {
             parameter.Format(token + strlen(FLAG(str_volcano)));
             int volcano = g_volcanoes.GetVolcanoIndex(parameter);
             if (volcano >= 0) {
@@ -350,22 +354,31 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
             continue;
         }
 
+        // the working directory, used to override the location of the configurations
+        if (Equals(currentToken, FLAG(str_workingDirectory), strlen(FLAG(str_workingDirectory)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_workingDirectory)), "%s", buffer.data())) {
+                s_exePath = std::string(buffer.data());
+                Trim(s_exePath, " \t\"");
+            }
+            continue;
+        }
+
         // the maximum number of threads
-        if (Equals(token, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
-            sscanf(token + strlen(FLAG(str_maxThreadNum)), "%ld", &g_userSettings.m_maxThreadNum);
+        if (Equals(currentToken, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
+            sscanf(currentToken.c_str() + strlen(FLAG(str_maxThreadNum)), "%ld", &g_userSettings.m_maxThreadNum);
             g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, (unsigned long)1);
             token = tokenizer.NextToken();
             continue;
         }
 
         // The options for the local directory
-        if (Equals(token, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local)))) {
-            sscanf(token + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &g_userSettings.m_includeSubDirectories_Local);
+        if (Equals(currentToken, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local)))) {
+            sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &g_userSettings.m_includeSubDirectories_Local);
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(token, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
-            if (sscanf(token + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data())) {
                 g_userSettings.m_LocalDirectory.Format("%s", buffer.data());
                 // m_CheckLocalDirectory.SetCheck(1);
             }
@@ -378,13 +391,13 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The options for the FTP directory
-        if (Equals(token, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP)))) {
-            sscanf(token + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &g_userSettings.m_includeSubDirectories_FTP);
+        if (Equals(currentToken, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP)))) {
+            sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &g_userSettings.m_includeSubDirectories_FTP);
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(token, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
-            if (sscanf(token + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data())) {
                 g_userSettings.m_FTPDirectory.Format("%s", buffer.data());
                 // m_CheckFtp.SetCheck(1);
             }
@@ -395,15 +408,15 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(token, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername)))) {
-            if (sscanf(token + strlen(FLAG(str_FTPUsername)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPUsername)), "%s", buffer.data())) {
                 g_userSettings.m_FTPUsername.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(token, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword)))) {
-            if (sscanf(token + strlen(FLAG(str_FTPPassword)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPPassword)), "%s", buffer.data())) {
                 g_userSettings.m_FTPPassword.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
@@ -411,15 +424,15 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // If we should upload the results to the NovacFTP server at the end...
-        if (Equals(token, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults)))) {
-            sscanf(token + strlen(FLAG(str_uploadResults)), "%d", &g_userSettings.m_uploadResults);
+        if (Equals(currentToken, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults)))) {
+            sscanf(currentToken.c_str() + strlen(FLAG(str_uploadResults)), "%d", &g_userSettings.m_uploadResults);
             token = tokenizer.NextToken();
             continue;
         }
 
         // The output directory
-        if (Equals(token, FLAG(str_outputDirectory), strlen(FLAG(str_outputDirectory)))) {
-            if (sscanf(token + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_outputDirectory), strlen(FLAG(str_outputDirectory)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data())) {
                 g_userSettings.m_outputDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
                 if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/') {
@@ -431,8 +444,8 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The temporary directory
-        if (Equals(token, FLAG(str_tempDirectory), strlen(FLAG(str_tempDirectory)))) {
-            if (sscanf(token + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_tempDirectory), strlen(FLAG(str_tempDirectory)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data())) {
                 g_userSettings.m_tempDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
                 if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/') {
@@ -445,8 +458,8 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
         // The windField file
         int N = (int)strlen(FLAG(str_windFieldFile));
-        if (Equals(token, FLAG(str_windFieldFile), N)) {
-            if (sscanf(token + N, "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_windFieldFile), N)) {
+            if (sscanf(currentToken.c_str() + N, "%s", buffer.data())) {
                 g_userSettings.m_windFieldFile.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
@@ -454,15 +467,15 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The processing mode
-        if (Equals(token, FLAG(str_processingMode), strlen(FLAG(str_processingMode)))) {
-            sscanf(token + strlen(FLAG(str_processingMode)), "%d", (int*)&g_userSettings.m_processingMode);
+        if (Equals(currentToken, FLAG(str_processingMode), strlen(FLAG(str_processingMode)))) {
+            sscanf(currentToken.c_str() + strlen(FLAG(str_processingMode)), "%d", (int*)&g_userSettings.m_processingMode);
             token = tokenizer.NextToken();
             continue;
         }
 
         // the molecule
-        if (Equals(token, FLAG(str_molecule), strlen(FLAG(str_molecule)))) {
-            if (sscanf(token + strlen(FLAG(str_molecule)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_molecule), strlen(FLAG(str_molecule)))) {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_molecule)), "%s", buffer.data())) {
                 const std::string moleculeName = std::string(buffer.data());
                 if (novac::Equals(moleculeName, "BrO")) {
                     g_userSettings.m_molecule = MOLEC_BRO;

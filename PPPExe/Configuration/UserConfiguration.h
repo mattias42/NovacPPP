@@ -38,6 +38,11 @@ namespace Configuration {
         unsigned long    m_maxThreadNum;
 #define str_maxThreadNum "MaxThreadNum"
 
+
+        /** The working-directory, used to override the location of the software.
+                This can only be overriden in command line arguments, not the config file. */
+#define str_workingDirectory "WorkDir"
+
         // ------------------------------------------------------------------------
         // ------------- IS THIS THE CONTINUATION OF A BROKEN RUN ? ---------------
         // ------------------------------------------------------------------------
