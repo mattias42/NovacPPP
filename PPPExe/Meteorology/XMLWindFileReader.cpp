@@ -9,6 +9,7 @@
 #include <Poco/Glob.h>
 #include <Poco/Path.h>
 #include <string.h>
+#include <memory>
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
@@ -110,7 +111,8 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 
     if (Equals(directory.Left(6), "ftp://")) {
         // If the directory is on the server, then this is how to check the files
-        Communication::CFTPServerConnection *ftp = new Communication::CFTPServerConnection();
+        std::unique_ptr<Communication::CFTPServerConnection> ftp;
+        ftp.reset(new Communication::CFTPServerConnection());
 
         // Make sure that the directory does end with a trailing '/'
         ftpDir.Format(directory);
@@ -120,7 +122,6 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
         // Get the list of files on the server
         if (ftp->DownloadFileListFromFTP(ftpDir, remoteFileList, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)) {
             ShowMessage("Failed to download list of wind files from FTP server");
-            delete ftp;
             return 1;
         }
 
@@ -163,7 +164,6 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
 
                 if (ftp->DownloadFileFromFTP(remoteFileName, localFileName, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)) {
                     ShowMessage("Failed to download wind file from FTP server");
-                    delete ftp;
                     return 1;
                 }
             }
