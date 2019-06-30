@@ -56,6 +56,8 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
     {
         ShowMessage("  Determining shift from FraunhoferReference");
 
+        adjustedFitWindow.fraunhoferRef.ReadCrossSectionDataFromFile();
+
         // If we have a solar-spectrum that we can use to determine the shift
         //	& squeeze then fit that first so that we know the wavelength calibration
         eval = FindOptimumShiftAndSqueezeFromFraunhoferReference(adjustedFitWindow, *darkSettings, g_userSettings.sky, *scan);
