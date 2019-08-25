@@ -55,6 +55,8 @@ namespace novac
 
 		/** Appends the contents of the other string to this. */
 		CString& Append(const CString& other);
+        CString& Append(const char* other);
+        CString& Append(const std::string& other);
 
 		// ---------------------- Extracting substrings -----------------------
 

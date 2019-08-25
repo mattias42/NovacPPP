@@ -168,7 +168,7 @@ namespace novac
 
 			CString sut;
 			sut.Format("%s", (const char*)cFirst);
-			sut.AppendFormat("%s", (const char*)cSecond);
+			sut.Append(cSecond);
 
 			REQUIRE(sut.ToStdString() == first + second);
 		}
