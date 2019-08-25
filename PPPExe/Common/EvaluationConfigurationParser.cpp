@@ -236,6 +236,16 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
             return 0;
         }
 
+        if (Equals(szToken, "fitWindow"))
+        {
+            Evaluation::CFitWindow child;
+            CDateTime childValidFrom, childValidTo;
+            Parse_FitWindow(child, childValidFrom, childValidTo);
+            window.child.push_back(child);
+            continue;
+        }
+
+
         if (Equals(szToken, "name")) {
             Parse_StringItem("/name", window.name);
             continue;

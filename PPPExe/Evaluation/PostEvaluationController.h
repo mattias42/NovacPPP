@@ -6,6 +6,7 @@
 
 #include "../Common/Common.h"
 #include <SpectralEvaluation/File/ScanFileHandler.h>
+#include <SpectralEvaluation/Evaluation/Ratio.h>
 #include "../Configuration/NovacPPPConfiguration.h"
 
 namespace Evaluation
@@ -93,7 +94,16 @@ namespace Evaluation
             @param txtFileName - if not null, this will on successful writing of the file be filled
                 with the full path and filename of the txt - file generated
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName = NULL);
+        RETURN_CODE WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName = nullptr);
+
+        /** Writes the evaluation result of one ratio calculation to the appropriate log file.
+            @param result - a vector of calculated ratios.
+            @param scan - the scan itself, also containing information about the evaluation and the flux.
+            @param scanningInstrument - information about the scanning instrument that generated the scan.
+            @param txtFileName - if not null, this will on successful writing of the file be filled
+                with the full path and filename of the txt - file generated
+            @return SUCCESS if operation completed sucessfully. */
+        RETURN_CODE WriteRatioResult(const std::vector<Ratio>& result, const FileHandler::CScanFileHandler& scan, const Evaluation::CFitWindow& window);
 
         /** Appends the evaluation result to the evaluation summary log file.
             @param result - a CScanResult holding information about the result

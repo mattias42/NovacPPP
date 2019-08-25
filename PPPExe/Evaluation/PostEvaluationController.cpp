@@ -2,6 +2,7 @@
 #include "ScanEvaluation.h"
 #include <cstring>
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
+#include <SpectralEvaluation/Evaluation/RatioEvaluation.h>
 
 // This is the information we need to continue an old processing
 #include "../ContinuationOfProcessing.h"
@@ -66,7 +67,8 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     // reader.ReadSpectrum(pakFileName, 0, spec); // TODO: check for errors!!
 
     //  Find the information in the configuration about this instrument
-    if (GetLocationAndFitWindow(&scan, fitWindowName, instrLocation, fitWindow)) {
+    if (GetLocationAndFitWindow(&scan, fitWindowName, instrLocation, fitWindow))
+    {
         errorMessage.Format("Could not read location and fit-window for pak-file %s. Will not evaulate.", (const char*)pakFileName);
         ShowMessage(errorMessage);
         return 3;
@@ -163,6 +165,29 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
         m_lastResult->GetCalculatedPlumeProperties(*plumeProperties);
     }
 
+#ifdef _MSC_VER
+#ifdef _DEBUG
+
+    // TESTING!
+    if (fitWindow.child.size() != 0)
+    {
+        RatioEvaluationSettings ratioSettings;
+        RatioEvaluation ratio{ ratioSettings, darkSettings };
+        ratio.SetupFirstResult(*m_lastResult, *plumeProperties);
+        ratio.SetupFitWindows(fitWindow, fitWindow.child);
+        std::vector<Ratio> broRatios = ratio.Run(scan);
+
+        if(broRatios.size() > 0)
+        {
+            if (SUCCESS != WriteRatioResult(broRatios, scan, fitWindow)) {
+                errorMessage.Format("Failed to write evaluation ratio result to file %s. No result produced", txtFileName);
+                ShowMessage(errorMessage);
+            }
+        }
+    }
+#endif // _DEBUG
+#endif // _MSC_VER
+
     // 13. Clean up
     delete m_lastResult;
     m_lastResult = nullptr;
@@ -170,7 +195,58 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     return 0;
 }
 
-RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName) {
+RETURN_CODE CPostEvaluationController::WriteRatioResult(const std::vector<Ratio>& result, const FileHandler::CScanFileHandler& scan, const Evaluation::CFitWindow& window)
+{
+    CSpectrum skySpec;
+    scan.GetSky(skySpec);
+
+    novac::CString fileName;
+    fileName.Format("%s%c%s%cRatioSummary_%s.txt",
+        (const char*)g_userSettings.m_outputDirectory,
+        Poco::Path::separator(),
+        window.name.c_str(),
+        Poco::Path::separator(),
+        skySpec.m_info.m_device.c_str());
+
+    const bool writeHeaderLine = !IsExistingFile(fileName);
+
+    FILE *f = fopen(fileName, "a");
+    if (f == nullptr)
+    {
+        return FAIL;
+    }
+
+    if (writeHeaderLine)
+    {
+        fprintf(f, "StartTime\t");
+        for (const Ratio& r : result)
+        {
+            fprintf(f, "Ratio\tError\t");
+            fprintf(f, "Column(%s)\tError(%s)\t", r.minorSpecieName.c_str(), r.minorSpecieName.c_str());
+            fprintf(f, "Column(%s)\tError(%s)\t", r.majorSpecieName.c_str(), r.majorSpecieName.c_str());
+        }
+        fprintf(f, "\n");
+    }
+
+    // The start-time
+    fprintf(f, "%04d.%02d.%02dT%02d:%02d:%02d\t", scan.m_startTime.year, scan.m_startTime.month, scan.m_startTime.day, scan.m_startTime.hour, scan.m_startTime.minute, scan.m_startTime.second);
+
+    // The major specie
+    for (const Ratio& r : result)
+    {
+        fprintf(f, "%.5e\t%.5e\t", r.ratio, r.error);
+        fprintf(f, "%.5e\t%.5e\t", r.minorResult, r.minorError);
+        fprintf(f, "%.5e\t%.5e\t", r.majorResult, r.majorError);
+    }
+    fprintf(f, "\n");
+
+    fclose(f);
+
+    return SUCCESS;
+}
+
+RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName)
+{
     novac::CString string, string1, string2, string3, string4;
     long itSpectrum, itSpecie; // iterators
     novac::CString pakFile, txtFile, evalSummaryLog;
@@ -205,7 +281,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
     string.AppendFormat("\tserial=%s\n", (const char*)result->GetSerial());
     string.AppendFormat("\tspectrometer=%s\n", instrLocation->m_spectrometerModel.c_str());
-    string.AppendFormat("\spectrometerMaxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+    string.AppendFormat("\tspectrometerMaxIntensity=%lf\n", spectrometerModel.maximumIntensity);
 
     string.AppendFormat("\tchannel=%d\n", window->channel);
     string.AppendFormat("\tconeangle=%.1lf\n", instrLocation->m_coneangle);
@@ -218,32 +294,32 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
     // The mode
     if (result->IsDirectSunMeasurement())
-        string.AppendFormat("\tmode=direct_sun\n");
+        string.Append("\tmode=direct_sun\n");
     else if (result->IsLunarMeasurement())
-        string.AppendFormat("\tmode=lunar\n");
+        string.Append("\tmode=lunar\n");
     else if (result->IsWindMeasurement())
-        string.AppendFormat("\tmode=wind\n");
+        string.Append("\tmode=wind\n");
     else if (result->IsStratosphereMeasurement())
-        string.AppendFormat("\tmode=stratospheric\n");
+        string.Append("\tmode=stratospheric\n");
     else if (result->IsCompositionMeasurement())
-        string.AppendFormat("\tmode=composition\n");
+        string.Append("\tmode=composition\n");
     else
-        string.AppendFormat("\tmode=plume\n");
+        string.Append("\tmode=plume\n");
 
     // The type of instrument used...
     if (instrLocation->m_instrumentType == INSTR_GOTHENBURG) {
-        string.AppendFormat("\tinstrumenttype=gothenburg\n");
+        string.Append("\tinstrumenttype=gothenburg\n");
     }
     else if (instrLocation->m_instrumentType == INSTR_HEIDELBERG) {
-        string.AppendFormat("\tinstrumenttype=heidelberg\n");
+        string.Append("\tinstrumenttype=heidelberg\n");
     }
 
     // Finally, the version of the file and the version of the program
-    string.AppendFormat("\tversion=2.2\n");
-    string.AppendFormat("\tsoftware=NovacPPP\n");
+    string.Append("\tversion=2.2\n");
+    string.Append("\tsoftware=NovacPPP\n");
     string.AppendFormat("\tcompiledate=%s\n", __DATE__);
 
-    string.AppendFormat("</scaninformation>\n");
+    string.Append("</scaninformation>\n");
     // 0a. Write the additional scan-information to the evaluation log
     FILE *f = fopen(txtFile, "w");
     if (f != nullptr) {
@@ -272,9 +348,9 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     string.AppendFormat("\twinddirectionsource=%s\n", (const char*)wdSrc);
     string.AppendFormat("\tplumeheightsource=%s\n", (const char*)phSrc);
     if (fabs(instrLocation->m_compass) > 360.0)
-        string.AppendFormat("\tcompasssource=compassreading\n");
+        string.Append("\tcompasssource=compassreading\n");
     else
-        string.AppendFormat("\tcompasssource=user\n");
+        string.Append("\tcompasssource=user\n");
 
     string.AppendFormat("\tplumecompleteness=%.2lf\n", plumeCompleteness);
     string.AppendFormat("\tplumecentre=%.2lf\n", plumeCentre1);
@@ -283,7 +359,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     string.AppendFormat("\tplumeedge1=%.2lf\n", plumeEdge1);
     string.AppendFormat("\tplumeedge2=%.2lf\n", plumeEdge2);
 
-    string.AppendFormat("</fluxinfo>");
+    string.Append("</fluxinfo>");
 
     // 0.1b Write the flux-information to the evaluation-log
     if (f != nullptr) {
@@ -299,14 +375,14 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     else if (instrLocation->m_instrumentType == INSTR_HEIDELBERG) {
         string.Format("#observationangle\tazimuth\t");
     }
-    string.AppendFormat("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tcounts_ms\tdelta\tchisquare\texposuretime\tnumspec\t");
+    string.Append("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tcounts_ms\tdelta\tchisquare\texposuretime\tnumspec\t");
 
     for (itSpecie = 0; itSpecie < window->nRef; ++itSpecie) {
         string.AppendFormat("column(%s)\tcolumnerror(%s)\t", window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
         string.AppendFormat("shift(%s)\tshifterror(%s)\t", window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
         string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", window->ref[itSpecie].m_specieName.c_str(), window->ref[itSpecie].m_specieName.c_str());
     }
-    string.AppendFormat("isgoodpoint\toffset\tflag");
+    string.Append("isgoodpoint\toffset\tflag");
 
     // 1a. Write the header to the log file
     if (f != nullptr) {
@@ -401,8 +477,10 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
 
     // we can also write an evaluation-summary log file
     evalSummaryLog.Format("%s%c%s%cEvaluationSummary_%s.txt",
-        (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(),
-        window->name.c_str(), Poco::Path::separator(),
+        (const char*)g_userSettings.m_outputDirectory,
+        Poco::Path::separator(),
+        window->name.c_str(),
+        Poco::Path::separator(),
         (const char*)result->GetSerial());
 
     if (!IsExistingFile(evalSummaryLog)) {
