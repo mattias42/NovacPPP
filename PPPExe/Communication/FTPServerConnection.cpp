@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include <chrono>
+#include <iostream>
 
 
 extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user

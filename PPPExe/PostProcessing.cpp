@@ -304,7 +304,7 @@ void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList,
     }
 
     // Keep the user informed about what we're doing
-    messageToUser.Format("%ld spectrum files found. Begin evaluation", s_nFilesToProcess);
+    messageToUser.Format("%ld spectrum files found. Begin evaluation using %d threads.", s_nFilesToProcess, g_userSettings.m_maxThreadNum);
     ShowMessage(messageToUser);
 
     // start the threads

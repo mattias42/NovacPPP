@@ -367,7 +367,8 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
     plumeProperties.offset = CalculatePlumeOffset(column, badEval, m_specNum);
 
     // Estimate the completeness of the plume (this will call on FindPlume we don't need to do that here...)
-    bool ret = CalculatePlumeCompleteness(scanAngle, phi, column, columnError, badEval, offset, m_specNum, m_plumeProperties);
+    std::string message;
+    bool ret = CalculatePlumeCompleteness(scanAngle, phi, column, columnError, badEval, offset, m_specNum, m_plumeProperties, &message);
 
     // Calculate the centre of the plume
     // bool ret = FindPlume(scanAngle, phi, column, columnError, badEval, m_specNum, m_plumeProperties);
@@ -378,6 +379,7 @@ bool CScanResult::CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProp
     }
     else {
         // If there's no plume, then the flux is probably not very good
+        ShowMessage(message);
     }
 
     return ret;

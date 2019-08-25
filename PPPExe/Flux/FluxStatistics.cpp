@@ -79,7 +79,7 @@ void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac:
 
         str.AppendFormat("\t%d", nMeasurementsFromThisInstrument);
     }
-    str.AppendFormat("\n");
+    str.Append("\n");
 
 
     delete[] data;

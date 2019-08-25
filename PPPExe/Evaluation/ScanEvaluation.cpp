@@ -55,6 +55,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
     if (adjustedFitWindow.fraunhoferRef.m_path.size() > 4)
     {
         ShowMessage("  Determining shift from FraunhoferReference");
+        this->m_lastErrorMessage.clear();
 
         adjustedFitWindow.fraunhoferRef.ReadCrossSectionDataFromFile();
 
@@ -63,8 +64,13 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
         eval = FindOptimumShiftAndSqueezeFromFraunhoferReference(adjustedFitWindow, *darkSettings, g_userSettings.sky, *scan);
         if (nullptr == eval)
         {
-            ShowMessage(this->m_lastErrorMessage);
+            ShowMessage(m_lastErrorMessage);
             return 0;
+        }
+
+        if (m_lastErrorMessage.size() > 1)
+        {
+            ShowMessage(m_lastErrorMessage);
         }
     }
     else if (fitWindow.findOptimalShift)

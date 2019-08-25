@@ -137,7 +137,7 @@ void LoadConfigurations()
     {
         throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
     }
-    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found. (", setupPath.c_str(), g_setup.m_instrumentNum));
+    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), g_setup.m_instrumentNum));
 
 
     // Read the users options from file processing.xml
@@ -176,7 +176,7 @@ void OnBnClickedCalculateFluxes(int selectedVolcano)
     // 2a. make sure that the ftp-path ends with a '/'
     if (g_userSettings.m_FTPDirectory.GetLength() > 1) {
         if (!Equals(g_userSettings.m_FTPDirectory.Right(1), "/")) {
-            g_userSettings.m_FTPDirectory.AppendFormat("/");
+            g_userSettings.m_FTPDirectory.Append("/");
         }
     }
 
@@ -437,7 +437,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
                 g_userSettings.m_outputDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
                 if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/') {
-                    g_userSettings.m_outputDirectory.AppendFormat("/");
+                    g_userSettings.m_outputDirectory.Append("/");
                 }
             }
             token = tokenizer.NextToken();
@@ -450,7 +450,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
                 g_userSettings.m_tempDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
                 if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/') {
-                    g_userSettings.m_tempDirectory.AppendFormat("/");
+                    g_userSettings.m_tempDirectory.Append("/");
                 }
             }
             token = tokenizer.NextToken();

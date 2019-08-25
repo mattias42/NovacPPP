@@ -1019,30 +1019,30 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         string.AppendFormat("\ttemperature=%.2f\n", scan.GetTemperature());
         // The mode
         if (scan.IsDirectSunMeasurement())
-            string.AppendFormat("\tmode=direct_sun\n");
+            string.Append("\tmode=direct_sun\n");
         else if (scan.IsWindMeasurement())
-            string.AppendFormat("\tmode=wind\n");
+            string.Append("\tmode=wind\n");
         else if (scan.IsStratosphereMeasurement())
-            string.AppendFormat("\tmode=stratospheric\n");
+            string.Append("\tmode=stratospheric\n");
         else if (scan.IsCompositionMeasurement())
-            string.AppendFormat("\tmode=composition\n");
+            string.Append("\tmode=composition\n");
         else
-            string.AppendFormat("\tmode=plume\n");
+            string.Append("\tmode=plume\n");
 
         // The type of instrument used...
         if (scan.GetInstrumentType() == INSTR_GOTHENBURG) {
-            string.AppendFormat("\tinstrumenttype=gothenburg\n");
+            string.Append("\tinstrumenttype=gothenburg\n");
         }
         else if (scan.GetInstrumentType() == INSTR_HEIDELBERG) {
-            string.AppendFormat("\tinstrumenttype=heidelberg\n");
+            string.Append("\tinstrumenttype=heidelberg\n");
         }
 
         // Finally, the version of the file and the version of the program
-        string.AppendFormat("\tversion=2.0\n");
+        string.Append("\tversion=2.0\n");
         string.AppendFormat("\tsoftwareversion=%d.%02d\n", CVersion::majorNumber, CVersion::minorNumber);
         string.AppendFormat("\tcompiledate=%s\n", __DATE__);
 
-        string.AppendFormat("</scaninformation>\n\n");
+        string.Append("</scaninformation>\n\n");
         fprintf(f, "%s", string.c_str());
 
         // ----------------- Create the flux-information ----------------------
@@ -1061,7 +1061,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         //	string.AppendFormat("\tcompasssource=compassreading\n");
         //else
         //	string.AppendFormat("\tcompasssource=user\n");
-        string.AppendFormat("</fluxinfo>\n");
+        string.Append("</fluxinfo>\n");
         fprintf(f, "%s", string.c_str());
 
         // ----------------------- write the header --------------------------------
@@ -1071,7 +1071,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         else if (m_instrumentType == INSTR_HEIDELBERG) {
             string.Format("#observationangle\tazimuth\t");
         }
-        string.AppendFormat("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tdelta\tchisquare\texposuretime\tnumspec\t");
+        string.Append("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tdelta\tchisquare\texposuretime\tnumspec\t");
 
         for (int itSpecie = 0; itSpecie < scan.GetSpecieNum(0); ++itSpecie) {
             specieName.Format("%s", (const char*)scan.GetSpecieName(0, itSpecie));
@@ -1079,8 +1079,8 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
             string.AppendFormat("shift(%s)\tshifterror(%s)\t", (const char*)specieName, (const char*)specieName);
             string.AppendFormat("squeeze(%s)\tsqueezeerror(%s)\t", (const char*)specieName, (const char*)specieName);
         }
-        string.AppendFormat("isgoodpoint\toffset\tflag");
-        string.AppendFormat("\n<spectraldata>\n");
+        string.Append("isgoodpoint\toffset\tflag");
+        string.Append("\n<spectraldata>\n");
 
         fprintf(f, "%s", string.c_str());
 
@@ -1167,7 +1167,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
             string.AppendFormat("%.2lf\t%.2lf\t", result->m_referenceResult[itSpecie].m_squeeze, result->m_referenceResult[itSpecie].m_squeezeError);
         }
         else {
-            string.AppendFormat("0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t");
+            string.Append("0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t");
         }
     }
 
@@ -1175,7 +1175,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     if (result != NULL)
         string.AppendFormat("%d\t", result->IsOK());
     else
-        string.AppendFormat("%d\t", 1);
+        string.Append("1\t");
 
     // 12. The offset
     string.AppendFormat("%.0lf\t", info->m_offset);

@@ -117,7 +117,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString &directory, Meteo
         // Make sure that the directory does end with a trailing '/'
         ftpDir.Format(directory);
         if (!Equals(ftpDir.Right(1), "/"))
-            ftpDir.AppendFormat("/");
+            ftpDir.Append("/");
 
         // Get the list of files on the server
         if (ftp->DownloadFileListFromFTP(ftpDir, remoteFileList, g_userSettings.m_FTPUsername, g_userSettings.m_FTPPassword)) {
