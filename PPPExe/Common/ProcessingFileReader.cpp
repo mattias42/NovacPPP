@@ -86,9 +86,6 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
             else if (Equals(modeStr, "stratosphere")) {
                 settings.m_processingMode = PROCESSING_MODE_STRATOSPHERE;
             }
-            else if (Equals(modeStr, "troposphere")) {
-                settings.m_processingMode = PROCESSING_MODE_TROPOSPHERE;
-            }
             else if (Equals(modeStr, "geometry")) {
                 settings.m_processingMode = PROCESSING_MODE_GEOMETRY;
             }
@@ -446,7 +443,6 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
     case PROCESSING_MODE_FLUX:			PrintParameter(f, 1, str_processingMode, "Flux"); break;
     case PROCESSING_MODE_COMPOSITION:	PrintParameter(f, 1, str_processingMode, "Composition"); break;
     case PROCESSING_MODE_STRATOSPHERE:	PrintParameter(f, 1, str_processingMode, "Stratosphere"); break;
-    case PROCESSING_MODE_TROPOSPHERE:	PrintParameter(f, 1, str_processingMode, "Troposphere"); break;
     case PROCESSING_MODE_GEOMETRY:		PrintParameter(f, 1, str_processingMode, "Geometry"); break;
     default:							PrintParameter(f, 1, str_processingMode, "Unknown"); break;
     }

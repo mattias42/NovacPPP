@@ -23,7 +23,7 @@
 #include <Poco/Util/Application.h>
 
 extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CUserConfiguration            g_userSettings;// <-- The settings of the user
 
 novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 
@@ -33,9 +33,8 @@ std::string s_exeFileName;
 #undef min
 #undef max
 
-// void LoadConfigurations(int argc, char* argv[]);
 void LoadConfigurations();
-void OnBnClickedCalculateFluxes(int selectedVolcano = 0);
+void StartProcessing(int selectedVolcano = 0);
 void CalculateAllFluxes();
 void ParseCommandLineOptions(const std::vector<std::string>& arguments);
 
@@ -43,17 +42,19 @@ void ParseCommandLineOptions(const std::vector<std::string>& arguments);
 class NovacPPPApplication : public Poco::Util::Application
 {
 protected:
-    void initialize(Poco::Util::Application& application) {
-        //this->config().setString("optionval", "defaultoption");
+    void initialize(Poco::Util::Application& application)
+    {
         this->loadConfiguration();
         Poco::Util::Application::initialize(application);
     }
 
-    void uninitialize() {
+    void uninitialize()
+    {
         Poco::Util::Application::uninitialize();
     }
 
-    void defineOptions(Poco::Util::OptionSet& optionSet) {
+    void defineOptions(Poco::Util::OptionSet& optionSet)
+    {
         Poco::Util::Application::defineOptions(optionSet);
 
         /* optionSet.addOption(
@@ -65,13 +66,15 @@ protected:
         ); */
     }
 
-    void handleMyOpt(const std::string &name, const std::string &value) {
+    void handleMyOpt(const std::string &name, const std::string &value)
+    {
         std::cout << "Setting option " << name << " to " << value << std::endl;
         this->config().setString(name, value);
         std::cout << "The option is now " << this->config().getString(name) << std::endl;
     }
 
-    int main(const std::vector<std::string> &arguments) {
+    int main(const std::vector<std::string> &arguments)
+    {
         std::cout << "Novac Post Processing Program" << std::endl;
 
         try
@@ -102,7 +105,7 @@ protected:
 
             // Start calculating the fluxes, this is the old button handler
             std::cout << " Setup done: starting calculations" << std::endl;
-            OnBnClickedCalculateFluxes();
+            StartProcessing();
         }
         catch (Poco::FileNotFoundException& e)
         {
@@ -126,10 +129,8 @@ void LoadConfigurations()
 {
     // Declaration of variables and objects
     Common common;
-    novac::CString setupPath, processingPath, evalConfPath, volcanoName;
+    novac::CString setupPath;
     FileHandler::CSetupFileReader reader;
-    FileHandler::CEvaluationConfigurationParser eval_reader;
-    FileHandler::CProcessingFileReader processing_reader;
 
     //Read configuration from file setup.xml */	
     setupPath.Format("%sconfiguration%csetup.xml", (const char*)common.m_exePath, Poco::Path::separator());
@@ -141,59 +142,45 @@ void LoadConfigurations()
 
 
     // Read the users options from file processing.xml
+    novac::CString processingPath;
     processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)common.m_exePath, Poco::Path::separator());
-    if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings)) {
+    FileHandler::CProcessingFileReader processing_reader;
+    if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
+    {
         throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
     }
 
     // Check if there is a configuration file for every spectrometer serial number
-    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k) {
+    FileHandler::CEvaluationConfigurationParser eval_reader;
+    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+    {
+        novac::CString evalConfPath;
         evalConfPath.Format("%sconfiguration%c%s.exml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)g_setup.m_instrument[k].m_serial);
 
         if (IsExistingFile(evalConfPath))
+        {
             eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
-        else {
+        }
+        else
+        {
             throw std::logic_error("Could not find configuration file: " + evalConfPath);
         }
     }
 }
 
-
-void OnBnClickedCalculateFluxes(int selectedVolcano)
+void StartProcessing(int selectedVolcano)
 {
-    // 1. check input!!!
-
-// 	if (m_CheckLocalDirectory.GetCheck() != BST_CHECKED) {
-// 		g_userSettings.m_LocalDirectory.Format("");
-// 	}
-
-// 	if (m_CheckFtp.GetCheck() != BST_CHECKED) {
-// 		g_userSettings.m_FTPDirectory.Format("");
-// 	}
-
-    // 2. check the data
-
-    // 2a. make sure that the ftp-path ends with a '/'
-    if (g_userSettings.m_FTPDirectory.GetLength() > 1) {
-        if (!Equals(g_userSettings.m_FTPDirectory.Right(1), "/")) {
+    // Make sure that the ftp-path ends with a '/'
+    if (g_userSettings.m_FTPDirectory.GetLength() > 1)
+    {
+        if (!Equals(g_userSettings.m_FTPDirectory.Right(1), "/"))
+        {
             g_userSettings.m_FTPDirectory.Append("/");
         }
     }
 
-
-    // 3. Open the message window
-    // pView = &m_statusDlg;
-    // m_statusDlg.Create(IDD_MESSAGEDLG);
-    // m_statusDlg.ShowWindow(SW_SHOW);
-    // m_statusDlg.GetWindowRect(rect);
-    // int w = rect.Width();
-    // int h = rect.Height();
-    // rect.left = 10; rect.right = rect.left + w;
-    // rect.top = 10; rect.bottom = rect.top + h;
-    // m_statusDlg.MoveWindow(rect); // move the window to the corner of the screen
-
     // 4. Set the parameters for the post-processing..
-    g_userSettings.m_volcano = selectedVolcano; // this->m_comboAllVolcanoes.GetCurSel();
+    g_userSettings.m_volcano = selectedVolcano;
 
     // 5. Run
 #ifdef _MFC_VER 
@@ -206,30 +193,34 @@ void OnBnClickedCalculateFluxes(int selectedVolcano)
 }
 
 
-void CalculateAllFluxes() {
+void CalculateAllFluxes()
+{
     try
     {
         CPostProcessing post;
-        novac::CString userMessage, processingOutputFile, setupOutputFile;
-        novac::CString confCopyDir, serial;
+        novac::CString processingOutputFile, setupOutputFile;
         Common common;
-        FileHandler::CProcessingFileReader writer;
-        unsigned int k;
 
         // Set the directory where we're working in...
         post.m_exePath.Format(common.m_exePath);
 
         // set the directory to which we want to copy the settings
+        novac::CString confCopyDir;
         confCopyDir.Format("%s/copiedConfiguration/", (const char*)g_userSettings.m_outputDirectory);
 
         // make sure that the output directory exists
-        if (CreateDirectoryStructure(g_userSettings.m_outputDirectory)) {
+        if (CreateDirectoryStructure(g_userSettings.m_outputDirectory))
+        {
+            novac::CString userMessage;
             userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
             ShowMessage(userMessage);
             ShowMessage("-- Exit post processing --");
             return;
         }
-        if (CreateDirectoryStructure(confCopyDir)) {
+
+        if (CreateDirectoryStructure(confCopyDir))
+        {
+            novac::CString userMessage;
             userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
             ShowMessage(userMessage);
             ShowMessage("-- Exit post processing --");
@@ -245,41 +236,38 @@ void CalculateAllFluxes() {
         // Copy the settings that we have read in from the 'configuration' directory
         //	to the output directory to make it easier for the user to remember 
         //	what has been done...
+        FileHandler::CProcessingFileReader writer;
         writer.WriteProcessingFile(processingOutputFile, g_userSettings);
 
         Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);
-        for (k = 0; k < g_setup.m_instrumentNum; ++k) {
-            serial.Format(g_setup.m_instrument[k].m_serial);
+        for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+        {
+            novac::CString serial(g_setup.m_instrument[k].m_serial);
 
             Common::CopyFile(common.m_exePath + "configuration/" + serial + ".exml", confCopyDir + serial + ".exml");
         }
 
         // Do the post-processing
-        if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION) {
+        if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION)
+        {
             ShowMessage("Warning: Post processing of composition measurements is not yet fully implemented");
             post.DoPostProcessing_Flux(); // this uses the same code as the flux processing
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE) {
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE)
+        {
             ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
             post.DoPostProcessing_Strat();
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_TROPOSPHERE) {
-            ShowMessage("Post processing of tropospheric measurements is not yet implemented");
-        }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_GEOMETRY) {
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE_GEOMETRY)
+        {
             post.DoPostProcessing_Geometry();
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_DUALBEAM) {
-
-        }
-        else {
+        else
+        {
             post.DoPostProcessing_Flux();
         }
 
-        // Tell the user that we're done
         ShowMessage("-- Exit post processing --");
-
-        return;
     }
     catch (Poco::FileNotFoundException& e)
     {
@@ -314,13 +302,15 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     while (nullptr != token)
     {
-        std::string currentToken{token};
+        std::string currentToken{ token };
         Trim(currentToken);
 
         // The first date which we should analyze data from
-        if (Equals(currentToken, FLAG(str_fromDate), strlen(FLAG(str_fromDate)))) {
+        if (Equals(currentToken, FLAG(str_fromDate), strlen(FLAG(str_fromDate))))
+        {
             parameter.Format(token + strlen(FLAG(str_fromDate)));
-            if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate)) {
+            if (!CDateTime::ParseDate(parameter, g_userSettings.m_fromDate))
+            {
                 errorMessage.Format("Could not parse date: %s", (const char*)parameter);
                 ShowMessage(errorMessage);
             }
@@ -329,9 +319,11 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The last date which we should analyze data from
-        if (Equals(currentToken, FLAG(str_toDate), strlen(FLAG(str_toDate)))) {
+        if (Equals(currentToken, FLAG(str_toDate), strlen(FLAG(str_toDate))))
+        {
             parameter.Format(token + strlen(FLAG(str_toDate)));
-            if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate)) {
+            if (!CDateTime::ParseDate(parameter, g_userSettings.m_toDate))
+            {
                 errorMessage.Format("Could not parse date: %s", (const char*)parameter);
                 ShowMessage(errorMessage);
             }
@@ -340,13 +332,16 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // the volcano to process data from 
-        if (Equals(currentToken, FLAG(str_volcano), strlen(FLAG(str_volcano)))) {
+        if (Equals(currentToken, FLAG(str_volcano), strlen(FLAG(str_volcano))))
+        {
             parameter.Format(token + strlen(FLAG(str_volcano)));
             int volcano = g_volcanoes.GetVolcanoIndex(parameter);
-            if (volcano >= 0) {
+            if (volcano >= 0)
+            {
                 g_userSettings.m_volcano = volcano;
             }
-            else {
+            else
+            {
                 errorMessage.Format("Could not find volcano: %s", (const char*)parameter);
                 ShowMessage(errorMessage);
             }
@@ -355,8 +350,10 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // the working directory, used to override the location of the configurations
-        if (Equals(currentToken, FLAG(str_workingDirectory), strlen(FLAG(str_workingDirectory)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_workingDirectory)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_workingDirectory), strlen(FLAG(str_workingDirectory))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_workingDirectory)), "%s", buffer.data()))
+            {
                 s_exePath = std::string(buffer.data());
                 Trim(s_exePath, " \t\"");
             }
@@ -365,7 +362,8 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // the maximum number of threads
-        if (Equals(currentToken, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum)))) {
+        if (Equals(currentToken, FLAG(str_maxThreadNum), strlen(FLAG(str_maxThreadNum))))
+        {
             sscanf(currentToken.c_str() + strlen(FLAG(str_maxThreadNum)), "%ld", &g_userSettings.m_maxThreadNum);
             g_userSettings.m_maxThreadNum = std::max(g_userSettings.m_maxThreadNum, (unsigned long)1);
             token = tokenizer.NextToken();
@@ -373,51 +371,61 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The options for the local directory
-        if (Equals(currentToken, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local)))) {
+        if (Equals(currentToken, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local))))
+        {
             sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &g_userSettings.m_includeSubDirectories_Local);
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(currentToken, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_LocalDirectory), strlen(FLAG(str_LocalDirectory))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data()))
+            {
                 g_userSettings.m_LocalDirectory.Format("%s", buffer.data());
-                // m_CheckLocalDirectory.SetCheck(1);
             }
-            else {
-                g_userSettings.m_LocalDirectory.Format("");
-                // m_CheckLocalDirectory.SetCheck(0);
+            else
+            {
+                g_userSettings.m_LocalDirectory = "";
             }
             token = tokenizer.NextToken();
             continue;
         }
 
         // The options for the FTP directory
-        if (Equals(currentToken, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP)))) {
+        if (Equals(currentToken, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP))))
+        {
             sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &g_userSettings.m_includeSubDirectories_FTP);
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(currentToken, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data())) {
+
+        if (Equals(currentToken, FLAG(str_FTPDirectory), strlen(FLAG(str_FTPDirectory))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data()))
+            {
                 g_userSettings.m_FTPDirectory.Format("%s", buffer.data());
-                // m_CheckFtp.SetCheck(1);
             }
-            else {
+            else
+            {
                 g_userSettings.m_FTPDirectory.Format("");
-                // m_CheckFtp.SetCheck(0);
             }
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(currentToken, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPUsername)), "%s", buffer.data())) {
+
+        if (Equals(currentToken, FLAG(str_FTPUsername), strlen(FLAG(str_FTPUsername))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPUsername)), "%s", buffer.data()))
+            {
                 g_userSettings.m_FTPUsername.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
             continue;
         }
-        if (Equals(currentToken, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPPassword)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_FTPPassword), strlen(FLAG(str_FTPPassword))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPPassword)), "%s", buffer.data()))
+            {
                 g_userSettings.m_FTPPassword.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
@@ -425,7 +433,8 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // If we should upload the results to the NovacFTP server at the end...
-        if (Equals(currentToken, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults)))) {
+        if (Equals(currentToken, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults))))
+        {
             sscanf(currentToken.c_str() + strlen(FLAG(str_uploadResults)), "%d", &g_userSettings.m_uploadResults);
             token = tokenizer.NextToken();
             continue;
@@ -448,11 +457,14 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The temporary directory
-        if (Equals(currentToken, FLAG(str_tempDirectory), strlen(FLAG(str_tempDirectory)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_tempDirectory), strlen(FLAG(str_tempDirectory))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data()))
+            {
                 g_userSettings.m_tempDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
-                if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/') {
+                if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/')
+                {
                     g_userSettings.m_tempDirectory.Append("/");
                 }
             }
@@ -462,8 +474,10 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
         // The windField file
         int N = (int)strlen(FLAG(str_windFieldFile));
-        if (Equals(currentToken, FLAG(str_windFieldFile), N)) {
-            if (sscanf(currentToken.c_str() + N, "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_windFieldFile), N))
+        {
+            if (sscanf(currentToken.c_str() + N, "%s", buffer.data()))
+            {
                 g_userSettings.m_windFieldFile.Format("%s", buffer.data());
             }
             token = tokenizer.NextToken();
@@ -471,23 +485,29 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The processing mode
-        if (Equals(currentToken, FLAG(str_processingMode), strlen(FLAG(str_processingMode)))) {
+        if (Equals(currentToken, FLAG(str_processingMode), strlen(FLAG(str_processingMode))))
+        {
             sscanf(currentToken.c_str() + strlen(FLAG(str_processingMode)), "%d", (int*)&g_userSettings.m_processingMode);
             token = tokenizer.NextToken();
             continue;
         }
 
         // the molecule
-        if (Equals(currentToken, FLAG(str_molecule), strlen(FLAG(str_molecule)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_molecule)), "%s", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_molecule), strlen(FLAG(str_molecule))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_molecule)), "%s", buffer.data()))
+            {
                 const std::string moleculeName = std::string(buffer.data());
-                if (novac::Equals(moleculeName, "BrO")) {
+                if (novac::Equals(moleculeName, "BrO"))
+                {
                     g_userSettings.m_molecule = MOLEC_BRO;
                 }
-                else if (novac::Equals(moleculeName, "NO2")) {
+                else if (novac::Equals(moleculeName, "NO2"))
+                {
                     g_userSettings.m_molecule = MOLEC_NO2;
                 }
-                else if (novac::Equals(moleculeName, "O3")) {
+                else if (novac::Equals(moleculeName, "O3"))
+                {
                     g_userSettings.m_molecule = MOLEC_O3;
                 }
                 else {
