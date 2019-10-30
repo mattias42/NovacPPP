@@ -432,11 +432,14 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
         }
 
         // The output directory
-        if (Equals(currentToken, FLAG(str_outputDirectory), strlen(FLAG(str_outputDirectory)))) {
-            if (sscanf(currentToken.c_str() + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data())) {
+        if (Equals(currentToken, FLAG(str_outputDirectory), strlen(FLAG(str_outputDirectory))))
+        {
+            if (sscanf(currentToken.c_str() + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data()))
+            {
                 g_userSettings.m_outputDirectory.Format("%s", buffer.data());
                 // make sure that this ends with a trailing '\'
-                if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/') {
+                if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/')
+                {
                     g_userSettings.m_outputDirectory.Append("/");
                 }
             }
