@@ -131,11 +131,13 @@ namespace novac
         return Left((size_t)(nChars));
     }
 
-    std::string Right(const std::string& input, size_t nChars) {
+    std::string Right(const std::string& input, size_t nChars)
+    {
         return input.substr(input.size() - nChars, nChars);
     }
 
-    std::string Left(const std::string& input, size_t nChars) {
+    std::string Left(const std::string& input, size_t nChars)
+    {
         return input.substr(0, nChars);
     }
 
@@ -204,21 +206,24 @@ namespace novac
     }
 
     // trim from start
-    static inline std::string &ltrim(std::string &s) {
+    static inline std::string &ltrim(std::string &s)
+    {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(),
             std::not1(std::ptr_fun<int, int>(std::isspace))));
         return s;
     }
 
     // trim from end
-    static inline std::string &rtrim(std::string &s) {
+    static inline std::string &rtrim(std::string &s)
+    {
         s.erase(std::find_if(s.rbegin(), s.rend(),
             std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
         return s;
     }
 
     // trim from both ends
-    static inline std::string &trim(std::string &s) {
+    static inline std::string &trim(std::string &s)
+    {
         return ltrim(rtrim(s));
     }
 
@@ -339,9 +344,9 @@ namespace novac
         return CString(str1.ToStdString() + other);
     }
 
-    char CString::GetAt(int index) const
+    char CString::GetAt(size_t index) const
     {
-        if ((size_t)index >= m_data.length())
+        if (index >= m_data.length())
         {
             std::stringstream ss;
             ss << "Request for invalid character index in CString::GetAt. index = " << index << " but length=" << m_data.length() << " in string '" << m_data << "'";
@@ -353,31 +358,41 @@ namespace novac
         }
     }
 
+    char CString::GetAt(int index) const
+    {
+        return GetAt((size_t)index);
+    }
+
     int CString::Compare(const CString& other) const
     {
         return m_data.compare(other.m_data);
     }
 
-    void CleanString(const CString &in, CString &out) {
+    void CleanString(const CString &in, CString &out)
+    {
         std::vector<char> buffer(strlen(in) + 2);
 
-        for (unsigned int it = 0; it < in.GetLength(); ++it)
+        for (size_t it = 0; it < in.GetLength(); ++it)
         {
             buffer[it] = in.GetAt(it);
         }
         CleanString(buffer.data(), out);
     }
 
-    void CleanString(const char *in, CString &out) {
+    void CleanString(const char *in, CString &out)
+    {
         out.Format("");
-        for (unsigned int it = 0; it < strlen(in); ++it) {
-            if ((unsigned char)in[it] >= 32) {
+        for (unsigned int it = 0; it < strlen(in); ++it)
+        {
+            if ((unsigned char)in[it] >= 32)
+            {
                 out.AppendFormat("%c", in[it]);
             }
         }
     }
 
-    void SimplifyString(const CString& in, CString& out) {
+    void SimplifyString(const CString& in, CString& out)
+    {
         CString tempString;
 
         // Clean the string for non-printable characters
@@ -386,15 +401,18 @@ namespace novac
         // Make a local copy of the string
         size_t L = strlen(tempString);
         std::vector<char> buffer(L + 2);
-        for (size_t it = 0; it < L; ++it) {
+        for (size_t it = 0; it < L; ++it)
+        {
             buffer[it] = tempString.GetAt((int)it);
         }
         buffer[L] = 0;
 
         // Check all characters in the string
-        for (size_t i = 0; i < L; ++i) {
+        for (size_t i = 0; i < L; ++i)
+        {
             // 1. Replace spaces, commas and dots with underscores
-            if (buffer[i] == ' ' || buffer[i] == ',' || buffer[i] == '.') {
+            if (buffer[i] == ' ' || buffer[i] == ',' || buffer[i] == '.') 
+            {
                 buffer[i] = '_';
                 continue;
             }
@@ -403,8 +421,10 @@ namespace novac
             buffer[i] = char(tolower(buffer[i]));
 
             // 3. Remove paranthesis...
-            if (buffer[i] == '(' || buffer[i] == '[' || buffer[i] == '{' || buffer[i] == ')' || buffer[i] == ']' || buffer[i] == '}') {
-                for (size_t j = i; j < L - 1; ++j) {
+            if (buffer[i] == '(' || buffer[i] == '[' || buffer[i] == '{' || buffer[i] == ')' || buffer[i] == ']' || buffer[i] == '}')
+            {
+                for (size_t j = i; j < L - 1; ++j)
+                {
                     buffer[j] = buffer[j + 1];
                 }
                 buffer[L - 1] = '\0';
@@ -414,7 +434,8 @@ namespace novac
             }
 
             // 4. Check if there's any accent on the character
-            if ((unsigned char)buffer[i] <= 127) {
+            if ((unsigned char)buffer[i] <= 127)
+            {
                 continue;
             }
 
