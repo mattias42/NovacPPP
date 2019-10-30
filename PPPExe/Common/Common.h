@@ -13,9 +13,16 @@
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 
-#include "../Geometry/PlumeHeight.h"
-#include "../Meteorology/WindField.h"
 #include <cmath>
+
+namespace Geometry
+{
+    class CPlumeHeight;
+}
+namespace Meteorology
+{
+    class CWindField;
+}
 
 // ---------------------------------------------------------------
 // ---------------- GLOBAL FUNCTIONS -----------------------------
@@ -91,11 +98,11 @@ enum PROCESSING_MODE {
 #define NOT_A_NUMBER -9999.0
 
 
-// ----------------------------------------------------------------
-// ---------------- MATHEMATICAL CONSTANTS ------------------------
-// ----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // ---------------- MATHEMATICAL CONSTANTS ------------------------
+    // ----------------------------------------------------------------
 
-// converts degrees to radians
+    // converts degrees to radians
 #define DEGREETORAD 0.017453 
 
 // converts radians to degrees
@@ -279,31 +286,7 @@ public:
     /** This function calculates the latitude and longitude for point
             which is the distance 'dist' m and bearing 'az' degrees from
             the point defied by 'lat1' and 'lon1' */
-    void	CalculateDestination(double lat1, double lon1, double dist, double az, double &lat2, double &lon2);
-
-    // --------------------------------------------------------------------
-    // --------------------------- STRINGS --------------------------------
-    // --------------------------------------------------------------------
-
-
-
-    /** Sorts a list of strings in either ascending or descending order.
-            The algorithm is based on MergeSort (~O(NlogN)). */
-    static void Sort(novac::CList <novac::CString> &strings, bool files, bool ascending = true);
-private:
-    novac::CString m_string[3];
-
-    // This is the string which is returned after a call to SimplifyString
-    novac::CString m_simpleString;
-
-    /** Merges the two lists 'list1' and 'list2' in a sorted way and stores
-            the result in the output-list 'result' */
-    static void MergeLists(const novac::CList <novac::CString> &list1, const novac::CList <novac::CString> &list2, novac::CList <novac::CString> &result, bool files, bool ascending = true);
-public:
-
-    // --------------------------------------------------------------------
-    // -------------------- UNIT CONVERSION -------------------------------
-    // --------------------------------------------------------------------
+    void CalculateDestination(double lat1, double lon1, double dist, double az, double &lat2, double &lon2);
 
     // --------------------------------------------------------------------
     // -------------------- CALCULATING FLUX ------------------------------
@@ -318,26 +301,12 @@ public:
     /** Guesses the name of the specie from the name of the reference file. */
     static void GuessSpecieName(const novac::CString &string, novac::CString &specie);
 
-
-
 };// end of class Common
 
 // --------------------------------------------------------------------
 // --------------- TEMPLATE ARRAY FUNCTIONS ---------------------------
 // --------------------------------------------------------------------
 
-/** Searches for the maximum element in the array.
-        @param pBuffer - The array in which to search for an element.
-        @param bufLen - The length of the array.
-        @return - The maximum value in the array */
-template <class T> T Max(T *pBuffer, long bufLen) {
-    T maxValue = pBuffer[0];
-    for (long i = 1; i < bufLen; ++i) {
-        if (pBuffer[i] > maxValue)
-            maxValue = pBuffer[i];
-    }
-    return maxValue;
-}
 
 /** Searches for the minimum element in the array.
         @param pBuffer - The array in which to search for an element.
@@ -350,69 +319,6 @@ template <class T> T Min(T *pBuffer, long bufLen) {
             minValue = pBuffer[i];
     }
     return minValue;
-}
-
-/** A simple function to find an element in an array. The items in the array must be comparable (operator= must be defined).
-        @param array - the array to search in.
-        @param element - the element to find.
-        @param nElements - the length of the array.
-        @return the zero-based index into the array where the element is.
-        @return -1 if the element was not found.	*/
-template <class T> int FindInArray(T array[], T element, long nElements) {
-    for (long i = 0; i < nElements; ++i) {
-        if (array[i] == element)
-            return i;
-    }
-    return -1;
-}
-
-/** A simple function to check if all elements in a 'bool' array are all same
-        @param array - the array to investigate
-        @param nElements - the length of the array
-        @return true if all elements are equal, otherwise false */
-template <class T> bool AllSame(T array[], long nElements) {
-    if (nElements < 0)
-        return false;
-    if (nElements <= 1)
-        return true;
-    T firstValue = array[0];
-    for (long i = 1; i < nElements; ++i) {
-        if (array[i] != firstValue)
-            return false;
-    }
-    return true;
-}
-
-/** This function finds the 'N' highest values in the supplied array.
-        On successfull return the array 'output' will be filled with the N highest
-        values in the input array, sorted in descending order.
-        @param array - the array to look into
-        @param nElements - the number of elements in the supplied array
-        @param output - the output array, must be at least 'N'- elements long
-        @param N - the number of values to take out.
-        @param indices - if specified, this will on return the indices for the highest elements. Must have length 'N' */
-template <class T> bool FindNHighest(const T array[], long nElements, T output[], int N, int *indices = NULL) {
-    for (int i = 0; i < N; ++i)
-        output[i] = array[0]; // to get some initial value
-
-    // loop through all elements in the array
-    for (int i = 0; i < nElements; ++i) {
-
-        // compare this element with all elements in the output array.
-        for (int j = 0; j < N; ++j) {
-            if (array[i] > output[j]) {
-                // If we found a higher value, shift all other values down one step...
-                for (int k = N - 1; k > j; --k) {
-                    output[k] = output[k - 1];
-                    if (indices)							indices[k] = indices[k - 1];
-                }
-                output[j] = array[i];
-                if (indices)								indices[j] = i;
-                break;
-            }
-        }
-    }
-    return true;
 }
 
 /** This function finds the 'N' lowest values in the supplied array.

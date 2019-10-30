@@ -16,7 +16,10 @@
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Flux/Flux.h>
 
-extern novac::CVolcanoInfo g_volcanoes;					// <-- the list of volcanoes
+#include "../Geometry/PlumeHeight.h"
+#include "../Meteorology/WindField.h"
+
+extern novac::CVolcanoInfo g_volcanoes; // <-- the list of volcanoes
 
 extern std::string s_exePath;
 extern std::string s_exeFileName;
@@ -331,120 +334,6 @@ RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double 
     SAZ = fmod(180.0 + sAzim, 360.0);
 
     return SUCCESS;
-}
-
-
-/** Sorts a list of strings in either ascending or descending order */
-void Common::Sort(novac::CList <novac::CString> &strings, bool files, bool ascending) {
-    unsigned long nStrings = (unsigned long)strings.GetCount(); // number of elements
-    unsigned long it = 0; // <-- iterator
-
-    if (nStrings <= 1) {
-        return; // <-- We're actually already done
-    }
-    else {
-        novac::CList <novac::CString> left;
-        novac::CList <novac::CString> right;
-
-        // Make two copies of the list, one of the first half and one of the second half
-        auto pos = strings.GetHeadPosition();
-        while (it < nStrings / 2) {
-            left.AddTail(strings.GetNext(pos));
-            ++it;
-        }
-        while (pos != NULL) {
-            right.AddTail(strings.GetNext(pos));
-        }
-
-        // Sort each of the two halves
-        Sort(left, files, ascending);
-        Sort(right, files, ascending);
-
-        // Merge the two...
-        MergeLists(left, right, strings, files, ascending);
-    }
-}
-
-/** Merges the two lists 'list1' and 'list2' in a sorted way and stores
-        the result in the output-list 'result' */
-void Common::MergeLists(const novac::CList <novac::CString> &list1, const novac::CList <novac::CString> &list2, novac::CList <novac::CString> &result, bool files, bool ascending) {
-    novac::CString	name1, name2, fullName1, fullName2;
-    int comparison;
-
-    auto pos_1 = list1.GetHeadPosition();
-    auto pos_2 = list2.GetHeadPosition();
-
-    // Clear the output-list
-    result.RemoveAll();
-
-    // 1. As long as there are elements in both lists, do this
-    while (pos_1 != NULL && pos_2 != NULL) {
-        // Get the file-names of the first and the second 
-        fullName1.Format(list1.GetAt(pos_1));	// position k
-        fullName2.Format(list2.GetAt(pos_2));	// position k+1
-
-        if (files) {
-            // Extract the file-names only
-            name1.Format(fullName1);
-            name2.Format(fullName2);
-            Common::GetFileName(name1);
-            Common::GetFileName(name2);
-
-            // Compare the two names
-            comparison = name1.Compare(name2);
-        }
-        else {
-            // Compare the two names
-            comparison = fullName1.Compare(fullName2);
-        }
-
-        if (comparison == 0) {
-            // if equal
-            result.AddTail(fullName1);
-            list1.GetNext(pos_1);
-            continue;
-        }
-        else if (comparison < 0) {
-            // fullName1 < fullName2
-            if (ascending) {
-                result.AddTail(fullName1);
-                list1.GetNext(pos_1);
-                continue;
-            }
-            else {
-                result.AddTail(fullName2);
-                list2.GetNext(pos_2);
-                continue;
-            }
-        }
-        else {
-            // fullName1 > fullName2
-            if (ascending) {
-                result.AddTail(fullName2);
-                list2.GetNext(pos_2);
-                continue;
-            }
-            else {
-                result.AddTail(fullName1);
-                list1.GetNext(pos_1);
-                continue;
-            }
-        }
-
-    }
-
-    // 2. If we're out of elements in list 2 but not in list 1, do this
-    while (pos_1 != NULL) {
-        fullName1.Format(list1.GetNext(pos_1));
-        result.AddTail(fullName1);
-    }
-
-    // 3. If we're out of elements in list 1 but not in list 2, do this
-    while (pos_2 != NULL) {
-        fullName2.Format(list2.GetNext(pos_2));
-        result.AddTail(fullName2);
-    }
-
 }
 
 double Common::CalculateFlux(const double *scanAngle, const double *scanAngle2, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle, double tilt)

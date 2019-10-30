@@ -3,6 +3,7 @@
 #include "../Common/Common.h"
 #include <SpectralEvaluation/DateTime.h>
 #include "../Meteorology/WindField.h"
+#include "../Geometry/PlumeHeight.h"
 #include <PPPLib/CString.h>
 
 enum FLUX_QUALITY_FLAG {
