@@ -207,42 +207,6 @@ public:
     const novac::CString m_exeFileName;
 
     // --------------------------------------------------------------------
-    // ---------------------- DATE & TIME ---------------------------------
-    // --------------------------------------------------------------------
-    /** Returns the current year */
-    static int  GetYear();
-
-    /** Returns the current month */
-    static int   GetMonth();
-
-    /** Returns the current day of the month */
-    static int   GetDay();
-
-    /** Returns the current hour */
-    static int   GetHour();
-
-    /** Returns the current minute */
-    static int   GetMinute();
-
-    /** Returns the current second */
-    static int   GetSecond();
-
-    /** Converts a time, given in seconds since midnight to hour, minutes and seconds */
-    static void		ConvertToHMS(const int time, int &hours, int &minutes, int &seconds);
-
-    /** pretty prints the current date into the string 'txt' */
-    static void GetDateText(novac::CString &txt);
-
-    /** pretty prints the current time into the string 'txt' */
-    static void GetTimeText(novac::CString &txt);
-
-    /** pretty prints the current time into the string 'txt' with the seperator*/
-    static void GetTimeText(novac::CString &txt, char* seperator);
-
-    /** pretty prints the current date and time into the string 'txt' */
-    static void GetDateTimeText(novac::CString &txt);
-
-    // --------------------------------------------------------------------
     // -------------------- SUN - FUNCTIONS -------------------------------
     // --------------------------------------------------------------------
 
