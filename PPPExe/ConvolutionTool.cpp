@@ -1,7 +1,7 @@
 #include <SpectralEvaluation/Spectra/ReferenceSpectrumConvolution.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/File/File.h>
-#include <SpectralEvaluation/Utils.h>
+#include <SpectralEvaluation/StringUtils.h>
 #include <rapidxml.hpp>
 #include <iostream>
 

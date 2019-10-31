@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <SpectralEvaluation/Utils.h>
+#include <SpectralEvaluation/StringUtils.h>
 #include <PPPLib/CString.h>
 #include <PPPLib/CStringTokenizer.h>
 #include <PPPLib/VolcanoInfo.h>

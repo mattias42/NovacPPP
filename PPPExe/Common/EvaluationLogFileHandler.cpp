@@ -1,6 +1,6 @@
 #include "EvaluationLogFileHandler.h"
 #include <SpectralEvaluation/Spectra/SpectrometerModel.h>
-#include <SpectralEvaluation/Utils.h>
+#include <SpectralEvaluation/StringUtils.h>
 #include "../Common/Version.h"
 #include <cstring>
 #include <algorithm>
