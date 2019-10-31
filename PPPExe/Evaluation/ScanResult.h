@@ -432,13 +432,7 @@ namespace Evaluation
         // ----------------------------------------------------------------------
         // -------------------- PRIVATE METHODS ---------------------------------
         // ----------------------------------------------------------------------
-
-        /** Returns the index, i, into 'm_evaluated[x].m_ref[i]' that corresponds to the gas 'specie'
-            @param specie - the gas to search for e.g. SO2 (case insensitive).
-            @return the zero-based index of the specie.
-            @return -1 if specie not found.*/
-        int GetSpecieIndex(const novac::CString &specie) const;
-
+        
         /** makes a sanity check of the parameters and returns fit parameter number 'index'.
             @param specIndex - the zero based into the list of evaluated spectra.
             @param specieIndex - the zero based into the list of species to evaluate for.
@@ -447,6 +441,6 @@ namespace Evaluation
         double GetFitParameter(unsigned long spectrumNum, unsigned long specieIndex, FIT_PARAMETER parameter) const;
 
         /** returns true if the given index is a valid spectrum index */
-        inline bool IsValidSpectrumIndex(unsigned long spectrumNum) const { return (spectrumNum >= 0 && spectrumNum < m_specNum) ? true : false; }
+        inline bool IsValidSpectrumIndex(unsigned long spectrumNum) const { return (spectrumNum >= 0 && spectrumNum < m_specNum); }
     };
 }

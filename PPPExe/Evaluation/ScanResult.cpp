@@ -195,27 +195,6 @@ int CScanResult::CalculateOffset(const CMolecule &specie) {
     return 0;
 }
 
-int CScanResult::GetSpecieIndex(const novac::CString &specie) const
-{
-    unsigned long i; // iterator
-
-    if (m_specNum <= 0) // <-- if there are no spectra, there can be no species
-        return -1;
-
-    // if there's only one specie, assume that this is the correct one
-    if (m_spec[0].m_referenceResult.size() == 1)
-        return 0;
-
-    // find the index of the interesting specie
-    for (i = 0; i < m_spec[0].m_referenceResult.size(); ++i) {
-        if (Equals(m_spec[0].m_referenceResult[i].m_specieName, specie)) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 int CScanResult::CalculateFlux(const CMolecule &specie, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle, double tilt) {
     unsigned long i; // iterator
     CDateTime startTime1, startTime2;
