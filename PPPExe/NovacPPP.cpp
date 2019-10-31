@@ -258,10 +258,6 @@ void CalculateAllFluxes()
             ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
             post.DoPostProcessing_Strat();
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_GEOMETRY)
-        {
-            post.DoPostProcessing_Geometry();
-        }
         else
         {
             post.DoPostProcessing_Flux();

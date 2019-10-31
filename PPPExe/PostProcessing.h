@@ -12,18 +12,18 @@
 /** The class <b>CPostProcessing</b> is the main class in the NovacPPP
     This is where all the processing takes place (or at least the control
     of the processing).
-    See the functions 'DoPostProcessing_Flux', 'DoPostProcessing_Strat'
-    and 'DoPostProcessing_Geometry'
+    See the functions 'DoPostProcessing_Flux' and 'DoPostProcessing_Strat'
 */
 
-namespace Evaluation {
+namespace Evaluation
+{
     class CReferenceFile;
 }
 
 class CPostProcessing
 {
 public:
-    CPostProcessing();
+    CPostProcessing() = default;
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
@@ -43,10 +43,6 @@ public:
     /** Performs an post processing of the data in order to extract
         good stratospheric data */
     void DoPostProcessing_Strat();
-
-    /** Performs an post processing of already evaluated data in order
-        to generate plume heights and wind directions */
-    void DoPostProcessing_Geometry();
 
 protected:
 
@@ -132,23 +128,6 @@ protected:
         The plume altitudes will be inserted into m_plumeDataBase */
     void InsertCalculatedGeometriesIntoDataBase(
         novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
-
-
-    /** Runs through the supplied list of evaluation - logs and performs
-        AC-DC corrections on the derived columns. The results are not
-        returned, instead the files are re-written with the updated
-        column values.
-        @param evalLogs - list of CExtendedScanResult, each holding the full path and filename
-            of an evaluation-log file that should be considered
-        @param geometryResults - list of calculated geometrical results. These will
-            be used to apply the radiative corrections to the columns.
-        @return - true if so large changes are made that the geometries would need to
-            be re-calculated. Otherwise false.
-        */
-    bool ApplyACDCCorrections(
-        novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs,
-        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
-
 
     /** This calculates the wind speeds from the dual-beam measurements that has been made
         @param evalLogs - list of CExtendedScanResult, each holding the full path and filename

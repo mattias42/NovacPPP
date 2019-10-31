@@ -1,7 +1,5 @@
 #pragma once
 
-// #include "../resource.h"
-#include "../stdafx.h"
 #include "ScanResult.h"
 
 #include "../Common/Common.h"
@@ -24,7 +22,7 @@ namespace Evaluation
     class CPostEvaluationController
     {
     public:
-        CPostEvaluationController();
+        CPostEvaluationController() = default;
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------
@@ -32,7 +30,7 @@ namespace Evaluation
 
         /** A scan-result, for sharing evaluated data with the rest of the
             program. This is updated after every evaluation of a full scan. */
-        CScanResult *m_lastResult;
+        CScanResult *m_lastResult = nullptr;
 
         // ----------------------------------------------------------------------
         // --------------------- PUBLIC METHODS ---------------------------------
@@ -130,7 +128,5 @@ namespace Evaluation
             @return -1 - if the measurement is not a flux measurement.
             */
         int CheckQualityOfFluxMeasurement(CScanResult *result, const novac::CString &pakFileName) const;
-
     };
-
 }
