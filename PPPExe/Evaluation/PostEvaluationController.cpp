@@ -3,6 +3,7 @@
 #include <cstring>
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
 #include <SpectralEvaluation/Evaluation/RatioEvaluation.h>
+#include <SpectralEvaluation/Evaluation/PlumeSpectrumSelector.h>
 
 // This is the information we need to continue an old processing
 #include "../ContinuationOfProcessing.h"
@@ -121,8 +122,6 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
     // 6. Evaluate the scan
     CScanEvaluation ev;
-
-    // Perform the evaluation!!
     long spectrumNum = ev.EvaluateScan(&scan, fitWindow, &darkSettings);
 
     // 7. Check the reasonability of the evaluation
@@ -176,24 +175,33 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 #ifdef _MSC_VER
 #ifdef _DEBUG
 
-    // TESTING!
-    if (fitWindow.child.size() != 0)
+    // --------------- TESTING SELECTING SPECTRA FOR IN/OUT PLUME ---------------
     {
-        RatioEvaluationSettings ratioSettings;
-        RatioEvaluation ratio{ ratioSettings, darkSettings };
-        ratio.SetupFirstResult(*m_lastResult, *plumeProperties);
-        ratio.SetupFitWindows(fitWindow, fitWindow.child);
-        std::vector<Ratio> broRatios = ratio.Run(scan);
+        int specieIndex = m_lastResult->GetSpecieIndex("SO2"); // TODO: Move up and use this more througout this file
 
-        if(broRatios.size() > 0)
-        {
-            if (SUCCESS != WriteRatioResult(broRatios, scan, fitWindow))
-            {
-                errorMessage.Format("Failed to write evaluation ratio result to file %s. No result produced", txtFileName);
-                ShowMessage(errorMessage);
-            }
-        }
+        PlumeSpectrumSelector spectrumSelector;
+        auto outputDirectoryStr = std::string(g_userSettings.m_outputDirectory);
+        spectrumSelector.CreatePlumeSpectrumFile(scan, *m_lastResult, *plumeProperties, specieIndex, outputDirectoryStr);
     }
+
+    // TESTING!
+    // if (fitWindow.child.size() != 0)
+    // {
+    //     RatioEvaluationSettings ratioSettings;
+    //     RatioEvaluation ratio{ ratioSettings, darkSettings };
+    //     ratio.SetupFirstResult(*m_lastResult, *plumeProperties);
+    //     ratio.SetupFitWindows(fitWindow, fitWindow.child);
+    //     std::vector<Ratio> broRatios = ratio.Run(scan);
+    // 
+    //     if(broRatios.size() > 0)
+    //     {
+    //         if (SUCCESS != WriteRatioResult(broRatios, scan, fitWindow))
+    //         {
+    //             errorMessage.Format("Failed to write evaluation ratio result to file %s. No result produced", txtFileName);
+    //             ShowMessage(errorMessage);
+    //         }
+    //     }
+    // }
 #endif // _DEBUG
 #endif // _MSC_VER
 
