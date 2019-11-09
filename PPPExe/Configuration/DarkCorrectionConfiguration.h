@@ -47,6 +47,7 @@ namespace Configuration
 
     private:
         /** The array of dark-current correction options for this spectrometer */
+        // TODO: Correct, this is actually a memory leak. Change to std::vector of solid objects
         novac::CArray <CDarkSettings*, CDarkSettings *> m_darkSettings;
         novac::CArray <CDateTime *, CDateTime *> m_validFrom;
         novac::CArray <CDateTime *, CDateTime *> m_validTo;

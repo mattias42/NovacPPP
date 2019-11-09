@@ -1,5 +1,9 @@
 #pragma once
+
 #include "../Common/Common.h"
+
+#include <SpectralEvaluation/DateTime.h>
+#include <PPPLib/CString.h>
 #include <SpectralEvaluation/Spectra/SpectrometerModel.h>
 
 /**
@@ -10,12 +14,11 @@
     in and the cone-angle of the instrument.
 */
 
-namespace Configuration {
+namespace Configuration
+{
     class CInstrumentLocation
     {
     public:
-        CInstrumentLocation(void);
-        ~CInstrumentLocation(void);
 
         // -----------------------------------------
         // -------------- PUBLIC DATA --------------
@@ -57,7 +60,6 @@ namespace Configuration {
         /** Time stamps, during which this location information
             is resonable/useful */
         CDateTime m_validFrom, m_validTo;
-
 
         // ---------------------------------------------
         // --------------- PUBLIC METHODS --------------

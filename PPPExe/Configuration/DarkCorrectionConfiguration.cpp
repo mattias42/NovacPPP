@@ -1,8 +1,8 @@
 #include "DarkCorrectionConfiguration.h"
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
 
-using namespace Configuration;
-
+namespace Configuration
+{
 CDarkCorrectionConfiguration::CDarkCorrectionConfiguration(void)
 {
     Clear();
@@ -98,7 +98,9 @@ int CDarkCorrectionConfiguration::GetDarkSettings(int index, CDarkSettings &dSet
     return 0;
 }
 
-/** Gets the number of fit-windows configured for this spectrometer */
-unsigned long CDarkCorrectionConfiguration::GetSettingsNum() const {
+unsigned long CDarkCorrectionConfiguration::GetSettingsNum() const
+{
     return m_darkSettings.GetSize();
+}
+
 }

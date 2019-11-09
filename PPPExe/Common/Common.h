@@ -17,11 +17,11 @@
 
 namespace Geometry
 {
-    class CPlumeHeight;
+class CPlumeHeight;
 }
 namespace Meteorology
 {
-    class CWindField;
+class CWindField;
 }
 
 // ---------------------------------------------------------------
@@ -41,14 +41,6 @@ bool IsExistingFile(const novac::CString &fileName);
 /** Creates a directory structure according to the given path.
         @return 0 on success. */
 int CreateDirectoryStructure(const novac::CString &path);
-
-/** Checks if the supplied string is a valid serial-number of a spectrometer.
-    @param serialNumber - the string that should be checked.
-    @return 1 if the string is a valid serial number.
-    @return 0 if the string is <b>not</b> a valid serial number. */
-int IsSerialNumber(const novac::CString &serialNumber);
-
-
 
 /** Appends an information / warning message to the logs */
 void ShowMessage(const novac::CString &message);
@@ -114,13 +106,6 @@ enum PROCESSING_MODE {
 #ifndef M_PI
 #define M_PI 3.141592
 #endif
-
-// ----------------------------------------------------------------
-// ------------ SIMPLE MATHEMATICAL FUNCTIONS  --------------------
-// ----------------------------------------------------------------
-// Commented out since this conflicts with the definition in cmath.h
-// #define round(x) (x < 0 ? ceil((x)-0.5) : floor((x)+0.5))
-
 
 // -----------------------------------------------------------------
 // -------------------------- MESSAGES -----------------------------

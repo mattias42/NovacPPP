@@ -13,13 +13,11 @@
         located at different times.
 */
 
-namespace Configuration {
+namespace Configuration
+{
     class CInstrumentConfiguration
     {
     public:
-        CInstrumentConfiguration(void);
-        ~CInstrumentConfiguration(void);
-
         /** The serial of the spectrometer. This defines the instrument
             and is used to identify instruments. */
         novac::CString m_serial;

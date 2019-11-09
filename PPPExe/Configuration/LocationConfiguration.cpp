@@ -1,29 +1,19 @@
 #include "LocationConfiguration.h"
 
-using namespace Configuration;
-
-CLocationConfiguration::CLocationConfiguration(void)
+namespace Configuration
 {
-    Clear();
-}
 
-CLocationConfiguration::~CLocationConfiguration(void)
+void CLocationConfiguration::Clear()
 {
-    Clear();
-}
-
-/** Clears all configurations for this location */
-void CLocationConfiguration::Clear() {
     m_locationNum = 0;
-    for (int k = 0; k < MAX_N_LOCATIONS; ++k) {
+    for (int k = 0; k < MAX_N_LOCATIONS; ++k)
+    {
         this->m_location[k].Clear();
     }
 }
 
-/** Inserts a new location.
-        @param loc - the location to insert
-*/
-void CLocationConfiguration::InsertLocation(const CInstrumentLocation &loc) {
+void CLocationConfiguration::InsertLocation(const CInstrumentLocation &loc)
+{
     if (m_locationNum == MAX_N_LOCATIONS)
         return;
 
@@ -36,25 +26,8 @@ void CLocationConfiguration::InsertLocation(const CInstrumentLocation &loc) {
     return;
 }
 
-/** Sets the properties of the location number 'm_locationNum'
-        @param index - the index of the location to set. If this is < 0 this function returns 1 and nothing is changed
-        @param location - the location to set
-        @return 0 if successful, otherwise 1 */
-int CLocationConfiguration::SetLocation(int index, const CInstrumentLocation &loc) {
-    if (index < 0)
-        return 1;
-
-    // replace the old location with the new information
-    this->m_location[index] = loc;
-
-    return 0;
-}
-
-/** Retrieves a location for this specrometer.
-        @param index - the index of the location to get. If this is < 0 this function returns 1 and nothing is changed
-        @param loc - the location to get
-        @return 0 if successful, otherwise 1 */
-int CLocationConfiguration::GetLocation(int index, CInstrumentLocation &loc) const {
+int CLocationConfiguration::GetLocation(int index, CInstrumentLocation &loc) const
+{
     if (index < 0 || index >= m_locationNum)
         return 1;
 
@@ -64,13 +37,13 @@ int CLocationConfiguration::GetLocation(int index, CInstrumentLocation &loc) con
     return 0;
 }
 
-/** Gets the number of locations configured for this spectrometer */
-unsigned long CLocationConfiguration::GetLocationNum() const {
+unsigned long CLocationConfiguration::GetLocationNum() const
+{
     return m_locationNum;
 }
 
-int CLocationConfiguration::CheckSettings() const {
-
+int CLocationConfiguration::CheckSettings() const
+{
     // make sure that at least one fit-window is defined
     if (m_locationNum == 0)
         return 1;
@@ -93,4 +66,6 @@ int CLocationConfiguration::CheckSettings() const {
     }
 
     return 0; // all is ok.
+}
+
 }

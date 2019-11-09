@@ -1,33 +1,26 @@
 #include "InstrumentLocation.h"
 
-using namespace Configuration;
-
-CInstrumentLocation::CInstrumentLocation(void)
+namespace Configuration
 {
-    Clear();
-}
 
-CInstrumentLocation::~CInstrumentLocation(void)
+void CInstrumentLocation::Clear()
 {
-    Clear();
-}
-
-void CInstrumentLocation::Clear() {
     this->m_altitude = 0;
     this->m_compass = 0.0;
     this->m_coneangle = 0.0;
     this->m_latitude = 0.0;
-    this->m_locationName.Format("");
+    this->m_locationName = "";
     this->m_longitude = 0.0;
     this->m_tilt = 0.0;
     this->m_validFrom = CDateTime(0000, 00, 00, 0, 0, 0);
     this->m_validTo = CDateTime(9999, 12, 31, 23, 59, 59);
-    this->m_volcano.Format("");
+    this->m_volcano = "";
     this->m_instrumentType = INSTR_GOTHENBURG;
     this->m_spectrometerModel = "S2000";
 }
 
-CInstrumentLocation &CInstrumentLocation::operator =(const CInstrumentLocation &l2) {
+CInstrumentLocation &CInstrumentLocation::operator =(const CInstrumentLocation &l2)
+{
     this->m_altitude = l2.m_altitude;
     this->m_compass = l2.m_compass;
     this->m_coneangle = l2.m_coneangle;
@@ -42,4 +35,6 @@ CInstrumentLocation &CInstrumentLocation::operator =(const CInstrumentLocation &
     this->m_spectrometerModel = l2.m_spectrometerModel;
 
     return *this;
+}
+
 }
