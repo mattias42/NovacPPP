@@ -1,15 +1,12 @@
+#include <cstring>
 #include "PostEvaluationController.h"
 #include "ScanEvaluation.h"
-#include <cstring>
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
 #include <SpectralEvaluation/Evaluation/RatioEvaluation.h>
 #include <SpectralEvaluation/Evaluation/PlumeSpectrumSelector.h>
 
 // This is the information we need to continue an old processing
 #include "../ContinuationOfProcessing.h"
-
-// This is the configuration of the network
-#include "../Configuration/NovacPPPConfiguration.h"
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
@@ -70,6 +67,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
         ShowMessage(errorMessage);
         return 3;
     }
+
     // the settings for how to correct for dark
     if (GetDarkCurrentSettings(&scan, darkSettings))
     {
@@ -122,7 +120,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
 
     // 6. Evaluate the scan
     CScanEvaluation ev;
-    long spectrumNum = ev.EvaluateScan(&scan, fitWindow, &darkSettings);
+    const long spectrumNum = ev.EvaluateScan(&scan, fitWindow, &darkSettings);
 
     // 7. Check the reasonability of the evaluation
     if (spectrumNum == 0)
@@ -137,6 +135,9 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     {
         m_lastResult = new CScanResult(*ev.m_result);
     }
+
+    // TODO: Make use of this really useful index...
+    const int specieIndex = m_lastResult->GetSpecieIndex(CMolecule(g_userSettings.m_molecule).m_name);
 
     // 9. Get the mode of the evaluation
     m_lastResult->CheckMeasurementMode();
@@ -172,38 +173,26 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
         m_lastResult->GetCalculatedPlumeProperties(*plumeProperties);
     }
 
-#ifdef _MSC_VER
-#ifdef _DEBUG
-
-    // --------------- TESTING SELECTING SPECTRA FOR IN/OUT PLUME ---------------
     {
-        int specieIndex = m_lastResult->GetSpecieIndex("SO2"); // TODO: Move up and use this more througout this file
+        const std::string outputDirectoryStr = 
+            std::string(g_userSettings.m_outputDirectory) +
+            "/" + std::string(fitWindowName) +  
+            "/PlumeSpectra/" + 
+            m_lastResult->GetSerial();
 
-        PlumeSpectrumSelector spectrumSelector;
-        auto outputDirectoryStr = std::string(g_userSettings.m_outputDirectory);
-        spectrumSelector.CreatePlumeSpectrumFile(scan, *m_lastResult, *plumeProperties, specieIndex, outputDirectoryStr);
+        int ret = CreateDirectoryStructure(outputDirectoryStr);
+        if (ret)
+        {
+            novac::CString userMessage;
+            userMessage.Format("Could not create directory for archiving plume spectra: %s", outputDirectoryStr.c_str());
+            ShowMessage(userMessage);
+        }
+        else
+        {
+            PlumeSpectrumSelector spectrumSelector;
+            spectrumSelector.CreatePlumeSpectrumFile(scan, *m_lastResult, *plumeProperties, specieIndex, outputDirectoryStr);
+        }
     }
-
-    // TESTING!
-    // if (fitWindow.child.size() != 0)
-    // {
-    //     RatioEvaluationSettings ratioSettings;
-    //     RatioEvaluation ratio{ ratioSettings, darkSettings };
-    //     ratio.SetupFirstResult(*m_lastResult, *plumeProperties);
-    //     ratio.SetupFitWindows(fitWindow, fitWindow.child);
-    //     std::vector<Ratio> broRatios = ratio.Run(scan);
-    // 
-    //     if(broRatios.size() > 0)
-    //     {
-    //         if (SUCCESS != WriteRatioResult(broRatios, scan, fitWindow))
-    //         {
-    //             errorMessage.Format("Failed to write evaluation ratio result to file %s. No result produced", txtFileName);
-    //             ShowMessage(errorMessage);
-    //         }
-    //     }
-    // }
-#endif // _DEBUG
-#endif // _MSC_VER
 
     // 13. Clean up
     delete m_lastResult;
@@ -630,14 +619,18 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     {
         pakFile.Format("%s%cUnknownScans%c%d.pak", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), ++i);
         if (!IsExistingFile(pakFile))
+        {
             break;
+        }
     }
     txtFile.Format("%s%cUnknownScans%c%d.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), i);
 
     // 1. Read the first spectrum in the scan
     const std::string temporaryScanFileStr((const char*)temporaryScanFile);
     if (SUCCESS != reader.ReadSpectrum(temporaryScanFileStr, 0, tmpSpec))
+    {
         return FAIL;
+    }
     CSpectrumInfo &info = tmpSpec.m_info;
     int channel = info.m_channel;
 
@@ -647,7 +640,9 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     while (info.m_startTime.year == 2004 && info.m_startTime.month == 3 && info.m_startTime.second == 22)
     {
         if (SUCCESS != reader.ReadSpectrum(temporaryScanFileStr, i++, tmpSpec))
+        {
             break;
+        }
         info = tmpSpec.m_info;
     }
 
@@ -796,7 +791,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanF
 
     if ((instrLocation.m_instrumentType == INSTR_GOTHENBURG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_got) ||
         (instrLocation.m_instrumentType == INSTR_HEIDELBERG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_hei))
-        {
+    {
         errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", scan->GetFileName().c_str(), skySpectrum.ExposureTime());
         ShowMessage(errorMessage);
 

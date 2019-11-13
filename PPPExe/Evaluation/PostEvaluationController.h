@@ -2,7 +2,6 @@
 
 #include "ScanResult.h"
 
-#include "../Common/Common.h"
 #include <SpectralEvaluation/File/ScanFileHandler.h>
 #include <SpectralEvaluation/Evaluation/Ratio.h>
 #include "../Configuration/NovacPPPConfiguration.h"
@@ -30,7 +29,7 @@ namespace Evaluation
 
         /** A scan-result, for sharing evaluated data with the rest of the
             program. This is updated after every evaluation of a full scan. */
-        CScanResult *m_lastResult = nullptr;
+        CScanResult* m_lastResult = nullptr;
 
         // ----------------------------------------------------------------------
         // --------------------- PUBLIC METHODS ---------------------------------
