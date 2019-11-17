@@ -22,6 +22,10 @@
 
 #include <Poco/Path.h>
 
+#if defined(linux) || defined(__linux) || defined(__linux__)
+#define MAX_PATH 512
+#endif
+
 using namespace Evaluation;
 using namespace SpectrumIO;
 using namespace FileHandler;
@@ -385,7 +389,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     // 0.1b Write the flux-information to the evaluation-log
     if (f != nullptr)
     {
-        fprintf(f, string.c_str());
+        fprintf(f, "%s", string.c_str());
         fprintf(f, "\n");
     }
 
@@ -696,7 +700,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     pakFile.AppendFormat("%s_%s_%s_%1d_%4s.pak", (const char*)serialNumber, (const char*)dateStr, (const char*)timeStr, channel, (const char*)modeStr);
     txtFile.AppendFormat("%s_%s_%s_%1d_%4s.txt", (const char*)serialNumber, (const char*)dateStr, (const char*)timeStr, channel, (const char*)modeStr);
 
-    if (strlen(pakFile) > MAX_PATH)
+    if (strlen(pakFile) > MAX_PATH - 2)
         return FAIL;
 
     return SUCCESS;
