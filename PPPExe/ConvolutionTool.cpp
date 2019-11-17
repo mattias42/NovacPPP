@@ -3,7 +3,9 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/StringUtils.h>
 #include <rapidxml.hpp>
+#include <cmath>
 #include <iostream>
+#include <string.h>
 
 struct ConvolutionToolSettings
 {

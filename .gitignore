@@ -1,3 +1,7 @@
 /NovacPPP-cppcheck-build-dir
 /build
 /*.cppcheck
+/bin/ConvolutionTool
+/bin/NovacPPP
+/bin/PPPTests
+/bin/SpectralEvaluationTests
