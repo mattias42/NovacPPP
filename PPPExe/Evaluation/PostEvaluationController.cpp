@@ -182,7 +182,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
             std::string(g_userSettings.m_outputDirectory) +
             "/" + std::string(fitWindowName) +  
             "/PlumeSpectra/" + 
-            m_lastResult->GetSerial();
+            m_lastResult->GetSerial().std_str();
 
         int ret = CreateDirectoryStructure(outputDirectoryStr);
         if (ret)
