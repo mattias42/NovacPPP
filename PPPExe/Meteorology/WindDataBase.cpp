@@ -68,15 +68,6 @@ CWindDataBase::CWindInTime::~CWindInTime() {
 
 // --------- THE CLASS CWindDataBase ----------
 
-CWindDataBase::CWindDataBase(void)
-{
-}
-
-CWindDataBase::~CWindDataBase(void)
-{
-    m_dataBase.clear();
-    m_locations.clear();
-}
 
 /** Retrieves the wind field at a given time and at a given location.
     @param time - the time for which the wind field should be retrieved
@@ -190,23 +181,21 @@ void CWindDataBase::InsertWindSpeed(const CDateTime &validFrom, const CDateTime 
     }
 }
 
-/** Writes the contents of this database to file.
-    @return 0 on success. */
 int CWindDataBase::WriteToFile(const novac::CString &fileName) const {
     novac::CString indent, sourceStr;
-    CDateTime from, to;
 
     // open the file
     FILE *f = fopen(fileName, "w");
     if (f == NULL)
+    {
         return 1;
+    }
 
     // write the header lines and the start of the file
     fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     fprintf(f, "<!-- This file defines the wind field for a given volcano. To be used\n for the calculation of fluxes in the NOVAC Post Processing Program -->\n\n");
     fprintf(f, "<Wind volcano=\"%s\">\n", (const char*)m_dataBaseName);
     indent.Format("\t");
-
 
     // loop through the list of "CWindInTime's" and write them to file 
     std::list<CWindInTime>::const_iterator pos = m_dataBase.begin();
@@ -240,9 +229,9 @@ int CWindDataBase::WriteToFile(const novac::CString &fileName) const {
             std::list<CWindData>::const_iterator pos2 = time.windData.begin();
             // loop through each item in the list and write it down
             while (pos2 != time.windData.end()) {
-                const CWindData &data = (const CWindData &)*(pos2++);
-                const CGPSData &dataPos = GetLocation(data.location);
-                fprintf(f, "\t%s<item lat=\"%.2f\" lon=\"%.2f\" ws=\"%.2f\" wse=\"%.2f\" wd=\"%.2f\" wde=\"%.2f\"/>\n", (const char*)indent, dataPos.m_latitude, dataPos.m_longitude, data.ws, data.ws_err, data.wd, data.wd_err);
+                const CWindData &data2 = (const CWindData &)*(pos2++);
+                const CGPSData &dataPos2 = GetLocation(data2.location);
+                fprintf(f, "\t%s<item lat=\"%.2f\" lon=\"%.2f\" ws=\"%.2f\" wse=\"%.2f\" wd=\"%.2f\" wde=\"%.2f\"/>\n", (const char*)indent, dataPos2.m_latitude, dataPos2.m_longitude, data2.ws, data2.ws_err, data2.wd, data2.wd_err);
             }
         }
 

@@ -29,11 +29,6 @@ namespace Meteorology {
     class CWindDataBase
     {
     public:
-        /** Default constructor*/
-        CWindDataBase(void);
-
-        /** Default destructor */
-        ~CWindDataBase(void);
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------
