@@ -16,7 +16,7 @@
 		<fitHigh>458</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\HR2B2203_SO2_293K_HP500.xs</path>
+			<path>D:\Novac\References\HR2B2203_SO2_293K_HP500.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>

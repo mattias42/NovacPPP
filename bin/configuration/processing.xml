@@ -14,8 +14,6 @@
 	<IncludeSubDirs_Local>1</IncludeSubDirs_Local>
 	<FTPDirectory>ftp://129.16.35.206/piton_de_la_fournaise/</FTPDirectory>
 	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
-	<FTPUsername>novacUser</FTPUsername>
-	<FTPPassword>iht-1inks.</FTPPassword>
 	<UploadResults>0</UploadResults>
 	<WindFieldFile>~/Novac/Piton de la Fournaise/wind_pdf_2017_meteoFrance_UTC_novac.wxml</WindFieldFile>
 	<WindFileOption>0</WindFileOption>

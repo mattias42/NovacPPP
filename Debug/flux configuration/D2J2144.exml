@@ -19,7 +19,7 @@
 		<fitHigh>484</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -27,7 +27,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>
 	<fitWindow>
@@ -43,7 +43,7 @@
 		<fitHigh>586</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -52,7 +52,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -61,7 +61,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -69,7 +69,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
 		</wavelengthCalibration>		
 	</fitWindow>
 	<fitWindow>
@@ -85,7 +85,7 @@
 		<fitHigh>586</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -94,7 +94,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -103,7 +103,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -111,7 +111,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Master.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>	
 	<!-- Slave Channel -->
@@ -129,7 +129,7 @@
 		<fitHigh>487</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -137,7 +137,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>
 	<fitWindow>
@@ -153,7 +153,7 @@
 		<fitHigh>591</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -162,7 +162,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -171,7 +171,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -179,7 +179,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>
 	<fitWindow>
@@ -195,7 +195,7 @@
 		<fitHigh>591</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -204,7 +204,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -213,7 +213,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -221,7 +221,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\D2J2144_SolarSpec_Slave.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>	
 </EvaluationConfiguration>

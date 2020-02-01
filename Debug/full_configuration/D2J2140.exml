@@ -16,7 +16,7 @@
 		<fitHigh>515</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2140_SO2_294K_HP500_Master.xs</path>
+			<path>D:\Novac\References\D2J2140_SO2_294K_HP500_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -25,7 +25,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2140_O3_221K_HP500_Master.xs</path>
+			<path>D:\Novac\References\D2J2140_O3_221K_HP500_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -34,7 +34,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2140_Ring_HR_HP500_Master.xs</path>
+			<path>D:\Novac\References\D2J2140_Ring_HR_HP500_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -55,7 +55,7 @@
 		<fitHigh>508</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2140_SO2_294K_HP500_Slave.xs</path>
+			<path>D:\Novac\References\D2J2140_SO2_294K_HP500_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -64,7 +64,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2140_O3_221K_HP500_Slave.xs</path>
+			<path>D:\Novac\References\D2J2140_O3_221K_HP500_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -73,7 +73,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2140_Ring_HR_HP500_Slave.xs</path>
+			<path>D:\Novac\References\D2J2140_Ring_HR_HP500_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>

@@ -1,0 +1,68 @@
+<fitWindow name="SO2">
+	<fitLow>320</fitLow>
+	<fitHigh>520</fitHigh>
+	<polyOrder>5</polyOrder>
+	<fitType>0</fitType>
+	<channel>0</channel>
+	<specLength>2048</specLength>
+	<fOptShift>0</fOptShift>
+	<UV>0</UV>
+	<shiftSky>0</shiftSky>
+	<interlaceStep>1</interlaceStep>
+	<fraunhoferRef>C:\NOVAC\novacP3\Cross sections\D2J2134_SolarSpec_Slave.xs</fraunhoferRef>
+	<nRef>3</nRef>
+	<ref name="SO2">
+		<path>C:\NOVAC\novacP3\Cross sections\D2J2134_SO2_294K_Slave.xs</path>
+		<shiftOption>1</shiftOption>
+		<shiftValue>0.000000</shiftValue>
+		<squeezeOption>1</squeezeOption>
+		<squeezeValue>1.000000</squeezeValue>
+		<columnOption>0</columnOption>
+	</ref>
+	<ref name="RING">
+		<path>C:\NOVAC\novacP3\Cross sections\D2J2134_Ring_HR_Slave.xs</path>
+		<shiftOption>1</shiftOption>
+		<shiftValue>0.000000</shiftValue>
+		<squeezeOption>1</squeezeOption>
+		<squeezeValue>1.000000</squeezeValue>
+		<columnOption>0</columnOption>
+	</ref>
+	<ref name="O3">
+		<path>C:\NOVAC\novacP3\Cross sections\D2J2134_O3_223K_Slave.xs</path>
+		<shiftOption>1</shiftOption>
+		<shiftValue>0.000000</shiftValue>
+		<squeezeOption>1</squeezeOption>
+		<squeezeValue>1.000000</squeezeValue>
+		<columnOption>0</columnOption>
+	</ref>
+</fitWindow>
+<fitWindow name="BrO">
+	<fitLow>400</fitLow>
+	<fitHigh>600</fitHigh>
+	<polyOrder>5</polyOrder>
+	<fitType>2</fitType>
+	<channel>0</channel>
+	<specLength>2048</specLength>
+	<fOptShift>0</fOptShift>
+	<UV>0</UV>
+	<shiftSky>1</shiftSky>
+	<interlaceStep>1</interlaceStep>
+	<fraunhoferRef>C:\NOVAC\novacP3\Cross sections\D2J2134_SolarSpec_Slave.xs</fraunhoferRef>
+	<nRef>2</nRef>
+	<ref name="RING">
+		<path>C:\NOVAC\novacP3\Cross sections\D2J2134_Ring_HR_Slave.xs</path>
+		<shiftOption>1</shiftOption>
+		<shiftValue>0.000000</shiftValue>
+		<squeezeOption>1</squeezeOption>
+		<squeezeValue>1.000000</squeezeValue>
+		<columnOption>0</columnOption>
+	</ref>
+	<ref name="O3">
+		<path>C:\NOVAC\novacP3\Cross sections\D2J2134_O3_223K_Slave.xs</path>
+		<shiftOption>1</shiftOption>
+		<shiftValue>0.000000</shiftValue>
+		<squeezeOption>1</squeezeOption>
+		<squeezeValue>1.000000</squeezeValue>
+		<columnOption>0</columnOption>
+	</ref>
+</fitWindow>

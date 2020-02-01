@@ -16,7 +16,7 @@
 		<fitHigh>504</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\HR2B2202_SO2_HP500_20C.txt</path>
+			<path>D:\Novac\References\HR2B2202_SO2_HP500_20C.txt</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -25,7 +25,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\HR2B2202_O3_HP500_20C.txt</path>
+			<path>D:\Novac\References\HR2B2202_O3_HP500_20C.txt</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -34,7 +34,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\HR2B2202_Ring_20C.txt</path>
+			<path>D:\Novac\References\HR2B2202_Ring_20C.txt</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>

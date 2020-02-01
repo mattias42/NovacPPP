@@ -16,7 +16,7 @@
 		<fitHigh>515</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\I2J8546_SO2_294K_HP500.xs</path>
+			<path>D:\Novac\References\I2J8546_SO2_294K_HP500.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -25,7 +25,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\I2J8546_O3_221K_HP500.xs</path>
+			<path>D:\Novac\References\I2J8546_O3_221K_HP500.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -34,7 +34,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\I2J8546_Ring_HR_HP500.xs</path>
+			<path>D:\Novac\References\I2J8546_Ring_HR_HP500.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>

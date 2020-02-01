@@ -20,7 +20,7 @@
 		<fitHigh>511</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_SO2_294K.xs</path>
+			<path>D:\Novac\References\I2J8555_SO2_294K.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -29,7 +29,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_O3_221K.xs</path>
+			<path>D:\Novac\References\I2J8555_O3_221K.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -38,7 +38,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_Ring_HR.xs</path>
+			<path>D:\Novac\References\I2J8555_Ring_HR.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -46,7 +46,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>D:\NovacPostProcessingProgram\2009_11_30\Debug\configuration\References\I2J8555_SolarSpec.xs</fraunhoferSpec>
+			<fraunhoferSpec>D:\Novac\References\I2J8555_SolarSpec.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 		</DarkCorrection>
 			<dark>SCAN</dark>

@@ -19,7 +19,7 @@
 		<fitHigh>586</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -28,7 +28,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -37,7 +37,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Master.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Master.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -61,7 +61,7 @@
 		<fitHigh>591</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>References\D2J2144_SO2_294K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_SO2_294K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -70,7 +70,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>References\D2J2144_O3_223K_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_O3_223K_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -79,7 +79,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>References\D2J2144_Ring_HR_Slave.xs</path>
+			<path>D:\Novac\References\D2J2144_Ring_HR_Slave.xs</path>
 			<shiftOption>1</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>

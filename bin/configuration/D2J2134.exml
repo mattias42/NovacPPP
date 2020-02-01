@@ -19,7 +19,7 @@
 		<fitHigh>582</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>~/Novac/Cross sections/D2J2134_SO2_294K_Master.xs</path>
+			<path>~/Novac/References/D2J2134_SO2_294K_Master.xs</path>
 			<shiftOption>0</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -28,7 +28,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>~/Novac/Cross sections/D2J2134_O3_223K_Master.xs</path>
+			<path>~/Novac/References/D2J2134_O3_223K_Master.xs</path>
 			<shiftOption>2</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>2</squeezeOption>
@@ -37,7 +37,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>~/Novac/Cross sections/D2J2134_Ring_HR_Master.xs</path>
+			<path>~/Novac/References/D2J2134_Ring_HR_Master.xs</path>
 			<shiftOption>2</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>2</squeezeOption>
@@ -45,7 +45,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>~/Novac/Cross sections/D2J2134_SolarSpec_Master.xs</fraunhoferSpec>
+			<fraunhoferSpec>~/Novac/References/D2J2134_SolarSpec_Master.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>	
 
@@ -64,7 +64,7 @@
 		<fitHigh>578</fitHigh>
 		<Reference>
 			<name>SO2</name>
-			<path>~/Novac/Cross sections/D2J2134_SO2_294K_Slave.xs</path>
+			<path>~/Novac/References/D2J2134_SO2_294K_Slave.xs</path>
 			<shiftOption>0</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>1</squeezeOption>
@@ -73,7 +73,7 @@
 		</Reference>
 		<Reference>
 			<name>O3</name>
-			<path>~/Novac/Cross sections/D2J2134_O3_223K_Slave.xs</path>
+			<path>~/Novac/References/D2J2134_O3_223K_Slave.xs</path>
 			<shiftOption>2</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>2</squeezeOption>
@@ -82,7 +82,7 @@
 		</Reference>
 		<Reference>
 			<name>RING</name>
-			<path>~/Novac/Cross sections/D2J2134_Ring_HR_Slave.xs</path>
+			<path>~/Novac/References/D2J2134_Ring_HR_Slave.xs</path>
 			<shiftOption>2</shiftOption>
 			<shiftValue>0.000000</shiftValue>
 			<squeezeOption>2</squeezeOption>
@@ -90,7 +90,7 @@
 			<columnOption>0</columnOption>
 		</Reference>
 		<wavelengthCalibration>
-			<fraunhoferSpec>~/Novac/Cross sections/D2J2134_SolarSpec_Slave.xs</fraunhoferSpec>
+			<fraunhoferSpec>~/Novac/References/D2J2134_SolarSpec_Slave.xs</fraunhoferSpec>
 		</wavelengthCalibration>
 	</fitWindow>
 
