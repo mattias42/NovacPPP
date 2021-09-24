@@ -13,7 +13,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # ------------------- Dependencies -------------------
 
 find_package(Poco REQUIRED COMPONENTS Foundation Net XML Util 
-    PATHS "${CMAKE_CURRENT_LIST_DIR}/../External/poco/install" "${CMAKE_CURRENT_LIST_DIR}/../poco")
+    PATHS "${CMAKE_CURRENT_LIST_DIR}/../External/poco/install" "${CMAKE_CURRENT_LIST_DIR}/../poco" "${CMAKE_CURRENT_LIST_DIR}/../poco/install")
 
 set(RAPID_XML_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/rapidxml/)
     
