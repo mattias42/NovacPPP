@@ -19,3 +19,13 @@ The main tool is the NovacPPP executable, which is found in the PPPExe folder. T
 xml-files which must reside in a sub directory named _configuration_ in the same directory as the executable. 
 Examples of such configurations can be found in the directories _Debug/configuration_ and _Release/configuration_ in the
 source tree. 
+
+## Setting up
+
+1. Clone the repository from your own fork
+
+2. The SpectralEvaluation is setup as a sub-module. Before you can start building the program you need to setup the sub-module. This is done by opening a command prompt and typing the two commands 'git submodule init' and 'git submodule update'
+
+3. Copy the pre-built binaries of Poco to ../poco/install/ (this is where CMake will search for them)
+
+4. Run the desired build script to create Visual Studio solution or a Unix make file. 
