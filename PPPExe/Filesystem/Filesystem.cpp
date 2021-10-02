@@ -4,6 +4,8 @@
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Exception.h>
 
+using namespace novac;
+
 void ShowMessage(const char message[]);
 
 namespace Filesystem

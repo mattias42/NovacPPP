@@ -43,7 +43,7 @@ namespace Configuration
             for the given time
             @return 0 if successful otherwise non-zero
         */
-        int GetInstrumentLocation(const novac::CString &serial, const CDateTime &dateAndTime, CInstrumentLocation &instrLocation) const;
+        int GetInstrumentLocation(const novac::CString &serial, const novac::CDateTime &dateAndTime, CInstrumentLocation &instrLocation) const;
 
         /** Retrieves the CFitWindow that is valid for the given instrument and
             for the given time
@@ -53,14 +53,14 @@ namespace Configuration
                 will be returned.
             @return 0 if successful otherwise non-zero
         */
-        int GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName = NULL) const;
+        int GetFitWindow(const novac::CString &serial, int channel, const novac::CDateTime &dateAndTime, novac::CFitWindow &window, const novac::CString *fitWindowName = NULL) const;
 
         /** Retrieves the CDarkSettings that is valid for the given instrument and
             for the given time
 
             @return 0 if successful otherwise non-zero
         */
-        int GetDarkCorrection(const novac::CString &serial, const CDateTime &dateAndTime, CDarkSettings &settings) const;
+        int GetDarkCorrection(const novac::CString &serial, const novac::CDateTime &dateAndTime, CDarkSettings &settings) const;
 
     };
 }

@@ -3,6 +3,8 @@
 // The global configuration object
 Configuration::CNovacPPPConfiguration g_setup;
 
+using namespace novac;
+
 namespace Configuration
 {
     CNovacPPPConfiguration::CNovacPPPConfiguration()
@@ -73,7 +75,7 @@ namespace Configuration
             will be returned.
         @return 0 if successful otherwise non-zero
     */
-    int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, Evaluation::CFitWindow &window, const novac::CString *fitWindowName) const {
+    int CNovacPPPConfiguration::GetFitWindow(const novac::CString &serial, int channel, const CDateTime &dateAndTime, novac::CFitWindow &window, const novac::CString *fitWindowName) const {
         CDateTime evalValidFrom, evalValidTo;
         novac::CString errorMessage, windowName;
 

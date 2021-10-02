@@ -1,5 +1,7 @@
 #include "InstrumentLocation.h"
 
+using namespace novac;
+
 namespace Configuration
 {
 

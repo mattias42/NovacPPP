@@ -37,7 +37,7 @@ namespace FileHandler {
             @param dateTo - if not null then only file which contain a wind field before (and including)
                 the date 'dateTo' will be read in.
             @return 0 on success */
-        int ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const CDateTime *dateFrom = NULL, const CDateTime *dateTo = NULL);
+        int ReadWindDirectory(const novac::CString &directory, Meteorology::CWindDataBase &dataBase, const novac::CDateTime *dateFrom = NULL, const novac::CDateTime *dateTo = NULL);
 
         /** Writes an wind-field file in the NPPP-format
             @return 0 on success */

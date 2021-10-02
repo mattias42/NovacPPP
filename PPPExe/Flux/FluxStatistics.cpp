@@ -1,6 +1,7 @@
 #include "FluxStatistics.h"
 
 using namespace Flux;
+using namespace novac;
 
 CFluxStatistics::CMeasurementDay::CMeasurementDay() {
 

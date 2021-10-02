@@ -27,8 +27,8 @@ void CFluxResult::Clear() {
     m_compass = NOT_A_NUMBER;
     m_volcano = -1;
 
-    m_startTime = CDateTime(0, 0, 0, 0, 0, 0);
-    m_stopTime = CDateTime(0, 0, 0, 0, 0, 0);
+    m_startTime = novac::CDateTime(0, 0, 0, 0, 0, 0);
+    m_stopTime = novac::CDateTime(0, 0, 0, 0, 0, 0);
     m_instrument.Format("");
 
     m_instrumentType = INSTR_GOTHENBURG;

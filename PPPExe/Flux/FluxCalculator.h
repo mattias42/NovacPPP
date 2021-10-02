@@ -72,7 +72,7 @@ namespace Flux {
             was made.
             @return 0 if successful otherwise non-zero
         */
-        int GetLocation(const novac::CString &serial, const CDateTime &startTime,
+        int GetLocation(const novac::CString &serial, const novac::CDateTime &startTime,
             Configuration::CInstrumentLocation &instrLocation);
 
         /** Appends the evaluated flux to the appropriate log file.

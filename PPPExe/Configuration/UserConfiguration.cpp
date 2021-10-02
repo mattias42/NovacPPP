@@ -31,7 +31,7 @@ namespace Configuration
         m_volcano = 0;
 
         // The time range where to search for data
-        m_fromDate = CDateTime(2005, 10, 01, 00, 00, 00);
+        m_fromDate = novac::CDateTime(2005, 10, 01, 00, 00, 00);
         m_toDate.SetToNow();
 
         // The directory where to search for data

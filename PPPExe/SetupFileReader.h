@@ -39,6 +39,6 @@ namespace FileHandler {
         void Parse_Instrument(Configuration::CInstrumentConfiguration &instr);
 
         /** Parses a custom spectrometer model */
-        void Parse_CustomSpectrometer(SpectrometerModel& model);
+        void Parse_CustomSpectrometer(novac::SpectrometerModel& model);
     };
 }

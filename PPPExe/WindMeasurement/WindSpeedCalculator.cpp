@@ -9,8 +9,9 @@
 
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
-
 using namespace WindSpeedMeasurement;
+using namespace novac;
+
 
 CWindSpeedCalculator::CMeasurementSeries::CMeasurementSeries() {
     column = NULL;

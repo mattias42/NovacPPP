@@ -18,6 +18,7 @@ extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The setti
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
 using namespace Stratosphere;
+using namespace novac;
 
 // ------------- The private class Zenith Measurement -------------
 CStratosphereCalculator::CZenithMeasurement::CZenithMeasurement() {

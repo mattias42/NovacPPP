@@ -27,6 +27,7 @@ extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of t
 extern novac::CVolcanoInfo g_volcanoes; // <-- A list of all known volcanoes
 
 using namespace Communication;
+using namespace novac;
 
 
 struct ftpLogin

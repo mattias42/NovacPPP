@@ -22,13 +22,13 @@ namespace FileHandler {
     private:
 
         /** Reads a 'fitWindow' section */
-        int Parse_FitWindow(Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo);
+        int Parse_FitWindow(novac::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo);
 
         /** Reads a 'Reference' section */
-        int Parse_Reference(Evaluation::CFitWindow &window);
+        int Parse_Reference(novac::CFitWindow &window);
 
         /** Reads a 'dark-correction' section */
-        int Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo);
+        int Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo);
 
     };
 }

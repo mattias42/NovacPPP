@@ -1,6 +1,7 @@
 #include <cstring>
 #include "PostEvaluationController.h"
 #include "ScanEvaluation.h"
+#include <SpectralEvaluation/File/SpectrumIO.h>
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
 #include <SpectralEvaluation/Evaluation/RatioEvaluation.h>
 #include <SpectralEvaluation/Evaluation/PlumeSpectrumSelector.h>
@@ -24,8 +25,8 @@
 #endif
 
 using namespace Evaluation;
-using namespace SpectrumIO;
 using namespace FileHandler;
+using namespace novac;
 
 extern Configuration::CNovacPPPConfiguration    g_setup;    // <-- The settings
 extern Configuration::CUserConfiguration        g_userSettings;// <-- The settings of the user
@@ -37,7 +38,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     novac::CString errorMessage, message, serialNumber;
     Meteorology::CWindField windField;
     CDateTime startTime;
-    SpectrumIO::CSpectrumIO reader;
+    novac::CSpectrumIO reader;
     CSpectrum skySpectrum;
     Configuration::CInstrumentLocation instrLocation;
     CFitWindow fitWindow;
@@ -205,7 +206,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
     return 0;
 }
 
-RETURN_CODE CPostEvaluationController::WriteRatioResult(const std::vector<Ratio>& result, const FileHandler::CScanFileHandler& scan, const Evaluation::CFitWindow& window)
+RETURN_CODE CPostEvaluationController::WriteRatioResult(const std::vector<Ratio>& result, const novac::CScanFileHandler& scan, const novac::CFitWindow& window)
 {
     CSpectrum skySpec;
     scan.GetSky(skySpec);
@@ -255,7 +256,7 @@ RETURN_CODE CPostEvaluationController::WriteRatioResult(const std::vector<Ratio>
     return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName)
+RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const novac::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName)
 {
     novac::CString string, string1, string2, string3, string4;
     long itSpectrum, itSpecie; // iterators
@@ -502,7 +503,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const Evaluation::CFitWindow *window, Meteorology::CWindField& /*windField*/)
+RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const novac::CFitWindow *window, Meteorology::CWindField& /*windField*/)
 {
     novac::CString evalSummaryLog;
     bool fWriteHeaderLine = false;
@@ -558,7 +559,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
     return SUCCESS;
 }
 
-RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const Evaluation::CFitWindow* /*window*/, Meteorology::CWindField& /*windField*/)
+RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation* /*instrLocation*/, const novac::CFitWindow* /*window*/, Meteorology::CWindField& /*windField*/)
 {
     novac::CString pakSummaryLog;
     bool fWriteHeaderLine = false;
@@ -707,7 +708,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     is also valid at the time when the scan was made.
     @return 0 if successful otherwise non-zero
 */
-int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, Evaluation::CFitWindow &window)
+int CPostEvaluationController::GetLocationAndFitWindow(novac::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, novac::CFitWindow &window)
 {
     CSpectrum skySpec;
     CDateTime day, evalValidFrom, evalValidTo;
@@ -739,7 +740,7 @@ int CPostEvaluationController::GetLocationAndFitWindow(FileHandler::CScanFileHan
     from the collected spectra.
     On successful return will the settings be stored in 'settings'
     @return 0 on successful, otherwise non-zero. */
-int CPostEvaluationController::GetDarkCurrentSettings(FileHandler::CScanFileHandler *scan, Configuration::CDarkSettings &settings)
+int CPostEvaluationController::GetDarkCurrentSettings(novac::CScanFileHandler *scan, Configuration::CDarkSettings &settings)
 {
     CSpectrum skySpec;
     novac::CString serialNumber, errorMessage;
@@ -775,7 +776,7 @@ int CPostEvaluationController::CheckQualityOfFluxMeasurement(CScanResult *result
 
 /** Checks the supplied scan if it's good enough to bother evaluating.
     @returns false if the scan is too bad and should be ignored. Else return true. */
-bool CPostEvaluationController::IsGoodEnoughToEvaluate(const FileHandler::CScanFileHandler *scan, const Evaluation::CFitWindow &fitWindow, Configuration::CInstrumentLocation &instrLocation)
+bool CPostEvaluationController::IsGoodEnoughToEvaluate(const novac::CScanFileHandler *scan, const novac::CFitWindow &fitWindow, Configuration::CInstrumentLocation &instrLocation)
 {
     CSpectrum skySpectrum;
     novac::CString errorMessage;

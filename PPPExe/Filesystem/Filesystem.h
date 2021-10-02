@@ -14,8 +14,8 @@ namespace Filesystem
             : fileExtension("") {
         }
 
-        CDateTime startTime;
-        CDateTime endTime;
+        novac::CDateTime startTime;
+        novac::CDateTime endTime;
         std::string fileExtension;
     };
 

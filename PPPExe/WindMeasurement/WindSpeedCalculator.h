@@ -74,7 +74,7 @@ namespace WindSpeedMeasurement {
         void WriteWindSpeedLogHeader(const novac::CString &fileName);
 
         /** Appends a dual-beam wind speed result to the given file */
-        void AppendResultToFile(const novac::CString &fileName, const CDateTime &startTime,
+        void AppendResultToFile(const novac::CString &fileName, const novac::CDateTime &startTime,
             const Configuration::CInstrumentLocation &location,
             const Geometry::CPlumeHeight &plumeHeight,
             Meteorology::CWindField &windField);
@@ -92,8 +92,8 @@ namespace WindSpeedMeasurement {
 
         /** This is the start-time and the stop time of the measurement.
             This is filled in after a call to 'CalculateCorrelation' */
-        CDateTime	m_startTime;
-        CDateTime	m_stopTime;
+        novac::CDateTime	m_startTime;
+        novac::CDateTime	m_stopTime;
 
         // ----------------------------------------------------------------------
         // --------------------- PRIVATE METHODS --------------------------------

@@ -105,11 +105,11 @@ namespace Configuration {
         // ------------------------------------------------------------------------
 
         /** The first day that we should look for data (inclusive) */
-        CDateTime  m_fromDate;
+        novac::CDateTime  m_fromDate;
 #define   str_fromDate "FromDate"
 
         /** The last day that we should look for data (inclusive) */
-        CDateTime  m_toDate;
+        novac::CDateTime  m_toDate;
 #define   str_toDate "ToDate"
 
         // ------------------------------------------------------------------------

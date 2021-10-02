@@ -15,7 +15,7 @@
     See the functions 'DoPostProcessing_Flux' and 'DoPostProcessing_Strat'
 */
 
-namespace Evaluation
+namespace novac
 {
     class CReferenceFile;
 }
@@ -169,5 +169,5 @@ protected:
     /** Creates a reference file by convolving a high-res cross section with a slit-function and resamples it
         to a given wavelength calibration. The instrument serial is provided since the result is
         saved to a local file, for reference. */
-    bool ConvolveReference(Evaluation::CReferenceFile& ref, const novac::CString& instrumentSerial);
+    bool ConvolveReference(novac::CReferenceFile& ref, const novac::CString& instrumentSerial);
 };

@@ -4,6 +4,8 @@
 #include "../Common/Common.h"
 
 using namespace Meteorology;
+using namespace novac;
+
 
 // ----------- THE SUB-CLASS CWindData --------------
 CWindDataBase::CWindData::CWindData() {

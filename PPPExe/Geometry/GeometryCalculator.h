@@ -28,14 +28,14 @@ namespace Geometry {
             CGeometryCalculationInfo();
             ~CGeometryCalculationInfo();
             void Clear();
-            CGPSData	scanner[2];
+            novac::CGPSData	scanner[2];
             double		plumeCentre[2];
             CGeometryCalculationInfo	&operator=(const CGeometryCalculationInfo& info2);
         };
 
         /** Retrieve the plume height from a measurement using one scanning-instrument
                 with an given assumption of the wind-direction 	*/
-        static double GetPlumeHeight_OneInstrument(const CGPSData source, const CGPSData gps, double WindDirection, double alpha_center_of_mass, double phi_center_of_mass);
+        static double GetPlumeHeight_OneInstrument(const novac::CGPSData source, const novac::CGPSData gps, double WindDirection, double alpha_center_of_mass, double phi_center_of_mass);
 
         /** Calculates the plume-height for a scan, assuming that the plume originates
                     at the postition given in 'source' and that the centre of the plume is
@@ -46,7 +46,7 @@ namespace Geometry {
                     and the 'coneAngle' (degrees)
                     @return the plume height if the calculations are successful
                     @return NOT_A_NUMBER if something is wrong.				*/
-        static double GetPlumeHeight(const CGPSData source, double windDirection, const CGPSData scannerPos, double compass, double plumeCentre, double coneAngle, double tilt);
+        static double GetPlumeHeight(const novac::CGPSData source, double windDirection, const novac::CGPSData scannerPos, double compass, double plumeCentre, double coneAngle, double tilt);
 
         /** Calculate the plume-height using the two scans found in the
                 given evaluation-files.
@@ -55,7 +55,7 @@ namespace Geometry {
                 @return true on success */
         static bool CalculateGeometry(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
         static bool CalculateGeometry(const novac::CString &evalLog1, int scanIndex1, const novac::CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
-        static bool CalculateGeometry(const CPlumeInScanProperty &plume1, const CDateTime &startTime1, const CPlumeInScanProperty &plume2, const CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
+        static bool CalculateGeometry(const novac::CPlumeInScanProperty &plume1, const novac::CDateTime &startTime1, const novac::CPlumeInScanProperty &plume2, const novac::CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
 
         /** Calculate the plume-height using the scan found in the given evaluation-file.
                 @param windDirection - the assumed wind-direction at the time the measurement was made
@@ -86,7 +86,7 @@ namespace Geometry {
                 @param plumeHeight - will on return be filled with the calculated
                         height of the plume above the lower of the two scanners
                 @return true if a plume height could be calculated. */
-        static bool GetPlumeHeight_Exact(const CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight);
+        static bool GetPlumeHeight_Exact(const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight);
         static bool GetPlumeHeight_Exact(const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double &plumeHeight);
 
         /** Calculates the height of the plume given data from two scans
@@ -101,8 +101,8 @@ namespace Geometry {
                 @param windDirection - will on successful return be filled with the
                         calculated wind directions. In degrees from north, positive clockwise.
                 @return true if a plume height could be calculated. */
-        static bool GetPlumeHeight_Fuzzy(const CGPSData source, const CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight, double &windDirection);
-        static bool GetPlumeHeight_Fuzzy(const CGPSData source, const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double &plumeHeight, double &windDirection);
+        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight, double &windDirection);
+        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double &plumeHeight, double &windDirection);
 
         /** Calculates the wind-direction for a scan, assuming that the plume originates
                     at the postition given in 'source' and that the centre of the plume is
@@ -112,8 +112,8 @@ namespace Geometry {
                     and the 'coneAngle' (degrees)
                     @return the wind-direction if the calculations are successful
                     @return NOT_A_NUMBER if something is wrong. 					*/
-        static double GetWindDirection(const CGPSData source, double plumeHeight, const CGPSData scannerPos, double compass, double plumeCentre, double coneAngle, double tilt);
-        static double GetWindDirection(const CGPSData source, double plumeHeight, const Configuration::CInstrumentLocation scannerLocation, double plumeCentre);
+        static double GetWindDirection(const novac::CGPSData source, double plumeHeight, const novac::CGPSData scannerPos, double compass, double plumeCentre, double coneAngle, double tilt);
+        static double GetWindDirection(const novac::CGPSData source, double plumeHeight, const Configuration::CInstrumentLocation scannerLocation, double plumeCentre);
 
         /** Calculates the wind-direction for a scan, assuming that the plume originates
                     at the postition given in 'source' and that the centre of the plume is
@@ -122,7 +122,7 @@ namespace Geometry {
                     This function is intended for use with V-II Heidelberg instruments
                     @return the wind-direction if the calculations are successful
                     @return NOT_A_NUMBER if something is wrong. 					*/
-        static double GetWindDirection(const CGPSData source, const CGPSData scannerPos, double plumeHeight, double alpha_center_of_mass, double phi_center_of_mass);
+        static double GetWindDirection(const novac::CGPSData source, const novac::CGPSData scannerPos, double plumeHeight, double alpha_center_of_mass, double phi_center_of_mass);
 
         /** Rotates the given vector the given angle [degrees] around the given axis
                 @param vec - the coordiates of the vector

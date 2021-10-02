@@ -56,6 +56,8 @@ extern Configuration::CUserConfiguration        g_userSettings;// <-- The settin
 extern novac::CVolcanoInfo                      g_volcanoes;   // <-- A list of all known volcanoes
 CPostProcessingStatistics                       g_processingStats; // <-- The statistics of the processing itself
 
+using namespace novac;
+
 
 // this is the working-thread that takes care of evaluating a portion of the scans
 void EvaluateScansThread();
@@ -504,7 +506,7 @@ int CPostProcessing::PrepareEvaluation()
         unsigned long fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindowNum();
         for (unsigned int fitWindowIndex = 0; fitWindowIndex < fitWindowNum; ++fitWindowIndex)
         {
-            Evaluation::CFitWindow window;
+            novac::CFitWindow window;
 
             // get the fit window
             g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindow(fitWindowIndex, window, fromTime, toTime);
@@ -558,7 +560,7 @@ int CPostProcessing::PrepareEvaluation()
 
                     // If we are supposed to high-pass filter the spectra then
                     // we should also high-pass filter the cross-sections
-                    if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB)
+                    if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
                     {
                         if (window.ref[referenceIndex].m_isFiltered == false)
                         {
@@ -610,7 +612,7 @@ int CPostProcessing::PrepareEvaluation()
                     failure = true;
                     continue;
                 }
-                if (window.fitType == Evaluation::FIT_HP_DIV || window.fitType == Evaluation::FIT_HP_SUB)
+                if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
                 {
                     HighPassFilter_Ring(*window.fraunhoferRef.m_data);
                 }
@@ -1728,7 +1730,7 @@ void CPostProcessing::UploadResultsToFTP()
     return;
 }
 
-bool CPostProcessing::ConvolveReference(Evaluation::CReferenceFile& ref, const novac::CString& instrumentSerial)
+bool CPostProcessing::ConvolveReference(novac::CReferenceFile& ref, const novac::CString& instrumentSerial)
 {
     // Make sure the high-res section do exist.
     if (!IsExistingFile(ref.m_crossSectionFile))
@@ -1790,7 +1792,7 @@ bool CPostProcessing::ConvolveReference(Evaluation::CReferenceFile& ref, const n
     // Save the resulting reference, for reference...
     novac::CString tempFile;
     tempFile.Format("%s%s_%s.xs", (const char*)g_userSettings.m_tempDirectory, (const char*)instrumentSerial, ref.m_specieName.c_str());
-    FileIo::SaveCrossSectionFile(tempFile.ToStdString(), *ref.m_data);
+    SaveCrossSectionFile(tempFile.ToStdString(), *ref.m_data);
 
     return true;
 }

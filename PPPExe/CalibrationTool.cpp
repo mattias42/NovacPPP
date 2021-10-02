@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <SpectralEvaluation/Spectra/WavelengthCalibration.h>
+#include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
 
@@ -31,7 +31,7 @@ int main(int /*argc*/, char* /*argv*/[])
     settings.initialWavelengthToPixelMapping = "D:/NOVAC/References/D2J2124/D2J2124_Master.clb";
     settings.instrumentSlitFunction = "D:/NOVAC/References/D2J2124/D2J2124_Master_302nm.slf";
 
-    Evaluation::WavelengthCalibrationSetup calibrationSetup;
+    /* Evaluation::WavelengthCalibrationSetup calibrationSetup;
     {
         FileIo::ReadCrossSectionFile(settings.solarAtlas, calibrationSetup.solarAtlas);
 
@@ -57,5 +57,5 @@ int main(int /*argc*/, char* /*argv*/[])
         calibrationSetup,
         initialCalibration,
         measuredSpectrum,
-        calibration);
+        calibration); */
 }

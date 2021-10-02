@@ -67,10 +67,10 @@ namespace Flux
         double	m_compass;
 
         /** The date and time (UTC) when the measurement was started */
-        CDateTime	m_startTime;
+        novac::CDateTime	m_startTime;
 
         /** The date and time (UTC) when the measurement was finished */
-        CDateTime	m_stopTime;
+        novac::CDateTime	m_stopTime;
 
         /** The volcano that this measurement was made at. Set to -1 if unknown */
         int			m_volcano;

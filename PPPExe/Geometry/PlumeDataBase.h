@@ -41,7 +41,7 @@ namespace Geometry {
                 about the plume height at the requested time.
             @return true if the wind field could be retrieved, otherwise false.
          */
-        bool GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHeight) const;
+        bool GetPlumeHeight(const novac::CDateTime &time, CPlumeHeight &plumeHeight) const;
 
         /** Inserts a plume height into the database */
         void InsertPlumeHeight(const CPlumeHeight &plumeHeight);
@@ -66,8 +66,8 @@ namespace Geometry {
 
             /** The data needs to be labelled with the time
                 when it is valid */
-            CDateTime	validFrom;
-            CDateTime	validTo;
+            novac::CDateTime	validFrom;
+            novac::CDateTime	validTo;
 
             // The plume altitude (meters above sea level)
             float		altitude;

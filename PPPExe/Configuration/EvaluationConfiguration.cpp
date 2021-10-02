@@ -21,13 +21,13 @@ void CEvaluationConfiguration::Clear() {
     @param window - the fit-window to insert
     @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
     @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time */
-void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &window, const CDateTime *validFrom, const CDateTime *validTo) {
+void CEvaluationConfiguration::InsertFitWindow(const novac::CFitWindow &window, const novac::CDateTime *validFrom, const novac::CDateTime *validTo) {
     // make a copy of the fit - window
-    Evaluation::CFitWindow *newWindow = new Evaluation::CFitWindow(window);
+    novac::CFitWindow *newWindow = new novac::CFitWindow(window);
 
     // Get the time-range for which this window is valid
-    CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);
-    CDateTime *toTime = new CDateTime(9999, 12, 31, 23, 59, 59);
+    novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
+    novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
     if (validFrom != NULL) {
         *fromTime = *validFrom;
     }
@@ -52,17 +52,17 @@ void CEvaluationConfiguration::InsertFitWindow(const Evaluation::CFitWindow &win
     @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
     @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time
     @return 0 if sucessful, otherwise 1 */
-int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWindow &window, CDateTime *validFrom, CDateTime *validTo) {
+int CEvaluationConfiguration::SetFitWindow(int index, const novac::CFitWindow &window, novac::CDateTime *validFrom, novac::CDateTime *validTo) {
     if (index < 0)
         return 1;
 
     // make a copy of the fit - window
-    Evaluation::CFitWindow *newWindow = new Evaluation::CFitWindow();
+    novac::CFitWindow *newWindow = new novac::CFitWindow();
     *newWindow = window;
 
     // Get the time-range for which this window is valid
-    CDateTime *fromTime = new CDateTime(0000, 00, 00, 00, 00, 00);
-    CDateTime *toTime = new CDateTime(9999, 12, 31, 23, 59, 59);
+    novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
+    novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
     if (validFrom != NULL) {
         *fromTime = *validFrom;
     }
@@ -73,9 +73,9 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
     // If there's an item already at this location then delete it
     int length = m_fitWindows.GetCount();
     if (index < length) {
-        Evaluation::CFitWindow *thisWindow = m_fitWindows.GetAt(index);
-        CDateTime *from = m_validFrom.GetAt(index);
-        CDateTime *to = m_validTo.GetAt(index);
+        novac::CFitWindow *thisWindow = m_fitWindows.GetAt(index);
+        novac::CDateTime *from = m_validFrom.GetAt(index);
+        novac::CDateTime *to = m_validTo.GetAt(index);
 
         delete thisWindow;
         delete from;
@@ -98,7 +98,7 @@ int CEvaluationConfiguration::SetFitWindow(int index, const Evaluation::CFitWind
     @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
     @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time
     @return 0 if sucessful, otherwise 1 */
-int CEvaluationConfiguration::GetFitWindow(int index, Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo) const {
+int CEvaluationConfiguration::GetFitWindow(int index, novac::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo) const {
     if (index < 0 || index >= m_fitWindows.GetSize())
         return 1;
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 using namespace Evaluation;
+using namespace novac;
 
 extern novac::CVolcanoInfo g_volcanoes; // <-- A list of all known volcanoes
 

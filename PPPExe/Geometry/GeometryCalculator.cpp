@@ -16,6 +16,7 @@
 #undef max
 
 using namespace Geometry;
+using namespace novac;
 
 extern novac::CVolcanoInfo					g_volcanoes;   // <-- A list of all known volcanoes
 extern Configuration::CUserConfiguration	g_userSettings;// <-- The settings of the user

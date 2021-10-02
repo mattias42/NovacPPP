@@ -38,6 +38,7 @@ void StartProcessing(int selectedVolcano = 0);
 void CalculateAllFluxes();
 void ParseCommandLineOptions(const std::vector<std::string>& arguments);
 
+using namespace novac;
 
 class NovacPPPApplication : public Poco::Util::Application
 {

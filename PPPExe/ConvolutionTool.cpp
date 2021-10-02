@@ -1,4 +1,4 @@
-#include <SpectralEvaluation/Spectra/ReferenceSpectrumConvolution.h>
+#include <SpectralEvaluation/Calibration/ReferenceSpectrumConvolution.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/StringUtils.h>
@@ -6,6 +6,8 @@
 #include <cmath>
 #include <iostream>
 #include <string.h>
+
+using namespace novac;
 
 struct ConvolutionToolSettings
 {
@@ -69,7 +71,7 @@ std::vector<char> ReadEntireFile(FILE* fileStream)
     return vBuffer;
 }
 
-void ParseWavelengthConversion(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::ConvolutionSettings& data)
+void ParseWavelengthConversion(rapidxml::xml_node<>* refNode, ConvolutionToolSettings::ConvolutionSettings& data)
 {
     if (strlen(refNode->value()) == 0)
     {
@@ -80,7 +82,7 @@ void ParseWavelengthConversion(rapidxml::xml_node<> *refNode, ConvolutionToolSet
     {
         data.wavelengthConversion = WavelengthConversion::None;
     }
-    else if(EqualsIgnoringCase(refNode->value(), "VacToAir"))
+    else if (EqualsIgnoringCase(refNode->value(), "VacToAir"))
     {
         data.wavelengthConversion = WavelengthConversion::VacuumToAir;
     }
@@ -90,7 +92,7 @@ void ParseWavelengthConversion(rapidxml::xml_node<> *refNode, ConvolutionToolSet
     }
 }
 
-void ParseSlitFunction(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::ConvolutionSettings& data)
+void ParseSlitFunction(rapidxml::xml_node<>* refNode, ConvolutionToolSettings::ConvolutionSettings& data)
 {
     if (strlen(refNode->value()) > 0)
     {
@@ -118,7 +120,7 @@ void ParseSlitFunction(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::C
                     }
                     else if (EqualsIgnoringCase(attr->name(), "fwhm"))
                     {
-                        data.params[0] = std::atof(attr->value()) / ( 2.0 * std::sqrt(2.0 * std::log(2.0)));
+                        data.params[0] = std::atof(attr->value()) / (2.0 * std::sqrt(2.0 * std::log(2.0)));
                     }
                     attr = attr->next_attribute();
                 }
@@ -135,7 +137,7 @@ void ParseSlitFunction(rapidxml::xml_node<> *refNode, ConvolutionToolSettings::C
     throw std::invalid_argument("Invalid type of slit function encountered, can only handle 'File' or 'Gaussian'.");
 }
 
-void ParseReference(rapidxml::xml_node<> *node, ConvolutionToolSettings::ConvolutionSettings& data)
+void ParseReference(rapidxml::xml_node<>* node, ConvolutionToolSettings::ConvolutionSettings& data)
 {
     int elementsRead = 0;
 
@@ -180,13 +182,13 @@ void ParseSettings(std::vector<char>& configurationXml, ConvolutionToolSettings&
     rapidxml::xml_document<> doc;    // character type defaults to char
     doc.parse<0>(configurationXml.data());  // 0 means default parse flags
 
-    rapidxml::xml_node<> *node = doc.first_node("ReferenceConvolution");
+    rapidxml::xml_node<>* node = doc.first_node("ReferenceConvolution");
     if (nullptr == node)
     {
         throw std::invalid_argument("Failed to parse configuration file, expected a 'ReferenceConvolution' section.");
     }
 
-    rapidxml::xml_node<> *spec = node->first_node("Spectrometer");
+    rapidxml::xml_node<>* spec = node->first_node("Spectrometer");
     if (nullptr == spec)
     {
         throw std::invalid_argument(" Failed to parse configuration file, expected the 'ReferenceConvolution' section to contain a 'Spectrometer' section.");
@@ -261,18 +263,18 @@ int main(int argc, char* argv[])
     {
         for (const ConvolutionToolSettings::ConvolutionSettings& data : spectrometer.data)
         {
-            Evaluation::CCrossSectionData result;
+            CCrossSectionData result;
             std::cout << "Convolving reference: '" << data.destinationFile << "'... " << std::flush;
 
             bool success = true;
 
             if (data.type == ConvolutionToolSettings::SLIT_FUNCTION_TYPE::FILE)
             {
-                success = Evaluation::ConvolveReference(spectrometer.wavelengthCalibrationFile, spectrometer.slitFunctionFile, data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
+                success = ConvolveReference(spectrometer.wavelengthCalibrationFile, spectrometer.slitFunctionFile, data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
             }
             else if (data.type == ConvolutionToolSettings::SLIT_FUNCTION_TYPE::GAUSSIAN)
             {
-                success = Evaluation::ConvolveReferenceGaussian(spectrometer.wavelengthCalibrationFile, data.params[0], data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
+                success = ConvolveReferenceGaussian(spectrometer.wavelengthCalibrationFile, data.params[0], data.highResolutionCrossSectionFile, result, data.wavelengthConversion);
             }
 
             if (success)
@@ -283,7 +285,7 @@ int main(int argc, char* argv[])
                 }
 
                 std::cout << " done. Saving file to disk." << std::endl;
-                FileIo::SaveCrossSectionFile(data.destinationFile, result);
+                SaveCrossSectionFile(data.destinationFile, result);
             }
             else
             {

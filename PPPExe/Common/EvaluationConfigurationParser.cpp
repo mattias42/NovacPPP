@@ -31,8 +31,8 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
             continue;
         }
         if (novac::Equals(szToken, "fitWindow", 9)) {
-            Evaluation::CFitWindow tmpWindow;
-            CDateTime validFrom, validTo;
+            novac::CFitWindow tmpWindow;
+            novac::CDateTime validFrom, validTo;
 
             // Parse the fit window
             Parse_FitWindow(tmpWindow, validFrom, validTo);
@@ -43,7 +43,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 
         if (novac::Equals(szToken, "DarkCorrection", 14)) {
             Configuration::CDarkSettings dSettings;
-            CDateTime validFrom, validTo;
+            novac::CDateTime validFrom, validTo;
 
             // Parse the fit window
             Parse_DarkCorrection(dSettings, validFrom, validTo);
@@ -59,9 +59,9 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
 
 int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings) {
     novac::CString indent, str;
-    Evaluation::CFitWindow window;
+    novac::CFitWindow window;
     Configuration::CDarkSettings dSettings;
-    CDateTime from, to;
+    novac::CDateTime from, to;
 
     // open the file
     FILE *f = fopen(fileName, "w");
@@ -124,17 +124,17 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 
             // The value for the shift
             fprintf(f, "\t\t\t<shiftOption>%d</shiftOption>\n", window.ref[j].m_shiftOption);
-            if (window.ref[j].m_shiftOption != Evaluation::SHIFT_FREE)
+            if (window.ref[j].m_shiftOption != novac::SHIFT_TYPE::SHIFT_FREE)
                 fprintf(f, "\t\t\t<shiftValue>%lf</shiftValue>\n", window.ref[j].m_shiftValue);
 
             // The value for the squeeze
             fprintf(f, "\t\t\t<squeezeOption>%d</squeezeOption>\n", window.ref[j].m_shiftOption);
-            if (window.ref[j].m_shiftOption != Evaluation::SHIFT_FREE)
+            if (window.ref[j].m_shiftOption != novac::SHIFT_TYPE::SHIFT_FREE)
                 fprintf(f, "\t\t\t<squeezeValue>%lf</squeezeValue>\n", window.ref[j].m_shiftValue);
 
             // The value for the column
             fprintf(f, "\t\t\t<columnOption>%d</columnOption>\n", window.ref[j].m_columnOption);
-            if (window.ref[j].m_columnOption != Evaluation::SHIFT_FREE)
+            if (window.ref[j].m_columnOption != novac::SHIFT_TYPE::SHIFT_FREE)
                 fprintf(f, "\t\t\t<columnValue>%lf</columnValue>\n", window.ref[j].m_columnValue);
 
             fprintf(f, "\t\t</Reference>\n");
@@ -197,7 +197,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
     return 0;
 }
 
-void SaveSlitFunctionAndWavelengthCalibration(Evaluation::CFitWindow &window, novac::CString& slitfunctionFile, novac::CString& wavelengthCalibFile)
+void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow &window, novac::CString& slitfunctionFile, novac::CString& wavelengthCalibFile)
 {
     if (slitfunctionFile.GetLength() > 0)
     {
@@ -215,7 +215,7 @@ void SaveSlitFunctionAndWavelengthCalibration(Evaluation::CFitWindow &window, no
     }
 }
 
-int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &window, CDateTime &validFrom, CDateTime &validTo) {
+int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo) {
     window.Clear();
     novac::CString slitfunctionFile, wavelengthCalibFile;
 
@@ -238,8 +238,8 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
 
         if (Equals(szToken, "fitWindow"))
         {
-            Evaluation::CFitWindow child;
-            CDateTime childValidFrom, childValidTo;
+            novac::CFitWindow child;
+            novac::CDateTime childValidFrom, childValidTo;
             Parse_FitWindow(child, childValidFrom, childValidTo);
             window.child.push_back(child);
             continue;
@@ -343,7 +343,7 @@ int CEvaluationConfigurationParser::Parse_FitWindow(Evaluation::CFitWindow &wind
     return 1;
 }
 
-int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &window) {
+int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow &window) {
     int nRef = window.nRef;
 
     // the actual reading loop
@@ -393,10 +393,10 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
             int tmpInt;
             Parse_IntItem("/shiftOption", tmpInt);
             switch (tmpInt) {
-            case 0: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_FREE; break;
-            case 1: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_FIX; break;
-            case 2: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_LINK; break;
-            case 3: window.ref[nRef].m_shiftOption = Evaluation::SHIFT_LIMIT; break;
+            case 0: window.ref[nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FREE; break;
+            case 1: window.ref[nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX; break;
+            case 2: window.ref[nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_LINK; break;
+            case 3: window.ref[nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_LIMIT; break;
             }
             continue;
         }
@@ -410,10 +410,10 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
             int tmpInt;
             Parse_IntItem("/squeezeOption", tmpInt);
             switch (tmpInt) {
-            case 0: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_FREE; break;
-            case 1: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_FIX; break;
-            case 2: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_LINK; break;
-            case 3: window.ref[nRef].m_squeezeOption = Evaluation::SHIFT_LIMIT; break;
+            case 0: window.ref[nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FREE; break;
+            case 1: window.ref[nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX; break;
+            case 2: window.ref[nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_LINK; break;
+            case 3: window.ref[nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_LIMIT; break;
             }
             continue;
         }
@@ -427,10 +427,10 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
             int tmpInt;
             Parse_IntItem("/columnOption", tmpInt);
             switch (tmpInt) {
-            case 0: window.ref[nRef].m_columnOption = Evaluation::SHIFT_FREE; break;
-            case 1: window.ref[nRef].m_columnOption = Evaluation::SHIFT_FIX; break;
-            case 2: window.ref[nRef].m_columnOption = Evaluation::SHIFT_LINK; break;
-            case 3: window.ref[nRef].m_columnOption = Evaluation::SHIFT_LIMIT; break;
+            case 0: window.ref[nRef].m_columnOption = novac::SHIFT_TYPE::SHIFT_FREE; break;
+            case 1: window.ref[nRef].m_columnOption = novac::SHIFT_TYPE::SHIFT_FIX; break;
+            case 2: window.ref[nRef].m_columnOption = novac::SHIFT_TYPE::SHIFT_LINK; break;
+            case 3: window.ref[nRef].m_columnOption = novac::SHIFT_TYPE::SHIFT_LIMIT; break;
             }
             continue;
         }
@@ -444,7 +444,7 @@ int CEvaluationConfigurationParser::Parse_Reference(Evaluation::CFitWindow &wind
     return FAIL;
 }
 
-int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, CDateTime &validFrom, CDateTime &validTo) {
+int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo) {
     dSettings.Clear();
     novac::CString str;
 

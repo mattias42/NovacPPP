@@ -203,7 +203,7 @@ void Common::CalculateDestination(double lat1, double lon1, double dist, double 
         for the site specified by (lat, lon) and for the time given in gmtTime.
         Note that the returned angles are in degrees and that the specified
         time _must_ be GMT-time. */
-RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
+RETURN_CODE Common::GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
     SZA = SAZ = 0; // reset the numbers
 
     // Get the julian day

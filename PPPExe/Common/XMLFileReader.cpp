@@ -5,6 +5,7 @@
 #include <Poco/Path.h>
 
 using namespace FileHandler;
+using namespace novac;
 
 CXMLFileReader::CXMLFileReader()
 {
@@ -16,7 +17,7 @@ CXMLFileReader::~CXMLFileReader()
     Close();
 }
 
-bool CXMLFileReader::Open(const novac::CString &fileName)
+bool CXMLFileReader::Open(const novac::CString& fileName)
 {
     novac::CFileException exceFile;
 
@@ -47,7 +48,7 @@ void CXMLFileReader::Close()
 }
 
 
-char *CXMLFileReader::NextToken() {
+char* CXMLFileReader::NextToken() {
     char separators[] = "<>\t";
     szToken = nullptr;
 
@@ -88,7 +89,7 @@ char *CXMLFileReader::NextToken() {
     }
 }
 
-const char *CXMLFileReader::GetAttributeValue(const novac::CString &label)
+const char* CXMLFileReader::GetAttributeValue(const novac::CString& label)
 {
     novac::CString toSearchFor;
 
@@ -102,14 +103,14 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label)
 
     // search for the attribute in szToken
     toSearchFor.Format("%s=\"", (const char*)label);
-    char *pt_start = strstr(copyOfToken, toSearchFor);
+    char* pt_start = strstr(copyOfToken, toSearchFor);
     if (pt_start == nullptr) {
         return nullptr;
     }
     pt_start += toSearchFor.GetLength(); // point to the character after the double-quote
 
     // search for the ending double-quote
-    char *pt_end = strstr(pt_start, "\"");
+    char* pt_end = strstr(pt_start, "\"");
     if (pt_end == nullptr) {
         return nullptr;
     }
@@ -121,7 +122,7 @@ const char *CXMLFileReader::GetAttributeValue(const novac::CString &label)
     return attributeValue;
 }
 
-int CXMLFileReader::Parse_StringItem(const novac::CString &label, novac::CString &string) {
+int CXMLFileReader::Parse_StringItem(const novac::CString& label, novac::CString& string) {
     string.Format("");
 
     while (nullptr != (szToken = NextToken())) {
@@ -137,7 +138,7 @@ int CXMLFileReader::Parse_StringItem(const novac::CString &label, novac::CString
     return 0;
 }
 
-int CXMLFileReader::Parse_StringItem(const novac::CString &label, std::string &string)
+int CXMLFileReader::Parse_StringItem(const novac::CString& label, std::string& string)
 {
     string = "";
 
@@ -155,7 +156,7 @@ int CXMLFileReader::Parse_StringItem(const novac::CString &label, std::string &s
 }
 
 
-int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &path)
+int CXMLFileReader::Parse_PathItem(const novac::CString& label, novac::CString& path)
 {
     int r = Parse_StringItem(label, path);
     if (r != 0)
@@ -178,7 +179,7 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, novac::CString &
     }
 }
 
-int CXMLFileReader::Parse_PathItem(const novac::CString &label, std::string &path)
+int CXMLFileReader::Parse_PathItem(const novac::CString& label, std::string& path)
 {
     int r = Parse_StringItem(label, path);
     if (r != 0)
@@ -201,7 +202,7 @@ int CXMLFileReader::Parse_PathItem(const novac::CString &label, std::string &pat
     }
 }
 
-int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number) {
+int CXMLFileReader::Parse_LongItem(const novac::CString& label, long& number) {
 
     while (nullptr != (szToken = NextToken())) {
 
@@ -215,7 +216,7 @@ int CXMLFileReader::Parse_LongItem(const novac::CString &label, long &number) {
     return 0;
 }
 /** General parsing of a single, simple float item */
-int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number) {
+int CXMLFileReader::Parse_FloatItem(const novac::CString& label, double& number) {
     while (nullptr != (szToken = NextToken())) {
 
         if (Equals(szToken, label)) {
@@ -229,7 +230,7 @@ int CXMLFileReader::Parse_FloatItem(const novac::CString &label, double &number)
 }
 
 /** General parsing of a single, simple integer item */
-int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number) {
+int CXMLFileReader::Parse_IntItem(const novac::CString& label, int& number) {
     while (nullptr != (szToken = NextToken())) {
 
         if (Equals(szToken, label)) {
@@ -243,7 +244,7 @@ int CXMLFileReader::Parse_IntItem(const novac::CString &label, int &number) {
     return 0;
 }
 
-int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3) {
+int CXMLFileReader::Parse_IPNumber(const novac::CString& label, BYTE& ip0, BYTE& ip1, BYTE& ip2, BYTE& ip3) {
     while (nullptr != (szToken = NextToken())) {
         int i0, i1, i2, i3;
 
@@ -261,7 +262,7 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE 
     return 0;
 }
 /** General parsing of a date */
-int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum) {
+int CXMLFileReader::Parse_Date(const novac::CString& label, CDateTime& datum) {
     int nFields = 0;
 
     while (nullptr != (szToken = NextToken())) {
@@ -276,7 +277,7 @@ int CXMLFileReader::Parse_Date(const novac::CString &label, CDateTime &datum) {
             return 1;
         }
 
-        char *pt = strstr(szToken, "T");
+        char* pt = strstr(szToken, "T");
 
         if (pt == nullptr) {
             nFields = sscanf(szToken, "%d.%d.%d", &i0, &i1, &i2);
