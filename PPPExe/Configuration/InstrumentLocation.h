@@ -19,6 +19,7 @@ namespace Configuration
     class CInstrumentLocation
     {
     public:
+		CInstrumentLocation();
 
         // -----------------------------------------
         // -------------- PUBLIC DATA --------------
