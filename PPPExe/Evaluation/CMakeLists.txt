@@ -4,7 +4,6 @@ cmake_minimum_required (VERSION 3.6)
 
 set(NPP_EVALUATION_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/ExtendedScanResult.h
-    ${CMAKE_CURRENT_LIST_DIR}/MessageLog.h
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.h
     ${CMAKE_CURRENT_LIST_DIR}/ScanEvaluation.h
     ${CMAKE_CURRENT_LIST_DIR}/ScanResult.h
@@ -12,7 +11,6 @@ set(NPP_EVALUATION_HEADERS
     
     
 set(NPP_EVALUATION_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/MessageLog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PostEvaluationController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ScanEvaluation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ScanResult.cpp
