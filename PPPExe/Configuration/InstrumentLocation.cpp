@@ -2,6 +2,10 @@
 
 namespace Configuration
 {
+CInstrumentLocation::CInstrumentLocation()
+{
+	Clear();
+}
 
 void CInstrumentLocation::Clear()
 {

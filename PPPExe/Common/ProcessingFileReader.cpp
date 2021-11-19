@@ -175,6 +175,11 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
             continue;
         }
 
+		if (Equals(szToken, "SkySpectrum", 11)) {
+			this->Parse_SkySpectrum(settings);
+			continue;
+		}
+
         // If we've found the settings for the dual-beam calculations
         if (Equals(szToken, "DualBeam", 12)) {
             this->Parse_DualBeam(settings);
