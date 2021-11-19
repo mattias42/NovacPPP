@@ -4,6 +4,10 @@ using namespace novac;
 
 namespace Configuration
 {
+CInstrumentLocation::CInstrumentLocation()
+{
+	Clear();
+}
 
 void CInstrumentLocation::Clear()
 {
