@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SpectralEvaluation/DateTime.h>
-#include <SpectralEvaluation/Defintions.h>
+#include <SpectralEvaluation/Definitions.h>
 #include "../MeteorologySource.h"
 #include <PPPLib/CString.h>
 
