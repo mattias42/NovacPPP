@@ -7,14 +7,15 @@
 using namespace FileHandler;
 using namespace novac;
 
-CEvaluationConfigurationParser::CEvaluationConfigurationParser()
-{
-}
 
-int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings) {
+int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& fileName,
+            Configuration::CEvaluationConfiguration& settings,
+            Configuration::CDarkCorrectionConfiguration& darkSettings,
+            Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
+{
 
     // 1. Open the file
-    if(!Open(fileName))
+    if (!Open(fileName))
     {
         return FAIL;
     }
@@ -25,31 +26,31 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
         if (strlen(szToken) < 3)
             continue;
 
-
-        if (novac::Equals(szToken, "serial", 6)) {
-            this->Parse_StringItem("/serial", settings->m_serial);
+        if (novac::Equals(szToken, "serial", strlen("serial"))) {
+            this->Parse_StringItem("/serial", settings.m_serial);
             continue;
         }
-        if (novac::Equals(szToken, "fitWindow", 9)) {
+
+        if (novac::Equals(szToken, "fitWindow", strlen("fitWindow"))) {
             novac::CFitWindow tmpWindow;
             novac::CDateTime validFrom, validTo;
 
-            // Parse the fit window
             Parse_FitWindow(tmpWindow, validFrom, validTo);
 
-            // Insert the fit-window into the list
-            settings->InsertFitWindow(tmpWindow, &validFrom, &validTo);
+            settings.InsertFitWindow(tmpWindow, &validFrom, &validTo);
         }
 
-        if (novac::Equals(szToken, "DarkCorrection", 14)) {
+        if (novac::Equals(szToken, "DarkCorrection", strlen("DarkCorrection"))) {
             Configuration::CDarkSettings dSettings;
             novac::CDateTime validFrom, validTo;
 
-            // Parse the fit window
             Parse_DarkCorrection(dSettings, validFrom, validTo);
 
-            // Insert the fit-window into the list
-            darkSettings->InsertDarkCurrentCorrectionSettings(dSettings, &validFrom, &validTo);
+            darkSettings.InsertDarkCurrentCorrectionSettings(dSettings, &validFrom, &validTo);
+        }
+
+        if (novac::Equals(szToken, "Calibration", strlen("Calibration"))) {
+            Parse_CalibrationSettings(calibrationSettings);
         }
     }
     Close();
@@ -57,14 +58,19 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString &
     return 0;
 }
 
-int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings) {
+int CEvaluationConfigurationParser::WriteConfigurationFile(
+    const novac::CString& fileName,
+    const Configuration::CEvaluationConfiguration& settings,
+    const Configuration::CDarkCorrectionConfiguration& darkSettings,
+    const Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
+{
     novac::CString indent, str;
     novac::CFitWindow window;
     Configuration::CDarkSettings dSettings;
     novac::CDateTime from, to;
 
     // open the file
-    FILE *f = fopen(fileName, "w");
+    FILE* f = fopen(fileName, "w");
     if (f == NULL)
         return 1;
 
@@ -75,12 +81,12 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
     indent.Format("\t");
 
     // Write the serial-number of the spectrometer for which this configuration is valid
-    fprintf(f, "\t<serial>%s</serial>\n", (const char*)settings->m_serial);
+    fprintf(f, "\t<serial>%s</serial>\n", (const char*)settings.m_serial);
 
     // ------ loop through each of the fit windows and write them to file --------
-    unsigned long nWindows = settings->GetFitWindowNum();
+    unsigned long nWindows = settings.GetFitWindowNum();
     for (unsigned int k = 0; k < nWindows; ++k) {
-        settings->GetFitWindow(k, window, from, to);
+        settings.GetFitWindow(k, window, from, to);
 
         fprintf(f, "\t<fitWindow>\n");
 
@@ -145,7 +151,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
 
     // ------ loop through each of the dark-current settings and write them to file --------
     for (unsigned int k = 0; k < nWindows; ++k) {
-        darkSettings->GetDarkSettings(k, dSettings, from, to);
+        darkSettings.GetDarkSettings(k, dSettings, from, to);
 
         fprintf(f, "\t<DarkCorrection>\n");
 
@@ -189,6 +195,15 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
         fprintf(f, "\t</DarkCorrection>\n");
     }
 
+    // The instrument calibration settings
+    if (calibrationSettings.m_initialCalibrationFile.size() > 0 || calibrationSettings.m_instrumentLineshapeFile.size() > 0)
+    {
+        fprintf(f, "\t<Calibration>\n");
+        fprintf(f, "\t\t<initialCalibrationFile>%s</initialCalibrationFile>\n", calibrationSettings.m_initialCalibrationFile.c_str());
+        fprintf(f, "\t\t<initialInstrumentLineshapeFile>%s</initialInstrumentLineshapeFile>\n", calibrationSettings.m_instrumentLineshapeFile.c_str());
+        fprintf(f, "\t</Calibration>\n");
+    }
+
     fprintf(f, "</EvaluationConfiguration>\n");
 
     // remember to close the file when we're done
@@ -197,7 +212,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(const novac::CString 
     return 0;
 }
 
-void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow &window, novac::CString& slitfunctionFile, novac::CString& wavelengthCalibFile)
+void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow& window, novac::CString& slitfunctionFile, novac::CString& wavelengthCalibFile)
 {
     if (slitfunctionFile.GetLength() > 0)
     {
@@ -215,7 +230,7 @@ void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow &window, novac::
     }
 }
 
-int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo) {
+int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
     window.Clear();
     novac::CString slitfunctionFile, wavelengthCalibFile;
 
@@ -343,7 +358,39 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow &window, n
     return 1;
 }
 
-int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow &window) {
+int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
+{
+    while (szToken = NextToken()) {
+        // no use to parse empty lines
+        if (strlen(szToken) < 2)
+            continue;
+
+        // ignore comments
+        if (Equals(szToken, "!--", 3)) {
+            continue;
+        }
+
+        // end of dark-correction section
+        if (Equals(szToken, "/Calibration")) {
+            return 0;
+        }
+
+        if (Equals(szToken, "initialCalibrationFile")) {
+            Parse_StringItem("/initialCalibrationFile", calibrationSettings.m_initialCalibrationFile);
+            continue;
+        }
+
+        if (Equals(szToken, "initialInstrumentLineshapeFile")) {
+            Parse_StringItem("/initialInstrumentLineshapeFile", calibrationSettings.m_instrumentLineshapeFile);
+            continue;
+        }
+    }
+
+    return 1;
+}
+
+
+int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
     int nRef = window.nRef;
 
     // the actual reading loop
@@ -444,11 +491,10 @@ int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow &window) {
     return FAIL;
 }
 
-int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo) {
+int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
     dSettings.Clear();
     novac::CString str;
 
-    // parse the file
     while (szToken = NextToken()) {
         // no use to parse empty lines
         if (strlen(szToken) < 2)

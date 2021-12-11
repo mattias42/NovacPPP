@@ -6,9 +6,14 @@
 #undef max
 
 #include <algorithm>
+#include <sstream>
 
 // the PostEvaluationController takes care of the DOAS evaluations
 #include "Evaluation/PostEvaluationController.h"
+
+// The PostCalibration takes care of the instrument calibrations.
+#include "Calibration/PostCalibration.h"
+#include "Calibration/PostCalibrationStatistics.h"
 
 // The FluxCalculator takes care of calculating the fluxes
 #include "Flux/FluxCalculator.h"
@@ -38,6 +43,7 @@
 #include <PPPLib/CFileUtils.h>
 #include <PPPLib/ThreadUtils.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
+#include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 
 // we want to make some statistics on the processing
 #include "PostProcessingStatistics.h"
@@ -65,11 +71,11 @@ void EvaluateScansThread();
 // this takes care of adding the evaluated log-files to the list in an synchronized way
 //  the parameter passed in a reference to an array of strings holding the names of the 
 //  eval-log files generated
-void AddResultToList(const novac::CString &pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties);
+void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties);
 
 void CPostProcessing::DoPostProcessing_Flux()
 {
-    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
+    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> evalLogFiles;
     novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> geometryResults;
     novac::CString messageToUser, windFileName;
 
@@ -78,7 +84,7 @@ void CPostProcessing::DoPostProcessing_Flux()
 
     // Checks that the evaluation is ok and that all settings makes sense.
     ShowMessage("--- Validating settings --- ");
-    if (CheckSettings())
+    if (CheckProcessingSettings())
     {
         ShowMessage("Exiting post processing");
         return;
@@ -194,22 +200,79 @@ void CPostProcessing::DoPostProcessing_Flux()
     while (geometryResults.GetSize() != 0)
     {
         auto p = geometryResults.GetTailPosition();
-        Geometry::CGeometryResult *g = geometryResults.GetAt(p);
+        Geometry::CGeometryResult* g = geometryResults.GetAt(p);
         delete g;
         geometryResults.RemoveTail();
     }
 }
 
+void CPostProcessing::DoPostProcessing_InstrumentCalibration()
+{
+    ShowMessage("--- Prepairing to perform Instrument Calibrations --- ");
+
+    ShowMessage("--- Validating settings --- ");
+    if (CheckInstrumentCalibrationSettings())
+    {
+        ShowMessage("Exiting post processing");
+        return;
+    }
+
+    // 1. Find all .pak files in the directory.
+    ShowMessage("--- Locating Pak Files --- ");
+    std::vector<std::string> pakFileList;
+    if (g_userSettings.m_LocalDirectory.GetLength() > 3)
+    {
+        CString messageToUser;
+        messageToUser.Format("Searching for .pak - files in directory %s", (const char*)g_userSettings.m_LocalDirectory);
+        ShowMessage(messageToUser);
+
+        const bool includeSubDirs = (g_userSettings.m_includeSubDirectories_Local > 0);
+        Filesystem::FileSearchCriterion limits;
+        limits.startTime = g_userSettings.m_fromDate;
+        limits.endTime = g_userSettings.m_toDate;
+        limits.fileExtension = ".pak";
+        Filesystem::SearchDirectoryForFiles(g_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
+    }
+
+    if (g_userSettings.m_FTPDirectory.GetLength() > 9)
+    {
+        CheckForSpectraOnFTPServer(pakFileList);
+    }
+    if (pakFileList.size() == 0)
+    {
+        ShowMessage("No spectrum files found. Exiting");
+        return;
+    }
+
+    ShowMessage("--- Running Calibrations --- ");
+
+    // Unlike other parts of the NovacPPP, this function is intended to be single threaded. The reason for this is that the
+    //  classes which are called upon are strongly threaded themselves and further threading will not help the performance.
+    novac::StandardCrossSectionSetup standardCrossSections{ m_exePath };
+
+
+    novac::CPostCalibration calibrationController{ standardCrossSections };
+    novac::CPostCalibrationStatistics calibrationStatistics;
+
+    int numberOfCalibrations = calibrationController.RunInstrumentCalibration(pakFileList, calibrationStatistics);
+
+    CString messageToUser;
+    messageToUser.Format("%d instrument calibrations performed", numberOfCalibrations);
+    ShowMessage(messageToUser);
+
+
+}
+
 void CPostProcessing::DoPostProcessing_Strat()
 {
-    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> evalLogFiles;
+    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> evalLogFiles;
     novac::CString messageToUser, statFileName;
     Stratosphere::CStratosphereCalculator strat;
 
     // --------------- PREPARING FOR THE PROCESSING -----------
 
     // Checks that the evaluation is ok and that all settings makes sense.
-    if (CheckSettings())
+    if (CheckProcessingSettings())
     {
         ShowMessage("Exiting post processing");
         return;
@@ -294,7 +357,7 @@ novac::GuardedList<Evaluation::CExtendedScanResult> s_evalLogs;
 
 volatile unsigned long s_nFilesToProcess;
 
-void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evalLogFiles)
+void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles)
 {
     s_nFilesToProcess = (long)pakFileList.size();
     novac::CString messageToUser;
@@ -374,7 +437,7 @@ void EvaluateScansThread()
     }
 }
 
-void AddResultToList(const novac::CString &pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty &scanProperties)
+void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties)
 {
     // these are not used...
     novac::CString serial;
@@ -399,16 +462,70 @@ void AddResultToList(const novac::CString &pakFileName, const novac::CString(&ev
     g_processingStats.InsertAcception(serial);
 }
 
-int CPostProcessing::CheckSettings()
+int CPostProcessing::CheckInstrumentCalibrationSettings() const
 {
-    unsigned int j, k; //iterators
+    novac::CString errorMessage;
+    CDateTime now;
+    int returnCode = 0;
+
+    if (!novac::IsExistingFile(g_userSettings.m_highResolutionSolarSpectrumFile))
+    {
+        std::stringstream message;
+        message << "The high resolution solar spectrum file could not be found. File given: '" << g_userSettings.m_highResolutionSolarSpectrumFile << "'" << std::endl;
+        ShowError(message.str());
+        returnCode = 1;
+    }
+
+    if (g_userSettings.m_calibrationIntervalTimeOfDayLow < 0 || g_userSettings.m_calibrationIntervalTimeOfDayLow > 86400 ||
+        g_userSettings.m_calibrationIntervalTimeOfDayHigh < 0 || g_userSettings.m_calibrationIntervalTimeOfDayHigh > 86400)
+    {
+        std::stringstream message;
+        message << "The calibration intervals lie outside of the allowed interval [0, 86400]" << std::endl;
+        ShowError(message.str());
+        returnCode = 1;
+    }
+
+    // Verify that each instrument has an initial instrument line shape file.
+    for (unsigned int instrumentIdx = 0; instrumentIdx < g_setup.m_instrumentNum; ++instrumentIdx)
+    {
+        if (g_setup.m_instrument[instrumentIdx].m_instrumentCalibration.m_initialCalibrationFile.size() == 0)
+        {
+            std::stringstream message;
+            message << "No initial calibration file defined for instrument " << (const char*)g_setup.m_instrument[instrumentIdx].m_serial << std::endl;
+            ShowError(message.str());
+            returnCode = 1;
+        }
+        if (!novac::IsExistingFile(g_setup.m_instrument[instrumentIdx].m_instrumentCalibration.m_initialCalibrationFile))
+        {
+            std::stringstream message;
+            message << "Cannot locate the initial calibration file defined for instrument " << (const char*)g_setup.m_instrument[instrumentIdx].m_serial << std::endl;
+            ShowError(message.str());
+            returnCode = 1;
+        }
+
+        // The initial instrument line shape file is optional, but if it is defined then it must also exist.
+        if (g_setup.m_instrument[instrumentIdx].m_instrumentCalibration.m_instrumentLineshapeFile.size() > 0 &&
+             !novac::IsExistingFile(g_setup.m_instrument[instrumentIdx].m_instrumentCalibration.m_instrumentLineshapeFile))
+        {
+            std::stringstream message;
+            message << "Cannot locate the initial instrument line shape file defined for instrument " << (const char*)g_setup.m_instrument[instrumentIdx].m_serial << std::endl;
+            ShowError(message.str());
+            returnCode = 1;
+        }
+    }
+
+    return returnCode;
+}
+
+int CPostProcessing::CheckProcessingSettings() const
+{
     novac::CString errorMessage;
     CDateTime now;
 
     // Check that no instrument is duplicated in the list of instruments...
-    for (j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
     {
-        for (k = j + 1; k < g_setup.m_instrumentNum; ++k)
+        for (unsigned int k = j + 1; k < g_setup.m_instrumentNum; ++k)
         {
             if (Equals(g_setup.m_instrument[j].m_serial, g_setup.m_instrument[k].m_serial))
             {
@@ -422,7 +539,7 @@ int CPostProcessing::CheckSettings()
 
     // Check that, for each spectrometer, there's only one fit-window defined
     // at each instant
-    for (j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
     {
         if (g_setup.m_instrument[j].m_eval.GetFitWindowNum() == 1)
         {
@@ -450,10 +567,9 @@ int CPostProcessing::CheckSettings()
         }
     }
 
-
     // Check that, for each spectrometer, there's only one location defined
     // at each instant
-    for (j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
     {
         if (g_setup.m_instrument[j].m_location.GetLocationNum() == 1)
         {
@@ -487,7 +603,7 @@ int CPostProcessing::CheckSettings()
 novac::CString CPostProcessing::GetAbsolutePathFromRelative(const novac::CString& path)
 {
     novac::CString absolutePath;
-    absolutePath.Format("%sconfiguration%c%s", (const char*)m_exePath, Poco::Path::separator(), path.c_str());
+    absolutePath.Format("%sconfiguration%c%s", m_exePath.c_str(), Poco::Path::separator(), path.c_str());
     return absolutePath;
 }
 
@@ -500,7 +616,7 @@ int CPostProcessing::PrepareEvaluation()
     bool failure = false;
 
     // Loop through each of the configured instruments
-    for (unsigned int instrumentIndex = 0; instrumentIndex < g_setup.m_instrumentNum; ++instrumentIndex) 
+    for (unsigned int instrumentIndex = 0; instrumentIndex < g_setup.m_instrumentNum; ++instrumentIndex)
     {
         // For each instrument, loop through the fit-windows that are defined
         unsigned long fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindowNum();
@@ -797,7 +913,7 @@ int CPostProcessing::PreparePlumeHeights()
     return 0;
 }
 
-void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> &evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults)
+void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles, novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults)
 {
     novac::CString serial1, serial2, messageToUser;
     CDateTime startTime1, startTime2;
@@ -818,8 +934,8 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
     auto pos1 = evalLogFiles.GetHeadPosition();
     while (pos1 != nullptr)
     {
-        const novac::CString &evalLog1 = evalLogFiles.GetAt(pos1).m_evalLogFile[g_userSettings.m_mainFitWindow];
-        const CPlumeInScanProperty &plume1 = evalLogFiles.GetNext(pos1).m_scanProperties;
+        const novac::CString& evalLog1 = evalLogFiles.GetAt(pos1).m_evalLogFile[g_userSettings.m_mainFitWindow];
+        const CPlumeInScanProperty& plume1 = evalLogFiles.GetNext(pos1).m_scanProperties;
 
         ++nFilesChecked1; // for debugging...
 
@@ -854,8 +970,8 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
         bool successfullyCombined = false; // this is true if evalLog1 was combined with (at least one) other eval-log to make a geomery calculation.
         while (pos2 != nullptr)
         {
-            const novac::CString &evalLog2 = evalLogFiles.GetAt(pos2).m_evalLogFile[g_userSettings.m_mainFitWindow];
-            const CPlumeInScanProperty &plume2 = evalLogFiles.GetNext(pos2).m_scanProperties;
+            const novac::CString& evalLog2 = evalLogFiles.GetAt(pos2).m_evalLogFile[g_userSettings.m_mainFitWindow];
+            const CPlumeInScanProperty& plume2 = evalLogFiles.GetNext(pos2).m_scanProperties;
 
             ++nFilesChecked2; // for debugging...
 
@@ -908,7 +1024,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             ++nCalculationsMade;
 
             // If the files have passed these tests then make a geometry-calculation
-            Geometry::CGeometryResult *result = new Geometry::CGeometryResult();
+            Geometry::CGeometryResult* result = new Geometry::CGeometryResult();
             if (Geometry::CGeometryCalculator::CalculateGeometry(plume1, startTime1, plume2, startTime2, location, *result))
             {
                 // Check the quality of the measurement before we insert it...
@@ -917,7 +1033,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
                     ++nTooLargeAbsoluteError;
                     delete result; // too bad, continue.
                 }
-                else if ((result->m_plumeAltitudeError > 0.5*result->m_plumeAltitude) || (result->m_windDirectionError > g_userSettings.m_calcGeometry_MaxWindDirectionError))
+                else if ((result->m_plumeAltitudeError > 0.5 * result->m_plumeAltitude) || (result->m_windDirectionError > g_userSettings.m_calcGeometry_MaxWindDirectionError))
                 {
                     ++nTooLargeRelativeError;
                     delete result; // too bad, continue.
@@ -960,7 +1076,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             if (g_setup.GetInstrumentLocation(serial1, startTime1, location[0]))
                 continue;
 
-            Geometry::CGeometryResult *result = new Geometry::CGeometryResult();
+            Geometry::CGeometryResult* result = new Geometry::CGeometryResult();
 
             // Get the altitude of the plume at this moment. First look into the
             // general database. Then have a look in the list of geometry-results
@@ -969,7 +1085,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             auto gp = geometryResults.GetTailPosition();
             while (gp != nullptr)
             {
-                const Geometry::CGeometryResult *oldResult = geometryResults.GetPrev(gp);
+                const Geometry::CGeometryResult* oldResult = geometryResults.GetPrev(gp);
                 if (fabs(CDateTime::Difference(oldResult->m_averageStartTime, startTime1)) < g_userSettings.m_calcGeometryValidTime)
                 {
                     if ((oldResult->m_plumeAltitudeError < plumeHeight.m_plumeAltitudeError) && (oldResult->m_plumeAltitude > NOT_A_NUMBER))
@@ -1015,7 +1131,7 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
     ShowMessage(messageToUser);
 }
 
-void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles)
+void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles)
 {
     CDateTime scanStartTime;
     novac::CString serial, messageToUser;
@@ -1025,7 +1141,7 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
     Flux::CFluxStatistics stat;
 
     // we keep the calculated fluxes in a list
-    novac::CList <Flux::CFluxResult, Flux::CFluxResult &> calculatedFluxes;
+    novac::CList <Flux::CFluxResult, Flux::CFluxResult&> calculatedFluxes;
 
     // Initiate the flux-calculator
     Flux::CFluxCalculator fluxCalc;
@@ -1037,8 +1153,8 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
     while (pos != nullptr)
     {
         // Get the name of this eval-log
-        const novac::CString &evalLog = evalLogFiles.GetAt(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
-        const CPlumeInScanProperty &plume = evalLogFiles.GetNext(pos).m_scanProperties;
+        const novac::CString& evalLog = evalLogFiles.GetAt(pos).m_evalLogFile[g_userSettings.m_mainFitWindow];
+        const CPlumeInScanProperty& plume = evalLogFiles.GetNext(pos).m_scanProperties;
 
         // if the completeness is too low then ignore this scan.
         if (plume.completeness < (g_userSettings.m_completenessLimitFlux + 0.01))
@@ -1085,7 +1201,7 @@ void CPostProcessing::CalculateFluxes(novac::CList <Evaluation::CExtendedScanRes
     stat.WriteFluxStat(fluxStatFileName);
 }
 
-void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes)
+void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes)
 {
     novac::CString fluxLogFile, styleFile, wsSrc, wdSrc, phSrc, typeStr;
     CDateTime now;
@@ -1100,7 +1216,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
     Common::ArchiveFile(fluxLogFile);
 
     // Try to open the file
-    FILE *f = fopen(fluxLogFile, "w");
+    FILE* f = fopen(fluxLogFile, "w");
     if (f == nullptr)
     {
         ShowMessage("Could not open flux log file for writing. Writing of results failed. ");
@@ -1118,7 +1234,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
     while (pos != nullptr)
     {
         // Get the next flux result in the list
-        const Flux::CFluxResult &fluxResult = calculatedFluxes.GetNext(pos);
+        const Flux::CFluxResult& fluxResult = calculatedFluxes.GetNext(pos);
 
         // extract the sources of information about wind-speed, wind-direction and plume-height
         fluxResult.m_windField.GetWindSpeedSource(wsSrc);
@@ -1138,7 +1254,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
         fprintf(f, "\t\t<serial>%s</serial>\n", (const char*)fluxResult.m_instrument);
 
         // extract the instrument type
-        if (fluxResult.m_instrumentType == INSTR_HEIDELBERG)
+        if (fluxResult.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
         {
             typeStr.Format("heidelberg");
         }
@@ -1237,7 +1353,7 @@ void CPostProcessing::WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux:
     fclose(f);
 }
 
-void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes)
+void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes)
 {
     novac::CString fluxLogFile, wsSrc, wdSrc, phSrc, typeStr;
     CDateTime now;
@@ -1254,7 +1370,7 @@ void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux:
         Common::ArchiveFile(fluxLogFile);
     }
 
-    FILE *f = fopen(fluxLogFile, "w");
+    FILE* f = fopen(fluxLogFile, "w");
     if (f == nullptr)
     {
         ShowMessage("Could not open flux log file for writing. Writing of results failed. ");
@@ -1272,10 +1388,10 @@ void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux:
     while (pos != nullptr)
     {
         // Get the next flux result in the list
-        const Flux::CFluxResult &fluxResult = calculatedFluxes.GetNext(pos);
+        const Flux::CFluxResult& fluxResult = calculatedFluxes.GetNext(pos);
 
         // extract the instrument type
-        if (fluxResult.m_instrumentType == INSTR_HEIDELBERG)
+        if (fluxResult.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
         {
             typeStr.Format("heidelberg");
         }
@@ -1353,12 +1469,12 @@ void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux:
     fclose(f);
 }
 
-void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults)
+void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults)
 {
     if (geometryResults.GetCount() == 0)
         return; // nothing to write...
 
-    FILE *f = nullptr;
+    FILE* f = nullptr;
     novac::CString geomLogFile;
     geomLogFile.Format("%s%cGeometryLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
@@ -1385,7 +1501,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
     auto pos = geometryResults.GetHeadPosition();
     while (pos != nullptr)
     {
-        Geometry::CGeometryResult *result = geometryResults.GetNext(pos);
+        Geometry::CGeometryResult* result = geometryResults.GetNext(pos);
         // write the file
         if (result->m_calculationType == Meteorology::MET_GEOMETRY_CALCULATION)
         {
@@ -1415,7 +1531,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
     fclose(f);
 }
 
-void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults)
+void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults)
 {
     Meteorology::CWindField windField;
     CDateTime validFrom, validTo;
@@ -1424,7 +1540,7 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geome
     auto pos = geometryResults.GetHeadPosition();
     while (pos != nullptr)
     {
-        Geometry::CGeometryResult *result = geometryResults.GetNext(pos);
+        Geometry::CGeometryResult* result = geometryResults.GetNext(pos);
 
         if (result->m_plumeAltitude > 0.0)
         {
@@ -1449,11 +1565,11 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geome
     }
 }
 
-void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs)
+void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs)
 {
-    novac::CList <novac::CString, novac::CString &> masterList; // list of wind-measurements from the master channel
-    novac::CList <novac::CString, novac::CString &> slaveList;  // list of wind-measurements from the slave channel
-    novac::CList <novac::CString, novac::CString &> heidelbergList;  // list of wind-measurements from the Heidelbergensis
+    novac::CList <novac::CString, novac::CString&> masterList; // list of wind-measurements from the master channel
+    novac::CList <novac::CString, novac::CString&> slaveList;  // list of wind-measurements from the slave channel
+    novac::CList <novac::CString, novac::CString&> heidelbergList;  // list of wind-measurements from the Heidelbergensis
     CDateTime validFrom, validTo;
 
     novac::CString serial, serial2, fileName, fileName2, nonsenseString;
@@ -1471,7 +1587,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     auto logPosition = evalLogs.GetHeadPosition();
     while (logPosition != nullptr)
     {
-        const novac::CString &fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[g_userSettings.m_mainFitWindow];
+        const novac::CString& fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[g_userSettings.m_mainFitWindow];
 
         // to know the start-time of the measurement, we need to 
         // extract just the file-name, i.e. remove the path
@@ -1487,7 +1603,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
             if (g_setup.GetInstrumentLocation(serial, startTime, location))
                 continue;
 
-            if (location.m_instrumentType == INSTR_HEIDELBERG)
+            if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
             {
                 // this is a heidelberg instrument
                 heidelbergList.AddTail(novac::CString(fileNameAndPath));
@@ -1526,7 +1642,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     auto instrPos = heidelbergList.GetHeadPosition();
     while (instrPos != nullptr)
     {
-        const novac::CString &fileNameAndPath = heidelbergList.GetNext(instrPos);
+        const novac::CString& fileNameAndPath = heidelbergList.GetNext(instrPos);
 
         // to know the start-time of the measurement, we need to 
         // extract just the file-name, i.e. remove the path
@@ -1579,7 +1695,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     auto masterPos = masterList.GetHeadPosition();
     while (masterPos != nullptr)
     {
-        const novac::CString &fileNameAndPath = masterList.GetNext(masterPos);
+        const novac::CString& fileNameAndPath = masterList.GetNext(masterPos);
 
         // extract just the file-name, i.e. remove the path
         fileName = novac::CString(fileNameAndPath);
@@ -1591,7 +1707,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
         auto pos2 = slaveList.GetHeadPosition();
         while (pos2 != nullptr)
         {
-            const novac::CString &fileNameAndPath2 = slaveList.GetNext(pos2);
+            const novac::CString& fileNameAndPath2 = slaveList.GetNext(pos2);
 
             // extract just the file-name, i.e. remove the path
             fileName2 = novac::CString(fileNameAndPath2);
@@ -1645,10 +1761,10 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     }
 }
 
-void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs)
+void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs)
 {
-    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> left;
-    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> right;
+    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> left;
+    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> right;
 
     // If this list consists of only one element, then we're done
     if (evalLogs.GetCount() <= 1)
@@ -1659,7 +1775,7 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
     int index = 0;
     while (pos1 != nullptr)
     {
-        Evaluation::CExtendedScanResult &log = evalLogs.GetNext(pos1);
+        Evaluation::CExtendedScanResult& log = evalLogs.GetNext(pos1);
         if (index % 2 == 0)
             left.AddTail(log);
         else
@@ -1676,8 +1792,8 @@ void CPostProcessing::SortEvaluationLogs(novac::CList <Evaluation::CExtendedScan
     auto pos2 = right.GetHeadPosition();
     while (pos3 != nullptr && pos2 != nullptr)
     {
-        Evaluation::CExtendedScanResult &log1 = left.GetAt(pos3);
-        Evaluation::CExtendedScanResult &log2 = right.GetAt(pos2);
+        Evaluation::CExtendedScanResult& log1 = left.GetAt(pos3);
+        Evaluation::CExtendedScanResult& log2 = right.GetAt(pos2);
 
         if (log2.m_startTime < log1.m_startTime)
         {
@@ -1797,7 +1913,7 @@ bool CPostProcessing::ConvolveReference(novac::CReferenceFile& ref, const novac:
     return true;
 }
 
-void CPostProcessing::LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles)
+void CPostProcessing::LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evaluationLogFiles)
 {
     std::vector<std::string> evalLogFiles;
 
@@ -1828,7 +1944,7 @@ void CPostProcessing::LocateEvaluationLogFiles(const novac::CString& directory, 
 
         Evaluation::CExtendedScanResult result;
         result.m_evalLogFile[0] = f;
-        result.m_startTime      = startTime;
+        result.m_startTime = startTime;
 
         FileHandler::CEvaluationLogFileHandler logReader;
         logReader.m_evaluationLog = novac::CString(f);

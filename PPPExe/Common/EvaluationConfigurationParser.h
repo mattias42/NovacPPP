@@ -3,21 +3,28 @@
 #include "XMLFileReader.h"
 #include "../Configuration/EvaluationConfiguration.h"
 #include "../Configuration/DarkCorrectionConfiguration.h"
+#include "../Configuration/InstrumentCalibrationConfiguration.h"
 
 namespace FileHandler {
     class CEvaluationConfigurationParser : public CXMLFileReader
     {
     public:
-        CEvaluationConfigurationParser();
-
         /** Reads in an evaluation-configuration file.
             In the format specified for the NovacPostProcessingProgram (NPPP)
             @return 0 on sucess */
-        int ReadConfigurationFile(const novac::CString &fileName, Configuration::CEvaluationConfiguration *settings, Configuration::CDarkCorrectionConfiguration *darkSettings);
+        int ReadConfigurationFile(
+            const novac::CString &fileName,
+            Configuration::CEvaluationConfiguration& settings,
+            Configuration::CDarkCorrectionConfiguration& darkSettings,
+            Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
 
         /** Writes an evaluation configuration file in the NPPP-format
             @return 0 on success */
-        int WriteConfigurationFile(const novac::CString &fileName, const Configuration::CEvaluationConfiguration *settings, const Configuration::CDarkCorrectionConfiguration *darkSettings);
+        int WriteConfigurationFile(
+            const novac::CString& fileName,
+            const Configuration::CEvaluationConfiguration& settings,
+            const Configuration::CDarkCorrectionConfiguration& darkSettings,
+            const Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
 
     private:
 
@@ -29,6 +36,8 @@ namespace FileHandler {
 
         /** Reads a 'dark-correction' section */
         int Parse_DarkCorrection(Configuration::CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo);
+
+        int Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
 
     };
 }

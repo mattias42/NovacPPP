@@ -16,7 +16,7 @@ CProcessingFileReader::CProcessingFileReader()
 {
 }
 
-RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &filename, Configuration::CUserConfiguration &settings) {
+RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, Configuration::CUserConfiguration& settings) {
 
     // 1. Open the file
     if (!Open(filename)) {
@@ -72,7 +72,12 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
 
         //* Look for the xml tag 'instrument' and use Parse_Instrument and Parse_Location to read serial number and location to object 'settings' */
         if (Equals(szToken, "FitWindows", 10)) {
-            this->Parse_FitWindow(settings);
+            Parse_FitWindow(settings);
+            continue;
+        }
+
+        if (Equals(szToken, "Calibration", strlen("Calibration"))) {
+            Parse_CalibrationSetting(settings);
             continue;
         }
 
@@ -81,13 +86,16 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
             novac::CString modeStr;
             Parse_StringItem(ENDTAG(str_processingMode), modeStr);
             if (Equals(modeStr, "composition")) {
-                settings.m_processingMode = PROCESSING_MODE_COMPOSITION;
+                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_COMPOSITION;
             }
             else if (Equals(modeStr, "stratosphere")) {
-                settings.m_processingMode = PROCESSING_MODE_STRATOSPHERE;
+                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE;
+            }
+            else if (Equals(modeStr, "calibration")) {
+                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION;
             }
             else {
-                settings.m_processingMode = PROCESSING_MODE_FLUX;
+                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_FLUX;
             }
             continue;
         }
@@ -175,10 +183,10 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
             continue;
         }
 
-		if (Equals(szToken, "SkySpectrum", 11)) {
-			this->Parse_SkySpectrum(settings);
-			continue;
-		}
+        if (Equals(szToken, "SkySpectrum", 11)) {
+            this->Parse_SkySpectrum(settings);
+            continue;
+        }
 
         // If we've found the settings for the dual-beam calculations
         if (Equals(szToken, "DualBeam", 12)) {
@@ -198,8 +206,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString &file
     return SUCCESS;
 }
 
-// Parse for serial tag and store in the InstrumentConfiguration object
-void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration &settings) {
+void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration& settings) {
     novac::CString fitWindowName, mainFitWindowName;
     int nFitWindowsFound = 0;
 
@@ -242,8 +249,62 @@ void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration &s
     }
 }
 
-/** Parses an individual geometry-calculation section */
-void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration &settings) {
+void CProcessingFileReader::Parse_CalibrationSetting(Configuration::CUserConfiguration& settings) {
+    novac::CString fitWindowName, mainFitWindowName;
+    int nFitWindowsFound = 0;
+
+    // Parse the file
+    while (szToken = NextToken()) {
+
+        if (Equals(szToken, "/Calibration", strlen("/Calibration"))) {
+            return;
+        }
+
+        if (Equals(szToken, m_str_generateEvaluationSettings, strlen(m_str_generateEvaluationSettings))) {
+            int tmpInt = 0;
+            Parse_IntItem(ENDTAG(m_str_generateEvaluationSettings), tmpInt);
+            settings.m_generateEvaluationSetting = (tmpInt != 0);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationIntervalHours, strlen(m_str_calibrationIntervalHours))) {
+            Parse_FloatItem(ENDTAG(m_str_calibrationIntervalHours), settings.m_calibrationIntervalHours);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationIntervalTimeOfDayLow, strlen(m_str_calibrationIntervalTimeOfDayLow))) {
+            Parse_IntItem(ENDTAG(m_str_calibrationIntervalTimeOfDayLow), settings.m_calibrationIntervalTimeOfDayLow);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationIntervalTimeOfDayHigh, strlen(m_str_calibrationIntervalTimeOfDayHigh))) {
+            Parse_IntItem(ENDTAG(m_str_calibrationIntervalTimeOfDayHigh), settings.m_calibrationIntervalTimeOfDayHigh);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_highResolutionSolarSpectrumFile, strlen(m_str_highResolutionSolarSpectrumFile))) {
+            Parse_StringItem(ENDTAG(m_str_highResolutionSolarSpectrumFile), settings.m_highResolutionSolarSpectrumFile);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationInstrumentLineShapeFitOption, strlen(m_str_calibrationInstrumentLineShapeFitOption))) {
+            Parse_IntItem(ENDTAG(m_str_calibrationInstrumentLineShapeFitOption), settings.m_calibrationInstrumentLineShapeFitOption);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationInstrumentLineShapeFitRegionLow, strlen(m_str_calibrationInstrumentLineShapeFitRegionLow))) {
+            Parse_FloatItem(ENDTAG(m_str_calibrationInstrumentLineShapeFitRegionLow), settings.m_calibrationInstrumentLineShapeFitRegion.low);
+            continue;
+        }
+
+        if (Equals(szToken, m_str_calibrationInstrumentLineShapeFitRegionHigh, strlen(m_str_calibrationInstrumentLineShapeFitRegionHigh))) {
+            Parse_FloatItem(ENDTAG(m_str_calibrationInstrumentLineShapeFitRegionHigh), settings.m_calibrationInstrumentLineShapeFitRegion.high);
+            continue;
+        }
+    }
+}
+
+void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration& settings) {
     novac::CString option = novac::CString("option");
     novac::CString value = novac::CString("value");
     novac::CString parsedValueStr;
@@ -295,7 +356,7 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration 
 }
 
 /** Parses an individual geometry-calculation section */
-void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration &settings) {
+void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration& settings) {
 
     // Parse the file
     while (szToken = NextToken()) {
@@ -352,7 +413,7 @@ void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration
 }
 
 /** Parses an individual dual-beam section */
-void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration &settings) {
+void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration& settings) {
 
     // Parse the file
     while (szToken = NextToken()) {
@@ -387,7 +448,7 @@ void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration &se
 }
 
 /** Parses an individual quality-judgement section */
-void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfiguration &settings) {
+void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfiguration& settings) {
 
     // Parse the file
     while (szToken = NextToken()) {
@@ -421,10 +482,10 @@ void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfigurat
     }
 }
 
-RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fileName, const Configuration::CUserConfiguration &settings) {
+RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString& fileName, const Configuration::CUserConfiguration& settings) {
 
     // try to open the file
-    FILE *f = fopen(fileName, "w");
+    FILE* f = fopen(fileName, "w");
     if (f == NULL) {
         return FAIL;
     }
@@ -442,9 +503,10 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
 
     // the mode
     switch (settings.m_processingMode) {
-    case PROCESSING_MODE_FLUX:			PrintParameter(f, 1, str_processingMode, "Flux"); break;
-    case PROCESSING_MODE_COMPOSITION:	PrintParameter(f, 1, str_processingMode, "Composition"); break;
-    case PROCESSING_MODE_STRATOSPHERE:	PrintParameter(f, 1, str_processingMode, "Stratosphere"); break;
+    case PROCESSING_MODE::PROCESSING_MODE_FLUX:			PrintParameter(f, 1, str_processingMode, "Flux"); break;
+    case PROCESSING_MODE::PROCESSING_MODE_COMPOSITION:	PrintParameter(f, 1, str_processingMode, "Composition"); break;
+    case PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE:	PrintParameter(f, 1, str_processingMode, "Stratosphere"); break;
+    case PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION:	PrintParameter(f, 1, str_processingMode, "Calibration"); break;
     default:							PrintParameter(f, 1, str_processingMode, "Unknown"); break;
     }
 
@@ -542,7 +604,7 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString &fil
     return SUCCESS;
 }
 
-inline void PrintTabs(FILE *f, int nTabs) {
+inline void PrintTabs(FILE* f, int nTabs) {
     // print the starting tabs
     if (nTabs == 1) {
         fprintf(f, "\t");
@@ -557,32 +619,32 @@ inline void PrintTabs(FILE *f, int nTabs) {
     }
 }
 
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const novac::CString &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const novac::CString& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%s</%s>\n", (const char*)tag, (const char*)value, (const char*)tag);
     return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const int &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const int& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%d</%s>\n", (const char*)tag, value, (const char*)tag);
     return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned int &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const unsigned int& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%u</%s>\n", (const char*)tag, value, (const char*)tag);
     return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const unsigned long &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const unsigned long& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%u</%s>\n", (const char*)tag, value, (const char*)tag);
     return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const double &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const double& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%.2lf</%s>\n", (const char*)tag, value, (const char*)tag);
     return;
 }
-void CProcessingFileReader::PrintParameter(FILE *f, int nTabs, const novac::CString &tag, const CDateTime &value) {
+void CProcessingFileReader::PrintParameter(FILE* f, int nTabs, const novac::CString& tag, const CDateTime& value) {
     PrintTabs(f, nTabs);
     fprintf(f, "<%s>%04d.%02d.%02d</%s>\n", (const char*)tag, value.year, value.month, value.day, (const char*)tag);
     return;

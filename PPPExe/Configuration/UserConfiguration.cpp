@@ -21,7 +21,7 @@ namespace Configuration
         m_tempDirectory.Format("");
         m_outputDirectory.Format("");
 
-        m_processingMode = PROCESSING_MODE_FLUX;
+        m_processingMode = PROCESSING_MODE::PROCESSING_MODE_FLUX;
         m_doEvaluations = true;
 
         // the molecule

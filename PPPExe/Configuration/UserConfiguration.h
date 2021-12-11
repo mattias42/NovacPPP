@@ -2,6 +2,7 @@
 
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Configuration/SkySettings.h>
+#include <SpectralEvaluation/Spectra/WavelengthRange.h>
 
 #include "../Common/Common.h"
 #include "../Molecule.h"
@@ -28,7 +29,7 @@ namespace Configuration {
         void Clear();
 
         /** Compares to set of settings */
-        bool operator==(const CUserConfiguration &settings2);
+        bool operator==(const CUserConfiguration& settings2);
 
         // ------------------------------------------------------------------------
         // ------------------ GENERAL SETTINGS FOR THE SOFTWARE -------------------
@@ -43,18 +44,18 @@ namespace Configuration {
                 This can only be overriden in command line arguments, not the config file. */
 #define str_workingDirectory "WorkDir"
 
-        // ------------------------------------------------------------------------
-        // ------------- IS THIS THE CONTINUATION OF A BROKEN RUN ? ---------------
-        // ------------------------------------------------------------------------
+                // ------------------------------------------------------------------------
+                // ------------- IS THIS THE CONTINUATION OF A BROKEN RUN ? ---------------
+                // ------------------------------------------------------------------------
 
-        /** this is 'true' if this run is a continuation of an old processing
-            run that was interrupted for some reason.
-            This parameter is never written/read to/from file, it's queried
-                to the user at startup if (and only if) we detect that an output
-                directory already exists with the same settings that we want
-                to use.
+                /** this is 'true' if this run is a continuation of an old processing
+                    run that was interrupted for some reason.
+                    This parameter is never written/read to/from file, it's queried
+                        to the user at startup if (and only if) we detect that an output
+                        directory already exists with the same settings that we want
+                        to use.
 
-            If this is true, then the scan-files will not be evaluated again */
+                    If this is true, then the scan-files will not be evaluated again */
         bool m_fIsContinuation;
 
 
@@ -79,7 +80,7 @@ namespace Configuration {
 #define str_processingMode "mode"
 
 
-        /** Set to false to disable spectrum evaluations and thus only re-calculating 
+        /** Set to false to disable spectrum evaluations and thus only re-calculating
             the results from already produced evaluation-logs. */
         bool m_doEvaluations = true;
 #define str_doEvaluations "doEvaluations"
@@ -97,7 +98,7 @@ namespace Configuration {
         /** The volcano that we're processing at the moment.
             This is an index into the global array 'g_volcanoes'.
          */
-        int     m_volcano;
+        int m_volcano;
 #define    str_volcano "Volcano"
 
         // ------------------------------------------------------------------------
@@ -238,7 +239,7 @@ namespace Configuration {
             In processing for fluxes, this is the window that will be used
                 to calculate the flux.
         */
-        int    m_mainFitWindow;
+        int m_mainFitWindow;
 #define   str_mainFitWindow "main"
 
         /** The settings for the sky spectrum to use */
@@ -247,12 +248,53 @@ namespace Configuration {
 #define   str_skyIndex ""
 #define   str_skySpectrumFromUser ""
 
-// ------------------------------------------------------------------------
-// ---------------- SETTINGS FOR THE QUALITY CONTROL  ---------------------
-// ------------------------------------------------------------------------
+        // ------------------------------------------------------------------------
+        // ------------ SETTINGS FOR THE INSTRUMENT CALIBRATIONS  -----------------
+        // ------------------------------------------------------------------------
 
-/** Only flux measurements with a calculated completeness higher than this
-        given value will be used to calculate a flux. */
+        /** If set to true, then the instrument calibration will generate new exml-files specifying the calibrations. */
+        bool m_generateEvaluationSetting = true;
+#define   m_str_generateEvaluationSettings "generateEvaluationSettings"
+
+        /** The number of hours which needs to pass between each calibration */
+        double m_calibrationIntervalHours = 0.0;
+#define   m_str_calibrationIntervalHours "intervalHours"
+
+        /** The time of day when we can start performing calibrations. In seconds since midnight UTC.
+            This time is compared against the time of the scan and hence needs to be in UTC.
+            Notice that it is totally valid to have intervalTimeOfDayLow > intervalTimeOfDayHigh for locations far from Europe.
+            Default value is at 9 o'clock (9 * 60 * 60) */
+        int m_calibrationIntervalTimeOfDayLow = 32400;
+#define m_str_calibrationIntervalTimeOfDayLow "intervalTimeOfDayLow"
+
+        /** The time of day when we can start performing calibrations. In seconds since midnight UTC.
+            This time is compared against the time of the scan and hence needs to be in UTC.
+            Default value is at 15 o'clock (15 * 60 * 60) */
+        int m_calibrationIntervalTimeOfDayHigh = 54000;
+#define m_str_calibrationIntervalTimeOfDayHigh "intervalTimeOfDayHigh"
+
+        /** The full path to the high resolved solar spectrum */
+        std::string m_highResolutionSolarSpectrumFile;
+#define m_str_highResolutionSolarSpectrumFile "solarSpectrumFile"
+
+        /** The option for if an instrument line shape should be fitted as well during
+        *   the retrieval of the pixel-to-wavelength calibration.
+        *   0 corresponds to no fitting of an instrument line shape,
+        *   1 corresponds to fitting a super-gaussian instrument line shape.  */
+        int m_calibrationInstrumentLineShapeFitOption = 0;
+#define m_str_calibrationInstrumentLineShapeFitOption "instrumentLineShapeFitOption"
+
+        /** The wavelength region in which the instrument line shape should be fitted (in nm).  */
+        novac::WavelengthRange m_calibrationInstrumentLineShapeFitRegion = novac::WavelengthRange(330.0, 350.0);
+#define m_str_calibrationInstrumentLineShapeFitRegionLow "instrumentLineShapeFitRegionLow"
+#define m_str_calibrationInstrumentLineShapeFitRegionHigh "instrumentLineShapeFitRegionHigh"
+
+        // ------------------------------------------------------------------------
+        // ---------------- SETTINGS FOR THE QUALITY CONTROL  ---------------------
+        // ------------------------------------------------------------------------
+
+        /** Only flux measurements with a calculated completeness higher than this
+                given value will be used to calculate a flux. */
         double   m_completenessLimitFlux;
 #define   str_completenessLimitFlux "completenessLimit"
 

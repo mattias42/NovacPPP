@@ -31,7 +31,7 @@ void CFluxResult::Clear() {
     m_stopTime = novac::CDateTime(0, 0, 0, 0, 0, 0);
     m_instrument.Format("");
 
-    m_instrumentType = INSTR_GOTHENBURG;
+    m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
     m_scanOffset = 0.0;
     m_completeness = 0.0;
     m_plumeCentre[0] = NOT_A_NUMBER;

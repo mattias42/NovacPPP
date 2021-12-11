@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- This is the configuration file for the processing of scans in the NOVAC Post Processing Program -->
+<!-- This particular file is an example of how to setup the program to do instrument calibrations -->
 <NovacPostProcessing>
-	<MaxThreadNum>1</MaxThreadNum>
-	<outputdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\OutputFeb2017UTC\</outputdirectory>
-	<tempdirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp\</tempdirectory>
-	<mode>Flux</mode>
-    <doEvaluations>false</doEvaluations>
-	<molecule>SO2</molecule>
+	<OutputDirectory>D:\NovacPostProcessingProgram\TestRun_2021_12\OutputFeb2017UTC\</OutputDirectory>
+	<TempDirectory>D:\NovacPostProcessingProgram\TestRun_2021_12\Temp\</TempDirectory>
+	<Mode>Calibration</Mode>
+	<Molecule>SO2</Molecule>
 	<Volcano>0303-02=</Volcano>
 	<FromDate>2017.02.08</FromDate>
 	<ToDate>2017.02.28</ToDate>
@@ -14,34 +13,19 @@
 	<IncludeSubDirs_Local>1</IncludeSubDirs_Local>
 	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
 	<UploadResults>0</UploadResults>
-	<WindFieldFile>D:\NovacPostProcessingProgram\TestRun_2019_05_03\WindMeteoFrance\wind_pdf_2017_meteoFrance_UTC_novac.wxml</WindFieldFile>
-	<WindFileOption>0</WindFileOption>
-	<PlumeAltitudeFile>S2000</PlumeAltitudeFile>
-	<GeometryCalc>
-		<completenessLimit>0.50</completenessLimit>
-		<validTime>3600</validTime>
-		<maxStartTimeDifference>900</maxStartTimeDifference>
-		<minInstrumentDistance>100</minInstrumentDistance>
-		<maxInstrumentDistance>20000</maxInstrumentDistance>
-		<maxPlumeAltitudeError>1000.00</maxPlumeAltitudeError>
-		<maxWindDirectionError>20.00</maxWindDirectionError>
-	</GeometryCalc>
-	<DualBeam>
-		<useMaximumTestLength>1</useMaximumTestLength>
-		<maxWindSpeedError>10.00</maxWindSpeedError>
-		<validTime>7200</validTime>
-	</DualBeam>
+    <Calibration>
+        <GenerateEvaluationSettings>1</GenerateEvaluationSettings>
+        <intervalHours>1</intervalHours>
+        <intervalTimeOfDayLow>61200</intervalTimeOfDayLow>
+        <intervalTimeOfDayHigh>54000</intervalTimeOfDayHigh>
+        <solarSpectrumFile>D:\Development\NovacPPP_GitHub\bin\Debug\StandardCrossSections\SOLARFL_296-440nm.xs</solarSpectrumFile>
+        <initialCalibrationType>0</initialCalibrationType>
+        <instrumentLineShapeFitOption>0</instrumentLineShapeFitOption>
+        <instrumentLineShapeFitRegionLow>330.000000</instrumentLineShapeFitRegionLow>
+        <instrumentLineShapeFitRegionHigh>350.000000</instrumentLineShapeFitRegionHigh>
+    </Calibration>
 	<FitWindows>
 		<item>SO2</item>
 		<main>SO2</main>
 	</FitWindows>
-	<SkySpectrum>
-		<option>SCAN</option>
-	</SkySpectrum>
-	<Discarding>
-		<completenessLimit>0.75</completenessLimit>
-		<minimumSaturationInFitRegion>0.05</minimumSaturationInFitRegion>
-		<MaxExpTime_Got>1000</MaxExpTime_Got>
-		<MaxExpTime_Hei>4000</MaxExpTime_Hei>
-	</Discarding>
 </NovacPostProcessing>

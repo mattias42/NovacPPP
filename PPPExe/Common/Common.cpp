@@ -238,11 +238,11 @@ double Common::CalculateFlux(const double *scanAngle, const double *scanAngle2, 
     double windDirection = wind.GetWindDirection();
     double plumeHeight = relativePlumeHeight.m_plumeAltitude;
 
-    if (type == INSTR_HEIDELBERG)
+    if (type == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
     {
         return CalculateFluxHeidelbergScanner(scanAngle, scanAngle2, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass);
     }
-    else if (type == INSTR_GOTHENBURG)
+    else if (type == INSTRUMENT_TYPE::INSTR_GOTHENBURG)
     {
         // In the NovacPPP, the gas factor isn't used. However the flux-calculation formula, shared with the NovacProgram, requires the gas factor.
         //  This compensation factor is used to compensate for how the gas factor is weighted into the calculation...

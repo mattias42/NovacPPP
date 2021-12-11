@@ -30,7 +30,7 @@ public:
     // ----------------------------------------------------------------------
 
     /** This is the directory of the executable. */
-    novac::CString m_exePath;
+    std::string m_exePath;
 
     // ----------------------------------------------------------------------
     // --------------------- PUBLIC METHODS ---------------------------------
@@ -39,6 +39,11 @@ public:
     /** Performs an post processing of the data in order to extract
         good flux data */
     void DoPostProcessing_Flux();
+
+    /** Performs a post processing of the data in order to create good
+        calibrations for the instrument(s) with the purpose of improving the quality
+        of the data for other processing modes */
+    void DoPostProcessing_InstrumentCalibration();
 
     /** Performs an post processing of the data in order to extract
         good stratospheric data */
@@ -63,12 +68,17 @@ protected:
     // ----------------------------------------------------------------------
 
 
-    /** Prepares for the post-processing by first making sure that
-        all settings found in the configuration are ok and that
+    /** Prepares for the post-processing by first making sure that 
+        all settings found in the configuration are ok and that 
         they make sense.
         @return 0 if all settings are ok and we should continue,
             otherwise non-zero*/
-    int CheckSettings();
+    int CheckProcessingSettings() const;
+
+    /** Prepares for post-processing by making sure that all settings
+        relevant to instrument calibration are ok and make sense.
+        @return 0 if all settings are ok otherwise non-zero */
+    int CheckInstrumentCalibrationSettings() const;
 
     /** Prepares for the evaluation of the spectra
         by reading in all the reference files that are
@@ -105,6 +115,13 @@ protected:
         */
     void EvaluateScans(const std::vector<std::string>& pakFileList,
         novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles);
+
+    /** Runs through the supplied list of .pak files and performs an instrument calibration
+        on each one. 
+        @param pakFileList The list of scan files to calibrate.
+        @param instrumentCalibrationFiles Will on successful return be filled with calibrations. 
+        TODO: We need to be able to return updated fit-windows as well */
+    void CalibrateInstrumentFromScans(const std::vector<std::string>& pakFileList, std::vector<std::string>& calibrations);
 
     /** Runs through the supplied list of evaluation - logs and performs
         geometry calculations on the ones which does match. The results

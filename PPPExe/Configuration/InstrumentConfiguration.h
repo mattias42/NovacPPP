@@ -3,6 +3,8 @@
 #include "LocationConfiguration.h"
 #include "EvaluationConfiguration.h"
 #include "DarkCorrectionConfiguration.h"
+#include "InstrumentCalibrationConfiguration.h"
+
 /**
     The class <b>CInstrumentConfiguration</b> containst the configuration
         of one single instrument for the NovacPPP.
@@ -30,11 +32,13 @@ namespace Configuration
         /** The location configuration of this instrument.
             This holds a set of locations, telling us where the
             instrument has been located at different times and when
-            it has been moved
-        */
+            it has been moved */
         CLocationConfiguration m_location;
 
         /** The settings for how to correct for the dark current. */
         CDarkCorrectionConfiguration m_darkCurrentCorrection;
+
+        /** The settings for how to calibrate this device */
+        CInstrumentCalibrationConfiguration m_instrumentCalibration;
     };
 }

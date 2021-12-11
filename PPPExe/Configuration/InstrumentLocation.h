@@ -19,7 +19,7 @@ namespace Configuration
     class CInstrumentLocation
     {
     public:
-		CInstrumentLocation();
+        CInstrumentLocation();
 
         // -----------------------------------------
         // -------------- PUBLIC DATA --------------
@@ -70,6 +70,6 @@ namespace Configuration
         void Clear();
 
         /** Assignment operator */
-        CInstrumentLocation &operator=(const CInstrumentLocation &l2);
+        CInstrumentLocation& operator=(const CInstrumentLocation& l2);
     };
 }

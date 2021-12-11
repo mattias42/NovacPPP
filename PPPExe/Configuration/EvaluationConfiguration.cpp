@@ -17,11 +17,8 @@ void CEvaluationConfiguration::Clear() {
     this->m_validFrom.RemoveAll();
 }
 
-/** Inserts a new fit-window into the configuration for this spectrometer.
-    @param window - the fit-window to insert
-    @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
-    @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time */
-void CEvaluationConfiguration::InsertFitWindow(const novac::CFitWindow &window, const novac::CDateTime *validFrom, const novac::CDateTime *validTo) {
+void CEvaluationConfiguration::InsertFitWindow(const novac::CFitWindow &window, const novac::CDateTime *validFrom, const novac::CDateTime *validTo)
+{
     // make a copy of the fit - window
     novac::CFitWindow *newWindow = new novac::CFitWindow(window);
 

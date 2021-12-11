@@ -61,15 +61,26 @@ void UpdateMessage(const novac::CString &message);
 // ---------------------------------------------------------------
 
 // The list of instrument types available
-enum INSTRUMENT_TYPE { INSTR_GOTHENBURG, INSTR_HEIDELBERG };
+enum class INSTRUMENT_TYPE { INSTR_GOTHENBURG, INSTR_HEIDELBERG };
 
 
-// The options for how to do the post-processing
-enum PROCESSING_MODE {
+/** The options for how to do the post-processing.
+    This also defines what types of operations will be performed */
+enum class PROCESSING_MODE {
+    // Default mode, fliuxes are calculated from each successfully evaluated scan.
     PROCESSING_MODE_FLUX,
+
+    // Calculation of molecular ratios in the plume, e.g. BrO/SO2. Not fully implemented.
     PROCESSING_MODE_COMPOSITION,
+
+
     PROCESSING_MODE_STRATOSPHERE,
-    PROCESSING_MODE_GEOMETRY
+
+    // Calculation of plume heights and plume directions.
+    PROCESSING_MODE_GEOMETRY,
+
+    // Performing instrument calibrations only, useful for prepairing for a later evaluation run.
+    PROCESSING_MODE_INSTRUMENT_CALIBRATION
 };
 
 // The maximum number of references that can be fitted to a single spectrum
@@ -111,27 +122,9 @@ enum PROCESSING_MODE {
 // -------------------------- MESSAGES -----------------------------
 // -----------------------------------------------------------------
 
-// signals to the 'NovacMasterProgramView' - class that a string should be added to the message list
-#define WM_SHOW_MESSAGE           WM_USER + 10
-
-//signals to the 'NovacMasterProgramView' - class that a string should be updated to the message list's top string
-#define WM_UPDATE_MESSAGE			WM_USER + 11
-
 // signals to the 'NovacMasterProgramView' -class that a scan has been sucessfully evaluated
 //  also signals to the reevaluation dialog that a spectrum has been sucessfully evaluated
 #define WM_EVAL_SUCCESS		        WM_USER + 12
-
-// signals to the 'NovacMasterProgramView' -class that a scan has falied to evaluate
-#define WM_EVAL_FAILURE		        WM_USER + 13
-
-// signals that something has been done
-#define WM_DONE                   WM_USER + 14
-
-// Signals that a 'cancel' button has been pressed
-#define WM_CANCEL                 WM_USER + 15
-
-// Signals a zooming event
-#define WM_ZOOM						WM_USER + 33
 
 
 // -------------------------------------------------------

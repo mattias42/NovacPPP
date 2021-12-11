@@ -22,7 +22,7 @@ namespace Configuration {
             @param window - the fit-window to insert
             @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
             @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time */
-        void InsertFitWindow(const novac::CFitWindow &window, const novac::CDateTime *validFrom, const novac::CDateTime *validTo);
+        void InsertFitWindow(const novac::CFitWindow& window, const novac::CDateTime* validFrom, const novac::CDateTime* validTo);
 
         /** Sets the properties of the fit-window number 'index'
             @param index - the index of the configuration to set. If this is < 0
@@ -31,7 +31,7 @@ namespace Configuration {
             @param validFrom - the time from which this fit-window is valid, NULL if valid since the beginning of time
             @param validTo - the time to which this fit-window is valid, NULL if valid until the end of time
             @return 0 if sucessful, otherwise 1 */
-        int SetFitWindow(int index, const novac::CFitWindow &window, novac::CDateTime *validFrom, novac::CDateTime *validTo);
+        int SetFitWindow(int index, const novac::CFitWindow& window, novac::CDateTime* validFrom, novac::CDateTime* validTo);
 
         /** Retrieves a fit-window from the configuration for this spectrometer.
             @param index - the index of the configuration to get. If this is < 0 or
@@ -41,7 +41,7 @@ namespace Configuration {
             @param validFrom - the time from which this fit-window is valid
             @param validTo - the time to which this fit-window is valid
             @return 0 if sucessful, otherwise 1 */
-        int GetFitWindow(int index, novac::CFitWindow &window, novac::CDateTime &validFrom, novac::CDateTime &validTo) const;
+        int GetFitWindow(int index, novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo) const;
 
         /** Gets the number of fit-windows configured for this spectrometer */
         unsigned long GetFitWindowNum() const;
@@ -56,8 +56,8 @@ namespace Configuration {
 
     private:
         /** The array of fit-windows for this spectrometer */
-        novac::CArray <novac::CFitWindow *, novac::CFitWindow *> m_fitWindows;
-        novac::CArray <novac::CDateTime *, novac::CDateTime *> m_validFrom;
-        novac::CArray <novac::CDateTime *, novac::CDateTime *> m_validTo;
+        novac::CArray <novac::CFitWindow*, novac::CFitWindow*> m_fitWindows;
+        novac::CArray <novac::CDateTime*, novac::CDateTime*> m_validFrom;
+        novac::CArray <novac::CDateTime*, novac::CDateTime*> m_validTo;
     };
 }

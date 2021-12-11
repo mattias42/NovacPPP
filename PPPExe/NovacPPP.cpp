@@ -67,14 +67,14 @@ protected:
         ); */
     }
 
-    void handleMyOpt(const std::string &name, const std::string &value)
+    void handleMyOpt(const std::string& name, const std::string& value)
     {
         std::cout << "Setting option " << name << " to " << value << std::endl;
         this->config().setString(name, value);
         std::cout << "The option is now " << this->config().getString(name) << std::endl;
     }
 
-    int main(const std::vector<std::string> &arguments)
+    int main(const std::vector<std::string>& arguments)
     {
         std::cout << "Novac Post Processing Program" << std::endl;
 
@@ -160,7 +160,11 @@ void LoadConfigurations()
 
         if (IsExistingFile(evalConfPath))
         {
-            eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
+            eval_reader.ReadConfigurationFile(
+                evalConfPath,
+                g_setup.m_instrument[k].m_eval,
+                g_setup.m_instrument[k].m_darkCurrentCorrection,
+                g_setup.m_instrument[k].m_instrumentCalibration);
         }
         else
         {
@@ -185,7 +189,7 @@ void StartProcessing(int selectedVolcano)
 
     // 5. Run
 #ifdef _MFC_VER 
-    CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+    CWinThread* postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
     Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
 #else
     std::thread postProcessingThread(CalculateAllFluxes);
@@ -203,7 +207,7 @@ void CalculateAllFluxes()
         Common common;
 
         // Set the directory where we're working in...
-        post.m_exePath.Format(common.m_exePath);
+        post.m_exePath = std::string((const char*)common.m_exePath);
 
         // set the directory to which we want to copy the settings
         novac::CString confCopyDir;
@@ -249,12 +253,16 @@ void CalculateAllFluxes()
         }
 
         // Do the post-processing
-        if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION)
+        if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_COMPOSITION)
         {
             ShowMessage("Warning: Post processing of composition measurements is not yet fully implemented");
             post.DoPostProcessing_Flux(); // this uses the same code as the flux processing
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE)
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION)
+        {
+            post.DoPostProcessing_InstrumentCalibration();
+        }
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE)
         {
             ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
             post.DoPostProcessing_Strat();
@@ -279,7 +287,7 @@ void CalculateAllFluxes()
 }
 
 
-void ParseCommandLineOptions(const std::vector<std::string> &arguments)
+void ParseCommandLineOptions(const std::vector<std::string>& arguments)
 {
     char seps[] = " \t";
     std::vector<char> buffer(16384, 0);
@@ -295,7 +303,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     // Go through the received input parameters and set the approprate option
     novac::CStringTokenizer tokenizer(commandLine.c_str(), seps);
-    const char *token = tokenizer.NextToken();
+    const char* token = tokenizer.NextToken();
 
     while (nullptr != token)
     {

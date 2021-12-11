@@ -319,11 +319,11 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         string.Append("\tmode=plume\n");
 
     // The type of instrument used...
-    if (instrLocation->m_instrumentType == INSTR_GOTHENBURG)
+    if (instrLocation->m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG)
     {
         string.Append("\tinstrumenttype=gothenburg\n");
     }
-    else if (instrLocation->m_instrumentType == INSTR_HEIDELBERG)
+    else if (instrLocation->m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
     {
         string.Append("\tinstrumenttype=heidelberg\n");
     }
@@ -369,7 +369,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
     string.AppendFormat("\tplumecompleteness=%.2lf\n", plumeCompleteness);
     string.AppendFormat("\tplumecentre=%.2lf\n", plumeCentre1);
-    if (instrLocation->m_instrumentType == INSTR_HEIDELBERG)
+    if (instrLocation->m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
         string.AppendFormat("\tplumecentre_phi=%.2lf\n", plumeCentre2);
     string.AppendFormat("\tplumeedge1=%.2lf\n", plumeEdge1);
     string.AppendFormat("\tplumeedge2=%.2lf\n", plumeEdge2);
@@ -385,11 +385,11 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
 
     // 1. write the header
-    if (instrLocation->m_instrumentType == INSTR_GOTHENBURG)
+    if (instrLocation->m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG)
     {
         string.Format("#scanangle\t");
     }
-    else if (instrLocation->m_instrumentType == INSTR_HEIDELBERG)
+    else if (instrLocation->m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
     {
         string.Format("#observationangle\tazimuth\t");
     }
@@ -702,13 +702,11 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     return SUCCESS;
 }
 
-/** Looks in the configuration of the instruments and searches
-    for a configured location and fit-window (for evaluation) which
-    is valid for the spectrometer that collected the given scan and
-    is also valid at the time when the scan was made.
-    @return 0 if successful otherwise non-zero
-*/
-int CPostEvaluationController::GetLocationAndFitWindow(novac::CScanFileHandler *scan, const novac::CString &fitWindowName, Configuration::CInstrumentLocation &instrLocation, novac::CFitWindow &window)
+int CPostEvaluationController::GetLocationAndFitWindow(
+    novac::CScanFileHandler *scan,
+    const novac::CString &fitWindowName,
+    Configuration::CInstrumentLocation &instrLocation,
+    novac::CFitWindow &window)
 {
     CSpectrum skySpec;
     CDateTime day, evalValidFrom, evalValidTo;
@@ -794,8 +792,8 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const novac::CScanFileHan
         return false;
     }
 
-    if ((instrLocation.m_instrumentType == INSTR_GOTHENBURG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_got) ||
-        (instrLocation.m_instrumentType == INSTR_HEIDELBERG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_hei))
+    if ((instrLocation.m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_got) ||
+        (instrLocation.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG && skySpectrum.ExposureTime() > g_userSettings.m_maxExposureTime_hei))
     {
         errorMessage.Format(" - Sky spectrum in scan %s has too long exposure time (%ld ms). Will not evaluate scan", scan->GetFileName().c_str(), skySpectrum.ExposureTime());
         ShowMessage(errorMessage);

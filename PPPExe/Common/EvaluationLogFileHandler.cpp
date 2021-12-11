@@ -45,7 +45,7 @@ CEvaluationLogFileHandler::CEvaluationLogFileHandler(void)
         m_col.squeezeError[i] = 12;
     }
 
-    m_instrumentType = INSTR_GOTHENBURG;
+    m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
 }
 
 void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
@@ -802,10 +802,10 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo& scanInfo, do
         if (nullptr != pt) {
             sscanf(pt + 15, "%s", instrumentType);
             if (Equals(instrumentType, "heidelberg")) {
-                m_instrumentType = INSTR_HEIDELBERG;
+                m_instrumentType = INSTRUMENT_TYPE::INSTR_HEIDELBERG;
             }
             else {
-                m_instrumentType = INSTR_GOTHENBURG;
+                m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
             }
         }
     }
@@ -1030,10 +1030,10 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
             string.Append("\tmode=plume\n");
 
         // The type of instrument used...
-        if (scan.GetInstrumentType() == INSTR_GOTHENBURG) {
+        if (scan.GetInstrumentType() == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
             string.Append("\tinstrumenttype=gothenburg\n");
         }
-        else if (scan.GetInstrumentType() == INSTR_HEIDELBERG) {
+        else if (scan.GetInstrumentType() == INSTRUMENT_TYPE::INSTR_HEIDELBERG) {
             string.Append("\tinstrumenttype=heidelberg\n");
         }
 
@@ -1065,10 +1065,10 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         fprintf(f, "%s", string.c_str());
 
         // ----------------------- write the header --------------------------------
-        if (m_instrumentType == INSTR_GOTHENBURG) {
+        if (m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
             string.Format("#scanangle\t");
         }
-        else if (m_instrumentType == INSTR_HEIDELBERG) {
+        else if (m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG) {
             string.Format("#observationangle\tazimuth\t");
         }
         string.Append("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tdelta\tchisquare\texposuretime\tnumspec\t");
@@ -1117,7 +1117,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     string.Format("%.0lf\t", info->m_scanAngle);
 
     // 2. The azimuth angle
-    if (iType == INSTR_HEIDELBERG)
+    if (iType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
         string.AppendFormat("%.0lf\t", info->m_scanAngle2);
 
     // 3. The start time

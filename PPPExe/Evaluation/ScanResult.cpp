@@ -19,7 +19,7 @@ CScanResult::CScanResult()
     m_spectroscopyError = 15.0; // best-case guess, 15%
     m_scatteringError = 30.0; // best-case guess, 30%
     m_measurementMode = MODE_UNKNOWN;
-    m_instrumentType = INSTR_GOTHENBURG;
+    m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
 }
 
 CScanResult::CScanResult(const CScanResult& s2) :

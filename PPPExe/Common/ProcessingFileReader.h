@@ -35,6 +35,9 @@ namespace FileHandler {
         /** Parses an individual sky-spectrum section */
         void Parse_SkySpectrum(Configuration::CUserConfiguration &settings);
 
+        /** Parses an individual configuration section */
+        void Parse_CalibrationSetting(Configuration::CUserConfiguration& settings);
+
         /** Parses an individual geometry-calculation section */
         void Parse_GeometryCalc(Configuration::CUserConfiguration &settings);
 

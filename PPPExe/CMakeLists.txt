@@ -5,6 +5,7 @@
 cmake_minimum_required (VERSION 3.6)
 
 # Define the different groups of files
+add_subdirectory(Calibration)
 add_subdirectory(Common)
 add_subdirectory(Communication)
 add_subdirectory(Configuration)
@@ -39,6 +40,8 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.h
 
+    ${NPP_CALIBRATION_HEADERS} 
+    ${NPP_CALIBRATION_SOURCES}
     ${NPP_COMMON_HEADERS} 
     ${NPP_COMMON_SOURCES}
     ${NPP_COMMON_SPECTRA_HEADERS}
@@ -84,6 +87,7 @@ ENDIF()
 
 IF(WIN32)
     #Organize the files into folders, for ease of use (Windows and Visual Studio only)
+    source_group("Header Files\\Calibration"            FILES ${NPP_CALIBRATION_HEADERS})
     source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
     source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
     source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
@@ -95,6 +99,7 @@ IF(WIN32)
     source_group("Header Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_HEADERS})
     source_group("Header Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_HEADERS})
 
+    source_group("Source Files\\Calibration"            FILES ${NPP_CALIBRATION_SOURCES})
     source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
     source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
     source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})
