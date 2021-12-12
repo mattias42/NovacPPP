@@ -9,7 +9,8 @@
 #include "../Configuration/UserConfiguration.h"
 #include "PostCalibrationStatistics.h"
 #include <sstream>
-
+#include <algorithm>
+#include <PPPLib/CFileUtils.h>
 
 extern Configuration::CNovacPPPConfiguration g_setup; // <-- The setup of the instruments
 extern Configuration::CUserConfiguration g_userSettings; // <-- The settings of the user for what to process
@@ -122,9 +123,7 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
 
 // ----------- PostCalibration class -----------
 
-bool IsTimeForInstrumentCalibration(
-    const CPostCalibrationStatistics& statistics,
-    const CSpectrumInfo& skySpectrumInScan)
+bool ScanIsMeasuredInConfiguredTimeOfDayForCalibration(const novac::CDateTime& scanStartTime)
 {
     // Check if the scan lies within the configured interval. Slightly complex logic here since the interval may wrap around midnight UTC.
     // Notice that this logic is shared with the real-time calibration in the NovacProgram.
@@ -133,22 +132,22 @@ bool IsTimeForInstrumentCalibration(
     if (calibrationIntervalWrapsMidnight)
     {
         scanTimeLiesWithinCalibrationTimeInterval =
-            skySpectrumInScan.m_startTime.SecondsSinceMidnight() >= g_userSettings.m_calibrationIntervalTimeOfDayLow ||
-            skySpectrumInScan.m_startTime.SecondsSinceMidnight() <= g_userSettings.m_calibrationIntervalTimeOfDayHigh;
+            scanStartTime.SecondsSinceMidnight() >= g_userSettings.m_calibrationIntervalTimeOfDayLow ||
+            scanStartTime.SecondsSinceMidnight() <= g_userSettings.m_calibrationIntervalTimeOfDayHigh;
     }
     else
     {
         scanTimeLiesWithinCalibrationTimeInterval =
-            skySpectrumInScan.m_startTime.SecondsSinceMidnight() >= g_userSettings.m_calibrationIntervalTimeOfDayLow &&
-            skySpectrumInScan.m_startTime.SecondsSinceMidnight() <= g_userSettings.m_calibrationIntervalTimeOfDayHigh;
+            scanStartTime.SecondsSinceMidnight() >= g_userSettings.m_calibrationIntervalTimeOfDayLow &&
+            scanStartTime.SecondsSinceMidnight() <= g_userSettings.m_calibrationIntervalTimeOfDayHigh;
     }
 
     if (!scanTimeLiesWithinCalibrationTimeInterval)
     {
         std::stringstream message;
-        message << "Measurement time (" << skySpectrumInScan.m_startTime.SecondsSinceMidnight() << ") is outside of configured interval [";
+        message << "Measurement time (" << scanStartTime.SecondsSinceMidnight() << ") is outside of configured interval [";
         message << g_userSettings.m_calibrationIntervalTimeOfDayLow << " to " << g_userSettings.m_calibrationIntervalTimeOfDayHigh << "]";
-        // AppendMessageToLog(spectrometer, message.str());
+        ShowMessage(message.str());
         return false;
     }
 
@@ -156,17 +155,123 @@ bool IsTimeForInstrumentCalibration(
     return true;
 }
 
+std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibration::SortScanFilesByInstrument(const std::vector<std::string>& scanFileList)
+{
+    std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> result;
+
+    for (const auto& scanFile : scanFileList)
+    {
+        novac::CDateTime startTime;
+        CString serial;
+        int channel;
+        MEASUREMENT_MODE mode;
+
+        BasicScanInfo info;
+
+        CString fileName = scanFile.c_str();
+        if (!CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode))
+        {
+            CScanFileHandler scan;
+            if (SUCCESS != scan.CheckScanFile(scanFile))
+            {
+                std::stringstream message;
+                message << "Could not read pak-file '" << scanFile << "'" << std::endl;
+                ShowMessage(message.str());
+                continue;
+            }
+
+            CSpectrum skySpec;
+            if (scan.GetSky(skySpec))
+            {
+                std::stringstream message;
+                message << "Could not read a sky spectrum from pak-file '" << scanFile << "'" << std::endl;
+                ShowMessage(message.str());
+                continue;
+            }
+
+            info.fullPath = scanFile;
+            info.serial = skySpec.m_info.m_device;
+            info.startTime = skySpec.m_info.m_startTime;
+        }
+        else
+        {
+            info.fullPath = scanFile;
+            info.serial = serial;
+            info.startTime = startTime;
+        }
+
+        // Insert the result
+        auto pos = result.find(info.serial);
+        if (pos == result.end())
+        {
+            std::vector<CPostCalibration::BasicScanInfo> newCollection;
+            newCollection.push_back(info);
+            result[info.serial] = newCollection;
+        }
+        else
+        {
+            pos->second.push_back(info);
+        }
+    }
+
+    return result;
+}
+
 int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& scanFileList, CPostCalibrationStatistics& statistics)
 {
-    // TODO: Organize the pak files by scanner and then sort by time
-    //  this makes it possible to select the files which are to be calibrated
+    auto sortedScanFileList = SortScanFilesByInstrument(scanFileList);
+    {
+        std::stringstream message;
+        message << "Located pak files from " << sortedScanFileList.size() << " devices" << std::endl;
+        ShowMessage(message.str());
+    }
 
     int numberOfCalibrations = 0;
-    for (const std::string& file : scanFileList)
+
+    for (auto& scanFileInfo : sortedScanFileList)
     {
-        if (RunInstrumentCalibration(file, statistics))
         {
-            ++numberOfCalibrations;
+            std::stringstream message;
+            message << "Performing calibrations for " << scanFileInfo.first << std::endl;
+            ShowMessage(message.str());
+        }
+
+        // Sort the files by increasing start time.
+        std::sort(
+            begin(scanFileInfo.second),
+            end(scanFileInfo.second),
+            [](const BasicScanInfo& first, const BasicScanInfo& second) {
+                return first.startTime < second.startTime;
+            });
+
+        novac::CDateTime timeOfLastCalibration;
+        for (const auto& basicFileInfo : scanFileInfo.second)
+        {
+            {
+                std::stringstream message;
+                message << "Checking pack file: " << basicFileInfo.fullPath << std::endl;
+                ShowMessage(message.str());
+            }
+
+            if (!ScanIsMeasuredInConfiguredTimeOfDayForCalibration(basicFileInfo.startTime))
+            {
+                continue;
+            }
+
+            const double secondsSinceLastCalibration = timeOfLastCalibration.year > 0 ? novac::CDateTime::Difference(basicFileInfo.startTime, timeOfLastCalibration) : 1e99;
+            if (secondsSinceLastCalibration < 3600.0 * g_userSettings.m_calibrationIntervalHours)
+            {
+                std::stringstream message;
+                message << "Interval since last performed calibration ( " << (secondsSinceLastCalibration / 3600.0) << " hours) is too small. Skipping scan." << std::endl;
+                ShowMessage(message.str());
+                continue;
+            }
+
+            if (RunInstrumentCalibration(basicFileInfo.fullPath, statistics))
+            {
+                ++numberOfCalibrations;
+                timeOfLastCalibration = basicFileInfo.startTime;
+            }
         }
     }
 

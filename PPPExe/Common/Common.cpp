@@ -287,10 +287,6 @@ void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &spe
     return;
 }
 
-
-
-/** Take out the exe name from a long path
-      @param fileName path of the exe file	*/
 void Common::GetFileName(novac::CString& fileName)
 {
     // look for slashes in the path

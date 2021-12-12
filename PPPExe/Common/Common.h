@@ -17,11 +17,11 @@
 
 namespace Geometry
 {
-class CPlumeHeight;
+    class CPlumeHeight;
 }
 namespace Meteorology
 {
-class CWindField;
+    class CWindField;
 }
 
 // ---------------------------------------------------------------
@@ -36,25 +36,25 @@ void GetSysTempFolder(novac::CString& folderPath);
     @param - The filename (including path) to the file.
     @return 0 if the file does not exist.
     @return 1 if the file exist. */
-bool IsExistingFile(const novac::CString &fileName);
+bool IsExistingFile(const novac::CString& fileName);
 
 /** Creates a directory structure according to the given path.
         @return 0 on success. */
-int CreateDirectoryStructure(const novac::CString &path);
+int CreateDirectoryStructure(const novac::CString& path);
 
 /** Appends an information / warning message to the logs */
-void ShowMessage(const novac::CString &message);
+void ShowMessage(const novac::CString& message);
 void ShowMessage(const char message[]);
-void ShowMessage(const novac::CString &message, novac::CString connectionID);
+void ShowMessage(const novac::CString& message, novac::CString connectionID);
 void ShowMessage(const std::string& message);
 
 /** Appends an error message to the logs */
-void ShowError(const novac::CString &message);
+void ShowError(const novac::CString& message);
 void ShowError(const char message[]);
 
 
 /** Update the top line of list box */
-void UpdateMessage(const novac::CString &message);
+void UpdateMessage(const novac::CString& message);
 
 // ---------------------------------------------------------------
 // ---------------- DEFINED CONSTANTS ----------------------------
@@ -151,11 +151,11 @@ public:
     static long RetrieveFileSize(novac::CString& fileName);
 
     /** Compares two files to see if their contents are the same */
-    static bool AreIdenticalFiles(const novac::CString &fileName1, const novac::CString &fileName2);
+    static bool AreIdenticalFiles(const novac::CString& fileName1, const novac::CString& fileName2);
 
     /** If there's a file with the given input name, then it will be renamed to
         PATH\\FILENAME_creationDate_creationTime.FILEENDING */
-    static bool ArchiveFile(const novac::CString &fileName);
+    static bool ArchiveFile(const novac::CString& fileName);
 
     // --------------------------------------------------------------------
     // ------------------------ SYSTEM FUNCTIONS  -------------------------
@@ -165,13 +165,14 @@ public:
     // ------------------------- PATH -------------------------------------
     // --------------------------------------------------------------------
 
-    /** Take out the file name from a long path
-            @param fileName path of the file	*/
+    /** Take out the file name from a long path containing both a directory name and a file name.
+        The path separator can be either '/' or '\'.
+        @param fileName path of the file, will be set to only contain the filename, without the path . */
     static void GetFileName(novac::CString& fileName);
 
     /** Take out the directory from a long path name.
         @param fileName - the complete path of the file */
-    static void GetDirectory(novac::CString &fileName);
+    static void GetDirectory(novac::CString& fileName);
 
     /** Copies the file to the new file location */
     static void CopyFile(const novac::CString& oldName, const novac::CString& newName);
@@ -192,7 +193,7 @@ public:
             for the site specified by (lat, lon) and for the time given in gmtTime.
             Note that the returned angles are in degrees and that the specified
             time _must_ be GMT-time. */
-    static RETURN_CODE GetSunPosition(const novac::CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ);
+    static RETURN_CODE GetSunPosition(const novac::CDateTime& gmtTime, double lat, double lon, double& SZA, double& SAZ);
 
     /** ????
         D  is the JulianDay counted from the 1st of January 2000 @ midnight
@@ -200,7 +201,7 @@ public:
         dec	is the declination
         EQT is the equation of time (in hours)
     */
-    static void EquatorialCoordinates(double D, double &RA, double &dec, double &EQT);
+    static void EquatorialCoordinates(double D, double& RA, double& dec, double& EQT);
 
     /** ???
             lat - latitude in degrees
@@ -208,7 +209,7 @@ public:
             dec - The declination, degres
             elev - the returned elevation of the sun above the horizon
             azim - the returned azimuth angle of the sun, counted from south to west			*/
-    static void HorizontalCoordinates(double lat, double H, double dec, double &elev, double &azim);
+    static void HorizontalCoordinates(double lat, double H, double dec, double& elev, double& azim);
 
     /** Returns the hour angle given the longitude and equation of time. */
     static double GetHourAngle(double hr, double lon, double EqT);
@@ -228,7 +229,7 @@ public:
     /** This function calculates the latitude and longitude for point
             which is the distance 'dist' m and bearing 'az' degrees from
             the point defied by 'lat1' and 'lon1' */
-    void CalculateDestination(double lat1, double lon1, double dist, double az, double &lat2, double &lon2);
+    void CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2);
 
     // --------------------------------------------------------------------
     // -------------------- CALCULATING FLUX ------------------------------
@@ -236,12 +237,12 @@ public:
 
     /** Calculates the flux using the supplied data. Automatically decides which
             algorithm to use based on the given cone angle. */
-    static double CalculateFlux(const double *scanAngle, const double *scanAngle2, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle = 90.0, double tilt = 0.0);
+    static double CalculateFlux(const double* scanAngle, const double* scanAngle2, const double* column, double offset, int nDataPoints, const Meteorology::CWindField& wind, const Geometry::CPlumeHeight& relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle = 90.0, double tilt = 0.0);
 
     // ---------------------------- MISC ----------------------------------
 
     /** Guesses the name of the specie from the name of the reference file. */
-    static void GuessSpecieName(const novac::CString &string, novac::CString &specie);
+    static void GuessSpecieName(const novac::CString& string, novac::CString& specie);
 
 };// end of class Common
 
@@ -254,7 +255,7 @@ public:
         @param pBuffer - The array in which to search for an element.
         @param bufLen - The length of the array.
         @return - The minimum value in the array */
-template <class T> T Min(T *pBuffer, long bufLen) {
+template <class T> T Min(T* pBuffer, long bufLen) {
     T minValue = pBuffer[0];
     for (long i = 1; i < bufLen; i++) {
         if (pBuffer[i] < minValue)
@@ -270,7 +271,7 @@ template <class T> T Min(T *pBuffer, long bufLen) {
         @param nElements - the number of elements in the supplied array
         @param output - the output array, must be at least 'N'- elements long
         @param N - the number of values to take out. 	*/
-template <class T> bool FindNLowest(const T array[], long nElements, T output[], int N, int *indices = NULL) {
+template <class T> bool FindNLowest(const T array[], long nElements, T output[], int N, int* indices = NULL) {
     for (int i = 0; i < N; ++i)
         output[i] = 1e16; // to get some initial value
 

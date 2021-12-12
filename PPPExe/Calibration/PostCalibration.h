@@ -1,12 +1,13 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
+#include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 
 namespace novac
 {
-    class CDateTime;
     class CPostCalibrationStatistics;
 
     /** The CPostCalibration class is the helper class for performing instrument calibrations in the
@@ -38,6 +39,16 @@ namespace novac
                 as well as a set of
             @return true if the calibration succeeded.*/
         bool RunInstrumentCalibration(const std::string& scanFile, CPostCalibrationStatistics& statistics);
+
+        struct BasicScanInfo
+        {
+            novac::CDateTime startTime;
+            std::string serial;
+            std::string fullPath;
+        };
+
+        /** Arranges the provided list of scan files by the instrument which performed the measurement */
+        static std::map<std::string, std::vector<BasicScanInfo>> SortScanFilesByInstrument(const std::vector<std::string>& scanFileList);
 
     };
 }
