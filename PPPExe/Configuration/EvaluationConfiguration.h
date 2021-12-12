@@ -11,8 +11,8 @@ namespace Configuration
     class CEvaluationConfiguration
     {
     public:
-        CEvaluationConfiguration(void);
-        ~CEvaluationConfiguration(void);
+        CEvaluationConfiguration();
+        ~CEvaluationConfiguration();
 
         /** The serial-number of the spectrometer for which this setup is valid */
         std::string m_serial;

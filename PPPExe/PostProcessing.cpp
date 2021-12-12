@@ -260,8 +260,6 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
         ShowMessage(messageToUser);
     }
 
-    // Now that all the calibrations have been performed, we should be able to construct new .exml files, replacing the old ones.
-
 
 }
 

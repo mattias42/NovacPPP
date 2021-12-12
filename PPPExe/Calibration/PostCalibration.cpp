@@ -182,9 +182,9 @@ bool ScanIsMeasuredInConfiguredTimeOfDayForCalibration(const novac::CDateTime& s
     return true;
 }
 
-std::map<CPostCalibration::SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibration::SortScanFilesByInstrument(const std::vector<std::string>& scanFileList)
+std::map<SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibration::SortScanFilesByInstrument(const std::vector<std::string>& scanFileList)
 {
-    std::map<CPostCalibration::SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> result;
+    std::map<SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> result;
 
     for (const auto& scanFile : scanFileList)
     {
@@ -304,6 +304,9 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
                 timeOfLastCalibration = basicFileInfo.startTime;
             }
         }
+
+        // All calibrations for this particular spectrometer are now done.
+        CreateEvaluationSettings(scanFileInfo.first, statistics);
     }
 
     return numberOfCalibrations;
@@ -378,4 +381,14 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         ShowError(e.what());
     }
     return false;
+}
+
+void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectrometer, const CPostCalibrationStatistics& statistics)
+{
+    /* 1. Get the existing fit-windows (with time) for this spectrometer
+    *  2. Create new fit-windows with the new references and a splitting up the validity time
+    *  3. Save the new .exml file.
+    */
+
+
 }

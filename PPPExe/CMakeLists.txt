@@ -37,6 +37,7 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/PostProcessingStatistics.h
     ${CMAKE_CURRENT_LIST_DIR}/SetupFileReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/SetupFileReader.h
+    ${CMAKE_CURRENT_LIST_DIR}/SpectrometerId.h
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.h
 
