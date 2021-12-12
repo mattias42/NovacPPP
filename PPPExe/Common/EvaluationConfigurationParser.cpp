@@ -37,7 +37,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
 
             Parse_FitWindow(tmpWindow, validFrom, validTo);
 
-            settings.InsertFitWindow(tmpWindow, &validFrom, &validTo);
+            settings.InsertFitWindow(tmpWindow, validFrom, validTo);
         }
 
         if (novac::Equals(szToken, "DarkCorrection", strlen("DarkCorrection"))) {
@@ -81,7 +81,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     indent.Format("\t");
 
     // Write the serial-number of the spectrometer for which this configuration is valid
-    fprintf(f, "\t<serial>%s</serial>\n", (const char*)settings.m_serial);
+    fprintf(f, "\t<serial>%s</serial>\n", settings.m_serial.c_str());
 
     // ------ loop through each of the fit windows and write them to file --------
     unsigned long nWindows = settings.GetFitWindowNum();

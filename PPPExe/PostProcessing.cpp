@@ -742,7 +742,7 @@ int CPostProcessing::PrepareEvaluation()
 
             // If we've made it this far, then we've managed to read in all the references. Now
             // store the data in g_setup
-            g_setup.m_instrument[instrumentIndex].m_eval.SetFitWindow(fitWindowIndex, window, &fromTime, &toTime);
+            g_setup.m_instrument[instrumentIndex].m_eval.SetFitWindow(fitWindowIndex, window, fromTime, toTime);
         }
     }
 
