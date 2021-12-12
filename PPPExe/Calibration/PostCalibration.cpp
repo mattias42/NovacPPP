@@ -31,6 +31,33 @@ std::string FormatDateAndTimeOfSpectrum(const novac::CSpectrumInfo& spectrumInfo
     return std::string(dateAndTime);
 }
 
+std::string CreateOutputDirectoryForCalibration(const CSpectrumInfo& calibratedSpectrum)
+{
+    CString dateStr;
+    dateStr.Format(
+        "%04d.%02d.%02d",
+        calibratedSpectrum.m_startTime.year,
+        calibratedSpectrum.m_startTime.month,
+        calibratedSpectrum.m_startTime.day);
+
+    std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
+    directoryName += "/" + dateStr + calibratedSpectrum.m_device + "/";
+
+    // 4b. Make sure that the folder exists
+    int ret = CreateDirectoryStructure(directoryName);
+    if (ret)
+    {
+        std::stringstream message;
+        message << "Could not create directory for archiving instrument calibration: " << directoryName << std::endl;
+        ShowMessage(message.str());
+
+        // TODO: Another type of exception!
+        throw std::invalid_argument(message.str());
+    }
+
+    return directoryName;
+}
+
 std::string GetCalibrationFileName(const novac::CSpectrumInfo& spectrumInformation)
 {
     return "Calibration_" + spectrumInformation.m_device + "_" + FormatDateAndTimeOfSpectrum(spectrumInformation) + ".std";
@@ -186,8 +213,8 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         NovacProgramWavelengthCalibrationController calibrationController;
         RunCalibration(calibrationController, scanFile, instrument->m_instrumentCalibration);
 
-        // Save new instrument calibration. TODO: More organized layout would be better - not all references directly in the output directory
-        const std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
+        // Save new instrument calibration.
+        std::string directoryName = CreateOutputDirectoryForCalibration(skySpec.m_info);
         const std::string calibrationFileName = directoryName + GetCalibrationFileName(calibrationController.m_calibrationDebug.spectrumInfo);
         calibrationController.SaveResultAsStd(calibrationFileName);
 
@@ -199,36 +226,10 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
             m_standardCrossSections,
             directoryName);
 
-        // TODO: Now that all the references have been successfully created, remember the results such that we can build upon the evaluation setting.
-
-        /*
-    // All references have successfully been created, replace the references used by the evaluation with the new references.
-    if (autoCalibrationSettings.generateReferences && referencesCreated.size() > 0)
-    {
-        int scannerIdx = 0;
-        int spectrometerIdx = 0;
-        const std::string serialNumber = std::string(spectrometer.SerialNumber());
-        if (IdentifySpectrometer(settings, serialNumber, scannerIdx, spectrometerIdx))
-        {
-            // Update the settings.
-            // Notice that there are multiple copies of the settings found in the CSpectrometer (unclear why)
-            //  hence we need to replace all of them for the settings to work (for sure).
-            ReplaceReferences(referencesCreated, settings.scanner[scannerIdx].spec[spectrometerIdx]);
-            ReplaceReferences(referencesCreated, spectrometer.m_settings);
-            ReplaceReferences(referencesCreated, spectrometer.m_scanner.spec[spectrometerIdx]);
-            spectrometer.m_fitWindows[0] = spectrometer.m_settings.channel[0].fitWindow;
-
-            // Save the updated settings to file
-            FileHandler::CConfigurationFileHandler writer;
-            writer.WriteConfigurationFile(settings);
-        }
-    }
-
-    // Remember the result
-    spectrometer.m_history->AppendInstrumentCalibration(
-        calibrationController.m_calibrationDebug.spectrumInfo.m_startTime,
-        calibrationController.GetFinalCalibration());
-        */
+        statistics.RememberCalibrationPerformed(
+            skySpec.m_info.m_device,
+            skySpec.m_info.m_startTime,
+            referencesCreated);
 
         return true;
     }

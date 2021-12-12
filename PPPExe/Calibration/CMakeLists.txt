@@ -10,6 +10,7 @@ set(NPP_CALIBRATION_HEADERS
     
 set(NPP_CALIBRATION_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/PostCalibration.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PostCalibrationStatistics.cpp
     PARENT_SCOPE)
 
     
