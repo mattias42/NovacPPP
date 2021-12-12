@@ -44,11 +44,37 @@ namespace novac
         {
             novac::CDateTime startTime;
             std::string serial;
+            int channel = 0;
             std::string fullPath;
         };
 
+        struct SpectrometerId
+        {
+            SpectrometerId()
+                : serial(""), channel(0) { }
+
+            SpectrometerId(const std::string& serialNumber, int channelNumber)
+                : serial(serialNumber), channel(channelNumber) { }
+
+            std::string serial;
+            int channel = 0;
+
+            bool operator<(const SpectrometerId& other) const
+            {
+                int serialCompare = serial.compare(other.serial);
+                if (serialCompare == 0)
+                {
+                    return channel < other.channel;
+                }
+                else
+                {
+                    return serialCompare < 0;
+                }
+            }
+        };
+
         /** Arranges the provided list of scan files by the instrument which performed the measurement */
-        static std::map<std::string, std::vector<BasicScanInfo>> SortScanFilesByInstrument(const std::vector<std::string>& scanFileList);
+        static std::map<SpectrometerId, std::vector<BasicScanInfo>> SortScanFilesByInstrument(const std::vector<std::string>& scanFileList);
 
     };
 }

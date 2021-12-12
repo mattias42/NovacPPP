@@ -9,13 +9,13 @@
 	<Volcano>0303-02=</Volcano>
 	<FromDate>2017.02.08</FromDate>
 	<ToDate>2017.02.28</ToDate>
-	<LocalDirectory>D:\NovacPostProcessingProgram\TestRun_2019_05_03\Temp</LocalDirectory>
+	<LocalDirectory>D:\NovacPostProcessingProgram\TestRun_2021_12\Input\20170220</LocalDirectory>
 	<IncludeSubDirs_Local>1</IncludeSubDirs_Local>
 	<IncludeSubDirs_FTP>1</IncludeSubDirs_FTP>
 	<UploadResults>0</UploadResults>
     <Calibration>
         <GenerateEvaluationSettings>1</GenerateEvaluationSettings>
-        <intervalHours>1</intervalHours>
+        <intervalHours>4</intervalHours>
         <intervalTimeOfDayLow>61200</intervalTimeOfDayLow>
         <intervalTimeOfDayHigh>54000</intervalTimeOfDayHigh>
         <solarSpectrumFile>D:\Development\NovacPPP_GitHub\bin\Debug\StandardCrossSections\SOLARFL_296-440nm.xs</solarSpectrumFile>

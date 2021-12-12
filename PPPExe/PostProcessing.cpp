@@ -246,19 +246,21 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
 
     ShowMessage("--- Running Calibrations --- ");
 
-    // Unlike other parts of the NovacPPP, this function is intended to be single threaded. The reason for this is that the
-    //  classes which are called upon are strongly threaded themselves and further threading will not help the performance.
     novac::StandardCrossSectionSetup standardCrossSections{ m_exePath };
-
-
     novac::CPostCalibration calibrationController{ standardCrossSections };
     novac::CPostCalibrationStatistics calibrationStatistics;
 
+    // Unlike other parts of the NovacPPP, this function is intended to be single threaded. The reason for this is that the
+    //  classes which are called upon are strongly threaded themselves and further threading will not help the performance.
     int numberOfCalibrations = calibrationController.RunInstrumentCalibration(pakFileList, calibrationStatistics);
 
-    CString messageToUser;
-    messageToUser.Format("%d instrument calibrations performed", numberOfCalibrations);
-    ShowMessage(messageToUser);
+    {
+        CString messageToUser;
+        messageToUser.Format("%d instrument calibrations performed", numberOfCalibrations);
+        ShowMessage(messageToUser);
+    }
+
+    // Now that all the calibrations have been performed, we should be able to construct new .exml files, replacing the old ones.
 
 
 }

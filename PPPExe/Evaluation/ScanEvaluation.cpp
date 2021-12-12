@@ -79,8 +79,8 @@ long CScanEvaluation::EvaluateScan(novac::CScanFileHandler* scan, const CFitWind
         //	Find the optimal shift & squeeze from the spectrum with the highest column
         CFitWindow window2 = adjustedFitWindow;
         for (int k = 0; k < window2.nRef; ++k) {
-            window2.ref[k].m_shiftOption = SHIFT_FIX;
-            window2.ref[k].m_squeezeOption = SHIFT_FIX;
+            window2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_FIX;
+            window2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
             window2.ref[k].m_shiftValue = 0.0;
             window2.ref[k].m_squeezeValue = 1.0;
         }
@@ -347,8 +347,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow& f
 
     // Evaluate this spectrum again with free (and linked) shift
     CFitWindow fitWindow2 = fitWindow;
-    fitWindow2.ref[0].m_shiftOption = SHIFT_FREE;
-    fitWindow2.ref[0].m_squeezeOption = SHIFT_FIX;
+    fitWindow2.ref[0].m_shiftOption = SHIFT_TYPE::SHIFT_FREE;
+    fitWindow2.ref[0].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
     fitWindow2.ref[0].m_squeezeValue = 1.0;
     for (int k = 1; k < fitWindow2.nRef; ++k)
     {
@@ -357,8 +357,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow& f
             continue;
         }
 
-        fitWindow2.ref[k].m_shiftOption = SHIFT_LINK;
-        fitWindow2.ref[k].m_squeezeOption = SHIFT_LINK;
+        fitWindow2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_LINK;
+        fitWindow2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_LINK;
         fitWindow2.ref[k].m_shiftValue = 0.0;
         fitWindow2.ref[k].m_squeezeValue = 0.0;
     }
@@ -421,8 +421,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow& f
             continue;
         }
 
-        fitWindow2.ref[k].m_shiftOption = SHIFT_FIX;
-        fitWindow2.ref[k].m_squeezeOption = SHIFT_FIX;
+        fitWindow2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_FIX;
+        fitWindow2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
         fitWindow2.ref[k].m_shiftValue = optimumShift;
         fitWindow2.ref[k].m_squeezeValue = optimumSqueeze;
     }

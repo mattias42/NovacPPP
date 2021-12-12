@@ -18,13 +18,6 @@ namespace novac
             const novac::CDateTime& gpsTimeOfScan,
             const std::vector<novac::CReferenceFile>& referencesCreated);
 
-
-        /** Returns the last time a calibration was performed for the given spectrometers.
-            @returns the Gps timestamp of the calibrated spectrum OR default (year=0, month=0,...) if none has been performed. */
-        novac::CDateTime LastCalibrationPerformed(const std::string& instrumentSerial) const;
-
-        // TODO: Now that all the references have been successfully created and remembered, figure out a way such that can build up the evaluation setting.
-
     private:
         struct InstrumentCalibration
         {

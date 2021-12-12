@@ -5,7 +5,11 @@
 #include <PPPLib/CArray.h>
 #include <PPPLib/CString.h>
 
-namespace Configuration {
+namespace Configuration
+{
+    /** The class CEvaluationConfiguration helps keeping track of all the defined fit-windows for one spectrometer
+        (notice that there may be multiple channels on this spectrometer however, some fit windows may be for one channel and
+        some may be for the other). */
     class CEvaluationConfiguration
     {
     public:

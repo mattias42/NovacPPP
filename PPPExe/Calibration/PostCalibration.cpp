@@ -42,14 +42,14 @@ std::string CreateOutputDirectoryForCalibration(const CSpectrumInfo& calibratedS
         calibratedSpectrum.m_startTime.day);
 
     std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
-    directoryName += "/" + dateStr + calibratedSpectrum.m_device + "/";
+    directoryName += "/" + dateStr + "/" + calibratedSpectrum.m_device + "/";
 
     // 4b. Make sure that the folder exists
     int ret = CreateDirectoryStructure(directoryName);
     if (ret)
     {
         std::stringstream message;
-        message << "Could not create directory for archiving instrument calibration: " << directoryName << std::endl;
+        message << "Could not create directory for archiving instrument calibration: " << directoryName;
         ShowMessage(message.str());
 
         // TODO: Another type of exception!
@@ -87,8 +87,9 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     std::vector<novac::CReferenceFile> referencesCreated;
 
     referenceController.m_highPassFilter = false; // TODO: Are the references sometimes filtered here?
-    referenceController.m_unitSelection = 0;
+    referenceController.m_unitSelection = 1; // Default to molecules/cm2 in NovacPPP
 
+    // First the ordinary references
     for (size_t ii = 0; ii < standardCrossSections.NumberOfReferences(); ++ii)
     {
         referenceController.m_convertToAir = standardCrossSections.IsReferenceInVacuum(ii);
@@ -113,6 +114,32 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
 
         novac::CReferenceFile newReference;
         newReference.m_specieName = standardCrossSections.ReferenceSpecieName(ii);
+        newReference.m_path = dstFileName;
+        newReference.m_isFiltered = referenceController.m_highPassFilter;
+        referencesCreated.push_back(newReference);
+    }
+
+    // Save the Fraunhofer reference as well
+    {
+        // Do the convolution
+        referenceController.m_highPassFilter = false;
+        referenceController.m_convertToAir = false;
+        referenceController.m_highResolutionCrossSection = standardCrossSections.FraunhoferReferenceFileName();
+        referenceController.m_isPseudoAbsorber = true;
+        referenceController.ConvolveReference(*calibration);
+
+        // Save the result
+        const std::string dstFileName =
+            directoryName +
+            spectrumInformation.m_device +
+            "_Fraunhofer_" +
+            FormatDateAndTimeOfSpectrum(spectrumInformation) +
+            ".txt";
+
+        novac::SaveCrossSectionFile(dstFileName, *(referenceController.m_resultingCrossSection));
+
+        novac::CReferenceFile newReference;
+        newReference.m_specieName = "Fraunhofer";
         newReference.m_path = dstFileName;
         newReference.m_isFiltered = referenceController.m_highPassFilter;
         referencesCreated.push_back(newReference);
@@ -155,9 +182,9 @@ bool ScanIsMeasuredInConfiguredTimeOfDayForCalibration(const novac::CDateTime& s
     return true;
 }
 
-std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibration::SortScanFilesByInstrument(const std::vector<std::string>& scanFileList)
+std::map<CPostCalibration::SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibration::SortScanFilesByInstrument(const std::vector<std::string>& scanFileList)
 {
-    std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> result;
+    std::map<CPostCalibration::SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> result;
 
     for (const auto& scanFile : scanFileList)
     {
@@ -175,7 +202,7 @@ std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibra
             if (SUCCESS != scan.CheckScanFile(scanFile))
             {
                 std::stringstream message;
-                message << "Could not read pak-file '" << scanFile << "'" << std::endl;
+                message << "Could not read pak-file '" << scanFile << "'";
                 ShowMessage(message.str());
                 continue;
             }
@@ -184,29 +211,33 @@ std::map<std::string, std::vector<CPostCalibration::BasicScanInfo>> CPostCalibra
             if (scan.GetSky(skySpec))
             {
                 std::stringstream message;
-                message << "Could not read a sky spectrum from pak-file '" << scanFile << "'" << std::endl;
+                message << "Could not read a sky spectrum from pak-file '" << scanFile << "'";
                 ShowMessage(message.str());
                 continue;
             }
 
             info.fullPath = scanFile;
             info.serial = skySpec.m_info.m_device;
+            info.channel = skySpec.m_info.m_channel;
             info.startTime = skySpec.m_info.m_startTime;
         }
         else
         {
             info.fullPath = scanFile;
             info.serial = serial;
+            info.channel = channel;
             info.startTime = startTime;
         }
 
+        SpectrometerId id(info.serial, info.channel);
+
         // Insert the result
-        auto pos = result.find(info.serial);
+        auto pos = result.find(id);
         if (pos == result.end())
         {
             std::vector<CPostCalibration::BasicScanInfo> newCollection;
             newCollection.push_back(info);
-            result[info.serial] = newCollection;
+            result[id] = newCollection;
         }
         else
         {
@@ -222,7 +253,7 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
     auto sortedScanFileList = SortScanFilesByInstrument(scanFileList);
     {
         std::stringstream message;
-        message << "Located pak files from " << sortedScanFileList.size() << " devices" << std::endl;
+        message << "Located pak files from " << sortedScanFileList.size() << " devices";
         ShowMessage(message.str());
     }
 
@@ -232,7 +263,7 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
     {
         {
             std::stringstream message;
-            message << "Performing calibrations for " << scanFileInfo.first << std::endl;
+            message << "Performing calibrations for " << scanFileInfo.first.serial << " (channel: " << scanFileInfo.first.channel << ")";
             ShowMessage(message.str());
         }
 
@@ -249,7 +280,7 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
         {
             {
                 std::stringstream message;
-                message << "Checking pack file: " << basicFileInfo.fullPath << std::endl;
+                message << "Checking pak file: " << basicFileInfo.fullPath;
                 ShowMessage(message.str());
             }
 
@@ -262,7 +293,7 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
             if (secondsSinceLastCalibration < 3600.0 * g_userSettings.m_calibrationIntervalHours)
             {
                 std::stringstream message;
-                message << "Interval since last performed calibration ( " << (secondsSinceLastCalibration / 3600.0) << " hours) is too small. Skipping scan." << std::endl;
+                message << "Interval since last performed calibration ( " << (secondsSinceLastCalibration / 3600.0) << " hours) is too small. Skipping scan.";
                 ShowMessage(message.str());
                 continue;
             }
@@ -275,8 +306,6 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
         }
     }
 
-    // Now that all instruments and scans have been calibrated, we should be able to build up our own set of .exml files - replacing the old ones.
-
     return numberOfCalibrations;
 }
 
@@ -288,7 +317,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         if (SUCCESS != scan.CheckScanFile(scanFile))
         {
             std::stringstream message;
-            message << "Could not read recieved pak-file '" << scanFile << "' . Will not perform calibration." << std::endl;
+            message << "Could not read recieved pak-file '" << scanFile << "' . Will not perform calibration.";
             ShowMessage(message.str());
             return false;
         }
@@ -298,7 +327,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         if (scan.GetSky(skySpec))
         {
             std::stringstream message;
-            message << "Could not read a sky spectrum from pak-file '" << scanFile << "' . Will not perform calibration." << std::endl;
+            message << "Could not read a sky spectrum from pak-file '" << scanFile << "' . Will not perform calibration.";
             ShowMessage(message.str());
             return false;
         }
@@ -307,7 +336,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         if (instrument == nullptr)
         {
             std::stringstream message;
-            message << "Received pak file from not configured instrument: '" << skySpec.m_info.m_device << "' . Will not perform calibration." << std::endl;
+            message << "Received pak file from not configured instrument: '" << skySpec.m_info.m_device << "' . Will not perform calibration.";
             ShowMessage(message.str());
             return false;
         }
@@ -335,6 +364,12 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
             skySpec.m_info.m_device,
             skySpec.m_info.m_startTime,
             referencesCreated);
+
+        {
+            std::stringstream message;
+            message << "Peformed calibration on '" << scanFile << "'. Created " << referencesCreated.size() << " references.";
+            ShowMessage(message.str());
+        }
 
         return true;
     }
