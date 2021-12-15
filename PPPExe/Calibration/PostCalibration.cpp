@@ -7,6 +7,7 @@
 #include <SpectralEvaluation/File/ScanFileHandler.h>
 #include "../Configuration/NovacPPPConfiguration.h"
 #include "../Configuration/UserConfiguration.h"
+#include "../Common/EvaluationConfigurationParser.h"
 #include "PostCalibrationStatistics.h"
 #include <sstream>
 #include <algorithm>
@@ -122,7 +123,6 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     // Save the Fraunhofer reference as well
     {
         // Do the convolution
-        referenceController.m_highPassFilter = false;
         referenceController.m_convertToAir = false;
         referenceController.m_highResolutionCrossSection = standardCrossSections.FraunhoferReferenceFileName();
         referenceController.m_isPseudoAbsorber = true;
@@ -261,52 +261,62 @@ int CPostCalibration::RunInstrumentCalibration(const std::vector<std::string>& s
 
     for (auto& scanFileInfo : sortedScanFileList)
     {
+        try
+        {
+            {
+                std::stringstream message;
+                message << "Performing calibrations for " << scanFileInfo.first.serial << " (channel: " << scanFileInfo.first.channel << ")";
+                ShowMessage(message.str());
+            }
+
+            // Sort the files by increasing start time.
+            std::sort(
+                begin(scanFileInfo.second),
+                end(scanFileInfo.second),
+                [](const BasicScanInfo& first, const BasicScanInfo& second) {
+                    return first.startTime < second.startTime;
+                });
+
+            novac::CDateTime timeOfLastCalibration;
+            for (const auto& basicFileInfo : scanFileInfo.second)
+            {
+                {
+                    std::stringstream message;
+                    message << "Checking pak file: " << basicFileInfo.fullPath;
+                    ShowMessage(message.str());
+                }
+
+                if (!ScanIsMeasuredInConfiguredTimeOfDayForCalibration(basicFileInfo.startTime))
+                {
+                    continue;
+                }
+
+                const double secondsSinceLastCalibration = timeOfLastCalibration.year > 0 ? novac::CDateTime::Difference(basicFileInfo.startTime, timeOfLastCalibration) : 1e99;
+                if (secondsSinceLastCalibration < 3600.0 * g_userSettings.m_calibrationIntervalHours)
+                {
+                    std::stringstream message;
+                    message << "Interval since last performed calibration ( " << (secondsSinceLastCalibration / 3600.0) << " hours) is too small. Skipping scan.";
+                    ShowMessage(message.str());
+                    continue;
+                }
+
+                if (RunInstrumentCalibration(basicFileInfo.fullPath, statistics))
+                {
+                    ++numberOfCalibrations;
+                    timeOfLastCalibration = basicFileInfo.startTime;
+                }
+            }
+
+            // All calibrations for this particular spectrometer are now done.
+            CreateEvaluationSettings(scanFileInfo.first, statistics);
+        }
+        catch (std::exception& e)
         {
             std::stringstream message;
-            message << "Performing calibrations for " << scanFileInfo.first.serial << " (channel: " << scanFileInfo.first.channel << ")";
+            message << "Failed to create evaluation data for " << scanFileInfo.first.serial << " (channel: " << scanFileInfo.first.channel << "). ";
+            message << "Exception: " << e.what();
             ShowMessage(message.str());
         }
-
-        // Sort the files by increasing start time.
-        std::sort(
-            begin(scanFileInfo.second),
-            end(scanFileInfo.second),
-            [](const BasicScanInfo& first, const BasicScanInfo& second) {
-                return first.startTime < second.startTime;
-            });
-
-        novac::CDateTime timeOfLastCalibration;
-        for (const auto& basicFileInfo : scanFileInfo.second)
-        {
-            {
-                std::stringstream message;
-                message << "Checking pak file: " << basicFileInfo.fullPath;
-                ShowMessage(message.str());
-            }
-
-            if (!ScanIsMeasuredInConfiguredTimeOfDayForCalibration(basicFileInfo.startTime))
-            {
-                continue;
-            }
-
-            const double secondsSinceLastCalibration = timeOfLastCalibration.year > 0 ? novac::CDateTime::Difference(basicFileInfo.startTime, timeOfLastCalibration) : 1e99;
-            if (secondsSinceLastCalibration < 3600.0 * g_userSettings.m_calibrationIntervalHours)
-            {
-                std::stringstream message;
-                message << "Interval since last performed calibration ( " << (secondsSinceLastCalibration / 3600.0) << " hours) is too small. Skipping scan.";
-                ShowMessage(message.str());
-                continue;
-            }
-
-            if (RunInstrumentCalibration(basicFileInfo.fullPath, statistics))
-            {
-                ++numberOfCalibrations;
-                timeOfLastCalibration = basicFileInfo.startTime;
-            }
-        }
-
-        // All calibrations for this particular spectrometer are now done.
-        CreateEvaluationSettings(scanFileInfo.first, statistics);
     }
 
     return numberOfCalibrations;
@@ -356,6 +366,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
         calibrationController.SaveResultAsStd(calibrationFileName);
 
         // Create the standard references.
+        const SpectrometerId device{ skySpec.m_info.m_device, skySpec.m_info.m_channel };
         const auto finalCalibration = calibrationController.GetFinalCalibration();
         auto referencesCreated = CreateStandardReferences(
             calibrationController.m_calibrationDebug.spectrumInfo,
@@ -364,7 +375,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
             directoryName);
 
         statistics.RememberCalibrationPerformed(
-            skySpec.m_info.m_device,
+            device,
             skySpec.m_info.m_startTime,
             referencesCreated);
 
@@ -389,6 +400,100 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
     *  2. Create new fit-windows with the new references and a splitting up the validity time
     *  3. Save the new .exml file.
     */
+    const Configuration::CInstrumentConfiguration* instrument = g_setup.GetInstrument(spectrometer.serial);
+    if (instrument == nullptr)
+    {
+        std::stringstream message;
+        message << "Failed to retrieve instrument settings for: " << spectrometer.serial << " no new evaluation settings could be generated";
+        ShowMessage(message.str());
+        return;
+    }
 
+    // Get the windows defined for this instrument
+    std::vector<Configuration::FitWindowWithTime> windows;
+    for (int idx = 0; idx < static_cast<int>(instrument->m_eval.GetFitWindowNum()); ++idx)
+    {
+        Configuration::FitWindowWithTime window;
+        if (!instrument->m_eval.GetFitWindow(idx, window.window, window.validFrom, window.validTo))
+        {
+            if (window.window.channel == spectrometer.channel)
+            {
+                windows.push_back(window);
+            }
+        }
+    }
+
+    if (windows.size() == 0)
+    {
+        std::stringstream message;
+        message << "Failed to retrieve any fit window defined for: " << spectrometer.serial << " and channel ";
+        message << spectrometer.channel << " no new evaluation settings could be generated";
+        ShowMessage(message.str());
+        return;
+    }
+
+    // If there are still multiple windows, then warn the user that we can only (so far) process the first one.
+    if (windows.size() > 1)
+    {
+        std::stringstream message;
+        message << "Found " << windows.size() << " fit windows defined for: " << spectrometer.serial << " and channel " << spectrometer.channel;
+        message << ". Will generate new evaluation with settings from the first, different configurations is not supported";
+        ShowMessage(message.str());
+        return;
+    }
+
+    // Get the newly defined statistics
+    const int calibrationNum = statistics.GetNumberOfCalibrationsPerformedFor(spectrometer);
+
+    std::vector<Configuration::FitWindowWithTime> result;
+    for (int idx = 0; idx < calibrationNum; ++idx)
+    {
+        // Use the new references and the window given above to create a new (timed) fit window.
+        Configuration::FitWindowWithTime evaluationWindow;
+        std::vector<novac::CReferenceFile> references;
+        statistics.GetCalibration(spectrometer, idx, evaluationWindow.validFrom, evaluationWindow.validTo, references);
+
+        auto& window = evaluationWindow.window;
+        window.nRef = 0;
+        for (const auto& reference : references)
+        {
+            if (Equals(reference.m_specieName, "Fraunhofer"))
+            {
+                window.fraunhoferRef = reference;
+            }
+            else
+            {
+                window.ref[window.nRef] = reference;
+                ++window.nRef;
+            }
+        }
+    }
+
+    // Write the result to file (together with the other previous settings).
+    std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
+    directoryName += "/calibration/";
+    int ret = CreateDirectoryStructure(directoryName);
+    if (ret)
+    {
+        std::stringstream message;
+        message << "Could not create directory for saving evaluation configuration: " << directoryName;
+        ShowMessage(message.str());
+
+        // TODO: Another type of exception!
+        throw std::invalid_argument(message.str());
+    }
+    std::string fileName = directoryName + spectrometer.serial + ".exml";
+
+
+    Configuration::CEvaluationConfiguration newEvaluationSettings;
+    newEvaluationSettings.m_serial = spectrometer.serial;
+
+    for (const auto& evaluationWindow : result)
+    {
+        newEvaluationSettings.InsertFitWindow(evaluationWindow.window, evaluationWindow.validFrom, evaluationWindow.validTo);
+    }
+
+    FileHandler::CEvaluationConfigurationParser writer;
+    writer.WriteConfigurationFile(fileName, newEvaluationSettings, instrument->m_darkCurrentCorrection, instrument->m_instrumentCalibration);
 
 }

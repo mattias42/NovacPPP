@@ -2,6 +2,7 @@
 
 #include "InstrumentConfiguration.h"
 #include <PPPLib/CString.h>
+#include "../SpectrometerId.h"
 
 /**
     The class <b>CNovacPPPConfiguration</b> is the main configuration
@@ -52,8 +53,7 @@ namespace Configuration
                 name will be returned.
             if 'fitWindowName' is NULL then the first fit-window valid at the given time
                 will be returned.
-            @return 0 if successful otherwise non-zero
-        */
+            @return 0 if successful otherwise non-zero */
         int GetFitWindow(const novac::CString& serial, int channel, const novac::CDateTime& dateAndTime, novac::CFitWindow& window, const novac::CString* fitWindowName = NULL) const;
 
         /** Retrieves the CDarkSettings that is valid for the given instrument and

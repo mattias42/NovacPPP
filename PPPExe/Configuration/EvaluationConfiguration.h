@@ -5,6 +5,14 @@
 
 namespace Configuration
 {
+    /** Basic structure for keeping track of a fit window and the time-range for which it is valid */
+    struct FitWindowWithTime
+    {
+        novac::CFitWindow window;
+        novac::CDateTime validFrom;
+        novac::CDateTime validTo;
+    };
+
     /** The class CEvaluationConfiguration helps keeping track of all the defined fit-windows for one spectrometer
         (notice that there may be multiple channels on this spectrometer however, some fit windows may be for one channel and
         some may be for the other). */
@@ -58,12 +66,7 @@ namespace Configuration
 
     private:
 
-        struct FitWindowWithTime
-        {
-            novac::CFitWindow window;
-            novac::CDateTime validFrom;
-            novac::CDateTime validTo;
-        };
+
 
         /** The array of fit-windows for this spectrometer */
         std::vector<FitWindowWithTime> m_windows;

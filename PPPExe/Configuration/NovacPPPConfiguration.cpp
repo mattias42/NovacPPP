@@ -66,7 +66,14 @@ namespace Configuration
         return 0;
     }
 
-    int CNovacPPPConfiguration::GetFitWindow(const novac::CString& serial, int channel, const CDateTime& dateAndTime, novac::CFitWindow& window, const novac::CString* fitWindowName) const {
+    int CNovacPPPConfiguration::GetFitWindow(
+        const novac::CString& serial,
+        int channel,
+        const CDateTime& dateAndTime,
+        novac::CFitWindow& window,
+        const novac::CString* fitWindowName) const
+    {
+
         CDateTime evalValidFrom, evalValidTo;
         novac::CString errorMessage, windowName;
 

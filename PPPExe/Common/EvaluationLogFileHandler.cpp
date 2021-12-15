@@ -1005,7 +1005,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(m_specInfo.m_specModelName);
         if (!spectrometerModel.IsUnknown())
         {
-            string.AppendFormat("\tspectrometer_maxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+            string.AppendFormat("\tspectrometer_maxIntensity=%lf\n", spectrometerModel.maximumIntensityForSingleReadout);
             string.AppendFormat("\tspectrometer_numPixels=%d\n", spectrometerModel.numberOfPixels);
         }
 

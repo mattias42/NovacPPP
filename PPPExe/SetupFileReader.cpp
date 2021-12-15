@@ -189,7 +189,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
             {
                 fprintf(f, "\t\t<spectrometerModel>\n");
                 fprintf(f, "\t\t\t<name>%s</name>\n", currentSpectrometer.modelName.c_str());
-                fprintf(f, "\t\t\t<maxIntensity>%lf</maxIntensity>\n", currentSpectrometer.maximumIntensity);
+                fprintf(f, "\t\t\t<maxIntensity>%lf</maxIntensity>\n", currentSpectrometer.maximumIntensityForSingleReadout);
                 fprintf(f, "\t\t\t<numberOfPixels>%d</numberOfPixels>\n", currentSpectrometer.numberOfPixels);
                 fprintf(f, "\t\t</spectrometerModel>\n");
             }
@@ -225,7 +225,7 @@ void CSetupFileReader::Parse_CustomSpectrometer(SpectrometerModel& model)
 
         if (novac::Equals(szToken, "maxIntensity", 12))
         {
-            Parse_FloatItem("/maxIntensity", model.maximumIntensity);
+            Parse_FloatItem("/maxIntensity", model.maximumIntensityForSingleReadout);
             continue;
         }
 

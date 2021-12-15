@@ -325,7 +325,7 @@ bool CScanEvaluation::Ignore(const CSpectrum& spec, const CSpectrum& dark, int f
     // check if the intensity is below the given limit
     const double maxIntensity = spec.MaxValue(fitLow, fitHigh) - dark.MinValue(fitLow, fitHigh);
 
-    const double dynamicRange = CSpectrometerDatabase::GetInstance().GetModel(spec.m_info.m_specModelName).maximumIntensity;
+    const double dynamicRange = CSpectrometerDatabase::GetInstance().GetModel(spec.m_info.m_specModelName).maximumIntensityForSingleReadout;
 
     if (maxIntensity < (dynamicRange * g_userSettings.m_minimumSaturationInFitRegion))
     {

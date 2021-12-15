@@ -293,7 +293,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
 
     string.AppendFormat("\tserial=%s\n", (const char*)result->GetSerial());
     string.AppendFormat("\tspectrometer=%s\n", instrLocation->m_spectrometerModel.c_str());
-    string.AppendFormat("\tspectrometerMaxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+    string.AppendFormat("\tspectrometerMaxIntensity=%lf\n", spectrometerModel.maximumIntensityForSingleReadout);
 
     string.AppendFormat("\tchannel=%d\n", window->channel);
     string.AppendFormat("\tconeangle=%.1lf\n", instrLocation->m_coneangle);
@@ -423,7 +423,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         sky.m_info.m_fitIntensity = (float)(sky.MaxValue(window->fitLow, window->fitHigh));
         if (sky.NumSpectra() > 0)
             sky.Div(sky.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&sky.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*sky.NumSpectra(), window->nRef, string1);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&sky.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensityForSingleReadout *sky.NumSpectra(), window->nRef, string1);
     }
     scan->GetDark(dark);
     if (dark.m_info.m_interlaceStep > 1)
@@ -433,7 +433,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         dark.m_info.m_fitIntensity = (float)(dark.MaxValue(window->fitLow, window->fitHigh));
         if (dark.NumSpectra() > 0)
             dark.Div(dark.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&dark.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*dark.NumSpectra(), window->nRef, string2);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&dark.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensityForSingleReadout *dark.NumSpectra(), window->nRef, string2);
     }
     scan->GetOffset(offset);
     if (offset.m_info.m_interlaceStep > 1)
@@ -442,7 +442,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     {
         offset.m_info.m_fitIntensity = (float)(offset.MaxValue(window->fitLow, window->fitHigh));
         offset.Div(offset.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&offset.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity * offset.NumSpectra(), window->nRef, string3);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&offset.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensityForSingleReadout * offset.NumSpectra(), window->nRef, string3);
     }
     scan->GetDarkCurrent(darkCurrent);
     if (darkCurrent.m_info.m_interlaceStep > 1)
@@ -451,7 +451,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
     {
         darkCurrent.m_info.m_fitIntensity = (float)(darkCurrent.MaxValue(window->fitLow, window->fitHigh));
         darkCurrent.Div(darkCurrent.NumSpectra());
-        CEvaluationLogFileHandler::FormatEvaluationResult(&darkCurrent.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensity*darkCurrent.NumSpectra(), window->nRef, string4);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&darkCurrent.m_info, nullptr, instrLocation->m_instrumentType, spectrometerModel.maximumIntensityForSingleReadout *darkCurrent.NumSpectra(), window->nRef, string4);
     }
 
     // 2b. Write it all to the evaluation log file
@@ -484,7 +484,7 @@ RETURN_CODE CPostEvaluationController::WriteEvaluationResult(const CScanResult *
         int nSpectra = result->GetSpectrumInfo(itSpectrum).m_numSpec;
 
         // 3a. Pretty print the result and the spectral info into a string
-        CEvaluationLogFileHandler::FormatEvaluationResult(&result->GetSpectrumInfo(itSpectrum), result->GetResult(itSpectrum), instrLocation->m_instrumentType, spectrometerModel.maximumIntensity * nSpectra, window->nRef, string);
+        CEvaluationLogFileHandler::FormatEvaluationResult(&result->GetSpectrumInfo(itSpectrum), result->GetResult(itSpectrum), instrLocation->m_instrumentType, spectrometerModel.maximumIntensityForSingleReadout * nSpectra, window->nRef, string);
 
         // 3b. Write it all to the evaluation log file
         if (f != nullptr)
@@ -805,7 +805,7 @@ bool CPostEvaluationController::IsGoodEnoughToEvaluate(const novac::CScanFileHan
     }
 
     const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(instrLocation.m_spectrometerModel);
-    const double dynamicRange = skySpectrum.NumSpectra() * spectrometerModel.maximumIntensity;
+    const double dynamicRange = skySpectrum.NumSpectra() * spectrometerModel.maximumIntensityForSingleReadout;
 
     if (skySpectrum.MaxValue(fitWindow.fitLow, fitWindow.fitHigh) >= dynamicRange)
     {
