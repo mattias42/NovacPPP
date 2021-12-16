@@ -46,7 +46,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
 
             Parse_DarkCorrection(dSettings, validFrom, validTo);
 
-            darkSettings.InsertDarkCurrentCorrectionSettings(dSettings, &validFrom, &validTo);
+            darkSettings.InsertDarkCurrentCorrectionSettings(dSettings, validFrom, validTo);
         }
 
         if (novac::Equals(szToken, "Calibration", strlen("Calibration"))) {
@@ -118,7 +118,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
         //  the shift & squeeze of the spectra
         if (window.fraunhoferRef.m_path.size() > 3) {
             fprintf(f, "\t\t<wavelengthCalibration>\n");
-            fprintf(f, "\t\t<fraunhoferSpec>%s</fraunhoferSpec>\n", window.fraunhoferRef.m_path.c_str());
+            fprintf(f, "\t\t\t<fraunhoferSpec>%s</fraunhoferSpec>\n", window.fraunhoferRef.m_path.c_str());
             fprintf(f, "\t\t</wavelengthCalibration>\n");
         }
 
@@ -150,7 +150,8 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     }
 
     // ------ loop through each of the dark-current settings and write them to file --------
-    for (unsigned int k = 0; k < nWindows; ++k) {
+    unsigned long numberOfDarkSettings = darkSettings.GetSettingsNum();
+    for (unsigned long k = 0; k < numberOfDarkSettings; ++k) {
         darkSettings.GetDarkSettings(k, dSettings, from, to);
 
         fprintf(f, "\t<DarkCorrection>\n");
@@ -200,7 +201,10 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     {
         fprintf(f, "\t<Calibration>\n");
         fprintf(f, "\t\t<initialCalibrationFile>%s</initialCalibrationFile>\n", calibrationSettings.m_initialCalibrationFile.c_str());
-        fprintf(f, "\t\t<initialInstrumentLineshapeFile>%s</initialInstrumentLineshapeFile>\n", calibrationSettings.m_instrumentLineshapeFile.c_str());
+        if (calibrationSettings.m_instrumentLineshapeFile.size() > 0)
+        {
+            fprintf(f, "\t\t<initialInstrumentLineshapeFile>%s</initialInstrumentLineshapeFile>\n", calibrationSettings.m_instrumentLineshapeFile.c_str());
+        }
         fprintf(f, "\t</Calibration>\n");
     }
 

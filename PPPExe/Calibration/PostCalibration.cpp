@@ -43,7 +43,12 @@ std::string CreateOutputDirectoryForCalibration(const CSpectrumInfo& calibratedS
         calibratedSpectrum.m_startTime.day);
 
     std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
-    directoryName += "/" + dateStr + "/" + calibratedSpectrum.m_device + "/";
+
+    if (directoryName.back() != '/' && directoryName.back() != '\\')
+    {
+        directoryName += '/';
+    }
+    directoryName += dateStr + "/" + calibratedSpectrum.m_device + "/";
 
     // 4b. Make sure that the folder exists
     int ret = CreateDirectoryStructure(directoryName);
@@ -453,27 +458,37 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
         std::vector<novac::CReferenceFile> references;
         statistics.GetCalibration(spectrometer, idx, evaluationWindow.validFrom, evaluationWindow.validTo, references);
 
-        auto& window = evaluationWindow.window;
-        window.nRef = 0;
+        evaluationWindow.window = windows.front().window;
+        evaluationWindow.window.nRef = 0;
         for (const auto& reference : references)
         {
-            if (Equals(reference.m_specieName, "Fraunhofer"))
+            if (Equals(reference.m_specieName, "Fraunhofer") && evaluationWindow.window.fraunhoferRef.m_path.size() != 0)
             {
-                window.fraunhoferRef = reference;
+                evaluationWindow.window.fraunhoferRef = reference;
             }
             else
             {
-                window.ref[window.nRef] = reference;
-                ++window.nRef;
+                evaluationWindow.window.ref[evaluationWindow.window.nRef] = reference;
+                evaluationWindow.window.ref[evaluationWindow.window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX;
+                evaluationWindow.window.ref[evaluationWindow.window.nRef].m_shiftValue = 0.0;
+                evaluationWindow.window.ref[evaluationWindow.window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
+                evaluationWindow.window.ref[evaluationWindow.window.nRef].m_squeezeValue = 1.0;
+
+                ++evaluationWindow.window.nRef;
             }
         }
+
+        result.push_back(evaluationWindow);
     }
 
     // Write the result to file (together with the other previous settings).
     std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
-    directoryName += "/calibration/";
-    int ret = CreateDirectoryStructure(directoryName);
-    if (ret)
+    if (directoryName.back() != '/' && directoryName.back() != '\\')
+    {
+        directoryName += '/';
+    }
+    directoryName += "calibration/";
+    if (CreateDirectoryStructure(directoryName))
     {
         std::stringstream message;
         message << "Could not create directory for saving evaluation configuration: " << directoryName;

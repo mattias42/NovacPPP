@@ -66,8 +66,6 @@ namespace Configuration
 
     private:
 
-
-
         /** The array of fit-windows for this spectrometer */
         std::vector<FitWindowWithTime> m_windows;
     };

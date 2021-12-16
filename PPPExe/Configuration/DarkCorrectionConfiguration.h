@@ -1,12 +1,11 @@
 #pragma once
 
+#include <vector>
 #include <SpectralEvaluation/DateTime.h>
-#include <PPPLib/CArray.h>
+#include <SpectralEvaluation/Configuration/DarkSettings.h>
 
 namespace Configuration
 {
-    struct CDarkSettings;
-
     class CDarkCorrectionConfiguration
     {
     public:
@@ -20,7 +19,7 @@ namespace Configuration
             @param dSettings - dark-current correction settings
             @param validFrom - the time from which this settings is valid, NULL if valid since the beginning of time
             @param validTo - the time to which this settings is valid, NULL if valid until the end of time */
-        void InsertDarkCurrentCorrectionSettings(const CDarkSettings& dSettings, const novac::CDateTime* validFrom, const novac::CDateTime* validTo);
+        void InsertDarkCurrentCorrectionSettings(const CDarkSettings& dSettings, const novac::CDateTime& validFrom, const novac::CDateTime& validTo);
 
         /** Retrieves how the dark-current should be corrected for this spectrometer at the
                 given time.
@@ -42,15 +41,21 @@ namespace Configuration
         int GetDarkSettings(int index, CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo) const;
 
         /** Gets the number of dark-current settings configured for this spectrometer */
-        unsigned long GetSettingsNum() const;
+        int GetSettingsNum() const;
 
 
     private:
+
+        /** Basic structure for keeping track of a fit window and the time-range for which it is valid */
+        struct DarkSettingWithTime
+        {
+            CDarkSettings setting;
+            novac::CDateTime validFrom;
+            novac::CDateTime validTo;
+        };
+
         /** The array of dark-current correction options for this spectrometer */
-        // TODO: Correct, this is actually a memory leak. Change to std::vector of solid objects
-        novac::CArray <CDarkSettings*, CDarkSettings*> m_darkSettings;
-        novac::CArray <novac::CDateTime*, novac::CDateTime*> m_validFrom;
-        novac::CArray <novac::CDateTime*, novac::CDateTime*> m_validTo;
+        std::vector<DarkSettingWithTime> m_darkSettings;
 
     };
 }

@@ -1,106 +1,75 @@
 #include "DarkCorrectionConfiguration.h"
-#include <SpectralEvaluation/Configuration/DarkSettings.h>
 
 namespace Configuration
 {
-CDarkCorrectionConfiguration::CDarkCorrectionConfiguration(void)
-{
-    Clear();
-}
-
-CDarkCorrectionConfiguration::~CDarkCorrectionConfiguration(void)
-{
-    m_darkSettings.RemoveAll();
-    m_validFrom.RemoveAll();
-    m_validTo.RemoveAll();
-}
-
-void CDarkCorrectionConfiguration::Clear() {
-    m_darkSettings.RemoveAll();
-    m_validFrom.RemoveAll();
-    m_validTo.RemoveAll();
-
-    m_darkSettings.SetAtGrow(0, new CDarkSettings());
-
-    m_validFrom.SetAtGrow(0, new novac::CDateTime(0, 0, 0, 0, 0, 0));
-    m_validTo.SetAtGrow(0, new novac::CDateTime(9999, 12, 31, 23, 59, 59));
-}
-
-/** Inserts a new set of settings for correcting dark spectra into the configuration for this spectrometer.
-    @param dSettings - dark-current correction settings
-    @param validFrom - the time from which this settings is valid, NULL if valid since the beginning of time
-    @param validTo - the time to which this settings is valid, NULL if valid until the end of time */
-void CDarkCorrectionConfiguration::InsertDarkCurrentCorrectionSettings(const CDarkSettings &dSettings, const novac::CDateTime *validFrom, const novac::CDateTime *validTo) {
-
-    // make a copy of the settings
-    CDarkSettings *newSettings = new CDarkSettings();
-    *newSettings = dSettings;
-
-    // Get the time-range for which this window is valid
-    novac::CDateTime *fromTime = new novac::CDateTime(0000, 00, 00, 00, 00, 00);
-    novac::CDateTime *toTime = new novac::CDateTime(9999, 12, 31, 23, 59, 59);
-    if (validFrom != NULL) {
-        *fromTime = *validFrom;
-    }
-    if (validTo != NULL) {
-        *toTime = *validTo;
+    CDarkCorrectionConfiguration::CDarkCorrectionConfiguration(void)
+    {
+        Clear();
     }
 
-    // insert the fit-window into the array
-    int length = (int)m_darkSettings.GetCount();
-    m_darkSettings.SetAtGrow(length, newSettings);
-    m_validFrom.SetAtGrow(length, fromTime);
-    m_validTo.SetAtGrow(length, toTime);
+    CDarkCorrectionConfiguration::~CDarkCorrectionConfiguration(void)
+    {
+        m_darkSettings.clear();
+    }
 
+    void CDarkCorrectionConfiguration::Clear()
+    {
+        m_darkSettings.clear();
+    }
 
-    return;
-}
+    void CDarkCorrectionConfiguration::InsertDarkCurrentCorrectionSettings(const CDarkSettings& dSettings, const novac::CDateTime& validFrom, const novac::CDateTime& validTo) {
 
-/** Retrieves how the dark-current should be corrected for this spectrometer at the
-        given time.
-    @param dSettings - will on successfull return be filled with the settings that are
-        valid at the given time
-    @param time - the time when we want to know the settings for how the
-        dark current should be corrected
-    @return 0 if sucessful, otherwise 1 */
-int CDarkCorrectionConfiguration::GetDarkSettings(CDarkSettings &dSettings, const novac::CDateTime &time) const {
-    int length = (int)m_darkSettings.GetCount();
+        // make a copy of the settings
+        DarkSettingWithTime newSetting;
+        newSetting.setting = dSettings;
+        newSetting.validFrom = validFrom;
+        newSetting.validTo = validTo;
 
-    for (int k = 0; k < length; ++k) {
-        novac::CDateTime *from = m_validFrom.GetAt(k);
-        novac::CDateTime *to = m_validTo.GetAt(k);
-        if ((*from < time || *from == time) && time < *to) {
-            dSettings = *m_darkSettings.GetAt(k);
+        m_darkSettings.push_back(newSetting);
+    }
+
+    int CDarkCorrectionConfiguration::GetDarkSettings(CDarkSettings& dSettings, const novac::CDateTime& time) const
+    {
+        for (const auto& setting : m_darkSettings)
+        {
+            if ((setting.validFrom < time || setting.validFrom == time) && time < setting.validTo)
+            {
+                dSettings = setting.setting;
+                return 0;
+            }
+        }
+
+        // always return the default if no special setting can be found.
+        DarkSettingWithTime defaultSetting;
+        dSettings = defaultSetting.setting;
+        return 0;
+    }
+
+    int CDarkCorrectionConfiguration::GetDarkSettings(int index, CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo) const
+    {
+        if (index < 0 || index >= GetSettingsNum())
+            return 1;
+
+        if (m_darkSettings.size() == 0)
+        {
+            DarkSettingWithTime defaultSetting;
+            dSettings = defaultSetting.setting;
+            validFrom = novac::CDateTime(0000, 00, 00, 00, 00, 00);
+            validTo = novac::CDateTime(9999, 12, 31, 23, 59, 59);
             return 0;
         }
+
+        dSettings = m_darkSettings[index].setting;
+        validFrom = m_darkSettings[index].validFrom;
+        validTo = m_darkSettings[index].validTo;
+
+        return 0;
     }
 
-
-    return 1;
-}
-
-/** Retrieves a dark-current settings from the configuration for this spectrometer.
-    @param index - the index of the configuration to get. If this is < 0 or
-        larger than the number of dark-current settings configured this function
-        returns 1 and the dark-current setting is undefined
-    @param dSettings - the dark-current settings to get
-    @param validFrom - the time from which this fit-window is valid
-    @param validTo - the time to which this fit-window is valid
-    @return 0 if sucessful, otherwise 1 */
-int CDarkCorrectionConfiguration::GetDarkSettings(int index, CDarkSettings &dSettings, novac::CDateTime &validFrom, novac::CDateTime &validTo) const {
-    if (index < 0 || index >= m_darkSettings.GetSize())
-        return 1;
-
-    dSettings = *(m_darkSettings.GetAt(index));
-    validFrom = *(m_validFrom.GetAt(index));
-    validTo = *(m_validTo.GetAt(index));
-
-    return 0;
-}
-
-unsigned long CDarkCorrectionConfiguration::GetSettingsNum() const
-{
-    return m_darkSettings.GetSize();
-}
+    int CDarkCorrectionConfiguration::GetSettingsNum() const
+    {
+        // There's always the default setting..
+        return std::max(1, static_cast<int>(m_darkSettings.size()));
+    }
 
 }
