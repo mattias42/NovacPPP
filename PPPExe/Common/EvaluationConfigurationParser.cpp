@@ -97,8 +97,8 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
         fprintf(f, "\t\t<name>%s</name>\n", window.name.c_str());
 
         // the time-range when the fit-window is valid
-        fprintf(f, "\t\t<validFrom>%04d.%02d.%02d</validFrom>\n", from.year, from.month, from.day);
-        fprintf(f, "\t\t<validTo>%04d.%02d.%02d</validTo>\n", to.year, to.month, to.day);
+        fprintf(f, "\t\t<validFrom>%04d.%02d.%02dT%02d:%02d:%02d</validFrom>\n", from.year, from.month, from.day, from.hour, from.minute, from.second);
+        fprintf(f, "\t\t<validTo>%04d.%02d.%02dT%02d:%02d:%02d</validTo>\n", to.year, to.month, to.day, to.hour, to.minute, to.second);
 
         // The size of the spectra and the interlace-steps
         fprintf(f, "\t\t<specLength>%d</specLength>\n", window.specLength);
