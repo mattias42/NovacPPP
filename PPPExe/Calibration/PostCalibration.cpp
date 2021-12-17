@@ -126,6 +126,7 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     }
 
     // Save the Fraunhofer reference as well
+    if (IsExistingFile(standardCrossSections.FraunhoferReferenceFileName()))
     {
         // Do the convolution
         referenceController.m_convertToAir = false;

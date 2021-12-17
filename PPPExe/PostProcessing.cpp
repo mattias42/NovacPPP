@@ -217,6 +217,18 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
         return;
     }
 
+    novac::StandardCrossSectionSetup standardCrossSections{ m_exePath };
+    if (standardCrossSections.NumberOfReferences() == 0)
+    {
+        ShowMessage("The StandardReferences folder is either missing or contains no references. No references can be created.");
+        return;
+    }
+    else if (!IsExistingFile(standardCrossSections.FraunhoferReferenceFileName()))
+    {
+        ShowMessage("Cannot locate the Fraunhofer reference in the StandardReferences folder. The file is either missing or path is invalid. No Fraunhofer reference can be created.");
+    }
+
+
     // 1. Find all .pak files in the directory.
     ShowMessage("--- Locating Pak Files --- ");
     std::vector<std::string> pakFileList;
@@ -246,7 +258,6 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
 
     ShowMessage("--- Running Calibrations --- ");
 
-    novac::StandardCrossSectionSetup standardCrossSections{ m_exePath };
     novac::CPostCalibration calibrationController{ standardCrossSections };
     novac::CPostCalibrationStatistics calibrationStatistics;
 
@@ -513,7 +524,6 @@ int CPostProcessing::CheckInstrumentCalibrationSettings() const
             returnCode = 1;
         }
     }
-
     return returnCode;
 }
 
