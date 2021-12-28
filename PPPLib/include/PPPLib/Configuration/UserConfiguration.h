@@ -4,10 +4,11 @@
 #include <SpectralEvaluation/Configuration/SkySettings.h>
 #include <SpectralEvaluation/Spectra/WavelengthRange.h>
 
-#include "../Common/Common.h"
-#include "../Molecule.h"
-
+#include <PPPLib/Definitions.h>
+#include <PPPLib/Molecule.h>
+#include <PPPLib/Configuration/ProcessingMode.h>
 #include <PPPLib/MFC/CString.h>
+
 
 namespace Configuration {
     /** The class <b>CUserConfiguration</b> stores the settings from the user

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../Common/Common.h"
-
+#include <PPPLib/Configuration/InstrumentType.h>
 #include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/Spectra/SpectrometerModel.h>

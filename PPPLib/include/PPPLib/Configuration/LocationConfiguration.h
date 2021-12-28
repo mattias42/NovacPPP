@@ -1,6 +1,6 @@
 #pragma once
 
-#include "InstrumentLocation.h"
+#include <PPPLib/Configuration/InstrumentLocation.h>
 #include <PPPLib/MFC/CString.h>
 
 namespace Configuration

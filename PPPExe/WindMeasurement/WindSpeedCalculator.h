@@ -2,7 +2,7 @@
 
 #include "../Common/Common.h"
 #include "WindSpeedMeasSettings.h"
-#include "../Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 
 #include <PPPLib/MFC/CString.h>
 

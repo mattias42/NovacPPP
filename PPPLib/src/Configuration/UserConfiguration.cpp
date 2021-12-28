@@ -1,4 +1,4 @@
-#include "UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 #include <algorithm>
 
 // The global user-configuration object

@@ -5,7 +5,7 @@
 #include <vector>
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
-#include "../SpectrometerId.h"
+#include <PPPLib/SpectrometerId.h>
 
 namespace novac
 {

@@ -1,4 +1,4 @@
-#include "EvaluationConfiguration.h"
+#include <PPPLib/Configuration/EvaluationConfiguration.h>
 #include <SpectralEvaluation/StringUtils.h>
 
 using namespace Configuration;

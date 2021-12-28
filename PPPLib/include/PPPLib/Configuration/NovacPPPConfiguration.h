@@ -1,8 +1,8 @@
 #pragma once
 
-#include "InstrumentConfiguration.h"
+#include <PPPLib/Configuration/InstrumentConfiguration.h>
 #include <PPPLib/MFC/CString.h>
-#include "../SpectrometerId.h"
+#include <PPPLib/SpectrometerId.h>
 
 /**
     The class <b>CNovacPPPConfiguration</b> is the main configuration

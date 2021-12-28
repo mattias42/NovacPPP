@@ -5,8 +5,8 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 #include <SpectralEvaluation/File/ScanFileHandler.h>
-#include "../Configuration/NovacPPPConfiguration.h"
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
 #include "../Common/EvaluationConfigurationParser.h"
 #include "PostCalibrationStatistics.h"
 #include <sstream>

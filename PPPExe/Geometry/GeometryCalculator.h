@@ -1,9 +1,10 @@
 #pragma once
 
+#include "../Common/Common.h"
 #include <SpectralEvaluation/GPSData.h>
 #include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
 #include "GeometryResult.h"
-#include "../Configuration/InstrumentLocation.h"
+#include <PPPLib/Configuration/InstrumentLocation.h>
 
 #include <PPPLib/MFC/CString.h>
 

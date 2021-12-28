@@ -1,8 +1,7 @@
-#include "LocationConfiguration.h"
+#include <PPPLib/Configuration/LocationConfiguration.h>
 
 namespace Configuration
 {
-
     void CLocationConfiguration::Clear()
     {
         m_locationNum = 0;

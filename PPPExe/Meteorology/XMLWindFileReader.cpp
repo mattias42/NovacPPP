@@ -1,7 +1,7 @@
 #include "XMLWindFileReader.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // we need to be able to download data from the FTP-server
 #include "../Communication/FTPServerConnection.h"

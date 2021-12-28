@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "Molecule.h"
+#include <PPPLib/Molecule.h>
 
 CMolecule::CMolecule(void)
 {

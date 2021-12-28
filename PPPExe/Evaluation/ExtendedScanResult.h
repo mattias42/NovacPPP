@@ -3,6 +3,7 @@
 #include "../Common/Common.h"
 #include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <PPPLib/Definitions.h>
 
 #ifndef EXTENDEDSCANRESULT_H
 #define EXTENDEDSCANRESULT_H

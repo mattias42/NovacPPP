@@ -1,13 +1,13 @@
 #include "FluxCalculator.h"
 
 // Here we need to know about the global settings
-#include "../Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 
 // ... support for handling the evaluation-log files...
 #include "../Common/EvaluationLogFileHandler.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 #include <PPPLib/MFC/CFileUtils.h>
 #include <Poco/Path.h>

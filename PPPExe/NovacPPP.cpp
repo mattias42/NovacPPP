@@ -6,8 +6,8 @@
 
 #include "Common/Common.h"
 #include "SetupFileReader.h"
-#include "Configuration/NovacPPPConfiguration.h"
-#include "Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
 #include "Common/EvaluationConfigurationParser.h"
 #include "Common/ProcessingFileReader.h"
 #include "PostProcessing.h"

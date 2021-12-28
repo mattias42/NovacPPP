@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "../SpectrometerId.h"
+#include <PPPLib/SpectrometerId.h>
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Evaluation/ReferenceFile.h>
 

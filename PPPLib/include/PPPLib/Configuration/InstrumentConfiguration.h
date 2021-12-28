@@ -1,9 +1,9 @@
 #pragma once
 
-#include "LocationConfiguration.h"
-#include "EvaluationConfiguration.h"
-#include "DarkCorrectionConfiguration.h"
-#include "InstrumentCalibrationConfiguration.h"
+#include <PPPLib/Configuration/LocationConfiguration.h>
+#include <PPPLib/Configuration/EvaluationConfiguration.h>
+#include <PPPLib/Configuration/DarkCorrectionConfiguration.h>
+#include <PPPLib/Configuration/InstrumentCalibrationConfiguration.h>
 
 /**
     The class <b>CInstrumentConfiguration</b> containst the configuration

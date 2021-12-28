@@ -25,10 +25,10 @@
 #include "Flux/FluxStatistics.h"
 
 // This is the configuration of the network
-#include "Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 
 // This is the settings for how to do the procesing
-#include "Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // We also need to read the evaluation-log files
 #include "Common/EvaluationLogFileHandler.h"

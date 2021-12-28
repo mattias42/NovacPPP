@@ -7,7 +7,7 @@
 #include <SpectralEvaluation/Evaluation/BasicScanEvaluationResult.h>
 
 #include "../Flux/FluxResult.h"
-#include "../Molecule.h"
+#include <PPPLib/Molecule.h>
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CArray.h>
 

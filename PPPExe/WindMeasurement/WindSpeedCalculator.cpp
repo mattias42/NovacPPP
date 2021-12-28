@@ -5,7 +5,7 @@
 #include <cstring>
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 

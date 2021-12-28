@@ -1,7 +1,8 @@
 #pragma once
 
 #include "XMLFileReader.h"
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
+#include "Common.h"
 
 namespace FileHandler {
 

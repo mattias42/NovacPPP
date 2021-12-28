@@ -1,4 +1,4 @@
-#include "DarkCorrectionConfiguration.h"
+#include <PPPLib/Configuration/DarkCorrectionConfiguration.h>
 
 namespace Configuration
 {

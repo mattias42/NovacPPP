@@ -1,15 +1,15 @@
 #include "StratosphereCalculator.h"
 
 #include "../Evaluation/ScanResult.h"
-#include "../Molecule.h"
+#include <PPPLib/Molecule.h>
 #include "../Common/Common.h"
 #include "../Common/EvaluationLogFileHandler.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // This is the configuration of the network
-#include "../Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 
 #include <Poco/Path.h>
 
@@ -31,7 +31,7 @@ CStratosphereCalculator::CZenithMeasurement::~CZenithMeasurement() {
 
 }
 
-CStratosphereCalculator::CZenithMeasurement &CStratosphereCalculator::CZenithMeasurement::operator =(const CStratosphereCalculator::CZenithMeasurement &z) {
+CStratosphereCalculator::CZenithMeasurement& CStratosphereCalculator::CZenithMeasurement::operator =(const CStratosphereCalculator::CZenithMeasurement& z) {
     this->time = z.time;
     this->column = z.column;
     this->AMF = z.AMF;
@@ -48,13 +48,13 @@ CStratosphereCalculator::CMeasurementDay::~CMeasurementDay() {
 
 }
 
-CStratosphereCalculator::CMeasurementDay &CStratosphereCalculator::CMeasurementDay::operator =(const CStratosphereCalculator::CMeasurementDay &m) {
+CStratosphereCalculator::CMeasurementDay& CStratosphereCalculator::CMeasurementDay::operator =(const CStratosphereCalculator::CMeasurementDay& m) {
     this->day = m.day;
     this->measList.clear();
 
     std::list<CZenithMeasurement>::const_iterator p = m.measList.begin();
     while (p != m.measList.end()) {
-        CZenithMeasurement &zm = (CZenithMeasurement &)*(p++);
+        CZenithMeasurement& zm = (CZenithMeasurement&)*(p++);
         this->measList.push_back(zm);
     }
 
@@ -74,7 +74,7 @@ CStratosphereCalculator::~CStratosphereCalculator(void)
 /** Calculates the stratospheric columns based on the results int the
     supplied list of evaluation logs.
 */
-void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtendedScanResult> &results) {
+void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtendedScanResult>& results) {
     double vcd, vcdErr, s0;
     novac::CString fileName;
 
@@ -90,7 +90,7 @@ void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtend
     // write the results to files
     std::list<CMeasurementDay>::const_iterator p = m_measurementDays.begin();
     while (p != m_measurementDays.end()) {
-        CMeasurementDay &m = (CMeasurementDay &)*(p++);
+        CMeasurementDay& m = (CMeasurementDay&)*(p++);
 
         CalculateVCD(m, vcd, vcdErr, s0);
 
@@ -100,7 +100,7 @@ void CStratosphereCalculator::CalculateVCDs(const std::list <Evaluation::CExtend
 
 /** Builds the list of measurements. I.e. takes the supplied
     result files and builds the list 'm_measurementDays' */
-void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::CExtendedScanResult> &results) {
+void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::CExtendedScanResult>& results) {
     std::list<Evaluation::CExtendedScanResult>::const_iterator p = results.begin();
     novac::CString mainFitWindowName = novac::CString(g_userSettings.m_fitWindowsToUse[g_userSettings.m_mainFitWindow]);
     novac::CString evalLogfileToRead;
@@ -109,7 +109,7 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
 
     // loop through all the evaluation log files
     while (p != results.end()) {
-        const Evaluation::CExtendedScanResult &result = (Evaluation::CExtendedScanResult &)*(p++);
+        const Evaluation::CExtendedScanResult& result = (Evaluation::CExtendedScanResult&)*(p++);
 
         evalLogfileToRead.Format("");
         for (int k = 0; k < g_userSettings.m_nFitWindowsToUse; ++k) {
@@ -129,7 +129,7 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
             continue;
 
         // Get a handle to the result
-        Evaluation::CScanResult &scanResult = reader.m_scan[0];
+        Evaluation::CScanResult& scanResult = reader.m_scan[0];
 
         // loop through the measurements in this scan and insert them into the correct measurement day
         CMeasurementDay measurementDay;
@@ -161,7 +161,7 @@ void CStratosphereCalculator::BuildMeasurementList(const std::list <Evaluation::
 
 /** Inserts the results in the supplied measurement day structure
     into the appropriate place in the list of measurements */
-void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &mday) {
+void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay& mday) {
     CDateTime measDate = CDateTime(mday.day.year, mday.day.month, mday.day.day, 0, 0, 0);
     CMeasurementDay r;
     r = mday; // make a local copy of the results
@@ -169,7 +169,7 @@ void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &m
 
     std::list<CMeasurementDay>::iterator p = m_measurementDays.begin();
     while (p != m_measurementDays.end()) {
-        CMeasurementDay &d = (CMeasurementDay &)*p;
+        CMeasurementDay& d = (CMeasurementDay&)*p;
         if (d.day == measDate) {
             // insert the data into this day
             d.measList.insert(d.measList.end(), r.measList.begin(), r.measList.end());
@@ -197,7 +197,7 @@ void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay &m
 
 /** Retrieves the Air Mass Factor for a zenith measuremnt performed
     at the given location and at the given time of day (UTC). */
-double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData &location, const CDateTime &gmtTime) {
+double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData& location, const CDateTime& gmtTime) {
     double SZA, SAZ;
 
     if (SUCCESS != Common::GetSunPosition(gmtTime, location.m_latitude, location.m_longitude, SZA, SAZ))
@@ -218,7 +218,7 @@ void CStratosphereCalculator::CalculateVCD(CMeasurementDay& /*measDay*/, double&
 }
 
 /** Writes the given results to the output file */
-void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double /*VCD*/, double /*VCDErr*/, double /*S0*/) {
+void CStratosphereCalculator::WriteResultToFile(CMeasurementDay& measDay, double /*VCD*/, double /*VCDErr*/, double /*S0*/) {
     bool writeHeader = false;
     novac::CString fileName;
 
@@ -228,7 +228,7 @@ void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double
     if (!IsExistingFile(fileName))
         writeHeader = true;
 
-    FILE *f = fopen(fileName, "a");
+    FILE* f = fopen(fileName, "a");
     if (f == NULL)
         return;
 
@@ -239,7 +239,7 @@ void CStratosphereCalculator::WriteResultToFile(CMeasurementDay &measDay, double
 
     std::list<CZenithMeasurement>::const_iterator p = measDay.measList.begin();
     while (p != measDay.measList.end()) {
-        CZenithMeasurement &m = (CZenithMeasurement &)*(p++);
+        CZenithMeasurement& m = (CZenithMeasurement&)*(p++);
 
         fprintf(f, "%04d.%02d.%02dT%02d:%02d:%02d\t", m.time.year, m.time.month, m.time.day, m.time.hour, m.time.minute, m.time.second);
         fprintf(f, "%.5e\t", m.column);

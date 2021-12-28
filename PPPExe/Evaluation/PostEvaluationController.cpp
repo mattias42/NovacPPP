@@ -10,7 +10,7 @@
 #include "../ContinuationOfProcessing.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // ... support for handling the evaluation-log files...
 #include "../Common/EvaluationLogFileHandler.h"

@@ -10,6 +10,7 @@
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CList.h>
 #include <PPPLib/Measurement.h>
+#include <PPPLib/Configuration/InstrumentType.h>
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 
@@ -60,34 +61,9 @@ void UpdateMessage(const novac::CString& message);
 // ---------------- DEFINED CONSTANTS ----------------------------
 // ---------------------------------------------------------------
 
-// The list of instrument types available
-enum class INSTRUMENT_TYPE { INSTR_GOTHENBURG, INSTR_HEIDELBERG };
-
-
-/** The options for how to do the post-processing.
-    This also defines what types of operations will be performed */
-enum class PROCESSING_MODE {
-    // Default mode, fliuxes are calculated from each successfully evaluated scan.
-    PROCESSING_MODE_FLUX,
-
-    // Calculation of molecular ratios in the plume, e.g. BrO/SO2. Not fully implemented.
-    PROCESSING_MODE_COMPOSITION,
-
-
-    PROCESSING_MODE_STRATOSPHERE,
-
-    // Calculation of plume heights and plume directions.
-    PROCESSING_MODE_GEOMETRY,
-
-    // Performing instrument calibrations only, useful for prepairing for a later evaluation run.
-    PROCESSING_MODE_INSTRUMENT_CALIBRATION
-};
 
 // The maximum number of references that can be fitted to a single spectrum
 #define MAX_N_REFERENCES 10
-
-// The maximum number of fit windows that can be handled at any single time
-#define MAX_FIT_WINDOWS 5
 
 //size of buffer to receive data
 #define SIZEOFBUFFER 2048

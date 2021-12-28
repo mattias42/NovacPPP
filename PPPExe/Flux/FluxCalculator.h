@@ -5,7 +5,7 @@
 #include "../Evaluation/ScanResult.h"
 
 #include "../Common/Common.h"
-#include "../Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include "../Meteorology/WindDataBase.h"
 #include "../Geometry/PlumeHeight.h"
 

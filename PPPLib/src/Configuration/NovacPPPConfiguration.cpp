@@ -1,4 +1,5 @@
-#include "NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Logging.h>
 
 // The global configuration object
 Configuration::CNovacPPPConfiguration g_setup;

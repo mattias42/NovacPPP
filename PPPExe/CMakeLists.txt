@@ -8,7 +8,6 @@ cmake_minimum_required (VERSION 3.6)
 add_subdirectory(Calibration)
 add_subdirectory(Common)
 add_subdirectory(Communication)
-add_subdirectory(Configuration)
 add_subdirectory(Evaluation)
 add_subdirectory(Filesystem)
 add_subdirectory(Flux)
@@ -26,8 +25,6 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/FileInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/FileInfo.h
     ${CMAKE_CURRENT_LIST_DIR}/MeteorologySource.h
-    ${CMAKE_CURRENT_LIST_DIR}/Molecule.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Molecule.h
     ${CMAKE_CURRENT_LIST_DIR}/NovacPPP.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ObservatoryInfo.h
@@ -37,7 +34,6 @@ add_executable(NovacPPP
     ${CMAKE_CURRENT_LIST_DIR}/PostProcessingStatistics.h
     ${CMAKE_CURRENT_LIST_DIR}/SetupFileReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/SetupFileReader.h
-    ${CMAKE_CURRENT_LIST_DIR}/SpectrometerId.h
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/StringTokenizer.h
 
@@ -51,8 +47,6 @@ add_executable(NovacPPP
     ${NPP_COMMON_SPECTRUM_FORMAT_SOURCES}
     ${NPP_COMMUNICATION_HEADERS}
     ${NPP_COMMUNICATION_SOURCES}
-    ${NPP_CONFIGURATION_HEADERS}
-    ${NPP_CONFIGURATION_SOURCES}
     ${NPP_EVALUATION_HEADERS}
     ${NPP_EVALUATION_SOURCES}
     ${NPP_FILESYSTEM_HEADERS}
@@ -88,7 +82,6 @@ ENDIF()
 
 IF(WIN32)
     #Organize the files into folders, for ease of use (Windows and Visual Studio only)
-    source_group("Header Files\\Calibration"            FILES ${NPP_CALIBRATION_HEADERS})
     source_group("Header Files\\Common"                 FILES ${NPP_COMMON_HEADERS})
     source_group("Header Files\\Communication"          FILES ${NPP_COMMUNICATION_HEADERS})
     source_group("Header Files\\Configuration"          FILES ${NPP_CONFIGURATION_HEADERS})
@@ -100,7 +93,6 @@ IF(WIN32)
     source_group("Header Files\\Stratosphere"           FILES ${NPP_STRATOSPHERE_HEADERS})
     source_group("Header Files\\WindMeasurement"        FILES ${NPP_WINDMEASUREMENT_HEADERS})
 
-    source_group("Source Files\\Calibration"            FILES ${NPP_CALIBRATION_SOURCES})
     source_group("Source Files\\Common"                 FILES ${NPP_COMMON_SOURCES})
     source_group("Source Files\\Communication"          FILES ${NPP_COMMUNICATION_SOURCES})
     source_group("Source Files\\Configuration"          FILES ${NPP_CONFIGURATION_SOURCES})

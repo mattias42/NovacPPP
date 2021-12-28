@@ -4,7 +4,7 @@
 #include <PPPLib/MFC/CFileUtils.h>
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // This is the global list of volcanoes
 #include <PPPLib/VolcanoInfo.h>
