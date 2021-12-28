@@ -84,7 +84,7 @@ namespace Configuration
     }
 
     /** Compares to set of settings */
-    bool CUserConfiguration::operator==(const CUserConfiguration &settings2) {
+    bool CUserConfiguration::operator==(const CUserConfiguration& settings2) {
 
         if (!Equals(m_tempDirectory, settings2.m_tempDirectory))
             return false;

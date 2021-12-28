@@ -7,8 +7,8 @@
 #define COMMON_H
 
 #include <PPPLib/PPPLib.h>
-#include <PPPLib/CString.h>
-#include <PPPLib/CList.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CList.h>
 #include <PPPLib/Measurement.h>
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>

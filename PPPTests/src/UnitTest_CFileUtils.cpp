@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
 
 namespace novac
 {

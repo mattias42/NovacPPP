@@ -3,8 +3,8 @@
 #include "../stdafx.h"
 
 #include <SpectralEvaluation/DateTime.h>
-#include <PPPLib/CString.h>
-#include <PPPLib/CStdioFile.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CStdioFile.h>
 
 namespace FileHandler
 {

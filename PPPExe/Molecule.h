@@ -1,7 +1,7 @@
 #ifndef NOVAC_PPP_MOLECULE_H
 #define NOVAC_PPP_MOLECULE_H
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 /** The class <b>CMolecule</b> is used to store information on a single
     trace gas species, such as it's molecular weight.

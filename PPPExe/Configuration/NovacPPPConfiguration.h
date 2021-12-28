@@ -1,7 +1,7 @@
 #pragma once
 
 #include "InstrumentConfiguration.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 #include "../SpectrometerId.h"
 
 /**

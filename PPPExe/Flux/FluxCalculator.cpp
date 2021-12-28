@@ -9,11 +9,11 @@
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
 #include <Poco/Path.h>
 
-extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CNovacPPPConfiguration g_setup;	   // <-- The settings
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 using namespace Flux;
 using namespace novac;
@@ -32,7 +32,7 @@ CFluxCalculator::~CFluxCalculator(void)
         the result of the evaluation.
     @return 0 on success, else non-zero value
     */
-int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult) {
+int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase& windDataBase, const Geometry::CPlumeHeight& plumeAltitude, CFluxResult& fluxResult) {
     CDateTime skyStartTime;
     novac::CString errorMessage, shortFileName, serial;
     Geometry::CPlumeHeight relativePlumeHeight;
@@ -88,7 +88,7 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     }
 
     // 6. extract the scan
-    Evaluation::CScanResult &result = reader.m_scan[0];
+    Evaluation::CScanResult& result = reader.m_scan[0];
 
     // 6b. Improve on the start-time of the scan...
     result.GetSkyStartTime(skyStartTime);
@@ -171,9 +171,9 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     was made.
     @return 0 if successful otherwise non-zero
 */
-int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &startTime, Configuration::CInstrumentLocation &instrLocation) {
+int CFluxCalculator::GetLocation(const novac::CString& serial, const CDateTime& startTime, Configuration::CInstrumentLocation& instrLocation) {
     CDateTime day, evalValidFrom, evalValidTo;
-    Configuration::CInstrumentConfiguration *instrumentConf = nullptr;
+    Configuration::CInstrumentConfiguration* instrumentConf = nullptr;
     Configuration::CInstrumentLocation singleLocation;
     novac::CString errorMessage;
 
@@ -191,7 +191,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &
     }
 
     // Next find the instrument location that is valid for this date
-    Configuration::CLocationConfiguration &locationconf = instrumentConf->m_location;
+    Configuration::CLocationConfiguration& locationconf = instrumentConf->m_location;
     bool foundValidLocation = false;
     for (int k = 0; k < (int)locationconf.GetLocationNum(); ++k) {
         locationconf.GetLocation(k, singleLocation);
@@ -215,7 +215,7 @@ int CFluxCalculator::GetLocation(const novac::CString &serial, const CDateTime &
 /** Appends the evaluated flux to the appropriate log file.
     @param scan - the scan itself, also containing information about the evaluation and the flux.
     @return SUCCESS if operation completed sucessfully. */
-RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult, const Evaluation::CScanResult *result) {
+RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult& fluxResult, const Evaluation::CScanResult* result) {
     novac::CString string, dateStr, dateStr2, serialNumber;
     novac::CString fluxLogFile, directory;
     novac::CString wdSrc, wsSrc, phSrc;
@@ -322,7 +322,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
     // 20c. Check if the file exists
     if (!IsExistingFile(fluxLogFile)) {
         // write the header
-        FILE *f = fopen(fluxLogFile, "w");
+        FILE* f = fopen(fluxLogFile, "w");
         if (f != nullptr) {
             fprintf(f, "serial=%s\n", (const char*)serialNumber);
             fprintf(f, "volcano=x\n");//,		m_common.SimplifyString(spectrometer.m_scanner.volcano));
@@ -339,7 +339,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult &fluxResult
     }
 
     // 20d. Write the flux-result to the file
-    FILE *f = fopen(fluxLogFile, "a+");
+    FILE* f = fopen(fluxLogFile, "a+");
     if (f != nullptr) {
         fprintf(f, "%s\n", (const char*)string);
         fclose(f);

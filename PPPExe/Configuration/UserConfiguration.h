@@ -7,7 +7,7 @@
 #include "../Common/Common.h"
 #include "../Molecule.h"
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 namespace Configuration {
     /** The class <b>CUserConfiguration</b> stores the settings from the user

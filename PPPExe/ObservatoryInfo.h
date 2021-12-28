@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 #define MAX_OBSERVATORIES 35
 
@@ -13,9 +13,9 @@ public:
     ~CObservatoryInfo(void);
 
     /** The number of observatories */
-    unsigned int	m_observatoryNum;
+    unsigned int m_observatoryNum;
 
     /** The name of the observatories */
-    novac::CString	m_name[MAX_OBSERVATORIES];
+    novac::CString m_name[MAX_OBSERVATORIES];
 
 };

@@ -9,7 +9,7 @@ CFluxStatistics::CMeasurementDay::CMeasurementDay() {
 CFluxStatistics::CMeasurementDay::~CMeasurementDay() {
 
 }
-CFluxStatistics::CMeasurementDay &CFluxStatistics::CMeasurementDay::operator =(const CFluxStatistics::CMeasurementDay &m) {
+CFluxStatistics::CMeasurementDay& CFluxStatistics::CMeasurementDay::operator =(const CFluxStatistics::CMeasurementDay& m) {
     this->day = m.day;
 
     auto p = m.fluxList.GetHeadPosition();
@@ -20,7 +20,7 @@ CFluxStatistics::CMeasurementDay &CFluxStatistics::CMeasurementDay::operator =(c
     return *this;
 }
 
-void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString&> &instruments) {
+void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString& str, novac::CList <novac::CString, novac::CString&>& instruments) {
     // the statistics of the fluxes
     str.Format("Date\tAverageFlux(kg/s)\tMedianFlux(kg/s)\tStdFlux(kg/s)\tnMeasurements");
 
@@ -34,11 +34,11 @@ void CFluxStatistics::CMeasurementDay::GetHeaderLine(novac::CString &str, novac:
     return;
 }
 
-void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments) {
+void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString& str, novac::CList <novac::CString, novac::CString&>& instruments) {
     double average, median, std;
     long nMeasurements = (long)this->fluxList.GetCount();
-    double *data = new double[nMeasurements];
-    double *sortedData = new double[nMeasurements];
+    double* data = new double[nMeasurements];
+    double* sortedData = new double[nMeasurements];
     int nMeasurementsFromThisInstrument = 0;
     int k = 0;
 
@@ -68,11 +68,11 @@ void CFluxStatistics::CMeasurementDay::GetStatistics(novac::CString &str, novac:
     // go through the data and see how many points we have from each instrument
     auto p2 = instruments.GetHeadPosition();
     while (p2 != nullptr) {
-        novac::CString &serial = instruments.GetNext(p2);
+        novac::CString& serial = instruments.GetNext(p2);
         nMeasurementsFromThisInstrument = 0;
         auto fluxPosition = fluxList.GetHeadPosition();
         while (fluxPosition != nullptr) {
-            const CFluxResult &flux = fluxList.GetNext(fluxPosition);
+            const CFluxResult& flux = fluxList.GetNext(fluxPosition);
             if (Equals(flux.m_instrument, serial)) {
                 ++nMeasurementsFromThisInstrument;
             }
@@ -116,7 +116,7 @@ void CFluxStatistics::AttachFluxList(novac::CList <CFluxResult, CFluxResult&>& c
 
 /** Attaches the given flux result to the current set of
     measured data */
-void CFluxStatistics::AttachFlux(const CFluxResult &result) {
+void CFluxStatistics::AttachFlux(const CFluxResult& result) {
     CFluxResult r = result; // make a local copy of the result
     CMeasurementDay measday;
     CDateTime resultDay = CDateTime(result.m_startTime.year, result.m_startTime.month, result.m_startTime.day, 0, 0, 0);
@@ -138,7 +138,7 @@ void CFluxStatistics::AttachFlux(const CFluxResult &result) {
     //	right place for the result and insert it.
     auto meas_p = m_measurements.GetHeadPosition();
     while (meas_p != nullptr) {
-        CMeasurementDay &d = m_measurements.GetAt(meas_p);
+        CMeasurementDay& d = m_measurements.GetAt(meas_p);
 
         if (d.day == resultDay) {
             // insert the result on this day.
@@ -168,9 +168,9 @@ void CFluxStatistics::AttachFlux(const CFluxResult &result) {
 
 /** Calculates statistics on the statistics we have here and writes
     the results to file. */
-void CFluxStatistics::WriteFluxStat(const novac::CString &fileName) {
+void CFluxStatistics::WriteFluxStat(const novac::CString& fileName) {
     novac::CString str;
-    FILE *f = nullptr;
+    FILE* f = nullptr;
 
     // try to open the file
     if (IsExistingFile(fileName)) {
@@ -192,7 +192,7 @@ void CFluxStatistics::WriteFluxStat(const novac::CString &fileName) {
     //	write the number of measurements made ...
     auto p = m_measurements.GetHeadPosition();
     while (p != nullptr) {
-        CMeasurementDay &measDay = m_measurements.GetNext(p);
+        CMeasurementDay& measDay = m_measurements.GetNext(p);
 
         measDay.GetStatistics(str, this->m_instruments);
 

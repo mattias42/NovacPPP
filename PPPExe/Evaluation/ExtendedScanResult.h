@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Common/Common.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
 
 #ifndef EXTENDEDSCANRESULT_H

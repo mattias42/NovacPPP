@@ -3,9 +3,8 @@
 #ifndef FLUXSTATISTICS_H
 #define FLUXSTATISTICS_H
 
-// #include <afxtempl.h>
-#include <PPPLib/CString.h>
-#include <PPPLib/CList.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CList.h>
 #include "FluxResult.h"
 
 namespace Flux {
@@ -33,11 +32,11 @@ namespace Flux {
 
         /** Attaches the given flux result to the current set of
             measured data */
-        void AttachFlux(const CFluxResult &result);
+        void AttachFlux(const CFluxResult& result);
 
         /** Calculates statistics on the statistics we have here and writes
             the results to file. */
-        void WriteFluxStat(const novac::CString &fileName);
+        void WriteFluxStat(const novac::CString& fileName);
 
     private:
         // ----------------------------------------------------------------------
@@ -50,9 +49,9 @@ namespace Flux {
             ~CMeasurementDay();
             novac::CDateTime day; // the date of the measurement
             novac::CList <CFluxResult> fluxList;
-            static void GetHeaderLine(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
-            void GetStatistics(novac::CString &str, novac::CList <novac::CString, novac::CString &> &instruments);
-            CMeasurementDay &operator=(const CMeasurementDay &m);
+            static void GetHeaderLine(novac::CString& str, novac::CList <novac::CString, novac::CString&>& instruments);
+            void GetStatistics(novac::CString& str, novac::CList <novac::CString, novac::CString&>& instruments);
+            CMeasurementDay& operator=(const CMeasurementDay& m);
         };
 
         /** The list of measurement results.
@@ -61,7 +60,7 @@ namespace Flux {
 
         /** The list of instruments used. This is updated together with
             'm_measurements' when calling 'AttachFlux' */
-        novac::CList <novac::CString, novac::CString &> m_instruments;
+        novac::CList <novac::CString, novac::CString&> m_instruments;
 
         // ----------------------------------------------------------------------
         // --------------------- PRIVATE METHODS --------------------------------

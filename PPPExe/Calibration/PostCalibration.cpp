@@ -11,7 +11,7 @@
 #include "PostCalibrationStatistics.h"
 #include <sstream>
 #include <algorithm>
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
 
 extern Configuration::CNovacPPPConfiguration g_setup; // <-- The setup of the instruments
 extern Configuration::CUserConfiguration g_userSettings; // <-- The settings of the user for what to process

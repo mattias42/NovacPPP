@@ -5,14 +5,14 @@
 #include <cstring>
 #include <algorithm>
 
-#include <PPPLib/CSingleLock.h>
+#include <PPPLib/MFC/CSingleLock.h>
 
 // This is the settings for how to do the procesing
 #include "../Configuration/UserConfiguration.h"
 
 // Global variables;
-novac::CCriticalSection									g_evalLogCritSect; // synchronization access to evaluation-log files
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+novac::CCriticalSection g_evalLogCritSect; // synchronization access to evaluation-log files
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 
 using namespace FileHandler;

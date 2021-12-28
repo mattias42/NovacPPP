@@ -9,7 +9,7 @@
 #include "../Meteorology/WindDataBase.h"
 #include "../Geometry/PlumeHeight.h"
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 
 namespace Flux {
@@ -55,7 +55,7 @@ namespace Flux {
                 the result of the calculations.
             @return 0 on success, else non-zero value
           */
-        int CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase &windDataBase, const Geometry::CPlumeHeight &plumeAltitude, CFluxResult &fluxResult);
+        int CalculateFlux(const novac::CString& evalLogFileName, const Meteorology::CWindDataBase& windDataBase, const Geometry::CPlumeHeight& plumeAltitude, CFluxResult& fluxResult);
 
     private:
         // ----------------------------------------------------------------------
@@ -72,12 +72,12 @@ namespace Flux {
             was made.
             @return 0 if successful otherwise non-zero
         */
-        int GetLocation(const novac::CString &serial, const novac::CDateTime &startTime,
-            Configuration::CInstrumentLocation &instrLocation);
+        int GetLocation(const novac::CString& serial, const novac::CDateTime& startTime,
+            Configuration::CInstrumentLocation& instrLocation);
 
         /** Appends the evaluated flux to the appropriate log file.
             @param scan - the scan itself, also containing information about the evaluation and the flux.
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE WriteFluxResult(const Flux::CFluxResult &fluxResult, const Evaluation::CScanResult *result);
+        RETURN_CODE WriteFluxResult(const Flux::CFluxResult& fluxResult, const Evaluation::CScanResult* result);
     };
 }

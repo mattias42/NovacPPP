@@ -3,7 +3,7 @@
 #include "PlumeHeight.h"
 #include "GeometryResult.h"
 #include <SpectralEvaluation/DateTime.h>
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 // include the list-template from the C++ standard library
 #include <list>
@@ -41,17 +41,17 @@ namespace Geometry {
                 about the plume height at the requested time.
             @return true if the wind field could be retrieved, otherwise false.
          */
-        bool GetPlumeHeight(const novac::CDateTime &time, CPlumeHeight &plumeHeight) const;
+        bool GetPlumeHeight(const novac::CDateTime& time, CPlumeHeight& plumeHeight) const;
 
         /** Inserts a plume height into the database */
-        void InsertPlumeHeight(const CPlumeHeight &plumeHeight);
+        void InsertPlumeHeight(const CPlumeHeight& plumeHeight);
 
         /** Inserts a calculated plume height into the database */
-        void InsertPlumeHeight(const CGeometryResult &geomResult);
+        void InsertPlumeHeight(const CGeometryResult& geomResult);
 
         /** Writes the contents of this database to file.
             @return 0 on success. */
-        int WriteToFile(const novac::CString &fileName) const;
+        int WriteToFile(const novac::CString& fileName) const;
 
     private:
 
@@ -60,9 +60,9 @@ namespace Geometry {
         class CPlumeData {
         public:
             CPlumeData();
-            CPlumeData(const CPlumeData &p);
+            CPlumeData(const CPlumeData& p);
             ~CPlumeData();
-            CPlumeData &operator=(const CPlumeData &p);
+            CPlumeData& operator=(const CPlumeData& p);
 
             /** The data needs to be labelled with the time
                 when it is valid */
@@ -93,7 +93,7 @@ namespace Geometry {
 
 
         // Calculates the average and error of the plume heights in the given list
-        void CalculateAverageHeight(const std::list <CPlumeData> &plumeList, double &averageAltitude, double &altitudeError) const;
+        void CalculateAverageHeight(const std::list <CPlumeData>& plumeList, double& averageAltitude, double& altitudeError) const;
 
     };
 }

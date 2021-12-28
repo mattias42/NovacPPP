@@ -3,7 +3,7 @@
 #include "../Common/Common.h"
 
 #include <SpectralEvaluation/DateTime.h>
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/Spectra/SpectrometerModel.h>
 
 /**

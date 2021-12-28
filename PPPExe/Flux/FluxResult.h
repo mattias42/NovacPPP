@@ -4,7 +4,7 @@
 #include <SpectralEvaluation/DateTime.h>
 #include "../Meteorology/WindField.h"
 #include "../Geometry/PlumeHeight.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 enum FLUX_QUALITY_FLAG {
     FLUX_QUALITY_GREEN,
@@ -30,7 +30,7 @@ namespace Flux
         void Clear();
 
         /** Assignment operator */
-        CFluxResult &operator=(const CFluxResult &fl2);
+        CFluxResult& operator=(const CFluxResult& fl2);
 
         /** The calculated flux, in kg/s */
         double	m_flux;

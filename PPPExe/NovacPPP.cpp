@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <SpectralEvaluation/StringUtils.h>
-#include <PPPLib/CString.h>
-#include <PPPLib/CStringTokenizer.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CStringTokenizer.h>
 #include <PPPLib/VolcanoInfo.h>
 
 #include "Common/Common.h"

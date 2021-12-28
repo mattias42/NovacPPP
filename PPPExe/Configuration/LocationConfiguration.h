@@ -1,7 +1,7 @@
 #pragma once
 
 #include "InstrumentLocation.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 namespace Configuration
 {

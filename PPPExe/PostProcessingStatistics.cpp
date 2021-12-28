@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "PostProcessingStatistics.h"
 #include "Common/Common.h"
-#include <PPPLib/CCriticalSection.h>
-#include <PPPLib/CSingleLock.h>
+#include <PPPLib/MFC/CCriticalSection.h>
+#include <PPPLib/MFC/CSingleLock.h>
 
 // Include synchronization classes
 // #include <afxmt.h>
 
-novac::CCriticalSection									g_processingStatCritSect; // synchronization access to the processing statistics
+novac::CCriticalSection g_processingStatCritSect; // synchronization access to the processing statistics
 
 CPostProcessingStatistics::CInstrumentStats::CInstrumentStats() {
     // the serial of this instrument
@@ -42,7 +42,7 @@ CPostProcessingStatistics::~CPostProcessingStatistics(void)
 
 /** Inserts information on a rejected scan from a certain instrument
     into the database. */
-void CPostProcessingStatistics::InsertRejection(const novac::CString &serial, const REASON_FOR_REJECTION &reason) {
+void CPostProcessingStatistics::InsertRejection(const novac::CString& serial, const REASON_FOR_REJECTION& reason) {
 
     novac::CSingleLock singleLock(&g_processingStatCritSect);
     singleLock.Lock();
@@ -51,7 +51,7 @@ void CPostProcessingStatistics::InsertRejection(const novac::CString &serial, co
         // look for the correct instrument
         std::list <CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
         while (pos != m_instrumentStats.end()) {
-            CInstrumentStats &stat = (CInstrumentStats &)*(pos++);
+            CInstrumentStats& stat = (CInstrumentStats&)*(pos++);
 
             // this is the instrument. Insert the new data
             if (Equals(stat.serial, serial)) {
@@ -82,7 +82,7 @@ void CPostProcessingStatistics::InsertRejection(const novac::CString &serial, co
 }
 
 /** Inserts information on a accepted scan from a certain instrument into the database. */
-void CPostProcessingStatistics::InsertAcception(const novac::CString &serial) {
+void CPostProcessingStatistics::InsertAcception(const novac::CString& serial) {
 
     novac::CSingleLock singleLock(&g_processingStatCritSect);
     singleLock.Lock();
@@ -91,7 +91,7 @@ void CPostProcessingStatistics::InsertAcception(const novac::CString &serial) {
         // look for the correct instrument
         std::list<CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
         while (pos != m_instrumentStats.end()) {
-            CInstrumentStats &stat = (CInstrumentStats &)*(pos++);
+            CInstrumentStats& stat = (CInstrumentStats&)*(pos++);
 
             // this is the instrument. Insert the new data
             if (Equals(stat.serial, serial)) {
@@ -112,12 +112,12 @@ void CPostProcessingStatistics::InsertAcception(const novac::CString &serial) {
 }
 
 /** Retrieves the number of rejected full scans due to the specified reason */
-unsigned long CPostProcessingStatistics::GetRejectionNum(const novac::CString &serial, const REASON_FOR_REJECTION &reason) {
+unsigned long CPostProcessingStatistics::GetRejectionNum(const novac::CString& serial, const REASON_FOR_REJECTION& reason) {
 
     // look for the correct instrument
     std::list<CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
     while (pos != m_instrumentStats.end()) {
-        CInstrumentStats &stat = (CInstrumentStats &)*(pos++);
+        CInstrumentStats& stat = (CInstrumentStats&)*(pos++);
 
         // this is the instrument. Retrieve the data
         if (Equals(stat.serial, serial)) {
@@ -136,12 +136,12 @@ unsigned long CPostProcessingStatistics::GetRejectionNum(const novac::CString &s
 }
 
 /** Retrieves the number of accepted full scans */
-unsigned long CPostProcessingStatistics::GetAcceptionNum(const novac::CString &serial) {
+unsigned long CPostProcessingStatistics::GetAcceptionNum(const novac::CString& serial) {
 
     // look for the correct instrument
     std::list<CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
     while (pos != m_instrumentStats.end()) {
-        CInstrumentStats &stat = (CInstrumentStats &)*(pos++);
+        CInstrumentStats& stat = (CInstrumentStats&)*(pos++);
 
         // this is the instrument. Retrieve the data
         if (Equals(stat.serial, serial)) {
@@ -163,13 +163,13 @@ void CPostProcessingStatistics::InsertEvaluatedSpectrum(double timeUsed) {
 }
 
 /** Creates a small output file containing the statistical results */
-void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file) {
+void CPostProcessingStatistics::WriteStatToFile(const novac::CString& file) {
     novac::CSingleLock singleLock(&g_processingStatCritSect);
     singleLock.Lock();
     if (singleLock.IsLocked()) {
 
         // open the file
-        FILE *f = NULL;
+        FILE* f = NULL;
         if (IsExistingFile(file)) {
             f = fopen(file, "a");
         }
@@ -184,7 +184,7 @@ void CPostProcessingStatistics::WriteStatToFile(const novac::CString &file) {
         // for each instrument processed, write the info we have on it...
         std::list <CInstrumentStats>::const_iterator pos = m_instrumentStats.begin();
         while (pos != m_instrumentStats.end()) {
-            CInstrumentStats &instr = (CInstrumentStats &)*(pos++);
+            CInstrumentStats& instr = (CInstrumentStats&)*(pos++);
 
             fprintf(f, "Instrument: %s\n", (const char*)instr.serial);
             fprintf(f, "\t#Accepted scans: %lu\n", instr.acceptedScans);

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SetupFileReader.h"
-#include <PPPLib/CStdioFile.h>
+#include <PPPLib/MFC/CStdioFile.h>
 #include <cstring>
 
 using namespace FileHandler;
@@ -14,7 +14,7 @@ CSetupFileReader::~CSetupFileReader(void)
 {
 }
 
-RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Configuration::CNovacPPPConfiguration &setup) {
+RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Configuration::CNovacPPPConfiguration& setup) {
 
     // 1. Open the file
     if (!Open(filename))
@@ -47,7 +47,7 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString &filename, Conf
 }
 
 // Parse for serial tag and store in the InstrumentConfiguration object
-void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration &instr) {
+void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration& instr) {
     // Parse the file
     while (nullptr != (szToken = NextToken())) {
 
@@ -66,7 +66,7 @@ void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration 
 }
 
 // Parse for location area and store in the LocationConfiguration object
-void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc) {
+void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration& loc) {
     Configuration::CInstrumentLocation location;
 
     // Parse the other 
@@ -107,7 +107,7 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
             continue;
         }
         if (Equals(szToken, "type", 4)) {
-            Parse_IntItem("/type", (int &)location.m_instrumentType);
+            Parse_IntItem("/type", (int&)location.m_instrumentType);
             continue;
         }
         if (Equals(szToken, "spectrometerModel", 17))
@@ -141,11 +141,11 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration &loc
 
 /** This takes care of writing the contents of a setup data-structure to file
     Only the part regarding the instrument's location will be written to the file */
-RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup) {
+RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, const Configuration::CNovacPPPConfiguration& setup) {
     Configuration::CInstrumentLocation instrLocation;
 
     // Open the file
-    FILE *f = fopen(fileName, "w");
+    FILE* f = fopen(fileName, "w");
     if (f == nullptr)
         return FAIL;
 
@@ -158,7 +158,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString &fileName, con
 
     // loop through each instrument
     for (unsigned int k = 0; k < setup.m_instrumentNum; ++k) {
-        const Configuration::CInstrumentConfiguration &instr = setup.m_instrument[k];
+        const Configuration::CInstrumentConfiguration& instr = setup.m_instrument[k];
 
         fprintf(f, "\t<instrument>\n");
 

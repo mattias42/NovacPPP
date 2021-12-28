@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 class CFileInfo
 {

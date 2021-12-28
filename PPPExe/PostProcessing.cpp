@@ -40,7 +40,7 @@
 #include "Common/EvaluationLogFileHandler.h"
 
 #include <PPPLib/VolcanoInfo.h>
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
 #include <PPPLib/ThreadUtils.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/DateTime.h>
 
 namespace Filesystem

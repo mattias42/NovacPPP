@@ -43,7 +43,7 @@ CFluxResult::~CFluxResult(void)
 }
 
 /** Assignment operator */
-CFluxResult &CFluxResult::operator=(const CFluxResult &res) {
+CFluxResult& CFluxResult::operator=(const CFluxResult& res) {
     this->m_flux = res.m_flux;
     this->m_fluxQualityFlag = res.m_fluxQualityFlag;
 

@@ -5,7 +5,7 @@
 #include "GeometryResult.h"
 #include "../Configuration/InstrumentLocation.h"
 
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 namespace Geometry {
 
@@ -30,7 +30,7 @@ namespace Geometry {
             void Clear();
             novac::CGPSData	scanner[2];
             double		plumeCentre[2];
-            CGeometryCalculationInfo	&operator=(const CGeometryCalculationInfo& info2);
+            CGeometryCalculationInfo& operator=(const CGeometryCalculationInfo& info2);
         };
 
         /** Retrieve the plume height from a measurement using one scanning-instrument
@@ -53,9 +53,9 @@ namespace Geometry {
                 @param result - will on successful return be filled with information on the result
                     the resulting plume height is the altitude of the plume in meters above sea level...
                 @return true on success */
-        static bool CalculateGeometry(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
-        static bool CalculateGeometry(const novac::CString &evalLog1, int scanIndex1, const novac::CString &evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
-        static bool CalculateGeometry(const novac::CPlumeInScanProperty &plume1, const novac::CDateTime &startTime1, const novac::CPlumeInScanProperty &plume2, const novac::CDateTime &startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult &result);
+        static bool CalculateGeometry(const novac::CString& evalLog1, const novac::CString& evalLog2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult& result);
+        static bool CalculateGeometry(const novac::CString& evalLog1, int scanIndex1, const novac::CString& evalLog2, int scanIndex2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult& result);
+        static bool CalculateGeometry(const novac::CPlumeInScanProperty& plume1, const novac::CDateTime& startTime1, const novac::CPlumeInScanProperty& plume2, const novac::CDateTime& startTime2, const Configuration::CInstrumentLocation locations[2], Geometry::CGeometryResult& result);
 
         /** Calculate the plume-height using the scan found in the given evaluation-file.
                 @param windDirection - the assumed wind-direction at the time the measurement was made
@@ -64,7 +64,7 @@ namespace Geometry {
                     the estimated error is based on the error in wind-direction and the error in estimating
                         the plume centre position.
                 @return true on success */
-        static bool CalculatePlumeHeight(const novac::CString &evalLog, int scanIndex, Meteorology::CWindField &windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
+        static bool CalculatePlumeHeight(const novac::CString& evalLog, int scanIndex, Meteorology::CWindField& windField, Configuration::CInstrumentLocation location, Geometry::CGeometryResult& result);
 
         /** Calculate the wind direction using the scan found in the given evaluation-file.
                 @param absolutePlumeHeight - the assumed plume height (in meters above sea level)
@@ -72,7 +72,7 @@ namespace Geometry {
                 @param result - will on successful return be filled with information on the result
                     only the wind-direction (and its error) will be filled in
                 @return true on success */
-        static bool CalculateWindDirection(const novac::CString &evalLog, int scanIndex, Geometry::CPlumeHeight &absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult &result);
+        static bool CalculateWindDirection(const novac::CString& evalLog, int scanIndex, Geometry::CPlumeHeight& absolutePlumeHeight, Configuration::CInstrumentLocation location, Geometry::CGeometryResult& result);
 
     protected:
 
@@ -86,8 +86,8 @@ namespace Geometry {
                 @param plumeHeight - will on return be filled with the calculated
                         height of the plume above the lower of the two scanners
                 @return true if a plume height could be calculated. */
-        static bool GetPlumeHeight_Exact(const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight);
-        static bool GetPlumeHeight_Exact(const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double &plumeHeight);
+        static bool GetPlumeHeight_Exact(const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double& plumeHeight);
+        static bool GetPlumeHeight_Exact(const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double& plumeHeight);
 
         /** Calculates the height of the plume given data from two scans
                 @param gps - the gps-positions for the two scanning instruments
@@ -101,8 +101,8 @@ namespace Geometry {
                 @param windDirection - will on successful return be filled with the
                         calculated wind directions. In degrees from north, positive clockwise.
                 @return true if a plume height could be calculated. */
-        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double &plumeHeight, double &windDirection);
-        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double &plumeHeight, double &windDirection);
+        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const novac::CGPSData gps[2], const double compass[2], const double plumeCentre[2], const double coneAngle[2], const double tilt[2], double& plumeHeight, double& windDirection);
+        static bool GetPlumeHeight_Fuzzy(const novac::CGPSData source, const Configuration::CInstrumentLocation locations[2], const double plumeCentre[2], double& plumeHeight, double& windDirection);
 
         /** Calculates the wind-direction for a scan, assuming that the plume originates
                     at the postition given in 'source' and that the centre of the plume is
@@ -143,7 +143,7 @@ namespace Geometry {
                 @t2 - will on return be the parameter t2, as defined above
                 @return true if the rays do intersect
                 @return false if the rays don't intersect */
-        static bool Intersection(const double o1[3], const double d1[3], const double o2[3], const double d2[3], double &t1, double &t2);
+        static bool Intersection(const double o1[3], const double d1[3], const double o2[3], const double d2[3], double& t1, double& t2);
 
         /** Calculates the coordinates of the point (origin + t*direction) */
         static void PointOnRay(const double origin[3], const double direction[3], double t, double point[3]);

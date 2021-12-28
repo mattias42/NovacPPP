@@ -2,8 +2,8 @@
 #include "Common/XMLFileReader.h"
 #include "Configuration/NovacPPPConfiguration.h"
 
-#include <PPPLib/CString.h>
-#include <PPPLib/CStdioFile.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CStdioFile.h>
 
 namespace FileHandler {
 
@@ -25,18 +25,18 @@ namespace FileHandler {
                 found in the file.
             @return SUCCESS - if successful.
         */
-        RETURN_CODE ReadSetupFile(const novac::CString &fileName, Configuration::CNovacPPPConfiguration &setup);
+        RETURN_CODE ReadSetupFile(const novac::CString& fileName, Configuration::CNovacPPPConfiguration& setup);
 
         /** This takes care of writing the contents of a setup data-structure to file
             Only the part regarding the instrument's location will be written to the file */
-        RETURN_CODE WriteSetupFile(const novac::CString &fileName, const Configuration::CNovacPPPConfiguration &setup);
+        RETURN_CODE WriteSetupFile(const novac::CString& fileName, const Configuration::CNovacPPPConfiguration& setup);
 
     private:
         /** Parses an individual location section */
-        void Parse_Location(Configuration::CLocationConfiguration &loc);
+        void Parse_Location(Configuration::CLocationConfiguration& loc);
 
         /** Parses an individual instrument section */
-        void Parse_Instrument(Configuration::CInstrumentConfiguration &instr);
+        void Parse_Instrument(Configuration::CInstrumentConfiguration& instr);
 
         /** Parses a custom spectrometer model */
         void Parse_CustomSpectrometer(novac::SpectrometerModel& model);

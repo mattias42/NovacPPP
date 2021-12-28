@@ -54,7 +54,7 @@
 	<fitWindow>
 		<channel>1</channel>
 		<name>SO2</name>
-		<validFrom>1970.01.01</validFrom>
+		<validFrom>1970.01.01T12:30:20</validFrom>
 		<validTo>9999.01.10</validTo>
 		<specLength>2048</specLength>
 		<interlaceStep>1</interlaceStep>

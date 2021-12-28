@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 /** The class <b>CPostProcessingStatistics</b> is used to keep
     track of the statistics of the processing. E.g. how many
@@ -35,16 +35,16 @@ public:
 
     /** Inserts information on a rejected scan from a certain instrument
         into the database. */
-    void InsertRejection(const novac::CString &serial, const REASON_FOR_REJECTION &reason);
+    void InsertRejection(const novac::CString& serial, const REASON_FOR_REJECTION& reason);
 
     /** Inserts information on a accepted scan from a certain instrument into the database. */
-    void InsertAcception(const novac::CString &serial);
+    void InsertAcception(const novac::CString& serial);
 
     /** Retrieves the number of rejected full scans due to the specified reason */
-    unsigned long GetRejectionNum(const novac::CString &serial, const REASON_FOR_REJECTION &reason);
+    unsigned long GetRejectionNum(const novac::CString& serial, const REASON_FOR_REJECTION& reason);
 
     /** Retrieves the number of accepted full scans */
-    unsigned long GetAcceptionNum(const novac::CString &serial);
+    unsigned long GetAcceptionNum(const novac::CString& serial);
 
     /** Inserts the successful evaluation of a single spectrum into the statistics.
         This also increases the counter on the total amount of time used on
@@ -52,7 +52,7 @@ public:
     void InsertEvaluatedSpectrum(double timeUsed);
 
     /** Creates a small output file containing the statistical results */
-    void WriteStatToFile(const novac::CString &file);
+    void WriteStatToFile(const novac::CString& file);
 
 private:
     class CInstrumentStats {

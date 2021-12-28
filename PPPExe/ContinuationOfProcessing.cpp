@@ -7,9 +7,9 @@
 #include <cstring>
 #include <Poco/Path.h>
 
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
-CContinuationOfProcessing					g_continuation;		// <-- Information on what has already been done when continuing an old processing round
+CContinuationOfProcessing g_continuation;		// <-- Information on what has already been done when continuing an old processing round
 
 CContinuationOfProcessing::CContinuationOfProcessing(void)
 {

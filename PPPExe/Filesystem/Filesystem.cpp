@@ -1,6 +1,6 @@
 #include "Filesystem.h"
 
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Exception.h>
 
@@ -10,7 +10,7 @@ void ShowMessage(const char message[]);
 
 namespace Filesystem
 {
-    void SearchDirectoryForFiles(const novac::CString &path, bool includeSubdirectories, std::vector<std::string>& fileList, FileSearchCriterion* criteria)
+    void SearchDirectoryForFiles(const novac::CString& path, bool includeSubdirectories, std::vector<std::string>& fileList, FileSearchCriterion* criteria)
     {
         try
         {
