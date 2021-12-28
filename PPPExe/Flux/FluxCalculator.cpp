@@ -179,7 +179,7 @@ int CFluxCalculator::GetLocation(const novac::CString& serial, const CDateTime& 
     novac::CString errorMessage;
 
     // First of all find the instrument 
-    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k) {
+    for (int k = 0; k < g_setup.NumberOfInstruments(); ++k) {
         if (Equals(g_setup.m_instrument[k].m_serial, serial)) {
             instrumentConf = &g_setup.m_instrument[k];
             break;
@@ -313,7 +313,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult& fluxResult
         if (Filesystem::CreateDirectoryStructure(directory)) {
             errorMessage.Format("Could not create storage directory for flux-data. Please check settings and restart.");
             ShowError(errorMessage);
-            return FAIL;
+            return RETURN_CODE::FAIL;
         }
     }
 
@@ -346,5 +346,5 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult& fluxResult
         fclose(f);
     }
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }

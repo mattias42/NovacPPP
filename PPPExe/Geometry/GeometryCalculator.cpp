@@ -395,9 +395,9 @@ bool CGeometryCalculator::CalculateGeometry(const novac::CString& evalLog1, int 
     // 1. Read the evaluation-logs
     reader[0].m_evaluationLog.Format("%s", (const char*)evalLog1);
     reader[1].m_evaluationLog.Format("%s", (const char*)evalLog2);
-    if (SUCCESS != reader[0].ReadEvaluationLog())
+    if (RETURN_CODE::SUCCESS != reader[0].ReadEvaluationLog())
         return false;
-    if (SUCCESS != reader[1].ReadEvaluationLog())
+    if (RETURN_CODE::SUCCESS != reader[1].ReadEvaluationLog())
         return false;
 
     // 2. Get the 'CPlumeInScanProperty' for the two scans and the start-times
@@ -621,7 +621,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString& evalLog, in
 
     // 3. Read the evaluation-log
     reader.m_evaluationLog.Format("%s", (const char*)evalLog);
-    if (SUCCESS != reader.ReadEvaluationLog())
+    if (RETURN_CODE::SUCCESS != reader.ReadEvaluationLog())
         return false;
 
     // 4. Get the scan-angles around which the plumes are centred
@@ -703,7 +703,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString& evalLog, 
 
     // 3. Read the evaluation-log
     reader.m_evaluationLog.Format("%s", (const char*)evalLog);
-    if (SUCCESS != reader.ReadEvaluationLog())
+    if (RETURN_CODE::SUCCESS != reader.ReadEvaluationLog())
         return false;
 
     // 4. Get the scan-angles around which the plumes are centred

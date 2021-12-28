@@ -196,7 +196,7 @@ RETURN_CODE Common::GetSunPosition(const novac::CDateTime& gmtTime, double lat, 
     // Convert the azimuth to a value counted from the north and 
     SAZ = fmod(180.0 + sAzim, 360.0);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 double Common::CalculateFlux(const double* scanAngle, const double* scanAngle2, const double* column, double offset, int nDataPoints, const Meteorology::CWindField& wind, const Geometry::CPlumeHeight& relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle, double tilt)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PPPLib/PPPLib.h>
 #include <PPPLib/File/XMLFileReader.h>
 #include <PPPLib/Configuration/EvaluationConfiguration.h>
 #include <PPPLib/Configuration/DarkCorrectionConfiguration.h>
@@ -16,16 +17,16 @@ namespace FileHandler {
 
         /** Reads in an evaluation-configuration file.
             In the format specified for the NovacPostProcessingProgram (NPPP)
-            @return 0 on sucess */
-        int ReadConfigurationFile(
+            @return SUCCESS on sucess */
+        RETURN_CODE ReadConfigurationFile(
             const novac::CString& fileName,
             Configuration::CEvaluationConfiguration& settings,
             Configuration::CDarkCorrectionConfiguration& darkSettings,
             Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
 
         /** Writes an evaluation configuration file in the NPPP-format
-            @return 0 on success */
-        int WriteConfigurationFile(
+            @return SUCCESS on success */
+        RETURN_CODE WriteConfigurationFile(
             const novac::CString& fileName,
             const Configuration::CEvaluationConfiguration& settings,
             const Configuration::CDarkCorrectionConfiguration& darkSettings,
@@ -34,15 +35,15 @@ namespace FileHandler {
     private:
 
         /** Reads a 'fitWindow' section */
-        int Parse_FitWindow(novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo);
+        RETURN_CODE Parse_FitWindow(novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo);
 
         /** Reads a 'Reference' section */
-        int Parse_Reference(novac::CFitWindow& window);
+        RETURN_CODE Parse_Reference(novac::CFitWindow& window);
 
         /** Reads a 'dark-correction' section */
-        int Parse_DarkCorrection(Configuration::CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo);
+        RETURN_CODE Parse_DarkCorrection(Configuration::CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo);
 
-        int Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
+        RETURN_CODE Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings);
 
     };
 }

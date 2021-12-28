@@ -20,8 +20,8 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
     // 1. Open the file
     if (!Open(filename))
     {
-        ShowMessage(std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'"));
-        return FAIL;
+        m_log.Error(std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'"));
+        return RETURN_CODE::FAIL;
     }
 
     // parse the file, one line at a time.
@@ -36,8 +36,9 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
 
         //* Look for the xml tag 'instrument' and use Parse_Instrument and Parse_Location to read serial number and location to object 'setup' */
         if (novac::Equals(szToken, "instrument", 9)) {
-            this->Parse_Instrument(setup.m_instrument[setup.m_instrumentNum]);
-            setup.m_instrumentNum++;
+            Configuration::CInstrumentConfiguration instrument;
+            Parse_Instrument(instrument);
+            setup.m_instrument.push_back(instrument);
             continue;
         }
 
@@ -46,7 +47,7 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
 
     Close();
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration& instr) {
@@ -164,7 +165,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
     // Open the file
     FILE* f = fopen(fileName, "w");
     if (f == nullptr)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // Write the header
     fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
@@ -174,7 +175,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
     fprintf(f, "<NovacPPPConfiguration>\n");
 
     // loop through each instrument
-    for (unsigned int k = 0; k < setup.m_instrumentNum; ++k) {
+    for (int k = 0; k < setup.NumberOfInstruments(); ++k) {
         const Configuration::CInstrumentConfiguration& instr = setup.m_instrument[k];
 
         fprintf(f, "\t<instrument>\n");
@@ -222,7 +223,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
     // remember to close the file
     fclose(f);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 void CSetupFileReader::Parse_CustomSpectrometer(SpectrometerModel& model)

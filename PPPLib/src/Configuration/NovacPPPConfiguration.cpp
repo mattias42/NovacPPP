@@ -9,10 +9,8 @@ using namespace novac;
 namespace Configuration
 {
     CNovacPPPConfiguration::CNovacPPPConfiguration()
-        : m_instrumentNum(0)
     {
     }
-
 
     const CInstrumentConfiguration* CNovacPPPConfiguration::GetInstrument(const novac::CString& serial) const {
         std::string stdSerial{ (const char*)serial };
@@ -22,10 +20,11 @@ namespace Configuration
     const CInstrumentConfiguration* CNovacPPPConfiguration::GetInstrument(const std::string& serial) const {
         novac::CString errorMessage;
 
-        // First of all find the instrument 
-        for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k) {
-            if (Equals(g_setup.m_instrument[k].m_serial, serial)) {
-                return &g_setup.m_instrument[k];
+        for (auto& instrument : m_instrument)
+        {
+            if (Equals(instrument.m_serial, serial))
+            {
+                return &instrument;
             }
         }
 
@@ -93,7 +92,7 @@ namespace Configuration
         // Then find the evaluation fit-window that is valid for this date
         const Configuration::CEvaluationConfiguration& evalConf = instrumentConf->m_eval;
         bool foundValidEvaluation = false;
-        for (unsigned int k = 0; k < evalConf.GetFitWindowNum(); ++k) {
+        for (int k = 0; k < evalConf.NumberOfFitWindows(); ++k) {
             evalConf.GetFitWindow(k, window, evalValidFrom, evalValidTo);
 
             if (evalValidFrom < dateAndTime && (dateAndTime < evalValidTo || dateAndTime == evalValidTo) && ((channel % 16) == window.channel)) {
@@ -113,6 +112,7 @@ namespace Configuration
                 }
             }
         }
+
         if (!foundValidEvaluation) {
             if (windowName.GetLength() >= 1) {
                 errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window \"%s\" on %04d.%02d.%02d. Cannot Evaluate!", (const char*)serial, (const char*)windowName, dateAndTime.year, dateAndTime.month, dateAndTime.day);
@@ -127,12 +127,8 @@ namespace Configuration
         return 0;
     }
 
-    /** Retrieves the CDarkSettings that is valid for the given instrument and
-        for the given time
-
-        @return 0 if successful otherwise non-zero
-    */
-    int CNovacPPPConfiguration::GetDarkCorrection(const novac::CString& serial, const CDateTime& dateAndTime, CDarkSettings& settings) const {
+    int CNovacPPPConfiguration::GetDarkCorrection(const novac::CString& serial, const CDateTime& dateAndTime, CDarkSettings& settings) const
+    {
         // First of all find the instrument 
         const CInstrumentConfiguration* instrumentConf = GetInstrument(serial);
         if (instrumentConf == nullptr)

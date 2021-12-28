@@ -24,20 +24,19 @@ namespace Configuration
         // ---------------------- PUBLIC DATA -----------------------------------
         // ----------------------------------------------------------------------
 
-        /** The array of instruments that are/can be configured. */
-        CInstrumentConfiguration m_instrument[256];
-
-        /** Number of instruments that have been configured */
-        unsigned int m_instrumentNum;
+        /** The array of instruments that are configured. */
+        std::vector<CInstrumentConfiguration> m_instrument;
 
         // ----------------------------------------------------------------------
         // --------------------- PUBLIC METHODS ---------------------------------
         // ----------------------------------------------------------------------
 
-        /** Retrieves the CInstrumentConfiguration that is connected with a given
-            serial-number.
-            @return a pointer to the found CInstrumentconfiguraion. If none is found
-                then return value is NULL. */
+        /** Returns the number of configured instruments */
+        int NumberOfInstruments() const { return static_cast<int>(m_instrument.size()); }
+
+        /** Retrieves the CInstrumentConfiguration that is connected with a given serial-number.
+            @return a pointer to the found CInstrumentConfiguration.
+                If none is found then return value is nullptr. */
         const CInstrumentConfiguration* GetInstrument(const novac::CString& serial) const;
         const CInstrumentConfiguration* GetInstrument(const std::string& serial) const;
 

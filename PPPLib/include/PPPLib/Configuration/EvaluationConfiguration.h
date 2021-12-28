@@ -54,7 +54,7 @@ namespace Configuration
         int GetFitWindow(int index, novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo) const;
 
         /** Gets the number of fit-windows configured for this spectrometer */
-        unsigned long GetFitWindowNum() const { return static_cast<unsigned long>(m_windows.size()); }
+        int NumberOfFitWindows() const { return static_cast<int>(m_windows.size()); }
 
         /** This goes through the settings for the fit-windows to test that the settings
             make sense.

@@ -134,27 +134,27 @@ void LoadConfigurations()
     novac::CString setupPath;
     FileHandler::CSetupFileReader reader{ g_logger };
 
-    //Read configuration from file setup.xml */	
+    // Read configuration from file setup.xml
     setupPath.Format("%sconfiguration%csetup.xml", (const char*)common.m_exePath, Poco::Path::separator());
-    if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
+    if (RETURN_CODE::SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
     {
         throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
     }
-    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), g_setup.m_instrumentNum));
+    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), g_setup.NumberOfInstruments()));
 
 
     // Read the users options from file processing.xml
     novac::CString processingPath;
     processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)common.m_exePath, Poco::Path::separator());
     FileHandler::CProcessingFileReader processing_reader{ g_logger };
-    if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
+    if (RETURN_CODE::SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
     {
         throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
     }
 
     // Check if there is a configuration file for every spectrometer serial number
     FileHandler::CEvaluationConfigurationParser eval_reader{ g_logger };
-    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+    for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
     {
         novac::CString evalConfPath;
         evalConfPath.Format("%sconfiguration%c%s.exml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)g_setup.m_instrument[k].m_serial);
@@ -246,7 +246,7 @@ void CalculateAllFluxes()
         writer.WriteProcessingFile(processingOutputFile, g_userSettings);
 
         Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);
-        for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+        for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
         {
             novac::CString serial(g_setup.m_instrument[k].m_serial);
 

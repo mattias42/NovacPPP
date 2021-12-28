@@ -10,7 +10,7 @@ using namespace FileHandler;
 using namespace novac;
 
 
-int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& fileName,
+RETURN_CODE CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& fileName,
             Configuration::CEvaluationConfiguration& settings,
             Configuration::CDarkCorrectionConfiguration& darkSettings,
             Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
@@ -18,7 +18,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
     // 1. Open the file
     if (!Open(fileName))
     {
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // parse the file, one line at a time.
@@ -40,7 +40,10 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
             novac::CFitWindow tmpWindow;
             novac::CDateTime validFrom, validTo;
 
-            Parse_FitWindow(tmpWindow, validFrom, validTo);
+            if (RETURN_CODE::FAIL == Parse_FitWindow(tmpWindow, validFrom, validTo))
+            {
+                return RETURN_CODE::FAIL;
+            }
 
             settings.InsertFitWindow(tmpWindow, validFrom, validTo);
         }
@@ -49,21 +52,27 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
             Configuration::CDarkSettings dSettings;
             novac::CDateTime validFrom, validTo;
 
-            Parse_DarkCorrection(dSettings, validFrom, validTo);
+            if (RETURN_CODE::FAIL == Parse_DarkCorrection(dSettings, validFrom, validTo))
+            {
+                return RETURN_CODE::FAIL;
+            }
 
             darkSettings.InsertDarkCurrentCorrectionSettings(dSettings, validFrom, validTo);
         }
 
         if (novac::Equals(szToken, "Calibration", strlen("Calibration"))) {
-            Parse_CalibrationSettings(calibrationSettings);
+            if (RETURN_CODE::FAIL == Parse_CalibrationSettings(calibrationSettings))
+            {
+                return RETURN_CODE::FAIL;
+            }
         }
     }
     Close();
 
-    return 0;
+    return RETURN_CODE::SUCCESS;
 }
 
-int CEvaluationConfigurationParser::WriteConfigurationFile(
+RETURN_CODE CEvaluationConfigurationParser::WriteConfigurationFile(
     const novac::CString& fileName,
     const Configuration::CEvaluationConfiguration& settings,
     const Configuration::CDarkCorrectionConfiguration& darkSettings,
@@ -77,7 +86,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     // open the file
     FILE* f = fopen(fileName, "w");
     if (f == NULL)
-        return 1;
+        return RETURN_CODE::FAIL;
 
     // write the header lines and the start of the file
     fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
@@ -89,8 +98,8 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     fprintf(f, "\t<serial>%s</serial>\n", settings.m_serial.c_str());
 
     // ------ loop through each of the fit windows and write them to file --------
-    unsigned long nWindows = settings.GetFitWindowNum();
-    for (unsigned int k = 0; k < nWindows; ++k) {
+    const int nWindows = settings.NumberOfFitWindows();
+    for (int k = 0; k < nWindows; ++k) {
         settings.GetFitWindow(k, window, from, to);
 
         fprintf(f, "\t<fitWindow>\n");
@@ -162,8 +171,8 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
         fprintf(f, "\t<DarkCorrection>\n");
 
         // the time-range when the dark-current settings is valid
-        fprintf(f, "\t\t<validFrom>%04d.%02d.%02d</validFrom>\n", from.year, from.month, from.day);
-        fprintf(f, "\t\t<validTo>%04d.%02d.%02d</validTo>\n", to.year, to.month, to.day);
+        fprintf(f, "\t\t<validFrom>%04d.%02d.%02dT%02d:%02d:%02d</validFrom>\n", from.year, from.month, from.day, from.hour, from.minute, from.second);
+        fprintf(f, "\t\t<validTo>%04d.%02d.%02dT%02d:%02d:%02d</validTo>\n", to.year, to.month, to.day, to.hour, to.minute, to.second);
 
         if (dSettings.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::MEASURED_IN_SCAN) {
             // only use a dark-spectrum with the same exp.-time
@@ -218,7 +227,7 @@ int CEvaluationConfigurationParser::WriteConfigurationFile(
     // remember to close the file when we're done
     fclose(f);
 
-    return 0;
+    return RETURN_CODE::SUCCESS;
 }
 
 void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow& window, novac::CString& slitfunctionFile, novac::CString& wavelengthCalibFile)
@@ -239,7 +248,7 @@ void SaveSlitFunctionAndWavelengthCalibration(novac::CFitWindow& window, novac::
     }
 }
 
-int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
+RETURN_CODE CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
     window.Clear();
     novac::CString slitfunctionFile, wavelengthCalibFile;
 
@@ -261,7 +270,7 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, n
         // end of fit-window section
         if (Equals(szToken, "/fitWindow")) {
             SaveSlitFunctionAndWavelengthCalibration(window, slitfunctionFile, wavelengthCalibFile);
-            return 0;
+            return RETURN_CODE::SUCCESS;
         }
 
         if (Equals(szToken, "fitWindow"))
@@ -363,15 +372,18 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, n
         }
 
         if (Equals(szToken, "Reference", 9)) {
-            Parse_Reference(window);
+            if (RETURN_CODE::FAIL == Parse_Reference(window))
+            {
+                return RETURN_CODE::FAIL;
+            }
             continue;
         }
     }
 
-    return 1;
+    return RETURN_CODE::FAIL;
 }
 
-int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
+RETURN_CODE CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
 {
     // parse the file, one line at a time.
     szToken = "start";
@@ -390,7 +402,7 @@ int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CIn
 
         // end of dark-correction section
         if (Equals(szToken, "/Calibration")) {
-            return 0;
+            return RETURN_CODE::SUCCESS;
         }
 
         if (Equals(szToken, "initialCalibrationFile")) {
@@ -404,11 +416,11 @@ int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CIn
         }
     }
 
-    return 1;
+    return RETURN_CODE::FAIL;
 }
 
 
-int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
+RETURN_CODE CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
     int nRef = window.nRef;
 
     // parse the file, one line at a time.
@@ -428,7 +440,7 @@ int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
 
         if (Equals(szToken, "/Reference")) {
             ++window.nRef;
-            return 0;
+            return RETURN_CODE::SUCCESS;
         }
 
         if (Equals(szToken, "name")) {
@@ -509,10 +521,10 @@ int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
         }
     }
 
-    return FAIL;
+    return RETURN_CODE::FAIL;
 }
 
-int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
+RETURN_CODE CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSettings& dSettings, novac::CDateTime& validFrom, novac::CDateTime& validTo) {
     dSettings.Clear();
     novac::CString str;
 
@@ -533,7 +545,7 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
 
         // end of dark-correction section
         if (Equals(szToken, "/DarkCorrection")) {
-            return 0;
+            return RETURN_CODE::SUCCESS;
         }
 
         // valid interval
@@ -597,6 +609,6 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
         }
     }
 
-    return 1;
+    return RETURN_CODE::FAIL;
 }
 

@@ -22,7 +22,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
     if (!Open(filename))
     {
         m_log.Error("Cannot open file: " + filename.std_str());
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // parse the file, one line at a time.
@@ -208,7 +208,7 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
     }//end while
     Close();
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration& settings) {
@@ -531,7 +531,7 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString& fil
     // try to open the file
     FILE* f = fopen(fileName, "w");
     if (f == NULL) {
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     fprintf(f, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
@@ -645,7 +645,7 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString& fil
     // remember to close the file!
     fclose(f);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 inline void PrintTabs(FILE* f, int nTabs) {

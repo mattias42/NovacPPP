@@ -207,7 +207,7 @@ std::map<SpectrometerId, std::vector<CPostCalibration::BasicScanInfo>> CPostCali
         if (!CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, mode))
         {
             CScanFileHandler scan;
-            if (SUCCESS != scan.CheckScanFile(scanFile))
+            if (!scan.CheckScanFile(scanFile))
             {
                 std::stringstream message;
                 message << "Could not read pak-file '" << scanFile << "'";
@@ -335,7 +335,7 @@ bool CPostCalibration::RunInstrumentCalibration(const std::string& scanFile, CPo
     try
     {
         CScanFileHandler scan;
-        if (SUCCESS != scan.CheckScanFile(scanFile))
+        if (!scan.CheckScanFile(scanFile))
         {
             std::stringstream message;
             message << "Could not read recieved pak-file '" << scanFile << "' . Will not perform calibration.";
@@ -419,7 +419,7 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
 
     // Get the windows defined for this instrument
     std::vector<Configuration::FitWindowWithTime> windows;
-    for (int idx = 0; idx < static_cast<int>(instrument->m_eval.GetFitWindowNum()); ++idx)
+    for (int idx = 0; idx < instrument->m_eval.NumberOfFitWindows(); ++idx)
     {
         Configuration::FitWindowWithTime window;
         if (!instrument->m_eval.GetFitWindow(idx, window.window, window.validFrom, window.validTo))

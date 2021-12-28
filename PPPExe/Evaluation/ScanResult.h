@@ -238,7 +238,7 @@ namespace Evaluation
         /** Marks the desired spectrum with the supplied mark_flag.
             Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
             @return true on success. */
-        bool  MarkAs(unsigned long index, int MARK_FLAG);
+        bool MarkAs(unsigned long index, int MARK_FLAG);
 
         /** Removes the desired mark from the desired spectrum
             Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED

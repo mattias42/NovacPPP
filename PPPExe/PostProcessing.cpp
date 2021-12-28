@@ -503,7 +503,7 @@ int CPostProcessing::CheckInstrumentCalibrationSettings() const
     }
 
     // Verify that each instrument has an initial instrument line shape file.
-    for (unsigned int instrumentIdx = 0; instrumentIdx < g_setup.m_instrumentNum; ++instrumentIdx)
+    for (int instrumentIdx = 0; instrumentIdx < g_setup.NumberOfInstruments(); ++instrumentIdx)
     {
         if (g_setup.m_instrument[instrumentIdx].m_instrumentCalibration.m_initialCalibrationFile.size() == 0)
         {
@@ -539,9 +539,9 @@ int CPostProcessing::CheckProcessingSettings() const
     CDateTime now;
 
     // Check that no instrument is duplicated in the list of instruments...
-    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (int j = 0; j < g_setup.NumberOfInstruments(); ++j)
     {
-        for (unsigned int k = j + 1; k < g_setup.m_instrumentNum; ++k)
+        for (int k = j + 1; k < g_setup.NumberOfInstruments(); ++k)
         {
             if (Equals(g_setup.m_instrument[j].m_serial, g_setup.m_instrument[k].m_serial))
             {
@@ -555,9 +555,9 @@ int CPostProcessing::CheckProcessingSettings() const
 
     // Check that, for each spectrometer, there's only one fit-window defined
     // at each instant
-    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (int j = 0; j < g_setup.NumberOfInstruments(); ++j)
     {
-        if (g_setup.m_instrument[j].m_eval.GetFitWindowNum() == 1)
+        if (g_setup.m_instrument[j].m_eval.NumberOfFitWindows() == 1)
         {
             continue;
         }
@@ -585,7 +585,7 @@ int CPostProcessing::CheckProcessingSettings() const
 
     // Check that, for each spectrometer, there's only one location defined
     // at each instant
-    for (unsigned int j = 0; j < g_setup.m_instrumentNum; ++j)
+    for (int j = 0; j < g_setup.NumberOfInstruments(); ++j)
     {
         if (g_setup.m_instrument[j].m_location.GetLocationNum() == 1)
         {
@@ -632,11 +632,11 @@ int CPostProcessing::PrepareEvaluation()
     bool failure = false;
 
     // Loop through each of the configured instruments
-    for (unsigned int instrumentIndex = 0; instrumentIndex < g_setup.m_instrumentNum; ++instrumentIndex)
+    for (int instrumentIndex = 0; instrumentIndex < g_setup.NumberOfInstruments(); ++instrumentIndex)
     {
         // For each instrument, loop through the fit-windows that are defined
-        unsigned long fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindowNum();
-        for (unsigned int fitWindowIndex = 0; fitWindowIndex < fitWindowNum; ++fitWindowIndex)
+        int fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.NumberOfFitWindows();
+        for (int fitWindowIndex = 0; fitWindowIndex < fitWindowNum; ++fitWindowIndex)
         {
             novac::CFitWindow window;
 
@@ -903,7 +903,7 @@ int CPostProcessing::PreparePlumeHeights()
     Configuration::CInstrumentLocation location;
     novac::CString volcanoName;
     g_volcanoes.GetVolcanoName(g_userSettings.m_volcano, volcanoName);
-    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+    for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
     {
         unsigned long N = g_setup.m_instrument[k].m_location.GetLocationNum();
         for (unsigned int j = 0; j < N; ++j)
@@ -1964,7 +1964,7 @@ void CPostProcessing::LocateEvaluationLogFiles(const novac::CString& directory, 
 
         FileHandler::CEvaluationLogFileHandler logReader;
         logReader.m_evaluationLog = novac::CString(f);
-        if (SUCCESS != logReader.ReadEvaluationLog() || logReader.m_scan.size() == 0)
+        if (RETURN_CODE::SUCCESS != logReader.ReadEvaluationLog() || logReader.m_scan.size() == 0)
         {
             ++nofFailedLogReads;
             continue;

@@ -273,7 +273,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
     // If no evaluation log selected, quit
     if (strlen(m_evaluationLog) <= 1)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // First count the number of scans in the file.
     //	This to speed up the initialization of the arrays
@@ -292,7 +292,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
         FILE* f = fopen(m_evaluationLog, "r");
         if (NULL == f) {
             singleLock.Unlock();
-            return FAIL;
+            return RETURN_CODE::FAIL;
         }
 
         // Reset the column- and spectrum info
@@ -588,7 +588,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
     // Sort the scans in order of collection
     SortScans();
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Makes a quick scan through the evaluation-log
@@ -973,7 +973,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
 
     // 1. Test if the file already exists, if so then return false
     if (Filesystem::IsExistingFile(fileName))
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // 2. Write the file
     FILE* f = fopen(fileName, "w");
@@ -1103,7 +1103,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
     // Remember to close the file
     fclose(f);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInfo* info, const novac::CEvaluationResult* result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString& string) {
@@ -1111,7 +1111,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     Common common;
 
     if (result != NULL && result->m_referenceResult.size() < nSpecies)
-        return FAIL; // something's wrong here!
+        return RETURN_CODE::FAIL; // something's wrong here!
 
     // 1. The Scan angle
     string.Format("%.0lf\t", info->m_scanAngle);
@@ -1183,7 +1183,7 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     // 13. The 'flag' in the spectra
     string.AppendFormat("%d", info->m_flag);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Sorts the CDateTime-objects in the given array.

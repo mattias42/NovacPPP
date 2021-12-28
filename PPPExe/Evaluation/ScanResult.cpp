@@ -479,22 +479,16 @@ const CSpectrumInfo& CScanResult::GetDarkSpectrumInfo() const {
     return m_darkSpecInfo;
 }
 
-/** Marks the desired spectrum with the supplied mark_flag.
-    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-    @return SUCCESS on success. */
 bool CScanResult::MarkAs(unsigned long index, int MARK_FLAG) {
     if (!IsValidSpectrumIndex(index))
-        return FAIL;
+        return false;
 
     return m_spec[index].MarkAs(MARK_FLAG);
 }
 
-/** Removes the desired mark from the desired spectrum
-    Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
-    @return SUCCESS on success. */
 bool CScanResult::RemoveMark(unsigned long index, int MARK_FLAG) {
     if (!IsValidSpectrumIndex(index))
-        return FAIL;
+        return false;
 
     return m_spec[index].RemoveMark(MARK_FLAG);
 }
@@ -650,7 +644,7 @@ bool CScanResult::IsStratosphereMeasurement() const {
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 75 degrees then it is not a wind-speed measurement
     this->GetStartTime(0, startTime);
-    if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
         return false; // error
 
     // It is here assumed that the measurement is a stratospheric measurment
@@ -719,7 +713,7 @@ bool CScanResult::IsWindMeasurement_Gothenburg() const {
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 85 degrees then it is not a wind-speed measurement
     this->GetStartTime(0, startTime);
-    if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
         return false; // error
     if (fabs(SZA) >= 85.0)
         return false;
@@ -769,7 +763,7 @@ bool CScanResult::IsWindMeasurement_Heidelberg() const {
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 75 degrees then it is not a wind-speed measurement
     this->GetStartTime(0, startTime);
-    if (SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
+    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
         return false; // error
     if (fabs(SZA) >= 75.0)
         return false;
@@ -855,12 +849,12 @@ bool CScanResult::IsCompositionMeasurement() const {
     @param index - the zero based index into the list of evaluated spectra */
 RETURN_CODE CScanResult::GetStartTime(unsigned long index, CDateTime& t) const {
     if (!IsValidSpectrumIndex(index))
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // The start-time
     t = m_specInfo[index].m_startTime;
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 void CScanResult::GetSkyStartTime(CDateTime& t) const
@@ -878,11 +872,11 @@ CDateTime CScanResult::GetSkyStartTime() const
         @return SUCCESS if the index is valid */
 RETURN_CODE CScanResult::GetStopTime(unsigned long index, CDateTime& t) const {
     if (!IsValidSpectrumIndex(index))
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     t = m_specInfo[index].m_stopTime;
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Sets the type of the instrument used */
