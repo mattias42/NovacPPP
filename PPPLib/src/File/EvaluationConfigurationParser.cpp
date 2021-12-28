@@ -15,7 +15,6 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
             Configuration::CDarkCorrectionConfiguration& darkSettings,
             Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
 {
-
     // 1. Open the file
     if (!Open(fileName))
     {
@@ -29,7 +28,7 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
         szToken = NextToken();
 
         // no use to parse empty lines
-        if (strlen(szToken) < 3)
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         if (novac::Equals(szToken, "serial", strlen("serial"))) {
@@ -251,7 +250,7 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, n
         szToken = NextToken();
 
         // no use to parse empty lines
-        if (strlen(szToken) < 2)
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         // ignore comments
@@ -381,7 +380,7 @@ int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CIn
         szToken = NextToken();
 
         // no use to parse empty lines
-        if (strlen(szToken) < 2)
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         // ignore comments
@@ -419,7 +418,7 @@ int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
         szToken = NextToken();
 
         // no use to parse empty lines
-        if (strlen(szToken) < 3)
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         // ignore comments
@@ -524,7 +523,7 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
         szToken = NextToken();
 
         // no use to parse empty lines
-        if (strlen(szToken) < 2)
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         // ignore comments

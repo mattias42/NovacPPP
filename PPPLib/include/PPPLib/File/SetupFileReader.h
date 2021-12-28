@@ -16,7 +16,7 @@ namespace FileHandler {
     class CSetupFileReader : public CXMLFileReader
     {
     public:
-        CSetupFileReader(void);
+        CSetupFileReader(ILogger& logger);
         ~CSetupFileReader(void);
 
         /** This reads in the contents of a setup-file into the supplied data-structure.

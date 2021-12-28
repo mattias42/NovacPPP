@@ -68,6 +68,18 @@ void ShowError(const char message[])
     ShowError(msg);
 }
 
+void PocoLogger::Information(const std::string& message)
+{
+    Poco::Logger& log = Poco::Logger::get("NovacPPP");
+    log.information(message);
+}
+
+void PocoLogger::Error(const std::string& message)
+{
+    Poco::Logger& log = Poco::Logger::get("NovacPPP");
+    log.fatal(message);
+}
+
 Common::Common()
     :m_exePath(s_exePath), m_exeFileName(s_exeFileName)
 {

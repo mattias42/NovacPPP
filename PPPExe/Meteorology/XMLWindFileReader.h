@@ -14,7 +14,7 @@ namespace FileHandler {
     class CXMLWindFileReader : public CXMLFileReader
     {
     public:
-        CXMLWindFileReader(void);
+        CXMLWindFileReader(ILogger& logger);
         ~CXMLWindFileReader(void);
 
         /** Reads in an wind-field file.

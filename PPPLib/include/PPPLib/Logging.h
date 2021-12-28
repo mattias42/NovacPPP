@@ -13,3 +13,13 @@ void ShowMessage(const std::string& message);
 void ShowError(const novac::CString& message);
 void ShowError(const char message[]);
 
+/** Abstract logger base class. */
+class ILogger
+{
+public:
+    /** Logs an informative message to the log */
+    virtual void Information(const std::string& message) = 0;
+
+    /** Logs an error message to the log */
+    virtual void Error(const std::string& message) = 0;
+};

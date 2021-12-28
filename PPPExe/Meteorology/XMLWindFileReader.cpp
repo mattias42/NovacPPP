@@ -12,13 +12,14 @@
 #include <string.h>
 #include <memory>
 
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 using namespace FileHandler;
 using namespace Meteorology;
 using namespace novac;
 
-CXMLWindFileReader::CXMLWindFileReader(void)
+CXMLWindFileReader::CXMLWindFileReader(ILogger& logger)
+    : CXMLFileReader(logger)
 {
 }
 

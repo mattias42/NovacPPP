@@ -23,7 +23,7 @@ namespace novac
 class CPostProcessing
 {
 public:
-    CPostProcessing() = default;
+    CPostProcessing(ILogger& logger);
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
@@ -61,7 +61,7 @@ protected:
     /** The database of plume-heights to use for the flux calculations */
     Geometry::CPlumeDataBase m_plumeDataBase;
 
-
+    ILogger& m_log;
 
     // ----------------------------------------------------------------------
     // --------------------- PRIVATE METHODS --------------------------------

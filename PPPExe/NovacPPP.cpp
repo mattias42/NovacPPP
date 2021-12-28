@@ -26,6 +26,7 @@ extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The setti
 extern Configuration::CUserConfiguration            g_userSettings;// <-- The settings of the user
 
 novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
+PocoLogger g_logger; // <-- global logger
 
 std::string s_exePath;
 std::string s_exeFileName;
@@ -131,7 +132,7 @@ void LoadConfigurations()
     // Declaration of variables and objects
     Common common;
     novac::CString setupPath;
-    FileHandler::CSetupFileReader reader;
+    FileHandler::CSetupFileReader reader{ g_logger };
 
     //Read configuration from file setup.xml */	
     setupPath.Format("%sconfiguration%csetup.xml", (const char*)common.m_exePath, Poco::Path::separator());
@@ -145,14 +146,14 @@ void LoadConfigurations()
     // Read the users options from file processing.xml
     novac::CString processingPath;
     processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)common.m_exePath, Poco::Path::separator());
-    FileHandler::CProcessingFileReader processing_reader;
+    FileHandler::CProcessingFileReader processing_reader{ g_logger };
     if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
     {
         throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
     }
 
     // Check if there is a configuration file for every spectrometer serial number
-    FileHandler::CEvaluationConfigurationParser eval_reader;
+    FileHandler::CEvaluationConfigurationParser eval_reader{ g_logger };
     for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
     {
         novac::CString evalConfPath;
@@ -202,7 +203,7 @@ void CalculateAllFluxes()
 {
     try
     {
-        CPostProcessing post;
+        CPostProcessing post{ g_logger };
         novac::CString processingOutputFile, setupOutputFile;
         Common common;
 
@@ -241,7 +242,7 @@ void CalculateAllFluxes()
         // Copy the settings that we have read in from the 'configuration' directory
         //	to the output directory to make it easier for the user to remember 
         //	what has been done...
-        FileHandler::CProcessingFileReader writer;
+        FileHandler::CProcessingFileReader writer{ g_logger };
         writer.WriteProcessingFile(processingOutputFile, g_userSettings);
 
         Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);

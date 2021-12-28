@@ -6,6 +6,7 @@
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 #include <PPPLib/SpectrometerId.h>
+#include <PPPLib/Logging.h>
 
 namespace novac
 {
@@ -18,8 +19,8 @@ namespace novac
     {
     public:
 
-        CPostCalibration(const novac::StandardCrossSectionSetup& standardCrossSections)
-            : m_standardCrossSections(standardCrossSections)
+        CPostCalibration(const novac::StandardCrossSectionSetup& standardCrossSections, ILogger& logger)
+            : m_log(logger), m_standardCrossSections(standardCrossSections)
         {
         }
 
@@ -33,6 +34,8 @@ namespace novac
     private:
 
         const novac::StandardCrossSectionSetup m_standardCrossSections;
+
+        ILogger& m_log;
 
         /** Performs an automatic instrument calibration for the supplied spectrometer using the provided
             .pak file for measurement data.

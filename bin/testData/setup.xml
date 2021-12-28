@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is the global configuration file for the evaluation of spectra in the NOVAC Post Processing Program -->
+
+<NovacPPPConfiguration>	
+
+	<!-- The following instruments are for Piton_de_la_Fournaise -->
+
+	<instrument>
+		<serial>D2J2134</serial>
+		<location>
+			<name>Enclos0</name>
+			<time_from>2007.09.12</time_from>
+			<time_to>9999.12.31</time_to>
+			<latitude>-21.2432</latitude>
+			<longitude>55.6781</longitude>
+			<altitude>2363.0000</altitude>
+			<volcano>Piton_de_la_Fournaise</volcano>
+			<compass>93.0</compass>
+			<coneangle>60.0</coneangle>
+			<type>0</type>
+			<spec>S2000</spec>
+		</location>
+	</instrument>
+
+	<instrument>
+		<serial>I2J8550</serial>
+		<location>
+			<name>Piton_de_Bert</name>
+			<time_from>2007.09.14</time_from>
+			<time_to>2007.12.06</time_to>
+			<latitude>-21.2759</latitude>
+			<longitude>55.6972</longitude>
+			<altitude>2280.0000</altitude>
+			<volcano>Piton_de_la_Fournaise</volcano>
+			<compass>34.0</compass>
+			<coneangle>60.0</coneangle>
+			<type>0</type>
+			<spec>S2000</spec>
+		</location>
+	</instrument>
+
+	<instrument>
+		<serial>I2J8549</serial>
+		<location>
+			<name>Piton_de_Bert</name>
+			<time_from>2008.02.01</time_from>
+			<time_to>9999.12.31</time_to>
+			<latitude>-21.2759</latitude>
+			<longitude>55.6972</longitude>
+			<altitude>2280.0000</altitude>
+			<volcano>Piton_de_la_Fournaise</volcano>
+			<compass>34.0</compass>
+			<coneangle>60.0</coneangle>
+			<type>0</type>
+			<spec>S2000</spec>
+		</location>
+	</instrument>
+	
+	<instrument>
+		<serial>I2J8552</serial>
+		<location>
+			<name>Piton_de_Partage</name>
+			<time_from>2007.09.18</time_from>
+			<time_to>9999.12.31</time_to>
+			<latitude>-21.2195</latitude>
+			<longitude>55.7024</longitude>
+			<altitude>2373.0000</altitude>
+			<volcano>Piton_de_la_Fournaise</volcano>
+			<compass>153.0</compass>
+			<coneangle>60.0</coneangle>
+			<type>0</type>
+			<spec>S2000</spec>
+		</location>
+	</instrument>
+
+</NovacPPPConfiguration>

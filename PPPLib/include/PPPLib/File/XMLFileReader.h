@@ -3,13 +3,14 @@
 #include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CStdioFile.h>
+#include <PPPLib/Logging.h>
 
 namespace FileHandler
 {
     class CXMLFileReader
     {
     public:
-        CXMLFileReader();
+        CXMLFileReader(ILogger& logger);
         virtual ~CXMLFileReader();
 
         // Non copyable object, since we are managing a file pointer
@@ -50,6 +51,8 @@ namespace FileHandler
         int Parse_Date(const novac::CString& label, novac::CDateTime& datum);
 
     protected:
+        ILogger& m_log;
+
         /** The tokenizer */
         char* szToken = nullptr;
 

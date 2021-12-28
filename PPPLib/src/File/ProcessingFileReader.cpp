@@ -11,14 +11,17 @@ extern novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 using namespace FileHandler;
 using namespace novac;
 
-CProcessingFileReader::CProcessingFileReader()
+CProcessingFileReader::CProcessingFileReader(ILogger& logger)
+    : CXMLFileReader(logger)
 {
 }
 
 RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, Configuration::CUserConfiguration& settings) {
 
     // 1. Open the file
-    if (!Open(filename)) {
+    if (!Open(filename))
+    {
+        m_log.Error("Cannot open file: " + filename.std_str());
         return FAIL;
     }
 
@@ -28,8 +31,8 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
     {
         szToken = NextToken();
 
-        // no use to parse empty lines, don't parse lines with less than 3 characters
-        if (strlen(szToken) < 3)
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
 
         // If we've found the output directory
@@ -218,6 +221,10 @@ void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration& s
     {
         szToken = NextToken();
 
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
+
         if (Equals(szToken, "/FitWindows", 11)) {
 
             // set the index of the most important fit-window
@@ -262,6 +269,10 @@ void CProcessingFileReader::Parse_CalibrationSetting(Configuration::CUserConfigu
     while (szToken != nullptr)
     {
         szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
 
         if (Equals(szToken, "/Calibration", strlen("/Calibration"))) {
             return;
@@ -323,6 +334,10 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration&
     {
         szToken = NextToken();
 
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
+
         if (Equals(szToken, "/SkySpectrum", 12)) {
             if (settings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN) {
                 settings.sky.indexInScan = atoi(parsedValueStr);
@@ -372,6 +387,10 @@ void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration
     while (szToken != nullptr)
     {
         szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
 
         if (Equals(szToken, "/GeometryCalc", 13)) {
             return;
@@ -433,6 +452,10 @@ void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration& se
     {
         szToken = NextToken();
 
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
+
         if (Equals(szToken, "/DualBeam", 13)) {
             return;
         }
@@ -469,6 +492,10 @@ void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfigurat
     while (szToken != nullptr)
     {
         szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
 
         if (Equals(szToken, "/Discarding", 11)) {
             return;

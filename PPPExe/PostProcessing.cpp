@@ -73,6 +73,12 @@ void EvaluateScansThread();
 //  eval-log files generated
 void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties);
 
+CPostProcessing::CPostProcessing(ILogger& logger)
+    : m_log(logger)
+{
+
+}
+
 void CPostProcessing::DoPostProcessing_Flux()
 {
     novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&> evalLogFiles;
@@ -258,7 +264,7 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
 
     ShowMessage("--- Running Calibrations --- ");
 
-    novac::CPostCalibration calibrationController{ standardCrossSections };
+    novac::CPostCalibration calibrationController{ standardCrossSections, m_log };
     novac::CPostCalibrationStatistics calibrationStatistics;
 
     // Unlike other parts of the NovacPPP, this function is intended to be single threaded. The reason for this is that the
@@ -768,7 +774,7 @@ int CPostProcessing::ReadWindField()
 {
     novac::CString name1, name2, name3, path1, path2, path3, messageToUser;
     Common common;
-    FileHandler::CXMLWindFileReader reader;
+    FileHandler::CXMLWindFileReader reader{ m_log };
 
     if (g_userSettings.m_windFieldFileOption == 0)
     {

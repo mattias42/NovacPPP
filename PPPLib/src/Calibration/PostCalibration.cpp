@@ -511,7 +511,7 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
         newEvaluationSettings.InsertFitWindow(evaluationWindow.window, evaluationWindow.validFrom, evaluationWindow.validTo);
     }
 
-    FileHandler::CEvaluationConfigurationParser writer;
+    FileHandler::CEvaluationConfigurationParser writer{ m_log };
     writer.WriteConfigurationFile(fileName, newEvaluationSettings, instrument->m_darkCurrentCorrection, instrument->m_instrumentCalibration);
 
 }

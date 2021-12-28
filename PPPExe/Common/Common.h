@@ -7,6 +7,7 @@
 #define COMMON_H
 
 #include <PPPLib/PPPLib.h>
+#include <PPPLib/Logging.h>
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CList.h>
 #include <PPPLib/Measurement.h>
@@ -26,19 +27,18 @@ namespace Meteorology
 }
 
 // ---------------------------------------------------------------
-// ---------------- GLOBAL FUNCTIONS -----------------------------
+// --------------------------- LOGGING ---------------------------
 // ---------------------------------------------------------------
 
+class PocoLogger : public ILogger
+{
+public:
+    /** Logs an informative message to the log */
+    virtual void Information(const std::string& message) override;
 
-/** Appends an information / warning message to the logs */
-void ShowMessage(const novac::CString& message);
-void ShowMessage(const char message[]);
-void ShowMessage(const novac::CString& message, novac::CString connectionID);
-void ShowMessage(const std::string& message);
-
-/** Appends an error message to the logs */
-void ShowError(const novac::CString& message);
-void ShowError(const char message[]);
+    /** Logs an error message to the log */
+    virtual void Error(const std::string& message) override;
+};
 
 
 /** Update the top line of list box */

@@ -9,6 +9,11 @@ namespace FileHandler {
     class CEvaluationConfigurationParser : public CXMLFileReader
     {
     public:
+        CEvaluationConfigurationParser(ILogger& logger)
+            : CXMLFileReader(logger)
+        {
+        }
+
         /** Reads in an evaluation-configuration file.
             In the format specified for the NovacPostProcessingProgram (NPPP)
             @return 0 on sucess */

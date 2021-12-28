@@ -6,7 +6,8 @@
 using namespace FileHandler;
 using namespace novac;
 
-CSetupFileReader::CSetupFileReader(void)
+CSetupFileReader::CSetupFileReader(ILogger& logger)
+    : CXMLFileReader(logger)
 {
 }
 
@@ -23,13 +24,15 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
         return FAIL;
     }
 
-    // Parse the file
-    while (nullptr != (szToken = NextToken())) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
-        // no use to parse empty lines, don't parse lines with less than 3 characters
-        if (strlen(szToken) < 3) {
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
             continue;
-        }
 
         //* Look for the xml tag 'instrument' and use Parse_Instrument and Parse_Location to read serial number and location to object 'setup' */
         if (novac::Equals(szToken, "instrument", 9)) {
@@ -46,10 +49,17 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
     return SUCCESS;
 }
 
-// Parse for serial tag and store in the InstrumentConfiguration object
 void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration& instr) {
-    // Parse the file
-    while (nullptr != (szToken = NextToken())) {
+
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
 
         if (novac::Equals(szToken, "/instrument", 11)) {
             return;
@@ -69,8 +79,15 @@ void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration&
 void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration& loc) {
     Configuration::CInstrumentLocation location;
 
-    // Parse the other 
-    while (nullptr != (szToken = NextToken())) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
 
         if (novac::Equals(szToken, "/location", 8)) {
             // insert the information that we have into the array and return.
@@ -210,8 +227,16 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
 
 void CSetupFileReader::Parse_CustomSpectrometer(SpectrometerModel& model)
 {
-    while (nullptr != (szToken = NextToken()))
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
     {
+        szToken = NextToken();
+
+        // no use to parse empty lines
+        if (szToken == nullptr || strlen(szToken) < 3)
+            continue;
+
         if (novac::Equals(szToken, "/spectrometerModel", 8))
         {
             return;
