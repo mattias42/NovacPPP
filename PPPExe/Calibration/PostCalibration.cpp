@@ -92,7 +92,7 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     ReferenceCreationController referenceController;
     std::vector<novac::CReferenceFile> referencesCreated;
 
-    referenceController.m_highPassFilter = false; // TODO: Are the references sometimes filtered here?
+    referenceController.m_highPassFilter = false; // In the NovacPPP the references are never filtered on disk (but may be filtered after having been read in)
     referenceController.m_unitSelection = 1; // Default to molecules/cm2 in NovacPPP
 
     // First the ordinary references

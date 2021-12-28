@@ -197,7 +197,7 @@ void StartProcessing(int selectedVolcano)
 #endif  // _MFC_VER 
 }
 
-
+// This is the starting point for all the processing modes.
 void CalculateAllFluxes()
 {
     try

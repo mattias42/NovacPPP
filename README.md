@@ -7,10 +7,12 @@ options for performing the evaluations and it is possible to run the program on 
 run.
 
 The program has during 2018 been modified to be platform independent and has been tested to build on both:
-* Windows 10, using Visual Studio 2017 (community edition)
-* Ubuntu 16.04, using gcc and make
+* Windows 10, using Visual Studio 2017, 2019 and 2022 (community edition)
+* Ubuntu 16.04, and Ubuntu 18.04 using gcc and make
 The build system used to achieve this is [CMake](https://cmake.org/) and scripts are included to build the program in
-Windows using visual Studio 2017 and in Ubuntu using gcc and make. 
+Windows using visual Studio and in Ubuntu using gcc and make. 
+
+In order to make the program platform independent was the user interface removed entirely. The program is now console only.
 
 The program depends on [Poco libraries](https://pocoproject.org/) for performing common networking and filesystem tasks 
 and Poco must therefore be installed on the system prior to building.
