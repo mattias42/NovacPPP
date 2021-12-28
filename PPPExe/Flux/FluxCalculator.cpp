@@ -9,6 +9,7 @@
 // This is the settings for how to do the procesing
 #include <PPPLib/Configuration/UserConfiguration.h>
 
+#include <PPPLib/File/Filesystem.h>
 #include <PPPLib/MFC/CFileUtils.h>
 #include <Poco/Path.h>
 
@@ -41,7 +42,7 @@ int CFluxCalculator::CalculateFlux(const novac::CString& evalLogFileName, const 
     MEASUREMENT_MODE mode;
 
     // 1. Assert that the evaluation-log-file exists
-    if (!IsExistingFile(evalLogFileName)) {
+    if (!Filesystem::IsExistingFile(evalLogFileName)) {
         ShowMessage("Recieved evaluation-log with illegal path. Could not calculate flux.");
         return 1;
     }
@@ -306,10 +307,10 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult& fluxResult
     serialNumber.Format("%s", (const char*)result->GetSerial());
     directory.Format("%s%s%c%s%c", (const char*)g_userSettings.m_outputDirectory, (const char*)dateStr2,
         Poco::Path::separator(), (const char*)serialNumber, Poco::Path::separator());
-    if (CreateDirectoryStructure(directory)) {
+    if (Filesystem::CreateDirectoryStructure(directory)) {
         Common common;
         directory.Format("%sOutput%c%s%c%s", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)dateStr2, Poco::Path::separator(), (const char*)serialNumber);
-        if (CreateDirectoryStructure(directory)) {
+        if (Filesystem::CreateDirectoryStructure(directory)) {
             errorMessage.Format("Could not create storage directory for flux-data. Please check settings and restart.");
             ShowError(errorMessage);
             return FAIL;
@@ -320,7 +321,7 @@ RETURN_CODE CFluxCalculator::WriteFluxResult(const Flux::CFluxResult& fluxResult
     fluxLogFile.Format("%sFluxLog_%s_%s.txt", (const char*)directory, (const char*)serialNumber, (const char*)dateStr2);
 
     // 20c. Check if the file exists
-    if (!IsExistingFile(fluxLogFile)) {
+    if (!Filesystem::IsExistingFile(fluxLogFile)) {
         // write the header
         FILE* f = fopen(fluxLogFile, "w");
         if (f != nullptr) {

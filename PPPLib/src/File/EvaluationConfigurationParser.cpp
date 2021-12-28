@@ -1,5 +1,7 @@
-#include "EvaluationConfigurationParser.h"
-#include "Common.h"
+#include <PPPLib/File/EvaluationConfigurationParser.h>
+#include <PPPLib/Logging.h>
+#include <PPPLib/PPPLib.h>
+
 #include <memory>
 #include <cstring>
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
@@ -20,8 +22,12 @@ int CEvaluationConfigurationParser::ReadConfigurationFile(const novac::CString& 
         return FAIL;
     }
 
-    // parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
         // no use to parse empty lines
         if (strlen(szToken) < 3)
             continue;
@@ -238,8 +244,12 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, n
     window.Clear();
     novac::CString slitfunctionFile, wavelengthCalibFile;
 
-    // parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
         // no use to parse empty lines
         if (strlen(szToken) < 2)
             continue;
@@ -364,7 +374,12 @@ int CEvaluationConfigurationParser::Parse_FitWindow(novac::CFitWindow& window, n
 
 int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CInstrumentCalibrationConfiguration& calibrationSettings)
 {
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
         // no use to parse empty lines
         if (strlen(szToken) < 2)
             continue;
@@ -397,8 +412,11 @@ int CEvaluationConfigurationParser::Parse_CalibrationSettings(Configuration::CIn
 int CEvaluationConfigurationParser::Parse_Reference(novac::CFitWindow& window) {
     int nRef = window.nRef;
 
-    // the actual reading loop
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         // no use to parse empty lines
         if (strlen(szToken) < 3)
@@ -499,7 +517,12 @@ int CEvaluationConfigurationParser::Parse_DarkCorrection(Configuration::CDarkSet
     dSettings.Clear();
     novac::CString str;
 
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
+
         // no use to parse empty lines
         if (strlen(szToken) < 2)
             continue;

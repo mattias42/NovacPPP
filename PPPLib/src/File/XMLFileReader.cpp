@@ -1,5 +1,5 @@
-#include "XMLFileReader.h"
-#include "../Common/Common.h"
+#include <PPPLib/File/XMLFileReader.h>
+#include <PPPLib/Logging.h>
 #include <cstdlib>
 #include <cstring>
 #include <Poco/Path.h>
@@ -244,7 +244,8 @@ int CXMLFileReader::Parse_IntItem(const novac::CString& label, int& number) {
     return 0;
 }
 
-int CXMLFileReader::Parse_IPNumber(const novac::CString& label, BYTE& ip0, BYTE& ip1, BYTE& ip2, BYTE& ip3) {
+int CXMLFileReader::Parse_IPNumber(const novac::CString& label, std::uint8_t& ip0, std::uint8_t& ip1, std::uint8_t& ip2, std::uint8_t& ip3)
+{
     while (nullptr != (szToken = NextToken())) {
         int i0, i1, i2, i3;
 
@@ -253,10 +254,10 @@ int CXMLFileReader::Parse_IPNumber(const novac::CString& label, BYTE& ip0, BYTE&
         }
 
         sscanf(szToken, "%d.%d.%d.%d", &i0, &i1, &i2, &i3);
-        ip0 = (BYTE)i0;
-        ip1 = (BYTE)i1;
-        ip2 = (BYTE)i2;
-        ip3 = (BYTE)i3;
+        ip0 = (std::uint8_t)i0;
+        ip1 = (std::uint8_t)i1;
+        ip2 = (std::uint8_t)i2;
+        ip3 = (std::uint8_t)i3;
     }
 
     return 0;

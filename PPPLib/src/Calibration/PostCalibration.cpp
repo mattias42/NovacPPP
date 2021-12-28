@@ -1,5 +1,8 @@
-#include "PostCalibration.h"
-#include "../Common/Common.h"
+#include <PPPLib/Calibration/PostCalibration.h>
+#include <PPPLib/Calibration/PostCalibrationStatistics.h>
+#include <PPPLib/PPPLib.h>
+#include <PPPLib/Logging.h>
+#include <PPPLib/File/Filesystem.h>
 #include <SpectralEvaluation/DialogControllers/NovacProgramWavelengthCalibrationController.h>
 #include <SpectralEvaluation/DialogControllers/ReferenceCreationController.h>
 #include <SpectralEvaluation/File/File.h>
@@ -7,8 +10,7 @@
 #include <SpectralEvaluation/File/ScanFileHandler.h>
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include <PPPLib/Configuration/UserConfiguration.h>
-#include "../Common/EvaluationConfigurationParser.h"
-#include "PostCalibrationStatistics.h"
+#include <PPPLib/File/EvaluationConfigurationParser.h>
 #include <sstream>
 #include <algorithm>
 #include <PPPLib/MFC/CFileUtils.h>
@@ -51,7 +53,7 @@ std::string CreateOutputDirectoryForCalibration(const CSpectrumInfo& calibratedS
     directoryName += dateStr + "/" + calibratedSpectrum.m_device + "/";
 
     // 4b. Make sure that the folder exists
-    int ret = CreateDirectoryStructure(directoryName);
+    int ret = Filesystem::CreateDirectoryStructure(directoryName);
     if (ret)
     {
         std::stringstream message;
@@ -489,7 +491,7 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
         directoryName += '/';
     }
     directoryName += "calibration/";
-    if (CreateDirectoryStructure(directoryName))
+    if (Filesystem::CreateDirectoryStructure(directoryName))
     {
         std::stringstream message;
         message << "Could not create directory for saving evaluation configuration: " << directoryName;

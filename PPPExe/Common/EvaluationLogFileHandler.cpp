@@ -4,7 +4,7 @@
 #include "../Common/Version.h"
 #include <cstring>
 #include <algorithm>
-
+#include <PPPLib/File/Filesystem.h>
 #include <PPPLib/MFC/CSingleLock.h>
 
 // This is the settings for how to do the procesing
@@ -972,7 +972,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
     CDateTime startTime;
 
     // 1. Test if the file already exists, if so then return false
-    if (IsExistingFile(fileName))
+    if (Filesystem::IsExistingFile(fileName))
         return FAIL;
 
     // 2. Write the file

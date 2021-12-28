@@ -1,4 +1,5 @@
 #include "FluxStatistics.h"
+#include <PPPLib/File/Filesystem.h>
 
 using namespace Flux;
 using namespace novac;
@@ -173,7 +174,7 @@ void CFluxStatistics::WriteFluxStat(const novac::CString& fileName) {
     FILE* f = nullptr;
 
     // try to open the file
-    if (IsExistingFile(fileName)) {
+    if (Filesystem::IsExistingFile(fileName)) {
         f = fopen(fileName, "a");
         if (f == nullptr)
             return;

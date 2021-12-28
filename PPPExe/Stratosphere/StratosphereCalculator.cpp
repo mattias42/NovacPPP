@@ -4,6 +4,7 @@
 #include <PPPLib/Molecule.h>
 #include "../Common/Common.h"
 #include "../Common/EvaluationLogFileHandler.h"
+#include <PPPLib/File/Filesystem.h>
 
 // This is the settings for how to do the procesing
 #include <PPPLib/Configuration/UserConfiguration.h>
@@ -225,7 +226,7 @@ void CStratosphereCalculator::WriteResultToFile(CMeasurementDay& measDay, double
     // the name of the output file
     fileName.Format("%s%cStratosphere.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
-    if (!IsExistingFile(fileName))
+    if (!Filesystem::IsExistingFile(fileName))
         writeHeader = true;
 
     FILE* f = fopen(fileName, "a");

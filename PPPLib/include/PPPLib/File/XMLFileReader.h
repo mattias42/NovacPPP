@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../stdafx.h"
-
 #include <SpectralEvaluation/DateTime.h>
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CStdioFile.h>
@@ -20,47 +18,47 @@ namespace FileHandler
 
         /** Retrieve the next token from the xml file.
             Returns nullptr if no more tokens are available.  */
-        char *NextToken();
+        char* NextToken();
 
         /** Retrieves the value of the given attribute from the current token
             @return NULL if this attribute does not exist or the current token is not
                 a valid element */
-        const char * GetAttributeValue(const novac::CString &label);
+        const char* GetAttributeValue(const novac::CString& label);
 
         /** General parsing of a single, simple string item */
-        int Parse_StringItem(const novac::CString &label, novac::CString &string);
-        int Parse_StringItem(const novac::CString &label, std::string &string);
+        int Parse_StringItem(const novac::CString& label, novac::CString& string);
+        int Parse_StringItem(const novac::CString& label, std::string& string);
 
         /** General parsing of a single, simple path.
             This both parses the path and converts it to a full, absolute path by expanding environment variables */
-        int Parse_PathItem(const novac::CString &label, novac::CString &path);
-        int Parse_PathItem(const novac::CString &label, std::string &path);
+        int Parse_PathItem(const novac::CString& label, novac::CString& path);
+        int Parse_PathItem(const novac::CString& label, std::string& path);
 
         /** General parsing of a single, simple float item */
-        int Parse_FloatItem(const novac::CString &label, double &number);
+        int Parse_FloatItem(const novac::CString& label, double& number);
 
         /** General parsing of a single, simple integer item */
-        int Parse_IntItem(const novac::CString &label, int &number);
+        int Parse_IntItem(const novac::CString& label, int& number);
 
         /** General parsing of a single, simple long integer item */
-        int Parse_LongItem(const novac::CString &label, long &number);
+        int Parse_LongItem(const novac::CString& label, long& number);
 
         /** General parsing of a single, simple long integer item */
-        int Parse_IPNumber(const novac::CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3);
+        int Parse_IPNumber(const novac::CString& label, std::uint8_t& ip0, std::uint8_t& ip1, std::uint8_t& ip2, std::uint8_t& ip3);
 
         /** General parsing of a date */
-        int Parse_Date(const novac::CString &label, novac::CDateTime &datum);
+        int Parse_Date(const novac::CString& label, novac::CDateTime& datum);
 
     protected:
         /** The tokenizer */
-        char *szToken = nullptr;
+        char* szToken = nullptr;
 
         /** The name of the currently opened file. For debugging reasons */
         novac::CString m_filename = "";
 
         /** Opens the provided file for reading.
             @return true if successful */
-        bool Open(const novac::CString &fileName);
+        bool Open(const novac::CString& fileName);
 
         /** Closes m_File */
         void Close();

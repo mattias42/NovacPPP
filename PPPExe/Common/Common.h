@@ -29,19 +29,6 @@ namespace Meteorology
 // ---------------- GLOBAL FUNCTIONS -----------------------------
 // ---------------------------------------------------------------
 
-/**Get system temperory folder
-    *@param folderPath temperory system folder path*/
-void GetSysTempFolder(novac::CString& folderPath);
-
-/** A simple function to find out wheather a given file exists or not.
-    @param - The filename (including path) to the file.
-    @return 0 if the file does not exist.
-    @return 1 if the file exist. */
-bool IsExistingFile(const novac::CString& fileName);
-
-/** Creates a directory structure according to the given path.
-        @return 0 on success. */
-int CreateDirectoryStructure(const novac::CString& path);
 
 /** Appends an information / warning message to the logs */
 void ShowMessage(const novac::CString& message);

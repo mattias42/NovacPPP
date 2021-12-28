@@ -26,6 +26,16 @@ namespace Filesystem
         @param criteria If not null, then this is used to filter the list of files. */
     void SearchDirectoryForFiles(const novac::CString& path, bool includeSubdirectories, std::vector<std::string>& fileList, FileSearchCriterion* criteria = nullptr);
 
+    /** A simple function to find out whether a given file exists or not.
+        @param - The filename (including path) to the file.
+        @return 0 if the file does not exist.
+        @return 1 if the file exist. */
+    bool IsExistingFile(const novac::CString& fileName);
+
+    /** Creates a directory structure according to the given path.
+            @return 0 on success. */
+    int CreateDirectoryStructure(const novac::CString& path);
+
 }
 
 #endif // !NOVACPPP_FILESYSTEM_FILESYSTEM_H

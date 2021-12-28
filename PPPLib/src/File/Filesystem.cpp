@@ -1,5 +1,4 @@
-#include "Filesystem.h"
-
+#include <PPPLib/File/Filesystem.h>
 #include <PPPLib/MFC/CFileUtils.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Exception.h>
@@ -80,5 +79,46 @@ namespace Filesystem
             ShowMessage(e.what());
         }
     }
+
+
+    bool IsExistingFile(const novac::CString& fileName)
+    {
+        try
+        {
+            Poco::File file(fileName.c_str());
+            return file.exists();
+        }
+        catch (const std::exception& e)
+        {
+            novac::CString message;
+            message.Format("Exception happened when searching for file: '%s', message: '%s'", fileName.c_str(), e.what());
+            ShowMessage(message);
+            return false;
+        }
+    }
+
+    int CreateDirectoryStructure(const novac::CString& path)
+    {
+        try
+        {
+            Poco::File directory(path.c_str());
+            directory.createDirectories();
+
+            if (directory.exists()) {
+                return 0;
+            }
+            else {
+                return 1; // error
+            }
+        }
+        catch (std::exception& e)
+        {
+            novac::CString message = "Failed to create directory: ";
+            message.AppendFormat("%s", e.what());
+            ShowMessage(message);
+            return 1;
+        }
+    }
+
 
 }

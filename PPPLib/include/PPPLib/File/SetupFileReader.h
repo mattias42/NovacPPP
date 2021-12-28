@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Common/Common.h"
-#include "Common/XMLFileReader.h"
+#include <PPPLib/PPPLib.h>
+#include <PPPLib/File/XMLFileReader.h>
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CStdioFile.h>

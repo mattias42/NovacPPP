@@ -1,7 +1,6 @@
-#include "ProcessingFileReader.h"
+#include <PPPLib/File/ProcessingFileReader.h>
 #include <PPPLib/VolcanoInfo.h>
 #include <cstring>
-
 #include <algorithm>
 
 extern novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
@@ -23,8 +22,11 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
         return FAIL;
     }
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         // no use to parse empty lines, don't parse lines with less than 3 characters
         if (strlen(szToken) < 3)
@@ -210,8 +212,11 @@ void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration& s
     novac::CString fitWindowName, mainFitWindowName;
     int nFitWindowsFound = 0;
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/FitWindows", 11)) {
 
@@ -251,10 +256,12 @@ void CProcessingFileReader::Parse_FitWindow(Configuration::CUserConfiguration& s
 
 void CProcessingFileReader::Parse_CalibrationSetting(Configuration::CUserConfiguration& settings) {
     novac::CString fitWindowName, mainFitWindowName;
-    int nFitWindowsFound = 0;
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/Calibration", strlen("/Calibration"))) {
             return;
@@ -310,8 +317,11 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration&
     novac::CString parsedValueStr;
     novac::CString tmpString;
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/SkySpectrum", 12)) {
             if (settings.sky.skyOption == Configuration::SKY_OPTION::SPECTRUM_INDEX_IN_SCAN) {
@@ -355,11 +365,13 @@ void CProcessingFileReader::Parse_SkySpectrum(Configuration::CUserConfiguration&
     }
 }
 
-/** Parses an individual geometry-calculation section */
 void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration& settings) {
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/GeometryCalc", 13)) {
             return;
@@ -415,8 +427,11 @@ void CProcessingFileReader::Parse_GeometryCalc(Configuration::CUserConfiguration
 /** Parses an individual dual-beam section */
 void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration& settings) {
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/DualBeam", 13)) {
             return;
@@ -447,11 +462,13 @@ void CProcessingFileReader::Parse_DualBeam(Configuration::CUserConfiguration& se
     }
 }
 
-/** Parses an individual quality-judgement section */
 void CProcessingFileReader::Parse_DiscardSettings(Configuration::CUserConfiguration& settings) {
 
-    // Parse the file
-    while (szToken = NextToken()) {
+    // parse the file, one line at a time.
+    szToken = "start";
+    while (szToken != nullptr)
+    {
+        szToken = NextToken();
 
         if (Equals(szToken, "/Discarding", 11)) {
             return;

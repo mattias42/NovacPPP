@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../Common/XMLFileReader.h"
-#include "../Common/Common.h"
+#include <PPPLib/File/XMLFileReader.h>
+#include <PPPLib/PPPLib.h>
 #include "WindDataBase.h"
-
 #include <PPPLib/MFC/CString.h>
 
 namespace FileHandler {

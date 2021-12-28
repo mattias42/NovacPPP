@@ -6,6 +6,7 @@
 // we need to be able to download data from the FTP-server
 #include "../Communication/FTPServerConnection.h"
 
+#include <PPPLib/File/Filesystem.h>
 #include <Poco/Glob.h>
 #include <Poco/Path.h>
 #include <string.h>
@@ -41,7 +42,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorology
         localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), (const char*)tmpFileName);
 
         // make sure that the tmp-directory exists
-        if (CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
+        if (Filesystem::CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
             userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
             ShowMessage(userMessage);
             return 1;
@@ -126,7 +127,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Meteo
         }
 
         // make sure that the tmp-directory exists
-        if (CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
+        if (Filesystem::CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
             userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
             ShowMessage(userMessage);
             return 1;
@@ -155,7 +156,7 @@ int CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Meteo
 
             localFileName.Format("%s%s", (const char*)g_userSettings.m_tempDirectory, (const char*)name);
 
-            if (IsExistingFile(localFileName)) {
+            if (Filesystem::IsExistingFile(localFileName)) {
                 userMessage.Format("File %s is already downloaded", (const char*)localFileName);
                 ShowMessage(userMessage);
             }

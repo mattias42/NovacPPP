@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include "SetupFileReader.h"
+#include <PPPLib/File/SetupFileReader.h>
 #include <PPPLib/MFC/CStdioFile.h>
+#include <PPPLib/Logging.h>
 #include <cstring>
 
 using namespace FileHandler;

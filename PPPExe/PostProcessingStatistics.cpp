@@ -3,6 +3,7 @@
 #include "Common/Common.h"
 #include <PPPLib/MFC/CCriticalSection.h>
 #include <PPPLib/MFC/CSingleLock.h>
+#include <PPPLib/File/Filesystem.h>
 
 // Include synchronization classes
 // #include <afxmt.h>
@@ -170,7 +171,7 @@ void CPostProcessingStatistics::WriteStatToFile(const novac::CString& file) {
 
         // open the file
         FILE* f = NULL;
-        if (IsExistingFile(file)) {
+        if (Filesystem::IsExistingFile(file)) {
             f = fopen(file, "a");
         }
         else {

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ContinuationOfProcessing.h"
-#include "Common/Common.h"
+#include <PPPLib/File/Filesystem.h>
 
 // This is the settings for how to do the procesing
 #include <PPPLib/Configuration/UserConfiguration.h>
@@ -36,7 +36,7 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans() {
         return;
 
     oldStatusLogfile.Format("%s%cStatusLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
-    if (!IsExistingFile(oldStatusLogfile))
+    if (!Filesystem::IsExistingFile(oldStatusLogfile))
         return;
 
     FILE* f = fopen(oldStatusLogfile, "r");

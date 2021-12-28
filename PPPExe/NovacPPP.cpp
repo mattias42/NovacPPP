@@ -3,13 +3,13 @@
 #include <PPPLib/MFC/CString.h>
 #include <PPPLib/MFC/CStringTokenizer.h>
 #include <PPPLib/VolcanoInfo.h>
+#include <PPPLib/File/Filesystem.h>
 
-#include "Common/Common.h"
-#include "SetupFileReader.h"
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include <PPPLib/Configuration/UserConfiguration.h>
-#include "Common/EvaluationConfigurationParser.h"
-#include "Common/ProcessingFileReader.h"
+#include <PPPLib/File/SetupFileReader.h>
+#include <PPPLib/File/EvaluationConfigurationParser.h>
+#include <PPPLib/File/ProcessingFileReader.h>
 #include "PostProcessing.h"
 
 #include <iostream>
@@ -158,7 +158,7 @@ void LoadConfigurations()
         novac::CString evalConfPath;
         evalConfPath.Format("%sconfiguration%c%s.exml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)g_setup.m_instrument[k].m_serial);
 
-        if (IsExistingFile(evalConfPath))
+        if (Filesystem::IsExistingFile(evalConfPath))
         {
             eval_reader.ReadConfigurationFile(
                 evalConfPath,
@@ -214,7 +214,7 @@ void CalculateAllFluxes()
         confCopyDir.Format("%s/copiedConfiguration/", (const char*)g_userSettings.m_outputDirectory);
 
         // make sure that the output directory exists
-        if (CreateDirectoryStructure(g_userSettings.m_outputDirectory))
+        if (Filesystem::CreateDirectoryStructure(g_userSettings.m_outputDirectory))
         {
             novac::CString userMessage;
             userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
@@ -223,7 +223,7 @@ void CalculateAllFluxes()
             return;
         }
 
-        if (CreateDirectoryStructure(confCopyDir))
+        if (Filesystem::CreateDirectoryStructure(confCopyDir))
         {
             novac::CString userMessage;
             userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "XMLFileReader.h"
+#include <PPPLib/File/XMLFileReader.h>
 #include <PPPLib/Configuration/EvaluationConfiguration.h>
 #include <PPPLib/Configuration/DarkCorrectionConfiguration.h>
 #include <PPPLib/Configuration/InstrumentCalibrationConfiguration.h>

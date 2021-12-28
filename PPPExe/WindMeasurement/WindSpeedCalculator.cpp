@@ -2,6 +2,7 @@
 #include "WindSpeedCalculator.h"
 #include "../Common/EvaluationLogFileHandler.h"
 #include "../Meteorology/WindField.h"
+#include <PPPLib/File/Filesystem.h>
 #include <cstring>
 
 // This is the settings for how to do the procesing
@@ -668,7 +669,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString& fileName) {
     CDateTime now;
 
-    if (IsExistingFile(fileName))
+    if (Filesystem::IsExistingFile(fileName))
         return; // don't write the header if the file already exists..
 
     // get the current time

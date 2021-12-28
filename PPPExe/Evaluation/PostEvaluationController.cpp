@@ -5,6 +5,7 @@
 #include <SpectralEvaluation/Configuration/DarkSettings.h>
 #include <SpectralEvaluation/Evaluation/RatioEvaluation.h>
 #include <SpectralEvaluation/Evaluation/PlumeSpectrumSelector.h>
+#include <PPPLib/File/Filesystem.h>
 
 // This is the information we need to continue an old processing
 #include "../ContinuationOfProcessing.h"
@@ -102,7 +103,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
             for (int k = 0; k < 8; ++k)
             {
                 GetArchivingfileName(archivePakFileName, archiveTxtFileName, fitWindowName, pakFileName, modes[k]);
-                if (IsExistingFile(archiveTxtFileName))
+                if (Filesystem::IsExistingFile(archiveTxtFileName))
                 {
                     errorMessage.Format(" Scan %s has already been evaluated. Will proceed to the next scan", (const char*)pakFileName);
                     ShowMessage(errorMessage);
@@ -185,7 +186,7 @@ int CPostEvaluationController::EvaluateScan(const novac::CString& pakFileName, c
             "/PlumeSpectra/" + 
             m_lastResult->GetSerial().std_str();
 
-        int ret = CreateDirectoryStructure(outputDirectoryStr);
+        int ret = Filesystem::CreateDirectoryStructure(outputDirectoryStr);
         if (ret)
         {
             novac::CString userMessage;
@@ -219,7 +220,7 @@ RETURN_CODE CPostEvaluationController::WriteRatioResult(const std::vector<Ratio>
         Poco::Path::separator(),
         skySpec.m_info.m_device.c_str());
 
-    const bool writeHeaderLine = !IsExistingFile(fileName);
+    const bool writeHeaderLine = !Filesystem::IsExistingFile(fileName);
 
     FILE *f = fopen(fileName, "a");
     if (f == nullptr)
@@ -516,7 +517,7 @@ RETURN_CODE CPostEvaluationController::AppendToEvaluationSummaryFile(const CScan
         Poco::Path::separator(),
         (const char*)result->GetSerial());
 
-    if (!IsExistingFile(evalSummaryLog))
+    if (!Filesystem::IsExistingFile(evalSummaryLog))
     {
         fWriteHeaderLine = true;
     }
@@ -567,7 +568,7 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
     // we can also write an evaluation-summary log file
     pakSummaryLog.Format("%s%cPakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
-    if (!IsExistingFile(pakSummaryLog))
+    if (!Filesystem::IsExistingFile(pakSummaryLog))
     {
         fWriteHeaderLine = true;
     }
@@ -623,7 +624,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     while (1)
     {
         pakFile.Format("%s%cUnknownScans%c%d.pak", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), ++i);
-        if (!IsExistingFile(pakFile))
+        if (!Filesystem::IsExistingFile(pakFile))
         {
             break;
         }
@@ -668,7 +669,7 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString &pakF
     txtFile.Format("%s", (const char*)pakFile);
 
     // 4b. Make sure that the folder exists
-    int ret = CreateDirectoryStructure(pakFile);
+    int ret = Filesystem::CreateDirectoryStructure(pakFile);
     if (ret)
     {
         userMessage.Format("Could not create directory for archiving .pak-file: %s", (const char*)pakFile);

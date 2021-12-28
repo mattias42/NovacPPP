@@ -1,4 +1,4 @@
-#include "PostCalibrationStatistics.h"
+#include <PPPLib/Calibration/PostCalibrationStatistics.h>
 #include <algorithm>
 #include <stdexcept>
 #include <sstream>
@@ -86,7 +86,7 @@ void CPostCalibrationStatistics::GetCalibration(
             throw std::logic_error("Incorrect logic discovered in PostCalibrationStatistics, the timestamps were not sorted in increasing order.");
         }
 
-        validFrom.Increment(0.5 * secondsDifference);
+        validFrom.Increment(static_cast<int>(std::round(0.5 * secondsDifference)));
     }
 
     if (index < static_cast<int>(pos->second.calibrationsPerformed.size() - 1))
@@ -100,7 +100,7 @@ void CPostCalibrationStatistics::GetCalibration(
             throw std::logic_error("Incorrect logic discovered in PostCalibrationStatistics, the timestamps were not sorted in increasing order.");
         }
 
-        validTo.Increment(0.5 * secondsDifference);
+        validTo.Increment(static_cast<int>(std::round(0.5 * secondsDifference)));
     }
     else
     {

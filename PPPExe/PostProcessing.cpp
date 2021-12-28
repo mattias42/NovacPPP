@@ -12,8 +12,8 @@
 #include "Evaluation/PostEvaluationController.h"
 
 // The PostCalibration takes care of the instrument calibrations.
-#include "Calibration/PostCalibration.h"
-#include "Calibration/PostCalibrationStatistics.h"
+#include <PPPLib/Calibration/PostCalibration.h>
+#include <PPPLib/Calibration/PostCalibrationStatistics.h>
 
 // The FluxCalculator takes care of calculating the fluxes
 #include "Flux/FluxCalculator.h"
@@ -21,7 +21,7 @@
 // The Stratospherecalculator takes care of calculating Stratospheric VCD's
 #include "Stratosphere/StratosphereCalculator.h"
 
-// The flux CFluxStatistics takes care of the statistcal part of the fluxes
+// The flux CFluxStatistics takes care of the statistical part of the fluxes
 #include "Flux/FluxStatistics.h"
 
 // This is the configuration of the network
@@ -36,7 +36,7 @@
 #include "WindMeasurement/WindSpeedCalculator.h"
 
 #include "Meteorology/XMLWindFileReader.h"
-#include "Filesystem/Filesystem.h"
+#include <PPPLib/File/Filesystem.h>
 #include "Common/EvaluationLogFileHandler.h"
 
 #include <PPPLib/VolcanoInfo.h>
@@ -662,7 +662,7 @@ int CPostProcessing::PrepareEvaluation()
                         // the file does not exist, try to change it to include the path of the configuration-directory...
                         novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
 
-                        if (IsExistingFile(fileName))
+                        if (Filesystem::IsExistingFile(fileName))
                         {
                             window.ref[referenceIndex].m_path = fileName.ToStdString();
                         }
@@ -718,7 +718,7 @@ int CPostProcessing::PrepareEvaluation()
                     // the file does not exist, try to change it to include the path of the configuration-directory...
                     novac::CString fileName = GetAbsolutePathFromRelative(window.fraunhoferRef.m_path);
 
-                    if (IsExistingFile(fileName))
+                    if (Filesystem::IsExistingFile(fileName))
                     {
                         window.fraunhoferRef.m_path = fileName.ToStdString();
                     }
@@ -809,7 +809,7 @@ int CPostProcessing::ReadWindField()
             path3.Format("%sconfiguration%c%s.wxml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)name3);
 
             // check which of the files exists
-            if (IsExistingFile(path1))
+            if (Filesystem::IsExistingFile(path1))
             {
                 messageToUser.Format("Reading wind field from file: %s", (const char*)path1);
                 ShowMessage(messageToUser);
@@ -826,7 +826,7 @@ int CPostProcessing::ReadWindField()
                 }
 
             }
-            else if (IsExistingFile(path2))
+            else if (Filesystem::IsExistingFile(path2))
             {
                 messageToUser.Format("Reading wind field from file: %s", (const char*)path2);
                 ShowMessage(messageToUser);
@@ -842,7 +842,7 @@ int CPostProcessing::ReadWindField()
                     return 0;
                 }
             }
-            else if (IsExistingFile(path3))
+            else if (Filesystem::IsExistingFile(path3))
             {
                 messageToUser.Format("Reading wind field from file: %s", (const char*)path3);
                 ShowMessage(messageToUser);
@@ -1375,7 +1375,7 @@ void CPostProcessing::WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux:
     fluxLogFile.Format("%s%cFluxLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
     // Try to open the file
-    if (IsExistingFile(fluxLogFile))
+    if (Filesystem::IsExistingFile(fluxLogFile))
     {
         Common::ArchiveFile(fluxLogFile);
     }
@@ -1488,7 +1488,7 @@ void CPostProcessing::WriteCalculatedGeometriesToFile(novac::CList <Geometry::CG
     novac::CString geomLogFile;
     geomLogFile.Format("%s%cGeometryLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
 
-    if (IsExistingFile(geomLogFile))
+    if (Filesystem::IsExistingFile(geomLogFile))
     {
         f = fopen(geomLogFile, "a");
         if (f == nullptr)
@@ -1862,7 +1862,7 @@ bool CPostProcessing::ConvolveReference(novac::CReferenceFile& ref, const novac:
     if (!IsExistingFile(ref.m_crossSectionFile))
     {
         novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_crossSectionFile);
-        if (IsExistingFile(fullPath))
+        if (Filesystem::IsExistingFile(fullPath))
         {
             ref.m_crossSectionFile = fullPath.ToStdString();
         }
@@ -1879,7 +1879,7 @@ bool CPostProcessing::ConvolveReference(novac::CReferenceFile& ref, const novac:
     if (!IsExistingFile(ref.m_slitFunctionFile))
     {
         novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_slitFunctionFile);
-        if (IsExistingFile(fullPath))
+        if (Filesystem::IsExistingFile(fullPath))
         {
             ref.m_slitFunctionFile = fullPath.ToStdString();
         }
@@ -1896,7 +1896,7 @@ bool CPostProcessing::ConvolveReference(novac::CReferenceFile& ref, const novac:
     if (!IsExistingFile(ref.m_wavelengthCalibrationFile))
     {
         novac::CString fullPath = GetAbsolutePathFromRelative(ref.m_wavelengthCalibrationFile);
-        if (IsExistingFile(fullPath))
+        if (Filesystem::IsExistingFile(fullPath))
         {
             ref.m_wavelengthCalibrationFile = fullPath.ToStdString();
         }

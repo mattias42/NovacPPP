@@ -2,6 +2,7 @@
 
 #include "../Common/Common.h"
 #include <PPPLib/MFC/CFileUtils.h>
+#include <PPPLib/File/Filesystem.h>
 
 // This is the settings for how to do the procesing
 #include <PPPLib/Configuration/UserConfiguration.h>
@@ -86,7 +87,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString& serverDir, c
 
 
     // Make sure thath the temporary directory exists
-    if (CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
+    if (Filesystem::CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
         novac::CString userMessage;
         userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
         ShowMessage(userMessage);
@@ -360,7 +361,7 @@ void DownloadFile(Poco::Net::FTPClientSession& ftp, const novac::CFileInfo& file
         if (start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start) {
             // the creation date is between the start and the stop dates. Download the file
             localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), fileInfo.fileName.c_str());
-            if (IsExistingFile(localFileName)) {
+            if (Filesystem::IsExistingFile(localFileName)) {
                 userMessage.Format("File %s is already downloaded", (const char*)localFileName);
                 ShowMessage(userMessage);
                 downloadedFiles.AddItem(localFileName.std_str());
