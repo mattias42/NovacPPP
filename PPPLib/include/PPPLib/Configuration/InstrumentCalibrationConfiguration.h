@@ -1,10 +1,9 @@
 #pragma once
 
 /** The class CInstrumentCalibrationConfiguration defines per-instrument settings
-    on how to perform calibrations. */
+    on how to perform calibrations. This will only be used in calibration mode. */
 namespace Configuration
 {
-
     class CInstrumentCalibrationConfiguration
     {
     public:

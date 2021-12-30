@@ -418,7 +418,8 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
     }
 
     // Get the windows defined for this instrument
-    std::vector<Configuration::FitWindowWithTime> windows;
+    std::vector<Configuration::FitWindowWithTime> originalWindowsForThisChannel;
+    std::vector<Configuration::FitWindowWithTime> originalWindowsForOtherChannels;
     for (int idx = 0; idx < instrument->m_eval.NumberOfFitWindows(); ++idx)
     {
         Configuration::FitWindowWithTime window;
@@ -426,12 +427,16 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
         {
             if (window.window.channel == spectrometer.channel)
             {
-                windows.push_back(window);
+                originalWindowsForThisChannel.push_back(window);
+            }
+            else
+            {
+                originalWindowsForOtherChannels.push_back(window);
             }
         }
     }
 
-    if (windows.size() == 0)
+    if (originalWindowsForThisChannel.size() == 0)
     {
         std::stringstream message;
         message << "Failed to retrieve any fit window defined for: " << spectrometer.serial << " and channel ";
@@ -441,27 +446,26 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
     }
 
     // If there are still multiple windows, then warn the user that we can only (so far) process the first one.
-    if (windows.size() > 1)
+    if (originalWindowsForThisChannel.size() > 1)
     {
         std::stringstream message;
-        message << "Found " << windows.size() << " fit windows defined for: " << spectrometer.serial << " and channel " << spectrometer.channel;
+        message << "Found " << originalWindowsForThisChannel.size() << " fit windows defined for: " << spectrometer.serial << " and channel " << spectrometer.channel;
         message << ". Will generate new evaluation with settings from the first, different configurations is not supported";
         ShowMessage(message.str());
-        return;
     }
 
     // Get the newly defined statistics
     const int calibrationNum = statistics.GetNumberOfCalibrationsPerformedFor(spectrometer);
 
+    // Use the new references and the window given above to create a new (timed) fit window.
     std::vector<Configuration::FitWindowWithTime> result;
     for (int idx = 0; idx < calibrationNum; ++idx)
     {
-        // Use the new references and the window given above to create a new (timed) fit window.
         Configuration::FitWindowWithTime evaluationWindow;
         std::vector<novac::CReferenceFile> references;
         statistics.GetCalibration(spectrometer, idx, evaluationWindow.validFrom, evaluationWindow.validTo, references);
 
-        evaluationWindow.window = windows.front().window;
+        evaluationWindow.window = originalWindowsForThisChannel.front().window;
         evaluationWindow.window.nRef = 0;
         for (const auto& reference : references)
         {
@@ -502,11 +506,19 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
     }
     std::string fileName = directoryName + spectrometer.serial + ".exml";
 
-
     Configuration::CEvaluationConfiguration newEvaluationSettings;
     newEvaluationSettings.m_serial = spectrometer.serial;
 
+    // Insert the updated windows, as well as the other, not updated, fit windows.
     for (const auto& evaluationWindow : result)
+    {
+        newEvaluationSettings.InsertFitWindow(evaluationWindow.window, evaluationWindow.validFrom, evaluationWindow.validTo);
+    }
+    for (size_t otherWindowIdx = 1; otherWindowIdx < originalWindowsForThisChannel.size(); ++otherWindowIdx)
+    {
+        newEvaluationSettings.InsertFitWindow(originalWindowsForThisChannel[otherWindowIdx].window, originalWindowsForThisChannel[otherWindowIdx].validFrom, originalWindowsForThisChannel[otherWindowIdx].validTo);
+    }
+    for (const auto& evaluationWindow : originalWindowsForOtherChannels)
     {
         newEvaluationSettings.InsertFitWindow(evaluationWindow.window, evaluationWindow.validFrom, evaluationWindow.validTo);
     }
