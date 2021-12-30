@@ -32,18 +32,16 @@ int CEvaluationConfiguration::SetFitWindow(int index, const novac::CFitWindow& w
         return 1;
     }
 
+    if (index >= m_windows.size())
+    {
+        m_windows.resize(1 + index);
+    }
+
     FitWindowWithTime timedWindow;
     timedWindow.window = window;
     timedWindow.validFrom = validFrom;
     timedWindow.validTo = validTo;
-
-    while (index < m_windows.size())
-    {
-        FitWindowWithTime emptyWindow;
-        m_windows.push_back(emptyWindow);
-    }
-
-    m_windows[index] = timedWindow;
+    m_windows[index] = std::move(timedWindow);
 
     return 0;
 }
