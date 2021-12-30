@@ -22,7 +22,7 @@ bool CXMLFileReader::Open(const novac::CString& fileName)
 {
     novac::CFileException exceFile;
 
-    this->m_File = new novac::CStdioFile();
+    m_File = new novac::CStdioFile();
 
     if (!m_File->Open(fileName, novac::CStdioFile::modeRead | novac::CStdioFile::typeText, &exceFile))
     {
@@ -31,7 +31,7 @@ bool CXMLFileReader::Open(const novac::CString& fileName)
         return false;
     }
 
-    this->m_filename = fileName;
+    m_filename = fileName;
     this->nLinesRead = 0;
 
     return true;
@@ -56,7 +56,7 @@ char* CXMLFileReader::NextToken() {
     if (nLinesRead == 0) {
         // if this is the first call to this function
         m_File->ReadString(szLine, 4095);
-        szToken = (char*)(LPCSTR)szLine;
+        szToken = (char*)szLine;
 
         m_tokenPt = strtok(szToken, separators);
         ++nLinesRead;
@@ -76,7 +76,7 @@ char* CXMLFileReader::NextToken() {
             }
         }
 
-        szToken = (char*)(LPCSTR)szLine;
+        szToken = (char*)szLine;
 
         m_tokenPt = strtok(szToken, separators);
         ++nLinesRead;

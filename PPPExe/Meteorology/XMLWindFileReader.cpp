@@ -5,7 +5,7 @@
 
 // we need to be able to download data from the FTP-server
 #include "../Communication/FTPServerConnection.h"
-
+#include "../stdafx.h"
 #include <PPPLib/File/Filesystem.h>
 #include <Poco/Glob.h>
 #include <Poco/Path.h>

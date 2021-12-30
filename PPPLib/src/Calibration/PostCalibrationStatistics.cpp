@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <assert.h>
+#include <cmath>
 
 using namespace novac;
 
