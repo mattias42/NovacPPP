@@ -4,7 +4,7 @@
 
 #include <SpectralEvaluation/File/ScanFileHandler.h>
 #include <SpectralEvaluation/Evaluation/Ratio.h>
-#include "../Configuration/NovacPPPConfiguration.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
 
 namespace Evaluation
 {
@@ -51,7 +51,7 @@ namespace Evaluation
             @return 6 if the scan was rejected because it does not see the plume or
                         sees a too small portion of the plume
           */
-        int EvaluateScan(const novac::CString& pakFileName, const novac::CString &fitWindowName, novac::CString *txtFileName = NULL, CPlumeInScanProperty *plumeProperties = NULL);
+        int EvaluateScan(const novac::CString& pakFileName, const novac::CString &fitWindowName, novac::CString *txtFileName = NULL, novac::CPlumeInScanProperty *plumeProperties = NULL);
 
     private:
         // ----------------------------------------------------------------------
@@ -69,20 +69,20 @@ namespace Evaluation
             is also valid at the time when the scan was made.
             @return 0 if successful otherwise non-zero
         */
-        int GetLocationAndFitWindow(FileHandler::CScanFileHandler *scan, const novac::CString &fitWindowName,
+        int GetLocationAndFitWindow(novac::CScanFileHandler *scan, const novac::CString &fitWindowName,
             Configuration::CInstrumentLocation &instrLocation,
-            Evaluation::CFitWindow &window);
+            novac::CFitWindow &window);
 
         /** Looks in the configuration of the instrument and searches
             for the settings on how the dark-current should be removed
             from the collected spectra.
             On successful return will the settings be stored in 'settings'
             @return 0 on successful, otherwise non-zero. */
-        int GetDarkCurrentSettings(FileHandler::CScanFileHandler *scan, Configuration::CDarkSettings &settings);
+        int GetDarkCurrentSettings(novac::CScanFileHandler *scan, Configuration::CDarkSettings &settings);
 
         /** Checks the supplied scan if it's good enough to bother evaluating.
             @returns false if the scan is too bad and should be ignored. Else return true. */
-        bool IsGoodEnoughToEvaluate(const FileHandler::CScanFileHandler *scan, const Evaluation::CFitWindow &window, Configuration::CInstrumentLocation &instrLocation);
+        bool IsGoodEnoughToEvaluate(const novac::CScanFileHandler *scan, const novac::CFitWindow &window, Configuration::CInstrumentLocation &instrLocation);
 
         /** Writes the evaluation result to the appropriate log file.
             @param result - a CScanResult holding information about the result
@@ -91,7 +91,7 @@ namespace Evaluation
             @param txtFileName - if not null, this will on successful writing of the file be filled
                 with the full path and filename of the txt - file generated
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE WriteEvaluationResult(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName = nullptr);
+        RETURN_CODE WriteEvaluationResult(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const novac::CFitWindow *window, Meteorology::CWindField &windField, novac::CString *txtFileName = nullptr);
 
         /** Writes the evaluation result of one ratio calculation to the appropriate log file.
             @param result - a vector of calculated ratios.
@@ -100,21 +100,21 @@ namespace Evaluation
             @param txtFileName - if not null, this will on successful writing of the file be filled
                 with the full path and filename of the txt - file generated
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE WriteRatioResult(const std::vector<Ratio>& result, const FileHandler::CScanFileHandler& scan, const Evaluation::CFitWindow& window);
+        RETURN_CODE WriteRatioResult(const std::vector<novac::Ratio>& result, const novac::CScanFileHandler& scan, const novac::CFitWindow& window);
 
         /** Appends the evaluation result to the evaluation summary log file.
             @param result - a CScanResult holding information about the result
             @param scan - the scan itself
             @param scanningInstrument - information about the scanning instrument that generated the scan.
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE AppendToEvaluationSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField);
+        RETURN_CODE AppendToEvaluationSummaryFile(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const novac::CFitWindow *window, Meteorology::CWindField &windField);
 
         /** Appends the evaluation result to the pak-file summary log file.
             @param result - a CScanResult holding information about the result
             @param scan - the scan itself
             @param scanningInstrument - information about the scanning instrument that generated the scan.
             @return SUCCESS if operation completed sucessfully. */
-        RETURN_CODE AppendToPakFileSummaryFile(const CScanResult *result, const FileHandler::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const Evaluation::CFitWindow *window, Meteorology::CWindField &windField);
+        RETURN_CODE AppendToPakFileSummaryFile(const CScanResult *result, const novac::CScanFileHandler *scan, const Configuration::CInstrumentLocation *instrLocation, const novac::CFitWindow *window, Meteorology::CWindField &windField);
 
         /** Gets the filename under which the scan-file should be stored.
             @return SUCCESS if a filename is found. */

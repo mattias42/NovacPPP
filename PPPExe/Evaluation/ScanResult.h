@@ -7,9 +7,9 @@
 #include <SpectralEvaluation/Evaluation/BasicScanEvaluationResult.h>
 
 #include "../Flux/FluxResult.h"
-#include "../Molecule.h"
-#include <PPPLib/CString.h>
-#include <PPPLib/CArray.h>
+#include <PPPLib/Molecule.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CArray.h>
 
 namespace Evaluation
 {
@@ -23,13 +23,13 @@ namespace Evaluation
         of evaluation results such as the offset or the calculated flux of the scan,
         or a judgement wheather each evaluated spectrum is judged to be an ok
         spectrum or not. */
-    class CScanResult : public BasicScanEvaluationResult
+    class CScanResult : public novac::BasicScanEvaluationResult
     {
     public:
         CScanResult();
 
-        CScanResult(const CScanResult& );
-        CScanResult &operator=(const CScanResult &s2);
+        CScanResult(const CScanResult&);
+        CScanResult& operator=(const CScanResult& s2);
 
         // ----------------------------------------------------------------------
         // ---------------------- PUBLIC DATA -----------------------------------
@@ -40,7 +40,7 @@ namespace Evaluation
         // ----------------------------------------------------------------------
 
         /** Appends the result to the list of calculated results */
-        int AppendResult(const CEvaluationResult &evalRes, const CSpectrumInfo &specInfo);
+        int AppendResult(const novac::CEvaluationResult& evalRes, const novac::CSpectrumInfo& specInfo);
 
         /** Removes the spectrum number 'specIndex' from the list of calcualted results */
         int RemoveResult(unsigned int specIndex);
@@ -52,7 +52,7 @@ namespace Evaluation
         /** Retrieves the evaluation result for spectrum number
             'specIndex' from the list of calculated results.
                 @return - NULL if specIndex is out of bounds... */
-        const CEvaluationResult *GetResult(unsigned int specIndex) const;
+        const novac::CEvaluationResult* GetResult(unsigned int specIndex) const;
 
         /** Adds spectrum number 'specIndex' into the list of spectra in the .pak -file
                 which are corrupted and could not be evaluated */
@@ -62,33 +62,33 @@ namespace Evaluation
         int GetCorruptedNum() const;
 
         /** Stores the information about the sky-spectrum used */
-        void SetSkySpecInfo(const CSpectrumInfo &skySpecInfo);
+        void SetSkySpecInfo(const novac::CSpectrumInfo& skySpecInfo);
 
         /** Stores the information about the dark-spectrum used */
-        void SetDarkSpecInfo(const CSpectrumInfo &darkSpecInfo);
+        void SetDarkSpecInfo(const novac::CSpectrumInfo& darkSpecInfo);
 
         /** Stores the information about the offset-spectrum used */
-        void SetOffsetSpecInfo(const CSpectrumInfo &offsetSpecInfo);
+        void SetOffsetSpecInfo(const novac::CSpectrumInfo& offsetSpecInfo);
 
         /** Stores the information about the dark-current-spectrum used */
-        void SetDarkCurrentSpecInfo(const CSpectrumInfo &darkCurSpecInfo);
+        void SetDarkCurrentSpecInfo(const novac::CSpectrumInfo& darkCurSpecInfo);
 
         /** Check the last spectrum point for goodness of fit.
             The parameters 'deltaLimit', 'upperLimit' and 'lowerLimit' are for
             development purposes only. */
-        bool CheckGoodnessOfFit(const CSpectrumInfo& info, float chi2Limit = -1, float upperLimit = -1, float lowerLimit = -1);
+        bool CheckGoodnessOfFit(const novac::CSpectrumInfo& info, float chi2Limit = -1, float upperLimit = -1, float lowerLimit = -1);
 
         /** Check spectrum number 'index' for goodness of fit.
             The parameters 'deltaLimit', 'upperLimit' and 'lowerLimit' are for
             development purposes only. */
-        bool CheckGoodnessOfFit(const CSpectrumInfo& info, int index, float chi2Limit = -1, float upperLimit = -1, float lowerLimit = -1);
+        bool CheckGoodnessOfFit(const novac::CSpectrumInfo& info, int index, float chi2Limit = -1, float upperLimit = -1, float lowerLimit = -1);
 
         /** Gets the offset of the scan. The offset is calculated as the average of the
           three lowest columns values (bad values are skipped). After this function has
           been called the actual offset can be retrieved by a call to 'GetOffset'.
           @param specie - The name of the specie for which the offset should be found.
           @return 0 on success. @return 1 - if any error occurs. */
-        int CalculateOffset(const CMolecule &specie);
+        int CalculateOffset(const CMolecule& specie);
 
         /** Calculate the flux in this scan, using the supplied compass direction
                 and coneAngle.
@@ -102,7 +102,7 @@ namespace Evaluation
             @param coneAngle - the cone-angle of the instrument
             @param tilt - the tilt of the instrument.
             @return 0 if all is ok. @return 1 if any error occurs. */
-        int CalculateFlux(const CMolecule &specie, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, double coneAngle = 90.0, double tilt = 0.0);
+        int CalculateFlux(const CMolecule& specie, const Meteorology::CWindField& wind, const Geometry::CPlumeHeight& relativePlumeHeight, double compass, double coneAngle = 90.0, double tilt = 0.0);
 
         /** Tries to find a plume in the last scan result. If the plume is found
                 this function returns true, and the centre of the plume (in scanAngles)
@@ -110,12 +110,12 @@ namespace Evaluation
                 is given in 'plumeWidth' and the estimated completeness of the plume
                 is given in 'plumeCompleteness' (ranging from 0.0 to 1.0)
                 */
-        bool CalculatePlumeCentre(const CMolecule &specie, CPlumeInScanProperty &plumeProperties);
+        bool CalculatePlumeCentre(const CMolecule& specie, novac::CPlumeInScanProperty& plumeProperties);
 
         /** Tries to find a plume in the last scan result. If the plume is found
             this function returns true. The result of the calculations is stored in
             the member-variables 'm_plumeCentre' and 'm_plumeCompleteness' */
-        bool CalculatePlumeCentre(const CMolecule &specie);
+        bool CalculatePlumeCentre(const CMolecule& specie);
 
         /** Checks the kind of measurement that we have here and sets the
             flag 'm_measurementMode' to the appropriate value... */
@@ -153,12 +153,12 @@ namespace Evaluation
             corrected for the offset.
             NB!! The function 'CalculateOffset' must have been called
             before this function is called. */
-        double GetMaxColumn(const novac::CString &specie) const;
+        double GetMaxColumn(const novac::CString& specie) const;
 
         /** Returns the calculated flux */
         double GetFlux() const { return m_flux.m_flux; }
 
-        const Flux::CFluxResult &GetFluxResult() const { return m_flux; }
+        const Flux::CFluxResult& GetFluxResult() const { return m_flux; }
 
         /** Returns true if the automatic judgment considers this flux
             measurement to be a good measurement */
@@ -174,13 +174,13 @@ namespace Evaluation
         double GetTemperature() const { return m_skySpecInfo.m_temperature; }
 
         /** Fills in the supplied CPlumeInScanProperty object with the calculated properties of this scan */
-        void GetCalculatedPlumeProperties(CPlumeInScanProperty &properties) const { properties = m_plumeProperties; }
+        void GetCalculatedPlumeProperties(novac::CPlumeInScanProperty& properties) const { properties = m_plumeProperties; }
 
         /** Returns the calculated plume-centre position */
         double GetCalculatedPlumeCentre(int motor = 0) const;
 
         /** Returns the calculated plume edges */
-        void GetCalculatedPlumeEdges(double &lowEdge, double &highEdge) const;
+        void GetCalculatedPlumeEdges(double& lowEdge, double& highEdge) const;
 
         /** Returns the calculated plume-completeness */
         double GetCalculatedPlumeCompleteness() const { return m_plumeProperties.completeness; }
@@ -238,7 +238,7 @@ namespace Evaluation
         /** Marks the desired spectrum with the supplied mark_flag.
             Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
             @return true on success. */
-        bool  MarkAs(unsigned long index, int MARK_FLAG);
+        bool MarkAs(unsigned long index, int MARK_FLAG);
 
         /** Removes the desired mark from the desired spectrum
             Mark flag must be MARK_BAD_EVALUATION, or MARK_DELETED
@@ -246,13 +246,13 @@ namespace Evaluation
         bool RemoveMark(unsigned long index, int MARK_FLAG);
 
         /** Returns a reference to the desired spectrum info-structure */
-        const CSpectrumInfo& GetSpectrumInfo(unsigned long index) const;
+        const novac::CSpectrumInfo& GetSpectrumInfo(unsigned long index) const;
 
         /** Returns a reference to the spectrum info-structure of the sky-spectrum used */
-        const CSpectrumInfo &GetSkySpectrumInfo() const;
+        const novac::CSpectrumInfo& GetSkySpectrumInfo() const;
 
         /** Returns a reference to the spectrum info-structure of the dark-spectrum used */
-        const CSpectrumInfo &GetDarkSpectrumInfo() const;
+        const novac::CSpectrumInfo& GetDarkSpectrumInfo() const;
 
         /** returns the scan angle of evaluated spectrum number 'index'.
             @param index - the zero based index into the list of  evaluated spectra */
@@ -267,17 +267,17 @@ namespace Evaluation
                 'index' was started.
             @param index - the zero based index into the list of evaluated spectra.
             @return SUCCESS if the index is valid */
-        RETURN_CODE GetStartTime(unsigned long index, CDateTime &time) const;
+        RETURN_CODE GetStartTime(unsigned long index, novac::CDateTime& time) const;
 
         /** returns the time and date (UMT) when the sky-spectrum was started. */
-        void GetSkyStartTime(CDateTime &t) const;
-        CDateTime GetSkyStartTime() const;
+        void GetSkyStartTime(novac::CDateTime& t) const;
+        novac::CDateTime GetSkyStartTime() const;
 
         /** returns the time and date (UMT) when evaluated spectrum number 'index'
                 was stopped.
             @param index - the zero based index into the list of evaluated spectra.
             @return SUCCESS if the index is valid */
-        RETURN_CODE GetStopTime(unsigned long index, CDateTime &time) const;
+        RETURN_CODE GetStopTime(unsigned long index, novac::CDateTime& time) const;
 
         /** returns the evaluated column for specie number 'specieNum' and
                 spectrum number 'specNum'
@@ -286,7 +286,7 @@ namespace Evaluation
             @param spectrumNum - the zero based index into the list of evaluated
                 spectra.*/
         double GetColumn(unsigned long spectrumNum, unsigned long specieNum) const;
-        double GetColumn(unsigned long spectrumNum, CMolecule &mol) const;
+        double GetColumn(unsigned long spectrumNum, CMolecule& mol) const;
 
         /** returns the error for the evaluated column for specie number
                 'specieNum' and spectrum number 'specNum'
@@ -361,7 +361,7 @@ namespace Evaluation
         /** returns true if the spectra have been evaluated for the supplied specie.
             @param specie - a string containing the name of the specie to
                 search for, e.g. "SO2" (case insensitive)*/
-        bool IsEvaluatedSpecie(const novac::CString &specie) const { return (-1 != GetSpecieIndex(specie)); }
+        bool IsEvaluatedSpecie(const novac::CString& specie) const { return (-1 != GetSpecieIndex(specie)); }
 
         /** returns the number of species that were used in the evaluation of a
             given spectrum */
@@ -418,7 +418,7 @@ namespace Evaluation
         /** This contains the parameters of the plume that is seen
             in this scan, such as the completeness or the centre angle of
             the plume. */
-        CPlumeInScanProperty m_plumeProperties;
+        novac::CPlumeInScanProperty m_plumeProperties;
 
         /** The number of evaluations */
         unsigned long m_specNum;
@@ -432,7 +432,7 @@ namespace Evaluation
         // ----------------------------------------------------------------------
         // -------------------- PRIVATE METHODS ---------------------------------
         // ----------------------------------------------------------------------
-        
+
         /** makes a sanity check of the parameters and returns fit parameter number 'index'.
             @param specIndex - the zero based into the list of evaluated spectra.
             @param specieIndex - the zero based into the list of species to evaluate for.

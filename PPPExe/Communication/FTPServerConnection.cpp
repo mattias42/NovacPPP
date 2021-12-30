@@ -1,17 +1,18 @@
 #include "FTPServerConnection.h"
 
 #include "../Common/Common.h"
-#include <PPPLib/CFileUtils.h>
+#include <PPPLib/MFC/CFileUtils.h>
+#include <PPPLib/File/Filesystem.h>
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // This is the global list of volcanoes
 #include <PPPLib/VolcanoInfo.h>
 
-#include <PPPLib/CCriticalSection.h>
-#include <PPPLib/CSingleLock.h>
-#include <PPPLib/CFtpUtils.h>
+#include <PPPLib/MFC/CCriticalSection.h>
+#include <PPPLib/MFC/CSingleLock.h>
+#include <PPPLib/MFC/CFtpUtils.h>
 #include <PPPLib/ThreadUtils.h>
 #include <Poco/Net/FTPClientSession.h>
 #include <Poco/Net/NetException.h>
@@ -27,6 +28,7 @@ extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of t
 extern novac::CVolcanoInfo g_volcanoes; // <-- A list of all known volcanoes
 
 using namespace Communication;
+using namespace novac;
 
 
 struct ftpLogin
@@ -67,8 +69,8 @@ double nSecondsPassed = 0.0;
 static novac::GuardedValue nFTPThreadsRunning;
 
 
-int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, const novac::CString &username,
-    const novac::CString &password, std::vector<std::string>& pakFileList) {
+int CFTPServerConnection::DownloadDataFromFTP(const novac::CString& serverDir, const novac::CString& username,
+    const novac::CString& password, std::vector<std::string>& pakFileList) {
 
     unsigned int nRounds = 0;
 
@@ -85,7 +87,7 @@ int CFTPServerConnection::DownloadDataFromFTP(const novac::CString &serverDir, c
 
 
     // Make sure thath the temporary directory exists
-    if (CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
+    if (Filesystem::CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {
         novac::CString userMessage;
         userMessage.Format("Could not create temp directory: %s", (const char*)g_userSettings.m_tempDirectory);
         ShowMessage(userMessage);
@@ -177,7 +179,7 @@ bool DownloadFileList(Poco::Net::FTPClientSession& ftp, const std::string& direc
             }
         }
     }
-    catch(std::exception& e)
+    catch (std::exception& e)
     {
         std::cout << "Failed to download file list: " << e.what() << std::endl;
         ftp.endList();
@@ -266,7 +268,7 @@ void LoginAndDownloadDataFromDir(ftpLogin login, std::string directory, novac::G
 
         // Fork into a number of threads and start downloading the files
         std::vector<std::shared_ptr<std::thread>> downloadThreads;
-        std::vector<std::unique_ptr<Poco::Net::FTPClientSession>> connections{ g_userSettings.m_maxThreadNum};
+        std::vector<std::unique_ptr<Poco::Net::FTPClientSession>> connections{ g_userSettings.m_maxThreadNum };
 
         for (int threadIdx = 0; threadIdx < g_userSettings.m_maxThreadNum; ++threadIdx) {
 
@@ -359,7 +361,7 @@ void DownloadFile(Poco::Net::FTPClientSession& ftp, const novac::CFileInfo& file
         if (start <= g_userSettings.m_toDate && g_userSettings.m_fromDate <= start) {
             // the creation date is between the start and the stop dates. Download the file
             localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), fileInfo.fileName.c_str());
-            if (IsExistingFile(localFileName)) {
+            if (Filesystem::IsExistingFile(localFileName)) {
                 userMessage.Format("File %s is already downloaded", (const char*)localFileName);
                 ShowMessage(userMessage);
                 downloadedFiles.AddItem(localFileName.std_str());
@@ -409,7 +411,7 @@ void DownloadDataFromDir(Poco::Net::FTPClientSession& ftp, std::string directory
 
 /** Retrieves the list of files in a given directory on the FTP-server
     @return 0 on successful connection and completion of the download */
-int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDir, std::vector<std::string>& fileList, const novac::CString &username, const novac::CString &password) {
+int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString& serverDir, std::vector<std::string>& fileList, const novac::CString& username, const novac::CString& password) {
     // Extract the name of the server and each of the sub-directories specified
     std::string server, directory;
     novac::CFtpUtils ftpUtil{ g_volcanoes, g_userSettings.m_volcano };
@@ -437,8 +439,8 @@ int CFTPServerConnection::DownloadFileListFromFTP(const novac::CString &serverDi
 /** Downloads a single file from the given FTP-server
     @return 0 on successful connection and completion of the download
 */
-int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileName, const novac::CString &localFileName,
-    const novac::CString &username, const novac::CString &password) {
+int CFTPServerConnection::DownloadFileFromFTP(const novac::CString& remoteFileName, const novac::CString& localFileName,
+    const novac::CString& username, const novac::CString& password) {
     CDateTime now;
 
     // Extract the name of the server and the login
@@ -494,8 +496,8 @@ int CFTPServerConnection::DownloadFileFromFTP(const novac::CString &remoteFileNa
 /** Uploads result-files to the given FTP-server
     @return 0 on success otherwise non-zero
 */
-int CFTPServerConnection::UploadResults(const novac::CString &server, const novac::CString &username,
-    const novac::CString &password, novac::CList <novac::CString, novac::CString &> &fileList) {
+int CFTPServerConnection::UploadResults(const novac::CString& server, const novac::CString& username,
+    const novac::CString& password, novac::CList <novac::CString, novac::CString&>& fileList) {
     CDateTime now;
 
     // Extract the name of the server and the login
@@ -541,7 +543,7 @@ int CFTPServerConnection::UploadResults(const novac::CString &server, const nova
     auto p = fileList.GetHeadPosition();
     while (p != nullptr) {
         // Get the local name and path of the file to upload
-        novac::CString &localFile = fileList.GetNext(p);
+        novac::CString& localFile = fileList.GetNext(p);
 
         // Get the file-name to upload the file to...
         remoteFile.Format(localFile);

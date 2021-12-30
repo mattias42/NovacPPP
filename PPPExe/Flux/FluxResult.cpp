@@ -27,11 +27,11 @@ void CFluxResult::Clear() {
     m_compass = NOT_A_NUMBER;
     m_volcano = -1;
 
-    m_startTime = CDateTime(0, 0, 0, 0, 0, 0);
-    m_stopTime = CDateTime(0, 0, 0, 0, 0, 0);
+    m_startTime = novac::CDateTime(0, 0, 0, 0, 0, 0);
+    m_stopTime = novac::CDateTime(0, 0, 0, 0, 0, 0);
     m_instrument.Format("");
 
-    m_instrumentType = INSTR_GOTHENBURG;
+    m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
     m_scanOffset = 0.0;
     m_completeness = 0.0;
     m_plumeCentre[0] = NOT_A_NUMBER;
@@ -43,7 +43,7 @@ CFluxResult::~CFluxResult(void)
 }
 
 /** Assignment operator */
-CFluxResult &CFluxResult::operator=(const CFluxResult &res) {
+CFluxResult& CFluxResult::operator=(const CFluxResult& res) {
     this->m_flux = res.m_flux;
     this->m_fluxQualityFlag = res.m_fluxQualityFlag;
 

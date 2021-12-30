@@ -11,7 +11,7 @@
 #include "../PostProcessingStatistics.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 #include <cstdint>
 
@@ -19,6 +19,7 @@ extern CPostProcessingStatistics					g_processingStats; // <-- The statistics of
 extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
 
 using namespace Evaluation;
+using namespace novac;
 
 CScanEvaluation::CScanEvaluation()
     : ScanEvaluationBase()
@@ -33,8 +34,8 @@ CScanEvaluation::~CScanEvaluation(void)
     }
 }
 
-long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CFitWindow &fitWindow, const Configuration::CDarkSettings *darkSettings) {
-    CEvaluationBase *eval = NULL; // the evaluator
+long CScanEvaluation::EvaluateScan(novac::CScanFileHandler* scan, const CFitWindow& fitWindow, const Configuration::CDarkSettings* darkSettings) {
+    CEvaluationBase* eval = NULL; // the evaluator
     CFitWindow adjustedFitWindow = fitWindow; // we may need to make some small adjustments to the fit-window. This is a modified copy
 
     // Adjust the fit-low and fit-high parameters according to the spectra
@@ -78,8 +79,8 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
         //	Find the optimal shift & squeeze from the spectrum with the highest column
         CFitWindow window2 = adjustedFitWindow;
         for (int k = 0; k < window2.nRef; ++k) {
-            window2.ref[k].m_shiftOption = SHIFT_FIX;
-            window2.ref[k].m_squeezeOption = SHIFT_FIX;
+            window2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_FIX;
+            window2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
             window2.ref[k].m_shiftValue = 0.0;
             window2.ref[k].m_squeezeValue = 1.0;
         }
@@ -109,7 +110,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
         }
 
         CEvaluationBase* newEval = FindOptimumShiftAndSqueeze(adjustedFitWindow, m_indexOfMostAbsorbingSpectrum, *scan);
-        if(nullptr == newEval)
+        if (nullptr == newEval)
         {
             return 0;
         }
@@ -138,7 +139,7 @@ long CScanEvaluation::EvaluateScan(FileHandler::CScanFileHandler *scan, const CF
     return m_result->GetEvaluatedNum();
 }
 
-long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CEvaluationBase *eval, const Configuration::CDarkSettings *darkSettings) {
+long CScanEvaluation::EvaluateOpenedScan(novac::CScanFileHandler* scan, CEvaluationBase* eval, const Configuration::CDarkSettings* darkSettings) {
     novac::CString message;	// used for ShowMessage messages
     int	curSpectrumIndex = 0;		// keeping track of the index of the current spectrum into the .pak-file
     double highestColumnInScan = 0.0;	// the highest column-value in the evaluation
@@ -199,7 +200,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
 
         if (ret == 0) {
             // if something went wrong when reading the spectrum
-            if (scan->m_lastError == SpectrumIO::CSpectrumIO::ERROR_SPECTRUM_NOT_FOUND || scan->m_lastError == SpectrumIO::CSpectrumIO::ERROR_EOF) {
+            if (scan->m_lastError == novac::CSpectrumIO::ERROR_SPECTRUM_NOT_FOUND || scan->m_lastError ==  novac::CSpectrumIO::ERROR_EOF) {
                 // at the end of the file, quit the 'while' loop
                 break;
             }
@@ -207,9 +208,9 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
                 novac::CString errMsg;
                 errMsg.Format("Faulty spectrum found in %s", scan->GetFileName().c_str());
                 switch (scan->m_lastError) {
-                case SpectrumIO::CSpectrumIO::ERROR_CHECKSUM_MISMATCH:
+                case  novac::CSpectrumIO::ERROR_CHECKSUM_MISMATCH:
                     errMsg.AppendFormat(", Checksum mismatch. Spectrum ignored"); break;
-                case SpectrumIO::CSpectrumIO::ERROR_DECOMPRESS:
+                case  novac::CSpectrumIO::ERROR_DECOMPRESS:
                     errMsg.AppendFormat(", Decompression error. Spectrum ignored"); break;
                 default:
                     ShowMessage(", Unknown error. Spectrum ignored");
@@ -288,7 +289,7 @@ long CScanEvaluation::EvaluateOpenedScan(FileHandler::CScanFileHandler *scan, CE
     return m_result->GetEvaluatedNum();
 }
 
-bool CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectrum &spec, CSpectrum &dark, const Configuration::CDarkSettings *darkSettings)
+bool CScanEvaluation::GetDark(novac::CScanFileHandler* scan, const CSpectrum& spec, CSpectrum& dark, const Configuration::CDarkSettings* darkSettings)
 {
     m_lastErrorMessage = "";
     const bool successs = ScanEvaluationBase::GetDark(*scan, spec, dark, darkSettings);
@@ -303,7 +304,7 @@ bool CScanEvaluation::GetDark(FileHandler::CScanFileHandler *scan, const CSpectr
     return successs;
 }
 
-bool CScanEvaluation::GetSky(FileHandler::CScanFileHandler& scan, const Configuration::CSkySettings& settings, CSpectrum &sky)
+bool CScanEvaluation::GetSky(novac::CScanFileHandler& scan, const Configuration::CSkySettings& settings, CSpectrum& sky)
 {
     m_lastErrorMessage = "";
     const bool successs = ScanEvaluationBase::GetSky(scan, settings, sky);
@@ -319,12 +320,12 @@ bool CScanEvaluation::GetSky(FileHandler::CScanFileHandler& scan, const Configur
 }
 
 /** Returns true if the spectrum should be ignored */
-bool CScanEvaluation::Ignore(const CSpectrum &spec, const CSpectrum &dark, int fitLow, int fitHigh) {
+bool CScanEvaluation::Ignore(const CSpectrum& spec, const CSpectrum& dark, int fitLow, int fitHigh) {
 
     // check if the intensity is below the given limit
     const double maxIntensity = spec.MaxValue(fitLow, fitHigh) - dark.MinValue(fitLow, fitHigh);
 
-    const double dynamicRange = CSpectrometerDatabase::GetInstance().GetModel(spec.m_info.m_specModelName).maximumIntensity;
+    const double dynamicRange = CSpectrometerDatabase::GetInstance().GetModel(spec.m_info.m_specModelName).maximumIntensityForSingleReadout;
 
     if (maxIntensity < (dynamicRange * g_userSettings.m_minimumSaturationInFitRegion))
     {
@@ -335,7 +336,7 @@ bool CScanEvaluation::Ignore(const CSpectrum &spec, const CSpectrum &dark, int f
 }
 
 
-CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &fitWindow, int indexOfMostAbsorbingSpectrum, FileHandler::CScanFileHandler& scan)
+CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow& fitWindow, int indexOfMostAbsorbingSpectrum, novac::CScanFileHandler& scan)
 {
     CSpectrum spec, sky, dark;
 
@@ -346,8 +347,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &f
 
     // Evaluate this spectrum again with free (and linked) shift
     CFitWindow fitWindow2 = fitWindow;
-    fitWindow2.ref[0].m_shiftOption = SHIFT_FREE;
-    fitWindow2.ref[0].m_squeezeOption = SHIFT_FIX;
+    fitWindow2.ref[0].m_shiftOption = SHIFT_TYPE::SHIFT_FREE;
+    fitWindow2.ref[0].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
     fitWindow2.ref[0].m_squeezeValue = 1.0;
     for (int k = 1; k < fitWindow2.nRef; ++k)
     {
@@ -356,8 +357,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &f
             continue;
         }
 
-        fitWindow2.ref[k].m_shiftOption = SHIFT_LINK;
-        fitWindow2.ref[k].m_squeezeOption = SHIFT_LINK;
+        fitWindow2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_LINK;
+        fitWindow2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_LINK;
         fitWindow2.ref[k].m_shiftValue = 0.0;
         fitWindow2.ref[k].m_squeezeValue = 0.0;
     }
@@ -420,8 +421,8 @@ CEvaluationBase* CScanEvaluation::FindOptimumShiftAndSqueeze(const CFitWindow &f
             continue;
         }
 
-        fitWindow2.ref[k].m_shiftOption = SHIFT_FIX;
-        fitWindow2.ref[k].m_squeezeOption = SHIFT_FIX;
+        fitWindow2.ref[k].m_shiftOption = SHIFT_TYPE::SHIFT_FIX;
+        fitWindow2.ref[k].m_squeezeOption = SHIFT_TYPE::SHIFT_FIX;
         fitWindow2.ref[k].m_shiftValue = optimumShift;
         fitWindow2.ref[k].m_squeezeValue = optimumSqueeze;
     }

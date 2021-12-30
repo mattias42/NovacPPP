@@ -4,15 +4,15 @@
 #include "../Common/Version.h"
 #include <cstring>
 #include <algorithm>
-
-#include <PPPLib/CSingleLock.h>
+#include <PPPLib/File/Filesystem.h>
+#include <PPPLib/MFC/CSingleLock.h>
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 // Global variables;
-novac::CCriticalSection									g_evalLogCritSect; // synchronization access to evaluation-log files
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+novac::CCriticalSection g_evalLogCritSect; // synchronization access to evaluation-log files
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 
 using namespace FileHandler;
@@ -45,7 +45,7 @@ CEvaluationLogFileHandler::CEvaluationLogFileHandler(void)
         m_col.squeezeError[i] = 12;
     }
 
-    m_instrumentType = INSTR_GOTHENBURG;
+    m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
 }
 
 void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
@@ -167,7 +167,7 @@ void CEvaluationLogFileHandler::ParseScanHeader(const char szLine[8192]) {
         // The column
         if (Equals(szToken, column, strlen(column))) {
             m_col.column[m_evResult.m_referenceResult.size()] = curCol;
-            char *pt = szToken + strlen(column) + 1;
+            char* pt = szToken + strlen(column) + 1;
             szToken[strlen(szToken) - 1] = 0;
             std::string specieStr(pt);
             m_evResult.InsertSpecie(specieStr);
@@ -273,7 +273,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
 
     // If no evaluation log selected, quit
     if (strlen(m_evaluationLog) <= 1)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // First count the number of scans in the file.
     //	This to speed up the initialization of the arrays
@@ -289,10 +289,10 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
     novac::CSingleLock singleLock(&g_evalLogCritSect);
     singleLock.Lock();
     if (singleLock.IsLocked()) {
-        FILE *f = fopen(m_evaluationLog, "r");
+        FILE* f = fopen(m_evaluationLog, "r");
         if (NULL == f) {
             singleLock.Unlock();
-            return FAIL;
+            return RETURN_CODE::FAIL;
         }
 
         // Reset the column- and spectrum info
@@ -540,7 +540,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
             //  spectrum in the scan). Insert the data from this spectrum into the 
             //  CScanResult structure
 
-             m_specInfo.m_scanIndex = (short)measNr;
+            m_specInfo.m_scanIndex = (short)measNr;
             if (Equals(m_specInfo.m_name, "sky")) {
                 newResult.SetSkySpecInfo(m_specInfo);
             }
@@ -588,7 +588,7 @@ RETURN_CODE CEvaluationLogFileHandler::ReadEvaluationLog() {
     // Sort the scans in order of collection
     SortScans();
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Makes a quick scan through the evaluation-log
@@ -607,7 +607,7 @@ long CEvaluationLogFileHandler::CountScansInFile() {
     if (singleLock.IsLocked()) {
 
         // Open the evaluation log
-        FILE *f = fopen(m_evaluationLog, "r");
+        FILE* f = fopen(m_evaluationLog, "r");
         if (NULL == f) {
             singleLock.Unlock();
             return 0;
@@ -636,9 +636,9 @@ long CEvaluationLogFileHandler::CountScansInFile() {
 }
 
 /** Reads and parses the 'scanInfo' header before the scan */
-void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, double &flux, FILE *f) {
+void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo& scanInfo, double& flux, FILE* f) {
     char szLine[8192];
-    char *pt = NULL;
+    char* pt = NULL;
     int tmpInt[3];
     double tmpDouble;
     char instrumentType[64];
@@ -802,18 +802,18 @@ void CEvaluationLogFileHandler::ParseScanInformation(CSpectrumInfo &scanInfo, do
         if (nullptr != pt) {
             sscanf(pt + 15, "%s", instrumentType);
             if (Equals(instrumentType, "heidelberg")) {
-                m_instrumentType = INSTR_HEIDELBERG;
+                m_instrumentType = INSTRUMENT_TYPE::INSTR_HEIDELBERG;
             }
             else {
-                m_instrumentType = INSTR_GOTHENBURG;
+                m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
             }
         }
     }
 }
 
-void CEvaluationLogFileHandler::ParseFluxInformation(Meteorology::CWindField &windField, double &flux, FILE *f) {
+void CEvaluationLogFileHandler::ParseFluxInformation(Meteorology::CWindField& windField, double& flux, FILE* f) {
     char szLine[8192];
-    char *pt = NULL;
+    char* pt = NULL;
     double windSpeed = 10, windDirection = 0, plumeHeight = 1000;
     Meteorology::MET_SOURCE windSpeedSource = Meteorology::MET_USER;
     Meteorology::MET_SOURCE windDirectionSource = Meteorology::MET_USER;
@@ -931,8 +931,8 @@ void CEvaluationLogFileHandler::SortScans()
     }
 
     // Then sort the array
-    std::sort(begin(m_scan), end(m_scan), [&](const Evaluation::CScanResult& r1, const Evaluation::CScanResult& r2) 
-        { 
+    std::sort(begin(m_scan), end(m_scan), [&](const Evaluation::CScanResult& r1, const Evaluation::CScanResult& r2)
+        {
             return r1.GetSkyStartTime() < r2.GetSkyStartTime();
         });
 
@@ -972,15 +972,15 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
     CDateTime startTime;
 
     // 1. Test if the file already exists, if so then return false
-    if (IsExistingFile(fileName))
-        return FAIL;
+    if (Filesystem::IsExistingFile(fileName))
+        return RETURN_CODE::FAIL;
 
     // 2. Write the file
-    FILE *f = fopen(fileName, "w");
+    FILE* f = fopen(fileName, "w");
 
     for (int scanIndex = 0; scanIndex < this->m_scan.size(); ++scanIndex) {
-        Evaluation::CScanResult &scan = this->m_scan[scanIndex];
-        Meteorology::CWindField &wind = this->m_windField[scanIndex];
+        Evaluation::CScanResult& scan = this->m_scan[scanIndex];
+        Meteorology::CWindField& wind = this->m_windField[scanIndex];
 
         scan.GetStartTime(0, startTime);
 
@@ -1005,7 +1005,7 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         const SpectrometerModel spectrometerModel = CSpectrometerDatabase::GetInstance().GetModel(m_specInfo.m_specModelName);
         if (!spectrometerModel.IsUnknown())
         {
-            string.AppendFormat("\tspectrometer_maxIntensity=%lf\n", spectrometerModel.maximumIntensity);
+            string.AppendFormat("\tspectrometer_maxIntensity=%lf\n", spectrometerModel.maximumIntensityForSingleReadout);
             string.AppendFormat("\tspectrometer_numPixels=%d\n", spectrometerModel.numberOfPixels);
         }
 
@@ -1030,10 +1030,10 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
             string.Append("\tmode=plume\n");
 
         // The type of instrument used...
-        if (scan.GetInstrumentType() == INSTR_GOTHENBURG) {
+        if (scan.GetInstrumentType() == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
             string.Append("\tinstrumenttype=gothenburg\n");
         }
-        else if (scan.GetInstrumentType() == INSTR_HEIDELBERG) {
+        else if (scan.GetInstrumentType() == INSTRUMENT_TYPE::INSTR_HEIDELBERG) {
             string.Append("\tinstrumenttype=heidelberg\n");
         }
 
@@ -1065,10 +1065,10 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
         fprintf(f, "%s", string.c_str());
 
         // ----------------------- write the header --------------------------------
-        if (m_instrumentType == INSTR_GOTHENBURG) {
+        if (m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
             string.Format("#scanangle\t");
         }
-        else if (m_instrumentType == INSTR_HEIDELBERG) {
+        else if (m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG) {
             string.Format("#observationangle\tazimuth\t");
         }
         string.Append("starttime\tstoptime\tname\tspecsaturation\tfitsaturation\tdelta\tchisquare\texposuretime\tnumspec\t");
@@ -1103,21 +1103,21 @@ RETURN_CODE CEvaluationLogFileHandler::WriteEvaluationLog(const novac::CString f
     // Remember to close the file
     fclose(f);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
-RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString &string) {
+RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInfo* info, const novac::CEvaluationResult* result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString& string) {
     int itSpecie;
     Common common;
 
     if (result != NULL && result->m_referenceResult.size() < nSpecies)
-        return FAIL; // something's wrong here!
+        return RETURN_CODE::FAIL; // something's wrong here!
 
     // 1. The Scan angle
     string.Format("%.0lf\t", info->m_scanAngle);
 
     // 2. The azimuth angle
-    if (iType == INSTR_HEIDELBERG)
+    if (iType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
         string.AppendFormat("%.0lf\t", info->m_scanAngle2);
 
     // 3. The start time
@@ -1183,12 +1183,12 @@ RETURN_CODE CEvaluationLogFileHandler::FormatEvaluationResult(const CSpectrumInf
     // 13. The 'flag' in the spectra
     string.AppendFormat("%d", info->m_flag);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Sorts the CDateTime-objects in the given array.
         Algorithm based on MergeSort (~O(NlogN)) */
-void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending) {
+void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array, bool ascending) {
     unsigned long nElements = (unsigned long)array.GetSize(); // number of elements
     unsigned long it = 0; // <-- iterator
     unsigned long halfSize = nElements / 2;
@@ -1229,7 +1229,7 @@ void FileHandler::CEvaluationLogFileHandler::SortScans(novac::CArray<Evaluation:
 
 /** Merges the two arrays in a sorted way and stores the
         result in the output-array 'result' */
-void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending) {
+void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& result, bool ascending) {
     CDateTime	time1, time2;
     unsigned long it1 = 0; // iterator for array1
     unsigned long it2 = 0; // iterator for array2
@@ -1292,7 +1292,7 @@ void FileHandler::CEvaluationLogFileHandler::MergeArrays(novac::CArray<Evaluatio
         Algorithm based on BubbleSort (~O(N2))
         Quite efficient for small arrays since the elements does not have to be copied
             and thus uses very little memory */
-void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool /*ascending*/) {
+void FileHandler::CEvaluationLogFileHandler::BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array, bool /*ascending*/) {
     CDateTime time1, time2;
     bool change;
     unsigned long nElements = (unsigned long)array.GetSize(); // number of elements

@@ -4,7 +4,7 @@
 #include <SpectralEvaluation/DateTime.h>
 #include "../Meteorology/WindField.h"
 #include "../Geometry/PlumeHeight.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 enum FLUX_QUALITY_FLAG {
     FLUX_QUALITY_GREEN,
@@ -30,7 +30,7 @@ namespace Flux
         void Clear();
 
         /** Assignment operator */
-        CFluxResult &operator=(const CFluxResult &fl2);
+        CFluxResult& operator=(const CFluxResult& fl2);
 
         /** The calculated flux, in kg/s */
         double	m_flux;
@@ -67,10 +67,10 @@ namespace Flux
         double	m_compass;
 
         /** The date and time (UTC) when the measurement was started */
-        CDateTime	m_startTime;
+        novac::CDateTime	m_startTime;
 
         /** The date and time (UTC) when the measurement was finished */
-        CDateTime	m_stopTime;
+        novac::CDateTime	m_stopTime;
 
         /** The volcano that this measurement was made at. Set to -1 if unknown */
         int			m_volcano;

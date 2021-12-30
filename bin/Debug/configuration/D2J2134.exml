@@ -54,7 +54,7 @@
 	<fitWindow>
 		<channel>1</channel>
 		<name>SO2</name>
-		<validFrom>1970.01.01</validFrom>
+		<validFrom>1970.01.01T12:30:20</validFrom>
 		<validTo>9999.01.10</validTo>
 		<specLength>2048</specLength>
 		<interlaceStep>1</interlaceStep>
@@ -97,5 +97,10 @@
 	<DarkCorrection>
 		<dark>SCAN</dark>
 	</DarkCorrection>
+    
+    <Calibration>
+        <!-- the following defines one file which contains the initial pixel-to-wavelength mapping (and possibly also an instrument line shape) -->
+        <initialCalibrationFile>C:\NOVAC\novacP3\Cross sections\D2J2134_SO2_294K_Slave.xs</initialCalibrationFile>
+    </Calibration>    
 
 </EvaluationConfiguration>

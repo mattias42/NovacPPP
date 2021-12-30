@@ -23,7 +23,7 @@ namespace novac
         m_observatory = 0;
     }
 
-    CVolcanoInfo::CVolcano::CVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
+    CVolcanoInfo::CVolcano::CVolcano(const novac::CString& name, const novac::CString& number, const novac::CString& country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
     {
         m_name.Format(name);
         SimplifyString(name, m_simpleName);
@@ -39,7 +39,7 @@ namespace novac
         m_observatory = observatory;
     }
 
-    CVolcanoInfo::CVolcano::CVolcano(const novac::CString &name, const novac::CString &simpleName, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
+    CVolcanoInfo::CVolcano::CVolcano(const novac::CString& name, const novac::CString& simpleName, const novac::CString& number, const novac::CString& country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
     {
         m_name = name;
 
@@ -65,7 +65,7 @@ namespace novac
     }
 
     /** Adds a new volcano to the list */
-    void CVolcanoInfo::AddVolcano(const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
+    void CVolcanoInfo::AddVolcano(const novac::CString& name, const novac::CString& number, const novac::CString& country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
     {
         novac::CString simpleName;
         SimplifyString(name, simpleName);
@@ -75,7 +75,7 @@ namespace novac
         ++m_volcanoNum;
     }
 
-    void CVolcanoInfo::UpdateVolcano(unsigned int index, const novac::CString &name, const novac::CString &number, const novac::CString &country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
+    void CVolcanoInfo::UpdateVolcano(unsigned int index, const novac::CString& name, const novac::CString& number, const novac::CString& country, double latitude, double longitude, double altitude, double hoursToGMT, int observatory)
     {
         if (index >= this->m_volcanoNum)
         {
@@ -83,7 +83,7 @@ namespace novac
         }
         else
         {
-            CVolcano &volcano = m_volcanoes.at(index);
+            CVolcano& volcano = m_volcanoes.at(index);
             volcano.m_name.Format(name);
             SimplifyString(name, volcano.m_simpleName);
             volcano.m_number.Format(number);
@@ -96,13 +96,13 @@ namespace novac
         }
     }
 
-    int CVolcanoInfo::GetVolcanoIndex(const novac::CString &name)
+    int CVolcanoInfo::GetVolcanoIndex(const novac::CString& name)
     {
         static unsigned int lastIndex = 0;
 
         // first try with the same volcano as the last time
         //	this function was called...
-        CVolcano &vol = m_volcanoes.at(lastIndex);
+        CVolcano& vol = m_volcanoes.at(lastIndex);
         if (Equals(vol.m_name, name) || Equals(vol.m_simpleName, name) || Equals(vol.m_number, name))
         {
             return (int)lastIndex;
@@ -122,7 +122,7 @@ namespace novac
         return -1; // no volcano found
     }
 
-    void CVolcanoInfo::GetVolcanoName(unsigned int index, novac::CString &name)
+    void CVolcanoInfo::GetVolcanoName(unsigned int index, novac::CString& name)
     {
         if (index >= m_volcanoNum)
         {
@@ -130,7 +130,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             name.Format(vol.m_name);
         }
     }
@@ -143,7 +143,7 @@ namespace novac
     }
 
     /** Retrieves the location of the volcano */
-    void CVolcanoInfo::GetVolcanoLocation(unsigned int index, novac::CString &location) const
+    void CVolcanoInfo::GetVolcanoLocation(unsigned int index, novac::CString& location) const
     {
         if (index >= m_volcanoNum)
         {
@@ -151,7 +151,7 @@ namespace novac
         }
         else
         {
-            const CVolcano &vol = m_volcanoes.at(index);
+            const CVolcano& vol = m_volcanoes.at(index);
             location.Format(vol.m_country);
         }
     }
@@ -165,7 +165,7 @@ namespace novac
         return location;
     }
 
-    void CVolcanoInfo::GetVolcanoCode(unsigned int index, novac::CString &code)
+    void CVolcanoInfo::GetVolcanoCode(unsigned int index, novac::CString& code)
     {
         if (index >= m_volcanoNum)
         {
@@ -173,7 +173,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             code.Format(vol.m_number);
         }
     }
@@ -185,7 +185,7 @@ namespace novac
         return name;
     }
 
-    void CVolcanoInfo::GetSimpleVolcanoName(unsigned int index, novac::CString &name) const
+    void CVolcanoInfo::GetSimpleVolcanoName(unsigned int index, novac::CString& name) const
     {
         if (index >= m_volcanoNum)
         {
@@ -193,7 +193,7 @@ namespace novac
         }
         else
         {
-            const CVolcano &vol = m_volcanoes.at(index);
+            const CVolcano& vol = m_volcanoes.at(index);
             name.Format(vol.m_simpleName);
         }
     }
@@ -206,7 +206,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             return vol.m_peakLatitude;
         }
     }
@@ -218,7 +218,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             return vol.m_peakLongitude;
         }
     }
@@ -230,7 +230,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             return vol.m_peakHeight;
         }
     }
@@ -244,7 +244,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             return vol.m_hoursToGMT;
         }
     }
@@ -258,7 +258,7 @@ namespace novac
         }
         else
         {
-            CVolcano &vol = m_volcanoes.at(index);
+            CVolcano& vol = m_volcanoes.at(index);
             return vol.m_observatory;
         }
     }

@@ -2,8 +2,8 @@
 
 #include "Common.h"
 #include "../Evaluation/ScanResult.h"
-#include <PPPLib/CString.h>
-#include <PPPLib/CArray.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CArray.h>
 
 namespace FileHandler
 {
@@ -36,7 +36,7 @@ namespace FileHandler
                 @param result - the evaluation result, can be NULL
                 @param string - will on return be filled with the output line to be written to the evaluation-log.
                 @return SUCCESS - always */
-        static RETURN_CODE FormatEvaluationResult(const CSpectrumInfo *info, const Evaluation::CEvaluationResult *result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString &string);
+        static RETURN_CODE FormatEvaluationResult(const novac::CSpectrumInfo* info, const novac::CEvaluationResult* result, INSTRUMENT_TYPE iType, double maxIntensity, int nSpecies, novac::CString& string);
 
         // ------------------- PUBLIC DATA -------------------------
 
@@ -59,7 +59,7 @@ namespace FileHandler
         INSTRUMENT_TYPE m_instrumentType;
 
         /** The additional spectrum information of one spectrum. */
-        CSpectrumInfo m_specInfo;
+        novac::CSpectrumInfo m_specInfo;
 
     protected:
 
@@ -91,17 +91,17 @@ namespace FileHandler
         LogColumns m_col;
 
         /** The result from the evaluation of one spectrum. */
-        Evaluation::CEvaluationResult m_evResult;
+        novac::CEvaluationResult m_evResult;
 
         /** Reads the header line for the scan information and retrieves which
             column represents which value. */
         void ParseScanHeader(const char szLine[8192]);
 
         /** Reads and parses the XML-shaped 'scanInfo' header before the scan */
-        void ParseScanInformation(CSpectrumInfo &scanInfo, double &flux, FILE *f);
+        void ParseScanInformation(novac::CSpectrumInfo& scanInfo, double& flux, FILE* f);
 
         /** Reads and parses the XML-shaped 'fluxInfo' header before the scan */
-        void ParseFluxInformation(Meteorology::CWindField &windField, double &flux, FILE *f);
+        void ParseFluxInformation(Meteorology::CWindField& windField, double& flux, FILE* f);
 
         /** Resets the information about which column data is stored in */
         void ResetColumns();
@@ -121,17 +121,17 @@ namespace FileHandler
 
         /** Sorts the CScanResult-objects in the given array.
                 Algorithm based on MergeSort (~O(NlogN)) */
-        static void SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
+        static void SortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array, bool ascending = true);
 
         /** Sorts the CScanResult-objects in the given array.
                 Algorithm based on BubbleSort (~O(N2))
                 Quite efficient for small arrays since the elements does not have to be copied
                     and thus uses very little memory */
-        static void BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array, bool ascending = true);
+        static void BubbleSortScans(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array, bool ascending = true);
 
         /** Merges the two arrays in a sorted way and stores the
                 result in the output-array 'result' */
-        static void MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&> &result, bool ascending = true);
+        static void MergeArrays(novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array1, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& array2, novac::CArray<Evaluation::CScanResult, Evaluation::CScanResult&>& result, bool ascending = true);
 
     };
 }

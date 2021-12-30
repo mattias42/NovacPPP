@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../Common/Common.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 #include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <PPPLib/Definitions.h>
 
 #ifndef EXTENDEDSCANRESULT_H
 #define EXTENDEDSCANRESULT_H
@@ -42,10 +43,10 @@ namespace Evaluation
         novac::CString m_fitWindowName[MAX_FIT_WINDOWS];
 
         /** The date and time that the scan was generated. In UTC, taken from the .pak-file  */
-        CDateTime m_startTime;
+        novac::CDateTime m_startTime;
 
         /** The properties of this scan. This is only evaluated in the main-fit window */
-        CPlumeInScanProperty m_scanProperties;
+        novac::CPlumeInScanProperty m_scanProperties;
 
     };
 }

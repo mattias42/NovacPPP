@@ -1,7 +1,7 @@
 #pragma once
 
-#include <PPPLib/CString.h>
-#include <PPPLib/CList.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CList.h>
 
 // #include <afxtempl.h>
 
@@ -33,7 +33,7 @@ public:
 
     /** This returns true if the given pak-file has previously been
         processed at an earlier processing round. */
-    bool IsPreviouslyIgnored(const novac::CString &pakFileName);
+    bool IsPreviouslyIgnored(const novac::CString& pakFileName);
 
 private:
 
@@ -44,7 +44,7 @@ private:
     /** This list is only used if g_userSettings.m_fIsContinuation == true
         It is used to store the names of the .pak-files that we have already processed
         and ignored */
-    novac::CList <novac::CString, novac::CString &> m_previouslyIgnoredFiles;
+    novac::CList <novac::CString, novac::CString&> m_previouslyIgnoredFiles;
 
     // ----------------------------------------------------------------------
     // --------------------- PRIVATE METHODS --------------------------------

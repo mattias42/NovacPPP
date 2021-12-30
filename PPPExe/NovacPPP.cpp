@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include <SpectralEvaluation/StringUtils.h>
-#include <PPPLib/CString.h>
-#include <PPPLib/CStringTokenizer.h>
+#include <PPPLib/MFC/CString.h>
+#include <PPPLib/MFC/CStringTokenizer.h>
 #include <PPPLib/VolcanoInfo.h>
+#include <PPPLib/File/Filesystem.h>
 
-#include "Common/Common.h"
-#include "SetupFileReader.h"
-#include "Configuration/NovacPPPConfiguration.h"
-#include "Configuration/UserConfiguration.h"
-#include "Common/EvaluationConfigurationParser.h"
-#include "Common/ProcessingFileReader.h"
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
+#include <PPPLib/File/SetupFileReader.h>
+#include <PPPLib/File/EvaluationConfigurationParser.h>
+#include <PPPLib/File/ProcessingFileReader.h>
 #include "PostProcessing.h"
 
 #include <iostream>
@@ -26,6 +26,7 @@ extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The setti
 extern Configuration::CUserConfiguration            g_userSettings;// <-- The settings of the user
 
 novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
+PocoLogger g_logger; // <-- global logger
 
 std::string s_exePath;
 std::string s_exeFileName;
@@ -38,6 +39,7 @@ void StartProcessing(int selectedVolcano = 0);
 void CalculateAllFluxes();
 void ParseCommandLineOptions(const std::vector<std::string>& arguments);
 
+using namespace novac;
 
 class NovacPPPApplication : public Poco::Util::Application
 {
@@ -66,14 +68,14 @@ protected:
         ); */
     }
 
-    void handleMyOpt(const std::string &name, const std::string &value)
+    void handleMyOpt(const std::string& name, const std::string& value)
     {
         std::cout << "Setting option " << name << " to " << value << std::endl;
         this->config().setString(name, value);
         std::cout << "The option is now " << this->config().getString(name) << std::endl;
     }
 
-    int main(const std::vector<std::string> &arguments)
+    int main(const std::vector<std::string>& arguments)
     {
         std::cout << "Novac Post Processing Program" << std::endl;
 
@@ -130,36 +132,40 @@ void LoadConfigurations()
     // Declaration of variables and objects
     Common common;
     novac::CString setupPath;
-    FileHandler::CSetupFileReader reader;
+    FileHandler::CSetupFileReader reader{ g_logger };
 
-    //Read configuration from file setup.xml */	
+    // Read configuration from file setup.xml
     setupPath.Format("%sconfiguration%csetup.xml", (const char*)common.m_exePath, Poco::Path::separator());
-    if (SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
+    if (RETURN_CODE::SUCCESS != reader.ReadSetupFile(setupPath, g_setup))
     {
         throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
     }
-    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), g_setup.m_instrumentNum));
+    ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), g_setup.NumberOfInstruments()));
 
 
     // Read the users options from file processing.xml
     novac::CString processingPath;
     processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)common.m_exePath, Poco::Path::separator());
-    FileHandler::CProcessingFileReader processing_reader;
-    if (SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
+    FileHandler::CProcessingFileReader processing_reader{ g_logger };
+    if (RETURN_CODE::SUCCESS != processing_reader.ReadProcessingFile(processingPath, g_userSettings))
     {
         throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
     }
 
     // Check if there is a configuration file for every spectrometer serial number
-    FileHandler::CEvaluationConfigurationParser eval_reader;
-    for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+    FileHandler::CEvaluationConfigurationParser eval_reader{ g_logger };
+    for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
     {
         novac::CString evalConfPath;
         evalConfPath.Format("%sconfiguration%c%s.exml", (const char*)common.m_exePath, Poco::Path::separator(), (const char*)g_setup.m_instrument[k].m_serial);
 
-        if (IsExistingFile(evalConfPath))
+        if (Filesystem::IsExistingFile(evalConfPath))
         {
-            eval_reader.ReadConfigurationFile(evalConfPath, &g_setup.m_instrument[k].m_eval, &g_setup.m_instrument[k].m_darkCurrentCorrection);
+            eval_reader.ReadConfigurationFile(
+                evalConfPath,
+                g_setup.m_instrument[k].m_eval,
+                g_setup.m_instrument[k].m_darkCurrentCorrection,
+                g_setup.m_instrument[k].m_instrumentCalibration);
         }
         else
         {
@@ -184,7 +190,7 @@ void StartProcessing(int selectedVolcano)
 
     // 5. Run
 #ifdef _MFC_VER 
-    CWinThread *postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+    CWinThread* postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
     Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
 #else
     std::thread postProcessingThread(CalculateAllFluxes);
@@ -192,24 +198,24 @@ void StartProcessing(int selectedVolcano)
 #endif  // _MFC_VER 
 }
 
-
+// This is the starting point for all the processing modes.
 void CalculateAllFluxes()
 {
     try
     {
-        CPostProcessing post;
+        CPostProcessing post{ g_logger };
         novac::CString processingOutputFile, setupOutputFile;
         Common common;
 
         // Set the directory where we're working in...
-        post.m_exePath.Format(common.m_exePath);
+        post.m_exePath = std::string((const char*)common.m_exePath);
 
         // set the directory to which we want to copy the settings
         novac::CString confCopyDir;
         confCopyDir.Format("%s/copiedConfiguration/", (const char*)g_userSettings.m_outputDirectory);
 
         // make sure that the output directory exists
-        if (CreateDirectoryStructure(g_userSettings.m_outputDirectory))
+        if (Filesystem::CreateDirectoryStructure(g_userSettings.m_outputDirectory))
         {
             novac::CString userMessage;
             userMessage.Format("Could not create output directory: %s", (const char*)g_userSettings.m_outputDirectory);
@@ -218,7 +224,7 @@ void CalculateAllFluxes()
             return;
         }
 
-        if (CreateDirectoryStructure(confCopyDir))
+        if (Filesystem::CreateDirectoryStructure(confCopyDir))
         {
             novac::CString userMessage;
             userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
@@ -236,11 +242,11 @@ void CalculateAllFluxes()
         // Copy the settings that we have read in from the 'configuration' directory
         //	to the output directory to make it easier for the user to remember 
         //	what has been done...
-        FileHandler::CProcessingFileReader writer;
+        FileHandler::CProcessingFileReader writer{ g_logger };
         writer.WriteProcessingFile(processingOutputFile, g_userSettings);
 
         Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);
-        for (unsigned int k = 0; k < g_setup.m_instrumentNum; ++k)
+        for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
         {
             novac::CString serial(g_setup.m_instrument[k].m_serial);
 
@@ -248,12 +254,16 @@ void CalculateAllFluxes()
         }
 
         // Do the post-processing
-        if (g_userSettings.m_processingMode == PROCESSING_MODE_COMPOSITION)
+        if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_COMPOSITION)
         {
             ShowMessage("Warning: Post processing of composition measurements is not yet fully implemented");
             post.DoPostProcessing_Flux(); // this uses the same code as the flux processing
         }
-        else if (g_userSettings.m_processingMode == PROCESSING_MODE_STRATOSPHERE)
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION)
+        {
+            post.DoPostProcessing_InstrumentCalibration();
+        }
+        else if (g_userSettings.m_processingMode == PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE)
         {
             ShowMessage("Warning: Post processing of stratospheric measurements is not yet fully implemented");
             post.DoPostProcessing_Strat();
@@ -278,7 +288,7 @@ void CalculateAllFluxes()
 }
 
 
-void ParseCommandLineOptions(const std::vector<std::string> &arguments)
+void ParseCommandLineOptions(const std::vector<std::string>& arguments)
 {
     char seps[] = " \t";
     std::vector<char> buffer(16384, 0);
@@ -294,7 +304,7 @@ void ParseCommandLineOptions(const std::vector<std::string> &arguments)
 
     // Go through the received input parameters and set the approprate option
     novac::CStringTokenizer tokenizer(commandLine.c_str(), seps);
-    const char *token = tokenizer.NextToken();
+    const char* token = tokenizer.NextToken();
 
     while (nullptr != token)
     {

@@ -27,57 +27,12 @@ extern std::string s_exeFileName;
 #undef min
 #undef max
 
-void GetSysTempFolder(novac::CString& folderPath)
-{
-    folderPath = novac::CString(Poco::Path::temp());
-}
-
-bool IsExistingFile(const novac::CString &fileName)
-{
-    try
-    {
-        Poco::File file(fileName.c_str());
-        return file.exists();
-    }
-    catch (const std::exception& e)
-    {
-        novac::CString message;
-        message.Format("Exception happened when searching for file: '%s', message: '%s'", fileName.c_str(), e.what());
-        ShowMessage(message);
-        return false;
-    }
-}
-
-int CreateDirectoryStructure(const novac::CString &path)
-{
-    try
-    {
-        Poco::File directory(path.c_str());
-        directory.createDirectories();
-
-        if (directory.exists()) {
-            return 0;
-        }
-        else {
-            return 1; // error
-        }
-    }
-    catch (std::exception& e)
-    {
-        novac::CString message = "Failed to create directory: ";
-        message.AppendFormat("%s", e.what());
-        ShowMessage(message);
-        return 1;
-    }
-}
-
-
-void UpdateMessage(const novac::CString &message) {
+void UpdateMessage(const novac::CString& message) {
     Poco::Logger& log = Poco::Logger::get("NovacPPP");
     log.information(message.std_str());
 }
 
-void ShowMessage(const novac::CString &message) {
+void ShowMessage(const novac::CString& message) {
     Poco::Logger& log = Poco::Logger::get("NovacPPP");
     log.information(message.std_str());
 }
@@ -86,7 +41,7 @@ void ShowMessage(const std::string& message)
     Poco::Logger& log = Poco::Logger::get("NovacPPP");
     log.information(message);
 }
-void ShowMessage(const novac::CString &message, novac::CString connectionID) {
+void ShowMessage(const novac::CString& message, novac::CString connectionID) {
     novac::CString msg;
 
     msg.Format("<%s> : %s", (const char*)connectionID, (const char*)message);
@@ -101,7 +56,7 @@ void ShowMessage(const char message[]) {
     ShowMessage(msg);
 }
 
-void ShowError(const novac::CString &message)
+void ShowError(const novac::CString& message)
 {
     Poco::Logger& log = Poco::Logger::get("NovacPPP");
     log.fatal(message.std_str());
@@ -111,6 +66,18 @@ void ShowError(const char message[])
     novac::CString msg;
     msg.Format("%s", message);
     ShowError(msg);
+}
+
+void PocoLogger::Information(const std::string& message)
+{
+    Poco::Logger& log = Poco::Logger::get("NovacPPP");
+    log.information(message);
+}
+
+void PocoLogger::Error(const std::string& message)
+{
+    Poco::Logger& log = Poco::Logger::get("NovacPPP");
+    log.fatal(message);
 }
 
 Common::Common()
@@ -123,10 +90,10 @@ Common::Common()
     (lat2, lon2). All latitudes and longitudes should be in degrees. */
 double Common::GPSDistance(double lat1, double lon1, double lat2, double lon2) {
     const double R_Earth = 6367000; // radius of the earth
-    lat1 = lat1*DEGREETORAD;
-    lat2 = lat2*DEGREETORAD;
-    lon1 = lon1*DEGREETORAD;
-    lon2 = lon2*DEGREETORAD;
+    lat1 = lat1 * DEGREETORAD;
+    lat2 = lat2 * DEGREETORAD;
+    lon1 = lon1 * DEGREETORAD;
+    lon2 = lon2 * DEGREETORAD;
 
     double dLon = lon2 - lon1;
     double dLat = lat2 - lat1;
@@ -151,10 +118,10 @@ double Common::GPSDistance(double lat1, double lon1, double lat2, double lon2) {
 */
 double Common::GPSBearing(double lat1, double lon1, double lat2, double lon2)
 {
-    lat1 = lat1*DEGREETORAD;
-    lat2 = lat2*DEGREETORAD;
-    lon1 = lon1*DEGREETORAD;
-    lon2 = lon2*DEGREETORAD;
+    lat1 = lat1 * DEGREETORAD;
+    lat2 = lat2 * DEGREETORAD;
+    lon1 = lon1 * DEGREETORAD;
+    lon2 = lon2 * DEGREETORAD;
     double tmpAngle;
     double dLat = lat1 - lat2;
     double dLon = lon1 - lon2;
@@ -162,8 +129,8 @@ double Common::GPSBearing(double lat1, double lon1, double lat2, double lon2)
     if ((dLon == 0) && (dLat == 0))
         return 0;
 
-    tmpAngle = atan2(-sin(dLon)*cos(lat2),
-        cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(dLon));
+    tmpAngle = atan2(-sin(dLon) * cos(lat2),
+        cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
 
     /*  	tmpAngle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
 
@@ -172,14 +139,14 @@ double Common::GPSBearing(double lat1, double lon1, double lat2, double lon2)
         tmpAngle = TWO_PI + tmpAngle;
     }
 
-    tmpAngle = RADTODEGREE*tmpAngle;
+    tmpAngle = RADTODEGREE * tmpAngle;
     return tmpAngle;
 }
 
 /** This function calculates the latitude and longitude for a point
         which is the distance 'dist' m and bearing 'az' degrees from
         the point defied by 'lat1' and 'lon1' */
-void Common::CalculateDestination(double lat1, double lon1, double dist, double az, double &lat2, double &lon2) {
+void Common::CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2) {
     const double R_Earth = 6367000; // radius of the earth
 
     double dR = dist / R_Earth;
@@ -187,12 +154,12 @@ void Common::CalculateDestination(double lat1, double lon1, double dist, double 
     // convert to radians
     lat1 = lat1 * DEGREETORAD;
     lon1 = lon1 * DEGREETORAD;
-    az = az	  * DEGREETORAD;
+    az = az * DEGREETORAD;
 
     // calculate the second point
-    lat2 = asin(sin(lat1)*cos(dR) + cos(lat1)*sin(dR)*cos(az));
+    lat2 = asin(sin(lat1) * cos(dR) + cos(lat1) * sin(dR) * cos(az));
 
-    lon2 = lon1 + atan2(sin(az)*sin(dR)*cos(lat1), cos(dR) - sin(lat1)*sin(lat2));
+    lon2 = lon1 + atan2(sin(az) * sin(dR) * cos(lat1), cos(dR) - sin(lat1) * sin(lat2));
 
     // convert back to degrees
     lat2 = lat2 * RADTODEGREE;
@@ -203,7 +170,7 @@ void Common::CalculateDestination(double lat1, double lon1, double dist, double 
         for the site specified by (lat, lon) and for the time given in gmtTime.
         Note that the returned angles are in degrees and that the specified
         time _must_ be GMT-time. */
-RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double lon, double &SZA, double &SAZ) {
+RETURN_CODE Common::GetSunPosition(const novac::CDateTime& gmtTime, double lat, double lon, double& SZA, double& SAZ) {
     SZA = SAZ = 0; // reset the numbers
 
     // Get the julian day
@@ -229,20 +196,20 @@ RETURN_CODE Common::GetSunPosition(const CDateTime &gmtTime, double lat, double 
     // Convert the azimuth to a value counted from the north and 
     SAZ = fmod(180.0 + sAzim, 360.0);
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
-double Common::CalculateFlux(const double *scanAngle, const double *scanAngle2, const double *column, double offset, int nDataPoints, const Meteorology::CWindField &wind, const Geometry::CPlumeHeight &relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle, double tilt)
+double Common::CalculateFlux(const double* scanAngle, const double* scanAngle2, const double* column, double offset, int nDataPoints, const Meteorology::CWindField& wind, const Geometry::CPlumeHeight& relativePlumeHeight, double compass, INSTRUMENT_TYPE type, double coneAngle, double tilt)
 {
     double windSpeed = wind.GetWindSpeed();
     double windDirection = wind.GetWindDirection();
     double plumeHeight = relativePlumeHeight.m_plumeAltitude;
 
-    if (type == INSTR_HEIDELBERG)
+    if (type == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
     {
         return CalculateFluxHeidelbergScanner(scanAngle, scanAngle2, column, offset, nDataPoints, windSpeed, windDirection, plumeHeight, compass);
     }
-    else if (type == INSTR_GOTHENBURG)
+    else if (type == INSTRUMENT_TYPE::INSTR_GOTHENBURG)
     {
         // In the NovacPPP, the gas factor isn't used. However the flux-calculation formula, shared with the NovacProgram, requires the gas factor.
         //  This compensation factor is used to compensate for how the gas factor is weighted into the calculation...
@@ -263,7 +230,7 @@ double Common::CalculateFlux(const double *scanAngle, const double *scanAngle2, 
 }
 
 
-void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &specie) {
+void Common::GuessSpecieName(const novac::CString& fileName, novac::CString& specie) {
     specie.Format("");
     novac::CString spc[] = { "SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde", "HONO", "NO3" };
     int nSpecies = 12;
@@ -287,10 +254,6 @@ void Common::GuessSpecieName(const novac::CString &fileName, novac::CString &spe
     return;
 }
 
-
-
-/** Take out the exe name from a long path
-      @param fileName path of the exe file	*/
 void Common::GetFileName(novac::CString& fileName)
 {
     // look for slashes in the path
@@ -301,7 +264,7 @@ void Common::GetFileName(novac::CString& fileName)
 
 /** Take out the directory from a long path name.
     @param fileName - the complete path of the file */
-void Common::GetDirectory(novac::CString &fileName) {
+void Common::GetDirectory(novac::CString& fileName) {
     int position = fileName.ReverseFind('\\');
     if (position >= 0)
     {
@@ -324,15 +287,15 @@ long Common::RetrieveFileSize(novac::CString& fileName)
 
 
 /** Compares two files to see if their contents are the same */
-bool Common::AreIdenticalFiles(const novac::CString &fileName1, const novac::CString &fileName2) {
+bool Common::AreIdenticalFiles(const novac::CString& fileName1, const novac::CString& fileName2) {
     if (Equals(fileName1, fileName2))
         return true; // a file is always identical to itself
 
-    FILE *f1 = fopen(fileName1, "r");
+    FILE* f1 = fopen(fileName1, "r");
     if (f1 == NULL)
         return false;
 
-    FILE *f2 = fopen(fileName2, "r");
+    FILE* f2 = fopen(fileName2, "r");
     if (f2 == NULL)
         return false;
 
@@ -363,7 +326,7 @@ bool Common::AreIdenticalFiles(const novac::CString &fileName1, const novac::CSt
 
 /** If there's a file with the given input name, then it will be renamed to
     PATH\\FILENAME_creationDate_creationTime.FILEENDING */
-bool Common::ArchiveFile(const novac::CString &fileName) {
+bool Common::ArchiveFile(const novac::CString& fileName) {
     novac::CString newFileName, errorMsg;
 
     // Search for the file
@@ -397,7 +360,7 @@ bool Common::ArchiveFile(const novac::CString &fileName) {
 
 
 /*EQUATORIAL COORDINATES:RIGHT ASCENSION AND DECLINATION*/
-void Common::EquatorialCoordinates(double D, double &RA, double &dec, double &EQT)
+void Common::EquatorialCoordinates(double D, double& RA, double& dec, double& EQT)
 {
     double g_deg, q_deg, L_deg;				/*ANGLES IN DEGREES*/
     double g_rad, q_rad, L_rad;				/*ANGLES IN	RADIANS*/
@@ -406,15 +369,15 @@ void Common::EquatorialCoordinates(double D, double &RA, double &dec, double &EQ
     double RA_rad, dec_rad;					/*EQUATORIAL COORDINATES IN RADIANS*/
 
     g_deg = fmod(357.529 + 0.98560028 * D, 360.0);
-    g_rad = g_deg	* DEGREETORAD;
-    q_deg = fmod(280.459 + 0.98564736*D, 360.0);
+    g_rad = g_deg * DEGREETORAD;
+    q_deg = fmod(280.459 + 0.98564736 * D, 360.0);
     q_rad = q_deg * DEGREETORAD;
 
-    L_deg = q_deg + 1.915*sin(g_rad) + 0.02*sin(2 * g_rad);
+    L_deg = q_deg + 1.915 * sin(g_rad) + 0.02 * sin(2 * g_rad);
     L_rad = L_deg * DEGREETORAD;
 
     // The distance between the sun and the earth (in Astronomical Units)
-    R = 1.00014 - 0.01671*cos(g_rad) - 0.00014*cos(2 * g_rad);
+    R = 1.00014 - 0.01671 * cos(g_rad) - 0.00014 * cos(2 * g_rad);
 
     // The obliquity of the earth's orbit:
     obliq_deg = 23.439 - 0.00000036 * D;
@@ -438,21 +401,21 @@ void Common::EquatorialCoordinates(double D, double &RA, double &dec, double &EQ
     EQT = q_deg / 15.0 - RA / 15.0;
 }
 
-void Common::HorizontalCoordinates(double lat, double H, double dec, double &elev, double &azim) {
-    const double H_rad = H	 * DEGREETORAD;
+void Common::HorizontalCoordinates(double lat, double H, double dec, double& elev, double& azim) {
+    const double H_rad = H * DEGREETORAD;
     const double lat_rad = lat * DEGREETORAD;
     const double dec_rad = dec * DEGREETORAD;
 
     double azim_rad;
 
     // The elevation angle
-    const double elev_rad = asin(cos(H_rad)*cos(dec_rad)*cos(lat_rad) + sin(dec_rad)*sin(lat_rad));
+    const double elev_rad = asin(cos(H_rad) * cos(dec_rad) * cos(lat_rad) + sin(dec_rad) * sin(lat_rad));
 
     // The cosine of the azimuth - angle
-    const double cazim_rad = (cos(H_rad)*cos(dec_rad)*sin(lat_rad) - sin(dec_rad)*cos(lat_rad)) / cos(elev_rad);
+    const double cazim_rad = (cos(H_rad) * cos(dec_rad) * sin(lat_rad) - sin(dec_rad) * cos(lat_rad)) / cos(elev_rad);
 
     // The sine of the azimuth - angle
-    double sazim_rad = (sin(H_rad)*cos(dec_rad)) / cos(elev_rad);
+    double sazim_rad = (sin(H_rad) * cos(dec_rad)) / cos(elev_rad);
 
     if (cazim_rad > 0 && sazim_rad > 0)
         azim_rad = asin(sazim_rad);				// azim is in the range 0 - 90 degrees

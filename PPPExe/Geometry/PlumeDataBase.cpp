@@ -5,14 +5,14 @@
 #include "../Common/Common.h"
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 #undef min
 #undef max
 
 using namespace Geometry;
 
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 // ----------- THE SUB-CLASS CPlumeData --------------
 CPlumeDataBase::CPlumeData::CPlumeData() {
@@ -20,11 +20,11 @@ CPlumeDataBase::CPlumeData::CPlumeData() {
     this->altitudeError = 1000.0;
     this->altitudeSource = Meteorology::MET_DEFAULT;
 
-    this->validFrom = CDateTime(0, 0, 0, 0, 0, 0);
-    this->validTo = CDateTime(9999, 12, 31, 23, 59, 59);
+    this->validFrom = novac::CDateTime(0, 0, 0, 0, 0, 0);
+    this->validTo = novac::CDateTime(9999, 12, 31, 23, 59, 59);
 }
 
-CPlumeDataBase::CPlumeData::CPlumeData(const CPlumeDataBase::CPlumeData &p) {
+CPlumeDataBase::CPlumeData::CPlumeData(const CPlumeDataBase::CPlumeData& p) {
     this->altitude = p.altitude;
     this->altitudeError = p.altitudeError;
     this->altitudeSource = p.altitudeSource;
@@ -36,7 +36,7 @@ CPlumeDataBase::CPlumeData::CPlumeData(const CPlumeDataBase::CPlumeData &p) {
 CPlumeDataBase::CPlumeData::~CPlumeData() {
 }
 
-CPlumeDataBase::CPlumeData &CPlumeDataBase::CPlumeData::operator =(const CPlumeDataBase::CPlumeData &p) {
+CPlumeDataBase::CPlumeData& CPlumeDataBase::CPlumeData::operator =(const CPlumeDataBase::CPlumeData& p) {
     this->altitude = p.altitude;
     this->altitudeError = p.altitudeError;
     this->altitudeSource = p.altitudeSource;
@@ -64,14 +64,14 @@ CPlumeDataBase::~CPlumeDataBase(void)
         about the plume height at the requested time.
     @return true if the wind field could be retrieved, otherwise false.
     */
-bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHeight) const {
+bool CPlumeDataBase::GetPlumeHeight(const novac::CDateTime& time, CPlumeHeight& plumeHeight) const {
     std::list <CPlumeData> validData;
 
     // There can be more than one piece of wind-information valid for this given moment
     //	extract the ones which are valid and put them into the list 'validData'
     std::list <CPlumeData>::const_iterator pos = m_dataBase.begin();
     while (pos != m_dataBase.end()) {
-        const CPlumeData &data = (CPlumeData &)*pos;
+        const CPlumeData& data = (CPlumeData&)*pos;
 
         if ((data.validFrom < time || data.validFrom == time) && (time < data.validTo || time == data.validTo)) {
             validData.push_back(CPlumeData(data));
@@ -84,7 +84,7 @@ bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHe
 
     // If there's only one time, then return that one
     if (validData.size() == 1) {
-        CPlumeData &data = (CPlumeData &)*validData.begin();
+        CPlumeData& data = (CPlumeData&)*validData.begin();
         plumeHeight.m_plumeAltitude = data.altitude;
         plumeHeight.m_plumeAltitudeError = data.altitudeError;
         plumeHeight.m_plumeAltitudeSource = data.altitudeSource;
@@ -100,7 +100,7 @@ bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHe
     std::list <CPlumeData> calculatedData_1instr;
     pos = validData.begin();
     while (pos != validData.end()) {
-        CPlumeData &data = (CPlumeData &)*pos;
+        CPlumeData& data = (CPlumeData&)*pos;
 
         if (Meteorology::MET_GEOMETRY_CALCULATION == data.altitudeSource) {
             calculatedData_2instr.push_back(CPlumeData(data));
@@ -113,7 +113,7 @@ bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHe
     }
     if (calculatedData_2instr.size() == 1) {
         // There's only one geometry calculation. Return that one...
-        CPlumeData &data = (CPlumeData &)*calculatedData_2instr.begin();
+        CPlumeData& data = (CPlumeData&)*calculatedData_2instr.begin();
         plumeHeight.m_plumeAltitude = data.altitude;
         plumeHeight.m_plumeAltitudeError = data.altitudeError;
         plumeHeight.m_plumeAltitudeSource = Meteorology::MET_GEOMETRY_CALCULATION;
@@ -134,7 +134,7 @@ bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHe
     }
     else if (calculatedData_1instr.size() == 1) {
         // There's only one geometry calculation from a single instrument. Return that one...
-        CPlumeData &data = (CPlumeData &)*calculatedData_1instr.begin();
+        CPlumeData& data = (CPlumeData&)*calculatedData_1instr.begin();
         plumeHeight.m_plumeAltitude = data.altitude;
         plumeHeight.m_plumeAltitudeError = data.altitudeError;
         plumeHeight.m_plumeAltitudeSource = Meteorology::MET_GEOMETRY_CALCULATION_SINGLE_INSTR;
@@ -169,7 +169,7 @@ bool CPlumeDataBase::GetPlumeHeight(const CDateTime &time, CPlumeHeight &plumeHe
 }
 
 /** Inserts a plume height into the database */
-void CPlumeDataBase::InsertPlumeHeight(const CPlumeHeight &plumeHeight) {
+void CPlumeDataBase::InsertPlumeHeight(const CPlumeHeight& plumeHeight) {
     CPlumeData data;
 
     // generate a copy of the CPlumeHeight
@@ -184,10 +184,10 @@ void CPlumeDataBase::InsertPlumeHeight(const CPlumeHeight &plumeHeight) {
 }
 
 /** Inserts a calculated plume height into the database */
-void CPlumeDataBase::InsertPlumeHeight(const CGeometryResult &geomResult) {
+void CPlumeDataBase::InsertPlumeHeight(const CGeometryResult& geomResult) {
     CPlumeData data;
-    CDateTime validFrom = geomResult.m_averageStartTime;
-    CDateTime validTo = geomResult.m_averageStartTime;
+    novac::CDateTime validFrom = geomResult.m_averageStartTime;
+    novac::CDateTime validTo = geomResult.m_averageStartTime;
 
     // make the result of the measurement valid within +- 'g_userSettings.m_calcGeometryValidTime'/2 minutes of the measurement occasion
     validFrom.Decrement(g_userSettings.m_calcGeometryValidTime / 2);
@@ -212,15 +212,15 @@ int CPlumeDataBase::WriteToFile(const novac::CString& /*fileName*/) const {
 }
 
 // Calculates the average and error of the plume heights in the given list
-void CPlumeDataBase::CalculateAverageHeight(const std::list <CPlumeData> &plumeList, double &averageAltitude, double &altitudeError) const {
-    double *plumeAltitudes = new double[plumeList.size()];
-    double *plumeAltitudeErrors = new double[plumeList.size()];
+void CPlumeDataBase::CalculateAverageHeight(const std::list <CPlumeData>& plumeList, double& averageAltitude, double& altitudeError) const {
+    double* plumeAltitudes = new double[plumeList.size()];
+    double* plumeAltitudeErrors = new double[plumeList.size()];
     int nAltitudes = 0;
 
     // loop through the altitudes to extract the average and the errors
     std::list <CPlumeData>::const_iterator pos = plumeList.begin();
     while (pos != plumeList.end()) {
-        const CPlumeData &data = (CPlumeData &)*pos;
+        const CPlumeData& data = (CPlumeData&)*pos;
         plumeAltitudes[nAltitudes] = data.altitude;
         plumeAltitudeErrors[nAltitudes++] = data.altitudeError;
 

@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
-#include <PPPLib/CList.h>
+#include <PPPLib/MFC/CList.h>
 
 namespace novac
 {

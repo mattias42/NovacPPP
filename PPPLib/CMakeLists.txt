@@ -4,45 +4,45 @@ cmake_minimum_required (VERSION 3.6)
 
 set(PppLib_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include CACHE STRING "PPPLib headers")
 
+# Define the different groups of files
+add_subdirectory(src/Calibration)
+add_subdirectory(src/Configuration)
+add_subdirectory(src/File)
+add_subdirectory(src/MFC)
+
 # Add the different components
 add_library(PPPLib
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CArray.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CCriticalSection.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CFileUtils.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CFtpUtils.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CList.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CSingleLock.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CStdioFile.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CString.h
-    ${PppLib_INCLUDE_DIRS}/PPPLib/CStringTokenizer.h
+    ${NPPLIB_MFC_HEADERS} 
+    ${NPPLIB_MFC_SOURCES}
+    ${NPPLIB_CALIBRATION_HEADERS}
+    ${NPPLIB_CALIBRATION_SOURCES}
+    ${NPPLIB_CONFIGURATION_HEADERS}
+    ${NPPLIB_CONFIGURATION_SOURCES}
+    ${NPPLIB_FILE_HEADERS}
+    ${NPPLIB_FILE_SOURCES}
+
+    ${PppLib_INCLUDE_DIRS}/PPPLib/Definitions.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/Logging.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/Measurement.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/Molecule.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/PPPLib.h
+    ${PppLib_INCLUDE_DIRS}/PPPLib/SpectrometerId.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/ThreadUtils.h
     ${PppLib_INCLUDE_DIRS}/PPPLib/VolcanoInfo.h
-    ${PPPLIB_SPECTRA_HEADERS}
-    ${SPECTRUM_FIT_HEADERS}
-    ${SPECTRUM_EVALUATION_HEADERS}
-    ${SPECTRUM_CLASS_HEADERS}
-    ${SPECTRUM_FLUX_HEADERS}
-    ${SPECTRUM_FILE_HEADERS}
-    ${SPECTRUM_FILE_SOURCES}
-    ${SPECTRUM_CONFIGURATION_HEADERS}
-    ${SPECTRUM_CONFIGURATION_SOURCES}
 
-    ${CMAKE_CURRENT_LIST_DIR}/src/CFileUtils.cpp 
-    ${CMAKE_CURRENT_LIST_DIR}/src/CFtpUtils.cpp 
-    ${CMAKE_CURRENT_LIST_DIR}/src/CStdioFile.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/CString.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/CStringTokenizer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/VolcanoInfo.cpp
-    ${PPPLIB_SPECTRA_SOURCES}
-    ${SPECTRUM_EVALUATION_SOURCES}
-    ${SPECTRUM_CLASS_SOURCES}
-    ${SPECTRUM_FLUX_SOURCES}
+    ${CMAKE_CURRENT_LIST_DIR}/src/Molecule.cpp
 )
 
-target_include_directories (PPPLib PUBLIC ${PppLib_INCLUDE_DIRS} ${SPECTRALEVAUATION_INCLUDE_DIRS})
-target_link_libraries(PPPLib PUBLIC NovacSpectralEvaluation)
+target_include_directories(PPPLib PRIVATE 
+    ${PppLib_INCLUDE_DIRS}
+    ${SPECTRALEVAUATION_INCLUDE_DIRS}
+    ${PocoNet_DIR}
+    ${PocoFoundation_DIR})
+
+# Some classes are using Poco, though we should be able to remove these eventually
+target_link_libraries(PPPLib PUBLIC ${Poco_LIBRARIES} NovacSpectralEvaluation)
+
 
 IF(WIN32)
     target_compile_options(PPPLib PRIVATE /W4 /WX /sdl)
@@ -51,19 +51,16 @@ ELSE()
     target_compile_options(PPPLib PRIVATE -Wall -std=c++14)
 ENDIF()
 
-source_group("Header Files\\Configuration"          FILES ${SPECTRUM_CONFIGURATION_HEADERS})
-source_group("Header Files\\Spectra"                FILES ${PPPLIB_SPECTRA_HEADERS} ${SPECTRUM_CLASS_HEADERS})
-source_group("Header Files\\SpectrumFormat"         FILES ${})
-source_group("Header Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_HEADERS})
-source_group("Header Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_HEADERS})
-source_group("Header Files\\Flux"                   FILES ${SPECTRUM_FLUX_HEADERS})
-source_group("Header Files\\File"                   FILES ${SPECTRUM_FILE_HEADERS})
+IF(WIN32)
+    #Organize the files into folders, for ease of use (Windows and Visual Studio only)
+    source_group("Header Files\\MFC"            FILES ${NPPLIB_MFC_HEADERS})
+    source_group("Header Files\\Configuration"  FILES ${NPPLIB_CONFIGURATION_HEADERS})
+    source_group("Header Files\\Calibration"    FILES ${NPPLIB_CALIBRATION_HEADERS})
+    source_group("Header Files\\File"           FILES ${NPPLIB_FILE_HEADERS})
 
+    source_group("Source Files\\MFC"            FILES ${NPPLIB_MFC_SOURCES})
+    source_group("Source Files\\Configuration"  FILES ${NPPLIB_CONFIGURATION_SOURCES})
+    source_group("Source Files\\Calibration"    FILES ${NPPLIB_CALIBRATION_SOURCES})
+    source_group("Source Files\\File"           FILES ${NPPLIB_FILE_SOURCES})
+endif()
 
-source_group("Source Files\\Configuration"          FILES ${SPECTRUM_CONFIGURATION_SOURCES})
-source_group("Source Files\\Spectra"                FILES ${PPPLIB_SPECTRA_SOURCES} ${SPECTRUM_CLASS_SOURCES})
-source_group("Source Files\\SpectrumFormat"         FILES ${})
-source_group("Source Files\\SpectrumEvaluation"     FILES ${SPECTRUM_FIT_SOURCES})
-source_group("Source Files\\Evaluation"             FILES ${SPECTRUM_EVALUATION_SOURCES})
-source_group("Source Files\\Flux"                   FILES ${SPECTRUM_FLUX_SOURCES})
-source_group("Source Files\\File"                   FILES ${SPECTRUM_FILE_SOURCES})

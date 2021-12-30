@@ -2,7 +2,7 @@
 
 namespace Geometry
 {
-    CGeometryResult &CGeometryResult::operator=(const CGeometryResult &gr)
+    CGeometryResult& CGeometryResult::operator=(const CGeometryResult& gr)
     {
         this->m_averageStartTime = gr.m_averageStartTime;
         this->m_startTimeDifference = gr.m_startTimeDifference;

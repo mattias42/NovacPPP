@@ -2,15 +2,17 @@
 #include "WindSpeedCalculator.h"
 #include "../Common/EvaluationLogFileHandler.h"
 #include "../Meteorology/WindField.h"
+#include <PPPLib/File/Filesystem.h>
 #include <cstring>
 
 // This is the settings for how to do the procesing
-#include "../Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
-
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
 using namespace WindSpeedMeasurement;
+using namespace novac;
+
 
 CWindSpeedCalculator::CMeasurementSeries::CMeasurementSeries() {
     column = NULL;
@@ -31,13 +33,13 @@ RETURN_CODE CWindSpeedCalculator::CMeasurementSeries::SetLength(int len) {
     }
     column = new double[len];
     if (column == NULL)
-        return FAIL;
+        return RETURN_CODE::FAIL;
     time = new double[len];
     if (time == NULL)
-        return FAIL;
+        return RETURN_CODE::FAIL;
     length = len;
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 double CWindSpeedCalculator::CMeasurementSeries::AverageColumn(int from, int to) const {
@@ -89,9 +91,9 @@ CWindSpeedCalculator::~CWindSpeedCalculator(void)
 
 RETURN_CODE CWindSpeedCalculator::CalculateDelay(
     double& /*delay*/,
-    const CMeasurementSeries *upWindSerie,
-    const CMeasurementSeries *downWindSerie,
-    const CWindSpeedMeasSettings &settings) {
+    const CMeasurementSeries* upWindSerie,
+    const CMeasurementSeries* downWindSerie,
+    const CWindSpeedMeasSettings& settings) {
 
     int		comparisonLength;
 
@@ -100,20 +102,20 @@ RETURN_CODE CWindSpeedCalculator::CalculateDelay(
 
     // 0. Error checking of the input
     if (upWindSerie == NULL || upWindSerie->length == 0)
-        return FAIL;
+        return RETURN_CODE::FAIL;
     if (downWindSerie == NULL || downWindSerie->length == 0)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // 1. Start with the low pass filtering
-    if (SUCCESS != LowPassFilter(upWindSerie, &modifiedUpWind, settings.lowPassFilterAverage))
-        return FAIL;
-    if (SUCCESS != LowPassFilter(downWindSerie, &modifiedDownWind, settings.lowPassFilterAverage))
-        return FAIL;
+    if (RETURN_CODE::SUCCESS != LowPassFilter(upWindSerie, &modifiedUpWind, settings.lowPassFilterAverage))
+        return RETURN_CODE::FAIL;
+    if (RETURN_CODE::SUCCESS != LowPassFilter(downWindSerie, &modifiedDownWind, settings.lowPassFilterAverage))
+        return RETURN_CODE::FAIL;
 
     // 1b. Get the sample time
     double sampleInterval = modifiedDownWind.SampleInterval();
     if (fabs(modifiedUpWind.SampleInterval() - sampleInterval) > 0.5) {
-        return FAIL; // <-- we cannot have different sample intervals of the two time series
+        return RETURN_CODE::FAIL; // <-- we cannot have different sample intervals of the two time series
     }
 
     // 1c. Calculate the how many pixels that we should shift maximum
@@ -130,7 +132,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateDelay(
 
     // 1e. check that the resulting series is long enough
     if (modifiedDownWind.length - maximumShift - comparisonLength < maximumShift + 1)
-        return FAIL; // <-- data series to short to use current settings of test length and shiftmax
+        return RETURN_CODE::FAIL; // <-- data series to short to use current settings of test length and shiftmax
 
     // 2. Allocate some assistance arrays 
     //		(Note that it is the down wind data series that is shifted)
@@ -149,8 +151,8 @@ RETURN_CODE CWindSpeedCalculator::CalculateDelay(
         int bestShift;
 
         // 3a. Pick out the sub-vectors
-        double	*series1 = modifiedUpWind.column + offset;
-        double	*series2 = modifiedDownWind.column + offset;
+        double* series1 = modifiedUpWind.column + offset;
+        double* series2 = modifiedDownWind.column + offset;
         unsigned int series1Length = modifiedUpWind.length - offset;
         unsigned int series2Length = comparisonLength;
 
@@ -178,44 +180,44 @@ RETURN_CODE CWindSpeedCalculator::CalculateDelay(
 
     }
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Performs a low pass filtering on the supplied measurement series.
     The number of iterations in the filtering is given by 'nIterations'
     if nIterations is zero, nothing will be done. */
-RETURN_CODE CWindSpeedCalculator::LowPassFilter(const CMeasurementSeries *series, CMeasurementSeries *result, unsigned int nIterations) {
+RETURN_CODE CWindSpeedCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasurementSeries* result, unsigned int nIterations) {
 
     // 1. Check for errors in input
     if (series == NULL || series->length == 0 || result == NULL)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // 2. Calculate the old and the new data series lengths
     int length = series->length;							// <-- the length of the old data series
     int newLength = length - nIterations - 1;		// <-- the length of the new data series
 
     if (newLength <= 0)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // 3. If no iterations should be done, the output should be a copy of the input...
     if (nIterations == 0) {
-        if (SUCCESS != result->SetLength(length))
-            return FAIL;
+        if (RETURN_CODE::SUCCESS != result->SetLength(length))
+            return RETURN_CODE::FAIL;
 
         for (int i = 0; i < length; ++i) {
             result->column[i] = series->column[i];
             result->time[i] = series->time[i];
         }
         result->length = series->length;
-        return SUCCESS;
+        return RETURN_CODE::SUCCESS;
     }
 
     // 4. Change the length of the resulting series.
-    if (SUCCESS != result->SetLength(newLength))
-        return FAIL;
+    if (RETURN_CODE::SUCCESS != result->SetLength(newLength))
+        return RETURN_CODE::FAIL;
 
     // 5. Calculate the factorials
-    double *factorial = new double[nIterations];
+    double* factorial = new double[nIterations];
     factorial[0] = 1;
     if (nIterations > 1)
         factorial[1] = 1;
@@ -225,8 +227,8 @@ RETURN_CODE CWindSpeedCalculator::LowPassFilter(const CMeasurementSeries *series
     double coeffSum = 0; // <-- the sum of all coefficients, to make sure that we dont increase the values...
 
     // 6. Allocate temporary arrays for the time-stamps and the column values
-    double *tmpCol = new double[newLength];
-    double *tmpTime = new double[newLength];
+    double* tmpCol = new double[newLength];
+    double* tmpTime = new double[newLength];
     memset(tmpCol, 0, newLength * sizeof(double));
     memset(tmpTime, 0, newLength * sizeof(double));
 
@@ -254,24 +256,24 @@ RETURN_CODE CWindSpeedCalculator::LowPassFilter(const CMeasurementSeries *series
     delete[] tmpCol;
     delete[] tmpTime;
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Shifts the vector 'shortVector' against the vector 'longVector' and returns the
             shift for which the correlation between the two is highest. */
 RETURN_CODE CWindSpeedCalculator::FindBestCorrelation(
-    const double *longVector, unsigned long longLength,
-    const double *shortVector, unsigned long shortLength,
+    const double* longVector, unsigned long longLength,
+    const double* shortVector, unsigned long shortLength,
     unsigned int maximumShift,
-    double &highestCorr, int &bestShift) {
+    double& highestCorr, int& bestShift) {
 
     // 0. Check for errors in the input
     if (longLength == 0 || shortLength == 0)
-        return FAIL;
+        return RETURN_CODE::FAIL;
     if (longVector == NULL || shortVector == NULL)
-        return FAIL;
+        return RETURN_CODE::FAIL;
     if (longLength <= shortLength)
-        return FAIL;
+        return RETURN_CODE::FAIL;
 
     // Reset
     highestCorr = 0;
@@ -292,12 +294,12 @@ RETURN_CODE CWindSpeedCalculator::FindBestCorrelation(
         ++left;
     }
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Calculates the correlation between the two vectors 'x' and 'y', both of length 'length'
         @return - the correlation between the two vectors. */
-double CWindSpeedCalculator::correlation(const double *x, const double *y, long length) {
+double CWindSpeedCalculator::correlation(const double* x, const double* y, long length) {
     double s_xy = 0; // <-- the dot-product X*Y
     double s_x2 = 0; // <-- the dot-product X*X
     double s_x = 0; // <-- sum of all elements in X
@@ -317,8 +319,8 @@ double CWindSpeedCalculator::correlation(const double *x, const double *y, long 
         s_y2 += y[k] * y[k];
     }
 
-    double nom = (length * s_xy - s_x*s_y);
-    double denom = sqrt(((length*s_x2 - s_x*s_x) * (length*s_y2 - s_y*s_y)));
+    double nom = (length * s_xy - s_x * s_y);
+    double denom = sqrt(((length * s_x2 - s_x * s_x) * (length * s_y2 - s_y * s_y)));
 
     if ((fabs(nom - denom) < eps) && (fabs(denom) < eps))
         c = 1.0;
@@ -356,7 +358,7 @@ void CWindSpeedCalculator::InitializeArrays() {
         NOTE THAT THE WIND-DIRECTION WILL NOT BE CALCULATED AND WILL THUS NOT MAKE
         ANY SENSE...
 */
-int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, const novac::CString &evalLog2, const Configuration::CInstrumentLocation &location, const Geometry::CPlumeHeight &plumeHeight, Meteorology::CWindField &windField) {
+int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString& evalLog1, const novac::CString& evalLog2, const Configuration::CInstrumentLocation& location, const Geometry::CPlumeHeight& plumeHeight, Meteorology::CWindField& windField) {
     double distance = 0; // the distance between the two viewing directions at the altitude of the plume.
 
     // Extract the relative plume height
@@ -364,12 +366,12 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
     relativePlumeHeight.m_plumeAltitude -= location.m_altitude;
 
     // Calculate the correlation between the time series
-    if (location.m_instrumentType == INSTR_GOTHENBURG) {
-        if (SUCCESS != CalculateCorrelation(evalLog1, evalLog2))
+    if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
+        if (RETURN_CODE::SUCCESS != CalculateCorrelation(evalLog1, evalLog2))
             return 1;
     }
-    else if (location.m_instrumentType == INSTR_HEIDELBERG) {
-        if (SUCCESS != CalculateCorrelation_Heidelberg(evalLog1))
+    else if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG) {
+        if (RETURN_CODE::SUCCESS != CalculateCorrelation_Heidelberg(evalLog1))
             return 1;
     }
 
@@ -378,7 +380,7 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
 
     // 1. Get the distance between the two viewing directions...
     double scanAngle = 0.0;
-    if (location.m_instrumentType == INSTR_GOTHENBURG) {
+    if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_GOTHENBURG) {
         if (fabs(location.m_coneangle - 90.0) < 1) {
             // Flat scanner
             distance = relativePlumeHeight.m_plumeAltitude * (1.0 / cos(DEGREETORAD * scanAngle)) * tan(DEGREETORAD * m_settings.angleSeparation);
@@ -409,7 +411,7 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
     }
 
     // 2. Get the average delay, for all datapoints where the correlation is > 0.9
-    double *goodDelays = new double[m_length];
+    double* goodDelays = new double[m_length];
     int nGoodPoints = 0;
     for (int k = m_firstDataPoint; k < m_firstDataPoint + m_arrayLength; ++k) {
         if (corr[k] > 0.9) {
@@ -442,22 +444,22 @@ int CWindSpeedCalculator::CalculateWindSpeed(const novac::CString &evalLog1, con
 
 /** Calculate the correlation between the two time-series found in the
         given evaluation-files. */
-RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &evalLog1, const novac::CString &evalLog2) {
+RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString& evalLog1, const novac::CString& evalLog2) {
     FileHandler::CEvaluationLogFileHandler reader[2];
     CDateTime time;
     Meteorology::CWindField wf;
     novac::CString errorMessage;
-    WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
+    WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries* series[2];
     int scanIndex[2], k;
     double delay;
 
     // 1. Read the evaluation-logs
     reader[0].m_evaluationLog.Format("%s", (const char*)evalLog1);
     reader[1].m_evaluationLog.Format("%s", (const char*)evalLog2);
-    if (SUCCESS != reader[0].ReadEvaluationLog())
-        return FAIL;
-    if (SUCCESS != reader[1].ReadEvaluationLog())
-        return FAIL;
+    if (RETURN_CODE::SUCCESS != reader[0].ReadEvaluationLog())
+        return RETURN_CODE::FAIL;
+    if (RETURN_CODE::SUCCESS != reader[1].ReadEvaluationLog())
+        return RETURN_CODE::FAIL;
 
     // 2. Find the wind-speed measurement series in the log-files
     for (k = 0; k < 2; ++k) {
@@ -465,7 +467,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
             if (reader[k].IsWindSpeedMeasurement(scanIndex[k]))
                 break;
         if (scanIndex[k] == reader[k].m_scan.size())
-            return FAIL;		// <-- no wind-speed measurement found
+            return RETURN_CODE::FAIL;		// <-- no wind-speed measurement found
     }
 
     // 2a. Check the measurement series to make sure that they are the same 
@@ -473,18 +475,18 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
     if (reader[0].m_scan[scanIndex[0]].GetEvaluatedNum() != reader[1].m_scan[scanIndex[1]].GetEvaluatedNum()) {
         errorMessage.Format("Cannot correlate series %s and %s. The number of spectra is not same", (const char*)evalLog1, (const char*)evalLog2);
         ShowMessage(errorMessage);
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // 2b. Find the start and stop-time of the measurement
-    Evaluation::CScanResult &scan = reader[0].m_scan[scanIndex[0]];
+    Evaluation::CScanResult& scan = reader[0].m_scan[scanIndex[0]];
     scan.GetStartTime(0, m_startTime);
     scan.GetStopTime(scan.GetEvaluatedNum() - 1, m_stopTime);
 
     // 3. Create the wind-speed measurement series
     for (k = 0; k < 2; ++k) {
         // 3a. The scan we're looking at
-        Evaluation::CScanResult &secondScan = reader[k].m_scan[scanIndex[k]];
+        Evaluation::CScanResult& secondScan = reader[k].m_scan[scanIndex[k]];
 
         // 3c. The length of the measurement
         int	length = secondScan.GetEvaluatedNum();
@@ -503,14 +505,14 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
             //	time-series and this measurement
             series[k]->time[i] = 3600.0 * (time.hour - m_startTime.hour) +
                 60.0 * (time.minute - m_startTime.minute) +
-                1.0	* (time.second - m_startTime.second);
+                1.0 * (time.second - m_startTime.second);
         }
     }
 
     // 4. Perform the correlation calculations...
 
     // 4a. Calculate the correlation, assuming that series[0] is the upwind series
-    if (SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
+    if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
         ShowMessage("Failed to correlate time-series, no windspeed could be derived");
 
         // Tell the world that we've tried to make a correlation calculation but failed
@@ -519,14 +521,14 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 
         // Clean up and return
         delete series[0];		delete series[1];
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // 4b. Calculate the average correlation
     double avgCorr1 = Average(corr + m_firstDataPoint, m_arrayLength);
 
     // 4c. Calculate the correlation, assuming that series[1] is the upwind series
-    if (SUCCESS != CalculateDelay(delay, series[1], series[0], m_settings)) {
+    if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[1], series[0], m_settings)) {
         ShowMessage("Failed to correlate time-series, no windspeed could be derived");
 
         // Tell the world that we've tried to make a correlation calculation but failed
@@ -536,7 +538,7 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 
         // Clean up and return
         delete series[0];		delete series[1];
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // 4d. Calculate the average correlation
@@ -544,11 +546,11 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
 
     // 4e. Use the result which gave the higest correlation
     if (avgCorr1 > avgCorr2) {
-        if (SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
+        if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
             // this should never happen
             ShowMessage("Failed to correlate time-series, no windspeed could be derived");
             delete series[0];		delete series[1];
-            return FAIL;
+            return RETURN_CODE::FAIL;
         }
     }
 
@@ -560,14 +562,14 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation(const novac::CString &eva
     delete series[0];
     delete series[1];
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Calculate the correlation between the two time-series found in the
         given evaluation-file. */
-RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::CString &evalLog) {
+RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::CString& evalLog) {
     FileHandler::CEvaluationLogFileHandler reader;
-    WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries *series[2];
+    WindSpeedMeasurement::CWindSpeedCalculator::CMeasurementSeries* series[2];
     Meteorology::CWindField wf;
     CDateTime time;
     int scanIndex;
@@ -575,20 +577,20 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 
     // 1. Read the evaluation-log
     reader.m_evaluationLog.Format("%s", (const char*)evalLog);
-    if (SUCCESS != reader.ReadEvaluationLog())
-        return FAIL;
+    if (RETURN_CODE::SUCCESS != reader.ReadEvaluationLog())
+        return RETURN_CODE::FAIL;
 
     // 2. Find the wind-speed measurement series in the log-files
     for (scanIndex = 0; scanIndex < reader.m_scan.size(); ++scanIndex)
         if (reader.IsWindSpeedMeasurement_Heidelberg(scanIndex))
             break;
     if (scanIndex == reader.m_scan.size())
-        return FAIL; // <-- no wind-speed measurement found
+        return RETURN_CODE::FAIL; // <-- no wind-speed measurement found
 
     // 3. Create the wind-speed measurement series
 
     // 3a. The scan we're looking at
-    Evaluation::CScanResult &scan = reader.m_scan[scanIndex];
+    Evaluation::CScanResult& scan = reader.m_scan[scanIndex];
 
     // 3b. The start-time of the whole measurement
     scan.GetStartTime(0, m_startTime);
@@ -623,20 +625,20 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
     // 4. Perform the correlation calculations...
 
     // 4a. Calculate the correlation, assuming that series[0] is the upwind series
-    if (SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
+    if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
         ShowMessage("Failed to correlate time-series, no windspeed could be derived");
         delete series[0];		delete series[1];
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // 4b. Calculate the average correlation
     double avgCorr1 = Average(corr + m_firstDataPoint, m_length);
 
     // 4c. Calculate the correlation, assuming that series[1] is the upwind series
-    if (SUCCESS != CalculateDelay(delay, series[1], series[0], m_settings)) {
+    if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[1], series[0], m_settings)) {
         ShowMessage("Failed to correlate time-series, no windspeed could be derived");
         delete series[0];		delete series[1];
-        return FAIL;
+        return RETURN_CODE::FAIL;
     }
 
     // 4d. Calculate the average correlation
@@ -644,11 +646,11 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
 
     // 4e. Use the result which gave the higest correlation
     if (avgCorr1 > avgCorr2) {
-        if (SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
+        if (RETURN_CODE::SUCCESS != CalculateDelay(delay, series[0], series[1], m_settings)) {
             // this should never happen
             ShowMessage("Failed to correlate time-series, no windspeed could be derived");
             delete series[0];		delete series[1];
-            return FAIL;
+            return RETURN_CODE::FAIL;
         }
     }
 
@@ -659,21 +661,21 @@ RETURN_CODE CWindSpeedCalculator::CalculateCorrelation_Heidelberg(const novac::C
     delete series[0];
     delete series[1];
 
-    return SUCCESS;
+    return RETURN_CODE::SUCCESS;
 }
 
 /** Writes the header of a dual-beam wind speed log file to the given
     file. */
-void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileName) {
+void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString& fileName) {
     CDateTime now;
 
-    if (IsExistingFile(fileName))
+    if (Filesystem::IsExistingFile(fileName))
         return; // don't write the header if the file already exists..
 
     // get the current time
     now.SetToNow();
 
-    FILE *f = fopen(fileName, "w");
+    FILE* f = fopen(fileName, "w");
     if (f == NULL)
         return;
 
@@ -688,14 +690,14 @@ void CWindSpeedCalculator::WriteWindSpeedLogHeader(const novac::CString &fileNam
 }
 
 /** Appends a dual-beam wind speed result to the given file */
-void CWindSpeedCalculator::AppendResultToFile(const novac::CString &fileName, const CDateTime &startTime,
+void CWindSpeedCalculator::AppendResultToFile(const novac::CString& fileName, const CDateTime& startTime,
     const Configuration::CInstrumentLocation& /*location*/,
-    const Geometry::CPlumeHeight &plumeHeight,
-    Meteorology::CWindField &windField) {
+    const Geometry::CPlumeHeight& plumeHeight,
+    Meteorology::CWindField& windField) {
     CDateTime validFrom, validTo;
 
     // try to open the file
-    FILE *f = fopen(fileName, "a");
+    FILE* f = fopen(fileName, "a");
     if (f == NULL)
         return;
 

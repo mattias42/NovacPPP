@@ -53,4 +53,9 @@
 		<dark>SCAN</dark>
 	</DarkCorrection>
 
+    <Calibration>
+        <!-- the following defines one file which contains the initial pixel-to-wavelength mapping (and possibly also an instrument line shape) -->
+        <initialCalibrationFile>C:\NOVAC\novacP3\Cross sections\I2J8550_SO2_294K.xs</initialCalibrationFile>
+    </Calibration>    
+
 </EvaluationConfiguration>

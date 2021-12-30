@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "ContinuationOfProcessing.h"
+#include <PPPLib/File/Filesystem.h>
 
 // This is the settings for how to do the procesing
-#include "Configuration/UserConfiguration.h"
+#include <PPPLib/Configuration/UserConfiguration.h>
 
 #include <cstring>
 #include <Poco/Path.h>
 
-extern Configuration::CUserConfiguration			g_userSettings;// <-- The settings of the user
+extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
-CContinuationOfProcessing					g_continuation;		// <-- Information on what has already been done when continuing an old processing round
+CContinuationOfProcessing g_continuation;		// <-- Information on what has already been done when continuing an old processing round
 
 CContinuationOfProcessing::CContinuationOfProcessing(void)
 {
@@ -35,18 +36,18 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans() {
         return;
 
     oldStatusLogfile.Format("%s%cStatusLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
-    if (!IsExistingFile(oldStatusLogfile))
+    if (!Filesystem::IsExistingFile(oldStatusLogfile))
         return;
 
-    FILE *f = fopen(oldStatusLogfile, "r");
+    FILE* f = fopen(oldStatusLogfile, "r");
     if (f == NULL) {
         return;
     }
 
-    char *buffer = new char[16384];
+    char* buffer = new char[16384];
 
     while (NULL != fgets(buffer, 16383, f)) {
-        char *pt = strstr(buffer, " does not see the plume");
+        char* pt = strstr(buffer, " does not see the plume");
         if (NULL != pt) {
             // if this line corresponds to an ignored scan
             pt[0] = '\0';
@@ -58,10 +59,10 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans() {
     fclose(f);
 }
 
-bool CContinuationOfProcessing::IsPreviouslyIgnored(const novac::CString &pakFileName) {
+bool CContinuationOfProcessing::IsPreviouslyIgnored(const novac::CString& pakFileName) {
     auto p = m_previouslyIgnoredFiles.GetHeadPosition();
     while (p != NULL) {
-        novac::CString &fileName = m_previouslyIgnoredFiles.GetNext(p);
+        novac::CString& fileName = m_previouslyIgnoredFiles.GetNext(p);
         if (Equals(fileName, pakFileName))
             return true;
     }

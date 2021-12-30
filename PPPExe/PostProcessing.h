@@ -6,8 +6,8 @@
 #include "Geometry/PlumeDataBase.h"
 #include "Flux/FluxResult.h"
 #include "Evaluation/ExtendedScanResult.h"
-#include <PPPLib/CList.h>
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CList.h>
+#include <PPPLib/MFC/CString.h>
 
 /** The class <b>CPostProcessing</b> is the main class in the NovacPPP
     This is where all the processing takes place (or at least the control
@@ -15,7 +15,7 @@
     See the functions 'DoPostProcessing_Flux' and 'DoPostProcessing_Strat'
 */
 
-namespace Evaluation
+namespace novac
 {
     class CReferenceFile;
 }
@@ -23,14 +23,14 @@ namespace Evaluation
 class CPostProcessing
 {
 public:
-    CPostProcessing() = default;
+    CPostProcessing(ILogger& logger);
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
     // ----------------------------------------------------------------------
 
     /** This is the directory of the executable. */
-    novac::CString m_exePath;
+    std::string m_exePath;
 
     // ----------------------------------------------------------------------
     // --------------------- PUBLIC METHODS ---------------------------------
@@ -39,6 +39,11 @@ public:
     /** Performs an post processing of the data in order to extract
         good flux data */
     void DoPostProcessing_Flux();
+
+    /** Performs a post processing of the data in order to create good
+        calibrations for the instrument(s) with the purpose of improving the quality
+        of the data for other processing modes */
+    void DoPostProcessing_InstrumentCalibration();
 
     /** Performs an post processing of the data in order to extract
         good stratospheric data */
@@ -56,7 +61,7 @@ protected:
     /** The database of plume-heights to use for the flux calculations */
     Geometry::CPlumeDataBase m_plumeDataBase;
 
-
+    ILogger& m_log;
 
     // ----------------------------------------------------------------------
     // --------------------- PRIVATE METHODS --------------------------------
@@ -68,7 +73,12 @@ protected:
         they make sense.
         @return 0 if all settings are ok and we should continue,
             otherwise non-zero*/
-    int CheckSettings();
+    int CheckProcessingSettings() const;
+
+    /** Prepares for post-processing by making sure that all settings
+        relevant to instrument calibration are ok and make sense.
+        @return 0 if all settings are ok otherwise non-zero */
+    int CheckInstrumentCalibrationSettings() const;
 
     /** Prepares for the evaluation of the spectra
         by reading in all the reference files that are
@@ -104,7 +114,14 @@ protected:
             file generated and the properties of each scan.
         */
     void EvaluateScans(const std::vector<std::string>& pakFileList,
-        novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogFiles);
+        novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles);
+
+    /** Runs through the supplied list of .pak files and performs an instrument calibration
+        on each one.
+        @param pakFileList The list of scan files to calibrate.
+        @param instrumentCalibrationFiles Will on successful return be filled with calibrations.
+        TODO: We need to be able to return updated fit-windows as well */
+    void CalibrateInstrumentFromScans(const std::vector<std::string>& pakFileList, std::vector<std::string>& calibrations);
 
     /** Runs through the supplied list of evaluation - logs and performs
         geometry calculations on the ones which does match. The results
@@ -116,18 +133,18 @@ protected:
             calculated plume heights and wind-directions.
         */
     void CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult,
-        Evaluation::CExtendedScanResult &> &evalLogs, novac::CList <Geometry::CGeometryResult*,
-        Geometry::CGeometryResult*> &geometryResults);
+        Evaluation::CExtendedScanResult&>& evalLogs, novac::CList <Geometry::CGeometryResult*,
+        Geometry::CGeometryResult*>& geometryResults);
 
     /** Writes each of the calculated geometry results to the GeometryLog file */
     void WriteCalculatedGeometriesToFile(
-        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
+        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults);
 
     /** Inserts the calculated geometry results into the databases.
         The wind directions will be inserted into m_windDataBase
         The plume altitudes will be inserted into m_plumeDataBase */
     void InsertCalculatedGeometriesIntoDataBase(
-        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*> &geometryResults);
+        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults);
 
     /** This calculates the wind speeds from the dual-beam measurements that has been made
         @param evalLogs - list of CExtendedScanResult, each holding the full path and filename
@@ -136,7 +153,7 @@ protected:
         The plume heights are taken from the database 'm_plumeDataBase' and the
             results are written to the database 'm_windDataBase' */
     void CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult,
-        Evaluation::CExtendedScanResult &> &evalLogs);
+        Evaluation::CExtendedScanResult&>& evalLogs);
 
     /** Runs through the supplied list of evaluation-results and
         calculates the flux for each scan. The resulting fluxes are written
@@ -147,27 +164,27 @@ protected:
         The wind speeds and wind directions will be taken from 'm_windDataBase'
         The plume heigths will be taken from 'm_plumeDataBase'
         */
-    void CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs);
+    void CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs);
 
 
     /** Sorts the evaluation logs in order of increasing time
         (this is mostly done since this speeds up the geometry calculations enormously) */
-    void SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &> &evalLogs);
+    void SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs);
 
     /** Writes the calculated fluxes to the flux result file */
-    void WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
-    void WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult &> &calculatedFluxes);
+    void WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes);
+    void WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes);
 
     /** Takes care of uploading the result files to the FTP server */
     void UploadResultsToFTP();
 
     /** Locates evaluation log files in the output directory */
-    void LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult &>& evaluationLogFiles);
+    void LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evaluationLogFiles);
 
     novac::CString GetAbsolutePathFromRelative(const novac::CString& path);
 
     /** Creates a reference file by convolving a high-res cross section with a slit-function and resamples it
         to a given wavelength calibration. The instrument serial is provided since the result is
         saved to a local file, for reference. */
-    bool ConvolveReference(Evaluation::CReferenceFile& ref, const novac::CString& instrumentSerial);
+    bool ConvolveReference(novac::CReferenceFile& ref, const novac::CString& instrumentSerial);
 };

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SpectralEvaluation/DateTime.h>
-#include <SpectralEvaluation/Defintions.h>
+#include <SpectralEvaluation/Definitions.h>
 #include "../MeteorologySource.h"
-#include <PPPLib/CString.h>
+#include <PPPLib/MFC/CString.h>
 
 namespace Geometry
 {
@@ -15,7 +15,7 @@ namespace Geometry
         ~CGeometryResult() = default;
 
         /** Assignment operator */
-        CGeometryResult &operator=(const CGeometryResult &gr);
+        CGeometryResult& operator=(const CGeometryResult& gr);
 
         /** How this calculation was made. Can be either one of
             MET_GEOMETRY_CALCULATION (default) or
@@ -25,7 +25,7 @@ namespace Geometry
         /** The average of the starting-time of the
                 two scans that were combined to generate the result
                 (seconds since midnight, UTC) */
-        CDateTime m_averageStartTime;
+        novac::CDateTime m_averageStartTime;
 
         /** The difference in start-time between the two
             scans that were combined to make this measurement.
