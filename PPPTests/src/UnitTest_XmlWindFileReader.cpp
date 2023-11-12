@@ -1,0 +1,69 @@
+#include <PPPLib/Meteorology/XMLWindFileReader.h>
+#include "catch.hpp"
+#include "StdOutLogger.h"
+
+namespace novac
+{
+    static std::string GetTestDataDirectory()
+    {
+#ifdef _MSC_VER
+        return std::string("../testData/");
+#else
+        return std::string("testData/");
+#endif // _MSC_VER 
+    }
+
+    static std::string GetWindFieldFile()
+    {
+        return GetTestDataDirectory() + std::string("wind_ruapehu.wxml");
+    }
+
+    TEST_CASE("ReadWindFile gives expected wind profile", "[XMLWindFileReader][File]")
+    {
+        StdOutLogger logger;
+        Meteorology::CWindDataBase resultingDatabase;
+        FileHandler::CXMLWindFileReader sut{ logger };
+
+        int returnCode = sut.ReadWindFile(
+            GetWindFieldFile(),
+            resultingDatabase);
+
+        REQUIRE(returnCode == 0);
+
+        // Expected properties of the database
+        {
+            REQUIRE(resultingDatabase.m_dataBaseName == "Ruapehu");
+
+            REQUIRE(2 == resultingDatabase.GetDataBaseSize());
+        }
+
+        // Expected Wind fields
+        {
+            auto time = novac::CDateTime{ 2023, 1, 19, 22, 0, 0 };
+            auto location = novac::CGPSData{ -39.281302 , 175.564254 , 2700.0};
+            auto windField = Meteorology::CWindField{};
+
+            // Act
+            bool exists = resultingDatabase.GetWindField(time, location, Meteorology::INTERP_EXACT, windField);
+
+            // Assert
+            REQUIRE(exists);
+            REQUIRE(Approx(windField.GetWindSpeed()) == 5.13);
+            REQUIRE(Approx(windField.GetWindDirection()) == 277.3);
+        }
+
+        {
+            auto time = novac::CDateTime{ 2023, 1, 30, 1, 0, 0 };
+            auto location = novac::CGPSData{ -39.281302 , 175.564254 , 2700.0 };
+            auto windField = Meteorology::CWindField{};
+
+            // Act
+            bool exists = resultingDatabase.GetWindField(time, location, Meteorology::INTERP_EXACT, windField);
+
+            // Assert
+            REQUIRE(exists);
+            REQUIRE(Approx(windField.GetWindSpeed()) == 7.56);
+            REQUIRE(Approx(windField.GetWindDirection()) == 278.4);
+        }
+    }
+}
