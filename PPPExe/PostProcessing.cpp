@@ -149,6 +149,11 @@ void CPostProcessing::DoPostProcessing_Flux()
             return;
         }
 
+        {
+            messageToUser.Format("%d pak files found", pakFileList.size());
+            ShowMessage(messageToUser);
+        }
+
         // Evaluate the scans. This at the same time generates a list of evaluation-log
         // files with the evaluated results
         ShowMessage("--- Running Evaluations --- ");
