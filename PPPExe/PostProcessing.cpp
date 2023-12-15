@@ -599,148 +599,145 @@ novac::CString CPostProcessing::GetAbsolutePathFromRelative(const novac::CString
 int CPostProcessing::PrepareEvaluation()
 {
     CDateTime fromTime, toTime; //  these are not used but must be passed onto GetFitWindow...
-    novac::CString errorMessage;
 
-    // this is true if we failed to prepare the evaluation...
-    bool failure = false;
-
-    // Loop through each of the configured instruments
-    for (int instrumentIndex = 0; instrumentIndex < g_setup.NumberOfInstruments(); ++instrumentIndex)
+    try
     {
-        // For each instrument, loop through the fit-windows that are defined
-        int fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.NumberOfFitWindows();
-        for (int fitWindowIndex = 0; fitWindowIndex < fitWindowNum; ++fitWindowIndex)
+        for (int instrumentIndex = 0; instrumentIndex < g_setup.NumberOfInstruments(); ++instrumentIndex)
         {
-            novac::CFitWindow window;
-
-            // get the fit window
-            g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindow(fitWindowIndex, window, fromTime, toTime);
-
-            // For each reference in the fit-window, read it in and make sure that it exists...
-            for (int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex)
+            // For each instrument, loop through the fit-windows that are defined
+            int fitWindowNum = g_setup.m_instrument[instrumentIndex].m_eval.NumberOfFitWindows();
+            for (int fitWindowIndex = 0; fitWindowIndex < fitWindowNum; ++fitWindowIndex)
             {
+                novac::CFitWindow window;
 
-                if (window.ref[referenceIndex].m_path.empty())
-                {
-                    // The reference file was not given in the configuration. Try to generate a configuration
-                    //  from the cross section, slit-function and wavelength calibration. These three must then 
-                    //  exist or the evaluation fails.
-                    if (!ConvolveReference(window.ref[referenceIndex], g_setup.m_instrument[instrumentIndex].m_serial))
-                    {
-                        errorMessage.Format("Failed to create reference for fit window '%s' for spectrometer %s.",
-                            window.ref[referenceIndex].m_specieName.c_str(), (const char*)g_setup.m_instrument[instrumentIndex].m_serial);
-                        ShowMessage(errorMessage);
-                        failure = true;
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!IsExistingFile(window.ref[referenceIndex].m_path))
-                    {
-                        // the file does not exist, try to change it to include the path of the configuration-directory...
-                        novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
+                // get the fit window
+                g_setup.m_instrument[instrumentIndex].m_eval.GetFitWindow(fitWindowIndex, window, fromTime, toTime);
 
-                        if (Filesystem::IsExistingFile(fileName))
-                        {
-                            window.ref[referenceIndex].m_path = fileName.ToStdString();
-                        }
-                        else
-                        {
-                            errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path.c_str());
-                            ShowMessage(errorMessage);
-                            failure = true;
-                            continue;
-                        }
-                    }
-
-                    // Read in the cross section
-                    if (window.ref[referenceIndex].ReadCrossSectionDataFromFile())
-                    {
-                        errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path.c_str());
-                        ShowMessage(errorMessage);
-                        failure = true;
-                        continue;
-                    }
-
-                    // If we are supposed to high-pass filter the spectra then
-                    // we should also high-pass filter the cross-sections
-                    if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
-                    {
-                        if (window.ref[referenceIndex].m_isFiltered == false)
-                        {
-                            if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring"))
-                            {
-                                HighPassFilter_Ring(*window.ref[referenceIndex].m_data);
-                            }
-                            else
-                            {
-                                HighPassFilter(*window.ref[referenceIndex].m_data);
-                            }
-                        }
-                        else
-                        {
-                            // The filtered cross sections are scaled to the unit of ppmm
-                            // rescale them to molecules/cm2 as all other cross sections
-                            Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
-                        }
-                    }
-                }// endif
-            }
-
-            // If the window also contains a fraunhofer-reference then read it too.
-            if (window.fraunhoferRef.m_path.size() > 4)
-            {
-                if (!IsExistingFile(window.fraunhoferRef.m_path))
+                // For each reference in the fit-window, read it in and make sure that it exists...
+                for (int referenceIndex = 0; referenceIndex < window.nRef; ++referenceIndex)
                 {
 
-                    // the file does not exist, try to change it to include the path of the configuration-directory...
-                    novac::CString fileName = GetAbsolutePathFromRelative(window.fraunhoferRef.m_path);
-
-                    if (Filesystem::IsExistingFile(fileName))
+                    if (window.ref[referenceIndex].m_path.empty())
                     {
-                        window.fraunhoferRef.m_path = fileName.ToStdString();
+                        // The reference file was not given in the configuration. Try to generate a configuration
+                        //  from the cross section, slit-function and wavelength calibration. These three must then 
+                        //  exist or the evaluation fails.
+                        if (!ConvolveReference(window.ref[referenceIndex], g_setup.m_instrument[instrumentIndex].m_serial))
+                        {
+                            novac::CString errorMessage;
+                            errorMessage.Format("Failed to create reference for fit window '%s' for spectrometer %s.",
+                                window.ref[referenceIndex].m_specieName.c_str(), (const char*)g_setup.m_instrument[instrumentIndex].m_serial);
+                            throw novac::InvalidReferenceException(errorMessage.std_str());
+                        }
                     }
                     else
                     {
-                        errorMessage.Format("Cannot read reference file %s", window.fraunhoferRef.m_path.c_str());
-                        ShowMessage(errorMessage);
-                        failure = true;
-                        continue;
+                        if (!IsExistingFile(window.ref[referenceIndex].m_path))
+                        {
+                            // the file does not exist, try to change it to include the path of the configuration-directory...
+                            novac::CString fileName = GetAbsolutePathFromRelative(window.ref[referenceIndex].m_path);
+
+                            if (Filesystem::IsExistingFile(fileName))
+                            {
+                                window.ref[referenceIndex].m_path = fileName.ToStdString();
+                            }
+                            else
+                            {
+                                novac::CString errorMessage;
+                                errorMessage.Format("Cannot read reference file %s", window.ref[referenceIndex].m_path.c_str());
+                                throw novac::InvalidReferenceException(errorMessage.std_str());
+                            }
+                        }
+
+                        // Read in the cross section
+                        if (window.ref[referenceIndex].ReadCrossSectionDataFromFile())
+                        {
+                            novac::CString errorMessage;
+                            errorMessage.Format("Failed to read cross section file: %s", window.ref[referenceIndex].m_path.c_str());
+                            throw novac::InvalidReferenceException(errorMessage.std_str());
+                        }
+
+                        // If we are supposed to high-pass filter the spectra then
+                        // we should also high-pass filter the cross-sections
+                        if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
+                        {
+                            if (window.ref[referenceIndex].m_isFiltered == false)
+                            {
+                                if (novac::Equals(window.ref[referenceIndex].m_specieName, "ring"))
+                                {
+                                    HighPassFilter_Ring(*window.ref[referenceIndex].m_data);
+                                }
+                                else
+                                {
+                                    HighPassFilter(*window.ref[referenceIndex].m_data);
+                                }
+                            }
+                            else
+                            {
+                                // The filtered cross sections are scaled to the unit of ppmm
+                                // rescale them to molecules/cm2 as all other cross sections
+                                Multiply(*window.ref[referenceIndex].m_data, (1.0 / 2.5e15));
+                            }
+                        }
+
+                        // Verify that the resulting reference is ok, by checking that it does not contain any NaN or is constant in the fit-interval
+                        window.ref[referenceIndex].VerifyReferenceValues(window.fitLow, window.fitHigh);
+
+                    }// endif
+                }
+
+                // If the window also contains a fraunhofer-reference then read it too.
+                if (window.fraunhoferRef.m_path.size() > 4)
+                {
+                    if (!IsExistingFile(window.fraunhoferRef.m_path))
+                    {
+
+                        // the file does not exist, try to change it to include the path of the configuration-directory...
+                        novac::CString fileName = GetAbsolutePathFromRelative(window.fraunhoferRef.m_path);
+
+                        if (Filesystem::IsExistingFile(fileName))
+                        {
+                            window.fraunhoferRef.m_path = fileName.ToStdString();
+                        }
+                        else
+                        {
+                            novac::CString errorMessage;
+                            errorMessage.Format("Cannot read reference file %s", window.fraunhoferRef.m_path.c_str());
+                            throw novac::InvalidReferenceException(errorMessage.std_str());
+                        }
+                    }
+
+                    if (window.fraunhoferRef.ReadCrossSectionDataFromFile())
+                    {
+                        novac::CString errorMessage;
+                        errorMessage.Format("Failed to read fraunhofer-reference file: %s", window.fraunhoferRef.m_path.c_str());
+                        throw novac::InvalidReferenceException(errorMessage.std_str());
+                    }
+                    if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
+                    {
+                        HighPassFilter_Ring(*window.fraunhoferRef.m_data);
+                    }
+                    else
+                    {
+                        Log(*window.fraunhoferRef.m_data);
                     }
                 }
 
-                if (window.fraunhoferRef.ReadCrossSectionDataFromFile())
-                {
-                    errorMessage.Format("Failed to read fraunhofer-reference file: %s", window.fraunhoferRef.m_path.c_str());
-                    ShowMessage(errorMessage);
-                    failure = true;
-                    continue;
-                }
-                if (window.fitType == novac::FIT_TYPE::FIT_HP_DIV || window.fitType == novac::FIT_TYPE::FIT_HP_SUB)
-                {
-                    HighPassFilter_Ring(*window.fraunhoferRef.m_data);
-                }
-                else
-                {
-                    Log(*window.fraunhoferRef.m_data);
-                }
+                // If we've made it this far, then we've managed to read in all the references. Now
+                // store the data in g_setup
+                g_setup.m_instrument[instrumentIndex].m_eval.SetFitWindow(fitWindowIndex, window, fromTime, toTime);
             }
-
-            // If we've made it this far, then we've managed to read in all the references. Now
-            // store the data in g_setup
-            g_setup.m_instrument[instrumentIndex].m_eval.SetFitWindow(fitWindowIndex, window, fromTime, toTime);
         }
-    }
 
-    if (failure)
+    }
+    catch (novac::InvalidReferenceException& e)
     {
+        ShowMessage(e.what());
+
         return 1;
     }
-    else
-    {
-        return 0;
-    }
+
+    return 0;
 }
 
 int CPostProcessing::ReadWindField()

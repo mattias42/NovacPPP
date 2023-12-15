@@ -447,10 +447,10 @@ double CScanResult::GetChiSquare(unsigned long spectrumNum) const {
 
 /** Returns the desired fit parameter */
 double CScanResult::GetFitParameter(unsigned long specIndex, unsigned long specieIndex, FIT_PARAMETER parameter) const {
-    if (specIndex < 0 || specIndex > m_specNum)
+    if (specIndex >= m_specNum)
         return 0.0f;
 
-    if (specieIndex < 0 || specieIndex > this->m_spec[specIndex].m_referenceResult.size())
+    if (specieIndex >= this->m_spec[specIndex].m_referenceResult.size())
         return 0.0f;
 
     switch (parameter) {
