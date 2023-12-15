@@ -13,6 +13,11 @@
 #include <Poco/Path.h>
 #include <string.h>
 #include <memory>
+#include <cmath>
+
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
 extern Configuration::CUserConfiguration g_userSettings;// <-- The settings of the user
 
@@ -313,10 +318,10 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase& dataBase) {
             }
 
             // check that the latitude is within -90 to +90 degrees...
-            latitude = (latitude > 90.0) ? latitude - floor(latitude / 90.0) * 90.0 : latitude;
+            latitude = (latitude > 90.0) ? latitude - std::floor(latitude / 90.0) * 90.0 : latitude;
 
             // check that the longitude is within -180 to +180 degrees...
-            longitude = (longitude > 180.0) ? longitude - (1 + floor(longitude / 360.0)) * 360.0 : longitude;
+            longitude = (longitude > 180.0) ? longitude - (1 + std::floor(longitude / 360.0)) * 360.0 : longitude;
 
             // check the reasonability of the values
             if (winddirection < -360.0 || winddirection > 360.0) {
