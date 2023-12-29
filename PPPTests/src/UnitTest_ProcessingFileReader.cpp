@@ -37,6 +37,9 @@ namespace novac
 #ifdef _MSC_VER
             REQUIRE("~/Novac/Piton de la Fournaise/OutputFeb2017UTC\\" == resultingConfiguration.m_outputDirectory.std_str());
             REQUIRE("~/Novac/Piton de la Fournaise/Temp\\" == resultingConfiguration.m_tempDirectory.std_str());
+#else
+            REQUIRE("/Novac/Piton de la Fournaise/OutputFeb2017UTC/" == resultingConfiguration.m_outputDirectory.Right(46).std_str());
+            REQUIRE("/Novac/Piton de la Fournaise/Temp/" == resultingConfiguration.m_tempDirectory.Right(34).std_str());
 #endif // _MSC_VER
 
             REQUIRE(PROCESSING_MODE::PROCESSING_MODE_FLUX == resultingConfiguration.m_processingMode);
@@ -45,7 +48,12 @@ namespace novac
             REQUIRE(novac::CDateTime(2017, 1, 29, 12, 50, 51) == resultingConfiguration.m_fromDate);
             REQUIRE(novac::CDateTime(2017, 3, 01, 23, 50, 51) == resultingConfiguration.m_toDate);
 
+#ifdef _MSC_VER
             REQUIRE("C:\\Temp\\" == resultingConfiguration.m_LocalDirectory.std_str());
+#else
+            REQUIRE("C:\\Temp/" == resultingConfiguration.m_LocalDirectory.std_str());
+#endif // _MSC_VER
+
             REQUIRE(1 == resultingConfiguration.m_includeSubDirectories_Local);
 
             REQUIRE("ftp://129.16.35.206/piton_de_la_fournaise/" == resultingConfiguration.m_FTPDirectory.std_str());

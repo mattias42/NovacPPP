@@ -17,7 +17,11 @@ namespace Filesystem
         }
 
         char separator[8];
+#ifdef _MSC_VER
         sprintf_s(separator, "%c", Poco::Path::separator());
+#else
+        sprintf(separator, "%c", Poco::Path::separator());
+#endif
 
         return path.Append(separator);
     }
