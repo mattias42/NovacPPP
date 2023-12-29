@@ -11,7 +11,6 @@ for the calculation of fluxes in the NOVAC Post Processing Program -->
             <item lat="-39.281302" lon="175.564254" ws="5.13" wse="0.00" wd="277.3" wde="0.00"/>
     </windfield>
     <windfield>
-            <windfield>
             <source>ecmwf_forecast</source>
             <valid_from>2023.01.20T00:00:00</valid_from>
             <valid_to>2023.01.20T03:00:00</valid_to>
