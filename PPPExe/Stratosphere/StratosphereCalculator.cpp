@@ -224,7 +224,7 @@ void CStratosphereCalculator::WriteResultToFile(CMeasurementDay& measDay, double
     novac::CString fileName;
 
     // the name of the output file
-    fileName.Format("%s%cStratosphere.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
+    fileName.Format("%sStratosphere.txt", (const char*)g_userSettings.m_outputDirectory);
 
     if (!Filesystem::IsExistingFile(fileName))
         writeHeader = true;

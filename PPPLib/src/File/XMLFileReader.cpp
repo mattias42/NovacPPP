@@ -124,6 +124,7 @@ const char* CXMLFileReader::GetAttributeValue(const novac::CString& label)
 }
 
 int CXMLFileReader::Parse_StringItem(const novac::CString& label, novac::CString& string) {
+
     string.Format("");
 
     while (nullptr != (szToken = NextToken())) {
@@ -162,7 +163,7 @@ int CXMLFileReader::Parse_PathItem(const novac::CString& label, novac::CString& 
     int r = Parse_StringItem(label, path);
     if (r != 0)
     {
-        std::string p = Poco::Path::expand(path.std_str());
+        const std::string p = Poco::Path::expand(path.std_str());
 
         if (!novac::EqualsIgnoringCase(p, path.ToStdString()))
         {

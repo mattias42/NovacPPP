@@ -5,6 +5,11 @@
 class StdOutLogger : public ILogger
 {
 public:
+    virtual void Debug(const std::string& message) override
+    {
+        std::cout << message << std::endl;
+    }
+
     virtual void Information(const std::string& message) override
     {
         std::cout << message << std::endl;

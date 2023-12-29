@@ -656,7 +656,7 @@ bool CGeometryCalculator::CalculatePlumeHeight(const novac::CString& evalLog, in
 
 #ifdef _DEBUG
     novac::CString fileName;
-    fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
+    fileName.Format("%sdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
     FILE* f = fopen(fileName, "a");
     if (f > 0) {
         fprintf(f, "%.1lf\t%.2lf\t%.2lf\n", plume.plumeCenter, plumeHeight, plumeHeightErr);
@@ -740,7 +740,7 @@ bool CGeometryCalculator::CalculateWindDirection(const novac::CString& evalLog, 
 
 #ifdef _DEBUG
     novac::CString fileName;
-    fileName.Format("%s%cdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
+    fileName.Format("%sdebugGeometrySingleInstr.txt", (const char*)g_userSettings.m_outputDirectory);
     FILE* f = fopen(fileName, "a");
     if (f > 0) {
         fprintf(f, "wd\t%.1lf\t%.2lf\t%.2lf\n", plume.plumeCenter, windDirection, windDirectionErr);

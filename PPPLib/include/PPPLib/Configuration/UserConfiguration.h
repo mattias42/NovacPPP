@@ -68,7 +68,7 @@ namespace Configuration {
         novac::CString   m_tempDirectory;
 #define   str_tempDirectory "tempdirectory"
 
-        /** The directory that we should use to store the results */
+        /** The directory that we should use to store the results. This MUST ALWAYS end with a trailing separator character. */
         novac::CString   m_outputDirectory;
 #define str_outputDirectory "outputdirectory"
 

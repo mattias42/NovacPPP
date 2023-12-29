@@ -45,11 +45,6 @@ std::string CreateOutputDirectoryForCalibration(const CSpectrumInfo& calibratedS
         calibratedSpectrum.m_startTime.day);
 
     std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
-
-    if (directoryName.back() != '/' && directoryName.back() != '\\')
-    {
-        directoryName += '/';
-    }
     directoryName += dateStr + "/" + calibratedSpectrum.m_device + "/";
 
     // 4b. Make sure that the folder exists
@@ -490,10 +485,6 @@ void CPostCalibration::CreateEvaluationSettings(const SpectrometerId& spectromet
 
     // Write the result to file (together with the other previous settings).
     std::string directoryName{ (const char*)g_userSettings.m_outputDirectory };
-    if (directoryName.back() != '/' && directoryName.back() != '\\')
-    {
-        directoryName += '/';
-    }
     directoryName += "calibration/";
     if (Filesystem::CreateDirectoryStructure(directoryName))
     {

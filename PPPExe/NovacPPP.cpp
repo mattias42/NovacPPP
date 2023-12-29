@@ -212,7 +212,8 @@ void CalculateAllFluxes()
 
         // set the directory to which we want to copy the settings
         novac::CString confCopyDir;
-        confCopyDir.Format("%s/copiedConfiguration/", (const char*)g_userSettings.m_outputDirectory);
+        confCopyDir.Format("%scopiedConfiguration", (const char*)g_userSettings.m_outputDirectory);
+        confCopyDir = Filesystem::AppendPathSeparator(confCopyDir);
 
         // make sure that the output directory exists
         if (Filesystem::CreateDirectoryStructure(g_userSettings.m_outputDirectory))
@@ -233,8 +234,8 @@ void CalculateAllFluxes()
             return;
         }
         // we want to copy the setup and processing files to the confCopyDir
-        processingOutputFile.Format("%s/processing.xml", (const char*)confCopyDir);
-        setupOutputFile.Format("%s/setup.xml", (const char*)confCopyDir);
+        processingOutputFile.Format("%sprocessing.xml", (const char*)confCopyDir);
+        setupOutputFile.Format("%ssetup.xml", (const char*)confCopyDir);
 
         Common::ArchiveFile(setupOutputFile);
         Common::ArchiveFile(processingOutputFile);
@@ -452,11 +453,7 @@ void ParseCommandLineOptions(const std::vector<std::string>& arguments)
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_outputDirectory)), "%[^/*?<>|]", buffer.data()))
             {
                 g_userSettings.m_outputDirectory.Format("%s", buffer.data());
-                // make sure that this ends with a trailing '\'
-                if (g_userSettings.m_outputDirectory.GetAt(g_userSettings.m_outputDirectory.GetLength() - 1) != '/')
-                {
-                    g_userSettings.m_outputDirectory.Append("/");
-                }
+                g_userSettings.m_outputDirectory = Filesystem::AppendPathSeparator(g_userSettings.m_outputDirectory);
             }
             token = tokenizer.NextToken();
             continue;

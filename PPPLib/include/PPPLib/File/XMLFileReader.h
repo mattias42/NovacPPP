@@ -26,7 +26,7 @@ namespace FileHandler
                 a valid element */
         const char* GetAttributeValue(const novac::CString& label);
 
-        /** General parsing of a single, simple string item */
+        /** General parsing of a single, simple string item. Return zero on success. */
         int Parse_StringItem(const novac::CString& label, novac::CString& string);
         int Parse_StringItem(const novac::CString& label, std::string& string);
 

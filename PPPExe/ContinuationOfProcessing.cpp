@@ -35,12 +35,15 @@ void CContinuationOfProcessing::ScanStatusLogFileForOldScans() {
     if (g_userSettings.m_fIsContinuation == false)
         return;
 
-    oldStatusLogfile.Format("%s%cStatusLog.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
+    oldStatusLogfile.Format("%sStatusLog.txt", (const char*)g_userSettings.m_outputDirectory);
     if (!Filesystem::IsExistingFile(oldStatusLogfile))
+    {
         return;
+    }
 
     FILE* f = fopen(oldStatusLogfile, "r");
-    if (f == NULL) {
+    if (f == NULL)
+    {
         return;
     }
 

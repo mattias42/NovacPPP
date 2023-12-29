@@ -10,19 +10,31 @@ namespace novac
         int channel;
         MEASUREMENT_MODE mode;
 
+        SECTION("Returns false if unknown file name")
+        {
+            bool returnCode = CFileUtils::GetInfoFromFileName("Upload.pak", start, serial, channel, mode);
+            REQUIRE(false == returnCode);
+
+            returnCode = CFileUtils::GetInfoFromFileName("U001.pak", start, serial, channel, mode);
+            REQUIRE(false == returnCode);
+        }
+
         SECTION("Finds correct serial")
         {
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            bool returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(serial.std_str() == "D2J2134");
 
-            CFileUtils::GetInfoFromFileName("I2J98765_170129_0317_1.pak", start, serial, channel, mode);
+            returnCode = CFileUtils::GetInfoFromFileName("I2J98765_170129_0317_1.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(serial.std_str() == "I2J98765");
         }
 
         SECTION("Finds correct date")
         {
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            bool returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
 
+            REQUIRE(returnCode);
             REQUIRE(start.year == 2017);
             REQUIRE(start.month == 1);
             REQUIRE(start.day == 29);
@@ -33,19 +45,23 @@ namespace novac
 
         SECTION("Finds correct channel")
         {
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            bool returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(channel == 1);
 
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_0.pak", start, serial, channel, mode);
+            returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_0.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(channel == 0);
         }
 
         SECTION("Finds correct mode")
         {
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            bool returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(mode == MODE_FLUX); // default
 
-            CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1_wind.pak", start, serial, channel, mode);
+            returnCode = CFileUtils::GetInfoFromFileName("D2J2134_170129_0317_1_wind.pak", start, serial, channel, mode);
+            REQUIRE(returnCode);
             REQUIRE(mode == MODE_WINDSPEED);
         }
     }

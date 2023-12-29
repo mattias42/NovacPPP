@@ -567,7 +567,7 @@ RETURN_CODE CPostEvaluationController::AppendToPakFileSummaryFile(const CScanRes
     bool fWriteHeaderLine = false;
 
     // we can also write an evaluation-summary log file
-    pakSummaryLog.Format("%s%cPakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator());
+    pakSummaryLog.Format("%sPakfileSummary.txt", (const char*)g_userSettings.m_outputDirectory);
 
     if (!Filesystem::IsExistingFile(pakSummaryLog))
     {
@@ -624,13 +624,13 @@ RETURN_CODE CPostEvaluationController::GetArchivingfileName(novac::CString& pakF
     int i = 0;
     while (1)
     {
-        pakFile.Format("%s%cUnknownScans%c%d.pak", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), ++i);
+        pakFile.Format("%sUnknownScans%c%d.pak", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), ++i);
         if (!Filesystem::IsExistingFile(pakFile))
         {
             break;
         }
     }
-    txtFile.Format("%s%cUnknownScans%c%d.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), Poco::Path::separator(), i);
+    txtFile.Format("%sUnknownScans%c%d.txt", (const char*)g_userSettings.m_outputDirectory, Poco::Path::separator(), i);
 
     // 1. Read the first spectrum in the scan
     const std::string temporaryScanFileStr((const char*)temporaryScanFile);

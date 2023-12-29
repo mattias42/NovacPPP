@@ -17,6 +17,9 @@ void ShowError(const char message[]);
 class ILogger
 {
 public:
+    /** Logs a debug message to the log */
+    virtual void Debug(const std::string& message) = 0;
+
     /** Logs an informative message to the log */
     virtual void Information(const std::string& message) = 0;
 

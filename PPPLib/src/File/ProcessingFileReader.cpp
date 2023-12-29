@@ -1,5 +1,6 @@
 #include <PPPLib/File/ProcessingFileReader.h>
 #include <PPPLib/VolcanoInfo.h>
+#include <PPPLib/File/Filesystem.h>
 #include <cstring>
 #include <algorithm>
 
@@ -36,8 +37,11 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
             continue;
 
         // If we've found the output directory
-        if (Equals(szToken, str_outputDirectory, strlen(str_outputDirectory))) {
+        if (Equals(szToken, str_outputDirectory, strlen(str_outputDirectory)))
+        {
             Parse_PathItem(ENDTAG(str_outputDirectory), settings.m_outputDirectory);
+            // Make sure the output directory ALWYAS ends with a path separator character
+            settings.m_outputDirectory = Filesystem::AppendPathSeparator(settings.m_outputDirectory);
             continue;
         }
 

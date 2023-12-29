@@ -35,6 +35,7 @@ CScanEvaluation::~CScanEvaluation(void)
 }
 
 long CScanEvaluation::EvaluateScan(novac::CScanFileHandler* scan, const CFitWindow& fitWindow, const Configuration::CDarkSettings* darkSettings) {
+
     CEvaluationBase* eval = NULL; // the evaluator
     CFitWindow adjustedFitWindow = fitWindow; // we may need to make some small adjustments to the fit-window. This is a modified copy
 
@@ -140,6 +141,7 @@ long CScanEvaluation::EvaluateScan(novac::CScanFileHandler* scan, const CFitWind
 }
 
 long CScanEvaluation::EvaluateOpenedScan(novac::CScanFileHandler* scan, CEvaluationBase* eval, const Configuration::CDarkSettings* darkSettings) {
+
     novac::CString message;	// used for ShowMessage messages
     int	curSpectrumIndex = 0;		// keeping track of the index of the current spectrum into the .pak-file
     double highestColumnInScan = 0.0;	// the highest column-value in the evaluation
