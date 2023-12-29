@@ -46,8 +46,11 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
         }
 
         // If we've found the temporary directory
-        if (Equals(szToken, str_tempDirectory, strlen(str_tempDirectory))) {
+        if (Equals(szToken, str_tempDirectory, strlen(str_tempDirectory)))
+        {
             Parse_PathItem(ENDTAG(str_tempDirectory), settings.m_tempDirectory);
+            // Make sure the temp directory ALWYAS ends with a path separator character
+            settings.m_tempDirectory = Filesystem::AppendPathSeparator(settings.m_tempDirectory);
             continue;
         }
 
@@ -145,8 +148,11 @@ RETURN_CODE CProcessingFileReader::ReadProcessingFile(const novac::CString& file
         }
 
         // If we've found the local directory where to search for data
-        if (Equals(szToken, str_LocalDirectory, strlen(str_LocalDirectory))) {
+        if (Equals(szToken, str_LocalDirectory, strlen(str_LocalDirectory)))
+        {
             Parse_PathItem(ENDTAG(str_LocalDirectory), settings.m_LocalDirectory);
+            // Make sure the local directory ALWYAS ends with a path separator character
+            settings.m_LocalDirectory = Filesystem::AppendPathSeparator(settings.m_LocalDirectory);
             continue;
         }
 

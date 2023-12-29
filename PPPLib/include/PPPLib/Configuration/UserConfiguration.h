@@ -64,7 +64,7 @@ namespace Configuration {
         // ------------------ THE LOCATION OF THE OUTPUT FILES  -------------------
         // ------------------------------------------------------------------------
 
-        /** The directory that we should use for temporary files */
+        /** The directory that we should use for temporary files. This MUST ALWAYS end with a trailing separator character. */
         novac::CString   m_tempDirectory;
 #define   str_tempDirectory "tempdirectory"
 
@@ -119,7 +119,7 @@ namespace Configuration {
         // ------------------------------------------------------------------------
 
         /** The path to a directory on the location computer which we should scan for
-            data files. */
+            data files. This MUST ALWAYS end with a trailing separator character. */
         novac::CString   m_LocalDirectory;
 #define   str_LocalDirectory "LocalDirectory"
 

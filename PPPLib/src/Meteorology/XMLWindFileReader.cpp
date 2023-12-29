@@ -47,7 +47,7 @@ int CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorology
         novac::CString tmpFileName;
         tmpFileName.Format(fileName);
         novac::CFileUtils::GetFileName(tmpFileName); // this is the name of the file, without the path...
-        localFileName.Format("%s%c%s", (const char*)g_userSettings.m_tempDirectory, Poco::Path::separator(), (const char*)tmpFileName);
+        localFileName.Format("%s%s", (const char*)g_userSettings.m_tempDirectory, (const char*)tmpFileName);
 
         // make sure that the tmp-directory exists
         if (Filesystem::CreateDirectoryStructure(g_userSettings.m_tempDirectory)) {

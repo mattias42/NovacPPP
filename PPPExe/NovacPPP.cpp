@@ -389,6 +389,7 @@ void ParseCommandLineOptions(const std::vector<std::string>& arguments)
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data()))
             {
                 g_userSettings.m_LocalDirectory.Format("%s", buffer.data());
+                g_userSettings.m_LocalDirectory = Filesystem::AppendPathSeparator(g_userSettings.m_LocalDirectory);
             }
             else
             {
@@ -465,11 +466,7 @@ void ParseCommandLineOptions(const std::vector<std::string>& arguments)
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_tempDirectory)), "%[^/*?<>]", buffer.data()))
             {
                 g_userSettings.m_tempDirectory.Format("%s", buffer.data());
-                // make sure that this ends with a trailing '\'
-                if (g_userSettings.m_tempDirectory.GetAt(g_userSettings.m_tempDirectory.GetLength() - 1) != '/')
-                {
-                    g_userSettings.m_tempDirectory.Append("/");
-                }
+                g_userSettings.m_tempDirectory = Filesystem::AppendPathSeparator(g_userSettings.m_tempDirectory);
             }
             token = tokenizer.NextToken();
             continue;
