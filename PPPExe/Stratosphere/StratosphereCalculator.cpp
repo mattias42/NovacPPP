@@ -1,5 +1,6 @@
 #include "StratosphereCalculator.h"
 
+#include <SpectralEvaluation/Geometry.h>
 #include "../Evaluation/ScanResult.h"
 #include <PPPLib/Molecule.h>
 #include "../Common/Common.h"
@@ -198,12 +199,10 @@ void CStratosphereCalculator::InsertIntoMeasurementList(const CMeasurementDay& m
 
 /** Retrieves the Air Mass Factor for a zenith measuremnt performed
     at the given location and at the given time of day (UTC). */
-double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData& location, const CDateTime& gmtTime) {
+double CStratosphereCalculator::GetAMF_ZenithMeasurement(const CGPSData& location, const CDateTime& gmtTime)
+{
     double SZA, SAZ;
-
-    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(gmtTime, location.m_latitude, location.m_longitude, SZA, SAZ))
-        return 1.0;
-
+    novac::GetSunPosition(gmtTime, location.m_latitude, location.m_longitude, SZA, SAZ);
     return 1.0 / cos(DEGREETORAD * SZA);
 }
 

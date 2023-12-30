@@ -1,8 +1,9 @@
 #include "ScanResult.h"
 #include <PPPLib/VolcanoInfo.h>
 
-#include "../Geometry/GeometryCalculator.h"
+#include "../Geometry/PlumeHeight.h"
 #include <SpectralEvaluation/Flux/PlumeInScanProperty.h>
+#include <SpectralEvaluation/Geometry.h>
 
 #include <algorithm>
 
@@ -24,13 +25,13 @@ CScanResult::CScanResult()
 
 CScanResult::CScanResult(const CScanResult& s2) :
     m_flux(s2.m_flux),
-    m_plumeProperties(s2.m_plumeProperties),
     m_geomError(s2.m_geomError),
     m_scatteringError(s2.m_scatteringError),
     m_spectroscopyError(s2.m_spectroscopyError),
+    m_plumeProperties(s2.m_plumeProperties),
     m_specNum(s2.m_specNum),
-    m_measurementMode(s2.m_measurementMode),
-    m_instrumentType(s2.m_instrumentType)
+    m_instrumentType(s2.m_instrumentType),
+    m_measurementMode(s2.m_measurementMode)
 {
     this->m_spec = s2.m_spec;
     this->m_specInfo = s2.m_specInfo;
@@ -644,8 +645,7 @@ bool CScanResult::IsStratosphereMeasurement() const {
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 75 degrees then it is not a wind-speed measurement
     this->GetStartTime(0, startTime);
-    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
-        return false; // error
+    novac::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ);
 
     // It is here assumed that the measurement is a stratospheric measurment
     // if there are more than 3 repetitions in the zenith positon
@@ -713,8 +713,8 @@ bool CScanResult::IsWindMeasurement_Gothenburg() const {
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 85 degrees then it is not a wind-speed measurement
     this->GetStartTime(0, startTime);
-    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
-        return false; // error
+    novac::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ);
+
     if (fabs(SZA) >= 85.0)
         return false;
 
@@ -744,10 +744,8 @@ bool CScanResult::IsWindMeasurement_Gothenburg() const {
     return false;
 }
 
-bool CScanResult::IsWindMeasurement_Heidelberg() const {
-    double SAZ, SZA;
-    CDateTime startTime;
-
+bool CScanResult::IsWindMeasurement_Heidelberg() const
+{
     // Check so that the measurement is long enough
     if (m_specNum < 52)
         return false;
@@ -762,9 +760,12 @@ bool CScanResult::IsWindMeasurement_Heidelberg() const {
 
     // If the measurement started at a time when the Solar Zenith Angle 
     // was larger than 75 degrees then it is not a wind-speed measurement
-    this->GetStartTime(0, startTime);
-    if (RETURN_CODE::SUCCESS != Common::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ))
-        return false; // error
+     CDateTime startTime;
+   this->GetStartTime(0, startTime);
+
+    double SAZ, SZA;
+    novac::GetSunPosition(startTime, GetLatitude(), GetLongitude(), SZA, SAZ);
+
     if (fabs(SZA) >= 75.0)
         return false;
 

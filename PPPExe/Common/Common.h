@@ -147,35 +147,6 @@ public:
     const novac::CString m_exeFileName;
 
     // --------------------------------------------------------------------
-    // -------------------- SUN - FUNCTIONS -------------------------------
-    // --------------------------------------------------------------------
-
-    /** Retrieves the solar zenith angle (SZA) and the solar azimuth angle (SAZ)
-            for the site specified by (lat, lon) and for the time given in gmtTime.
-            Note that the returned angles are in degrees and that the specified
-            time _must_ be GMT-time. */
-    static RETURN_CODE GetSunPosition(const novac::CDateTime& gmtTime, double lat, double lon, double& SZA, double& SAZ);
-
-    /** ????
-        D  is the JulianDay counted from the 1st of January 2000 @ midnight
-        Ra is the  Right Ascencion
-        dec	is the declination
-        EQT is the equation of time (in hours)
-    */
-    static void EquatorialCoordinates(double D, double& RA, double& dec, double& EQT);
-
-    /** ???
-            lat - latitude in degrees
-            H		- The hour angle, in degrees
-            dec - The declination, degres
-            elev - the returned elevation of the sun above the horizon
-            azim - the returned azimuth angle of the sun, counted from south to west			*/
-    static void HorizontalCoordinates(double lat, double H, double dec, double& elev, double& azim);
-
-    /** Returns the hour angle given the longitude and equation of time. */
-    static double GetHourAngle(double hr, double lon, double EqT);
-
-    // --------------------------------------------------------------------
     // -------------------- GPS FUNCTIONS ---------------------------------
     // --------------------------------------------------------------------
 
