@@ -3,6 +3,8 @@
 #include <SpectralEvaluation/DateTime.h>
 #include "Geometry/GeometryCalculator.h"
 #include <PPPLib/Meteorology/WindDataBase.h>
+#include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
 #include "Geometry/PlumeDataBase.h"
 #include "Flux/FluxResult.h"
 #include "Evaluation/ExtendedScanResult.h"
@@ -17,19 +19,20 @@
 
 namespace novac
 {
-    class CReferenceFile;
+class CReferenceFile;
 }
 
 class CPostProcessing
 {
 public:
-    CPostProcessing(ILogger& logger);
+    CPostProcessing(ILogger& logger, Configuration::CNovacPPPConfiguration setup, Configuration::CUserConfiguration userSettings);
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
     // ----------------------------------------------------------------------
 
-    /** This is the directory of the executable. */
+    /** This is the directory of the executable.
+        Defines the directory where the configuration is supposed to be found. */
     std::string m_exePath;
 
     // ----------------------------------------------------------------------
@@ -63,17 +66,19 @@ protected:
 
     ILogger& m_log;
 
+    Configuration::CNovacPPPConfiguration m_setup;
+
+    Configuration::CUserConfiguration m_userSettings;
+
     // ----------------------------------------------------------------------
     // --------------------- PRIVATE METHODS --------------------------------
     // ----------------------------------------------------------------------
 
-
     /** Prepares for the post-processing by first making sure that
         all settings found in the configuration are ok and that
         they make sense.
-        @return 0 if all settings are ok and we should continue,
-            otherwise non-zero*/
-    int CheckProcessingSettings() const;
+        @throw std::invalid_argument if the settings are not ok and the processing cannot continue */
+    void CheckProcessingSettings() const;
 
     /** Prepares for post-processing by making sure that all settings
         relevant to instrument calibration are ok and make sense.
@@ -83,13 +88,13 @@ protected:
     /** Prepares for the evaluation of the spectra
         by reading in all the reference files that are
         needed.
-        @return 0 on success otherwise non-zero */
-    int PrepareEvaluation();
+        @throws std::invalid_argument if the references files could not be found or not be read. */
+    void PrepareEvaluation();
 
     /** Prepares for the flux calculations by reading in the relevant
         wind-field file.
-        @return 0 on success, otherwise non-zero */
-    int ReadWindField();
+        @throw std::invalid_argument if the wind field could not be read properly and the processing cannot continue */
+    void ReadWindField();
 
     /** Prepares for the flux calculation by setting up a reasonable
         set of plume heights. This could also read in a set from file...?
@@ -180,8 +185,6 @@ protected:
 
     /** Locates evaluation log files in the output directory */
     void LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evaluationLogFiles);
-
-    novac::CString GetAbsolutePathFromRelative(const novac::CString& path);
 
     /** Creates a reference file by convolving a high-res cross section with a slit-function and resamples it
         to a given wavelength calibration. The instrument serial is provided since the result is
