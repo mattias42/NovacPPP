@@ -5,6 +5,8 @@
 #include <SpectralEvaluation/File/ScanFileHandler.h>
 #include <SpectralEvaluation/Evaluation/Ratio.h>
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
+#include <PPPLib/PostProcessingStatistics.h>
 
 namespace Evaluation
 {
@@ -21,7 +23,10 @@ namespace Evaluation
 class CPostEvaluationController
 {
 public:
-    CPostEvaluationController() = default;
+    CPostEvaluationController(const Configuration::CNovacPPPConfiguration& setup, const Configuration::CUserConfiguration& userSettings, CPostProcessingStatistics& processingStats)
+        : m_setup(setup), m_userSettings(userSettings), m_processingStats(processingStats)
+    {
+    }
 
     // ----------------------------------------------------------------------
     // ---------------------- PUBLIC DATA -----------------------------------
@@ -58,27 +63,15 @@ private:
     // ---------------------- PRIVATE DATA ----------------------------------
     // ----------------------------------------------------------------------
 
+    Configuration::CNovacPPPConfiguration m_setup;
+
+    Configuration::CUserConfiguration m_userSettings;
+
+    CPostProcessingStatistics& m_processingStats;
 
     // ----------------------------------------------------------------------
     // --------------------- PRIVATE METHODS --------------------------------
     // ----------------------------------------------------------------------
-
-    /** Looks in the configuration of the instruments and searches
-        for a configured location and fit-window (for evaluation) which
-        is valid for the spectrometer that collected the given scan and
-        is also valid at the time when the scan was made.
-        @return 0 if successful otherwise non-zero
-    */
-    int GetLocationAndFitWindow(novac::CScanFileHandler* scan, const novac::CString& fitWindowName,
-        Configuration::CInstrumentLocation& instrLocation,
-        novac::CFitWindow& window);
-
-    /** Looks in the configuration of the instrument and searches
-        for the settings on how the dark-current should be removed
-        from the collected spectra.
-        On successful return will the settings be stored in 'settings'
-        @return 0 on successful, otherwise non-zero. */
-    int GetDarkCurrentSettings(novac::CScanFileHandler* scan, Configuration::CDarkSettings& settings);
 
     /** Checks the supplied scan if it's good enough to bother evaluating.
         @returns false if the scan is too bad and should be ignored. Else return true. */
@@ -127,5 +120,10 @@ private:
         @return -1 - if the measurement is not a flux measurement.
         */
     int CheckQualityOfFluxMeasurement(CScanResult* result, const novac::CString& pakFileName) const;
+
+    /** Creates the 'pluem spectrum file' which is a text file containing a list of which spectra are judged to be _in_ the plume
+        and which spectra are judged to be _out_ of the plume. Useful for determining plume composition at a later stage */
+    void CreatePlumespectrumFile(const novac::CString& fitWindowName, novac::CScanFileHandler& scan, const novac::SpectrometerModel& spectrometerModel, novac::CPlumeInScanProperty* plumeProperties, int specieIndex);
+
 };
 }

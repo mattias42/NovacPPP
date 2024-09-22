@@ -24,9 +24,6 @@
 // The flux CFluxStatistics takes care of the statistical part of the fluxes
 #include "Flux/FluxStatistics.h"
 
-// This is the settings for how to do the procesing
-#include <PPPLib/Configuration/UserConfiguration.h>
-
 // We also need to read the evaluation-log files
 #include "Common/EvaluationLogFileHandler.h"
 
@@ -42,9 +39,6 @@
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 
-// we want to make some statistics on the processing
-#include "PostProcessingStatistics.h"
-
 // we need to be able to download data from the FTP-server
 #include <PPPLib/Communication/FTPServerConnection.h>
 
@@ -55,18 +49,17 @@
 #undef max
 
 extern novac::CVolcanoInfo  g_volcanoes;   // <-- A list of all known volcanoes
-CPostProcessingStatistics   g_processingStats; // <-- The statistics of the processing itself
 
 using namespace novac;
 
 
 // this is the working-thread that takes care of evaluating a portion of the scans
-void EvaluateScansThread(const Configuration::CUserConfiguration& userSettings);
+void EvaluateScansThread(const Configuration::CNovacPPPConfiguration& setup, const Configuration::CUserConfiguration& userSettings, CPostProcessingStatistics& processingStats);
 
 // this takes care of adding the evaluated log-files to the list in an synchronized way
 //  the parameter passed in a reference to an array of strings holding the names of the 
 //  eval-log files generated
-void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties, const Configuration::CUserConfiguration& userSettings);
+void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties, const Configuration::CUserConfiguration& userSettings, CPostProcessingStatistics& processingStats);
 
 CPostProcessing::CPostProcessing(ILogger& logger, Configuration::CNovacPPPConfiguration setup, Configuration::CUserConfiguration userSettings)
     : m_log(logger), m_setup(setup), m_userSettings(userSettings)
@@ -168,7 +161,7 @@ void CPostProcessing::DoPostProcessing_Flux()
     novac::CString statFileName;
     statFileName.Format("%s%cProcessingStatistics.txt", (const char*)m_userSettings.m_outputDirectory, Poco::Path::separator());
     Common::ArchiveFile(statFileName);
-    g_processingStats.WriteStatToFile(statFileName);
+    m_processingStats.WriteStatToFile(statFileName);
 
     // 8. Also write the wind field that we have created to file
     windFileName.Format("%s%cGeneratedWindField.wxml", (const char*)m_userSettings.m_outputDirectory, Poco::Path::separator());
@@ -316,7 +309,7 @@ void CPostProcessing::DoPostProcessing_Strat()
     // 7. Write the statistics
     statFileName.Format("%s%cProcessingStatistics.txt", (const char*)m_userSettings.m_outputDirectory, Poco::Path::separator());
     Common::ArchiveFile(statFileName);
-    g_processingStats.WriteStatToFile(statFileName);
+    m_processingStats.WriteStatToFile(statFileName);
 }
 
 void CPostProcessing::CheckForSpectraOnFTPServer(std::vector<std::string>& fileList)
@@ -344,7 +337,9 @@ novac::GuardedList<Evaluation::CExtendedScanResult> s_evalLogs;
 
 volatile unsigned long s_nFilesToProcess;
 
-void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles)
+void CPostProcessing::EvaluateScans(
+    const std::vector<std::string>& pakFileList,
+    novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles) const
 {
     s_nFilesToProcess = (long)pakFileList.size();
     novac::CString messageToUser;
@@ -363,7 +358,7 @@ void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList,
     std::vector<std::thread> evalThreads(m_userSettings.m_maxThreadNum);
     for (unsigned int threadIdx = 0; threadIdx < m_userSettings.m_maxThreadNum; ++threadIdx)
     {
-        std::thread t{ EvaluateScansThread, m_userSettings };
+        std::thread t{ EvaluateScansThread, m_setup, m_userSettings, m_processingStats };
         evalThreads[threadIdx] = std::move(t);
     }
 
@@ -380,12 +375,12 @@ void CPostProcessing::EvaluateScans(const std::vector<std::string>& pakFileList,
     ShowMessage(messageToUser);
 }
 
-void EvaluateScansThread(const Configuration::CUserConfiguration& userSettings)
+void EvaluateScansThread(const Configuration::CNovacPPPConfiguration& setup, const Configuration::CUserConfiguration& userSettings, CPostProcessingStatistics& processingStats)
 {
     std::string fileName;
 
     // create a new CPostEvaluationController
-    Evaluation::CPostEvaluationController eval;
+    Evaluation::CPostEvaluationController eval{ setup, userSettings, processingStats };
 
     // while there are more .pak-files
     while (s_pakFilesRemaining.PopFront(fileName))
@@ -396,19 +391,27 @@ void EvaluateScansThread(const Configuration::CUserConfiguration& userSettings)
         // evaluate the .pak-file in all the specified fit-windows and retrieve the name of the 
         // eval-logs. If any of the fit-windows fails then the scan is not inserted.
         bool evaluationSucceeded = true;
-        for (int fitWindowIndex = 0; fitWindowIndex < userSettings.m_nFitWindowsToUse; ++fitWindowIndex)
+        try
         {
-            if (0 != eval.EvaluateScan(fileName, userSettings.m_fitWindowsToUse[fitWindowIndex], &evalLog[fitWindowIndex], &scanProperties[fitWindowIndex]))
+            for (int fitWindowIndex = 0; fitWindowIndex < userSettings.m_nFitWindowsToUse; ++fitWindowIndex)
             {
-                evaluationSucceeded = false;
-                break;
+                if (0 != eval.EvaluateScan(fileName, userSettings.m_fitWindowsToUse[fitWindowIndex], &evalLog[fitWindowIndex], &scanProperties[fitWindowIndex]))
+                {
+                    evaluationSucceeded = false;
+                    break;
+                }
             }
+        }
+        catch (std::exception& ex)
+        {
+            ShowMessage(ex.what());
+            evaluationSucceeded = false;
         }
 
         if (evaluationSucceeded)
         {
             // If we made it this far then the measurement is ok, insert it into the list!
-            AddResultToList(fileName, evalLog, scanProperties[userSettings.m_mainFitWindow], userSettings);
+            AddResultToList(fileName, evalLog, scanProperties[userSettings.m_mainFitWindow], userSettings, processingStats);
 
             // Tell the user what is happening
             novac::CString messageToUser;
@@ -418,13 +421,18 @@ void EvaluateScansThread(const Configuration::CUserConfiguration& userSettings)
         else
         {
             novac::CString messageToUser;
-            messageToUser.Format(" - Evaluation of scan %s failed", fileName.c_str());
+            messageToUser.Format(" - No flux calculated for scan %s ", fileName.c_str());
             ShowMessage(messageToUser);
         }
     }
 }
 
-void AddResultToList(const novac::CString& pakFileName, const novac::CString(&evalLog)[MAX_FIT_WINDOWS], const CPlumeInScanProperty& scanProperties, const Configuration::CUserConfiguration& userSettings)
+void AddResultToList(
+    const novac::CString& pakFileName,
+    const novac::CString(&evalLog)[MAX_FIT_WINDOWS],
+    const CPlumeInScanProperty& scanProperties,
+    const Configuration::CUserConfiguration& userSettings,
+    CPostProcessingStatistics& processingStats)
 {
     // these are not used...
     novac::CString serial;
@@ -446,7 +454,7 @@ void AddResultToList(const novac::CString& pakFileName, const novac::CString(&ev
     s_evalLogs.AddItem(newResult);
 
     // update the statistics
-    g_processingStats.InsertAcception(serial);
+    processingStats.InsertAcception(serial);
 }
 
 int CPostProcessing::CheckInstrumentCalibrationSettings() const
@@ -909,10 +917,16 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             }
 
             // Get the locations of the two instruments
-            if (m_setup.GetInstrumentLocation(serial1, startTime1, location[0]))
+            try
+            {
+                location[0] = m_setup.GetInstrumentLocation(serial1.std_str(), startTime1);
+                location[1] = m_setup.GetInstrumentLocation(serial2.std_str(), startTime1);
+            }
+            catch (PPPLib::NotFoundException& ex)
+            {
+                ShowMessage(ex.message);
                 continue;
-            if (m_setup.GetInstrumentLocation(serial2, startTime2, location[1]))
-                continue;
+            }
 
             // make sure that the distance between the instruments is not too long....
             double instrumentDistance = Common::GPSDistance(location[0].m_latitude, location[0].m_longitude, location[1].m_latitude, location[1].m_longitude);
@@ -975,8 +989,15 @@ void CPostProcessing::CalculateGeometries(novac::CList <Evaluation::CExtendedSca
             Geometry::CPlumeHeight plumeHeight;
 
             // Get the location of the instrument
-            if (m_setup.GetInstrumentLocation(serial1, startTime1, location[0]))
+            try
+            {
+                location[0] = m_setup.GetInstrumentLocation(serial1.std_str(), startTime1);
+            }
+            catch (PPPLib::NotFoundException& ex)
+            {
+                ShowMessage(ex.message);
                 continue;
+            }
 
             Geometry::CGeometryResult* result = new Geometry::CGeometryResult();
 
@@ -1452,17 +1473,24 @@ void CPostProcessing::InsertCalculatedGeometriesIntoDataBase(novac::CList <Geome
 
         if (result->m_windDirection > NOT_A_NUMBER)
         {
-            // get the location of the instrument at the time of the measurement
-            m_setup.GetInstrumentLocation(result->m_instr1, result->m_averageStartTime, location);
+            try
+            {
+                // get the location of the instrument at the time of the measurement
+                location = m_setup.GetInstrumentLocation(result->m_instr1.std_str(), result->m_averageStartTime);
 
-            // get the time-interval that the measurement is valid for
-            validFrom = CDateTime(result->m_averageStartTime);
-            validFrom.Decrement(m_userSettings.m_calcGeometryValidTime);
-            validTo = CDateTime(result->m_averageStartTime);
-            validTo.Increment(m_userSettings.m_calcGeometryValidTime);
+                // get the time-interval that the measurement is valid for
+                validFrom = CDateTime(result->m_averageStartTime);
+                validFrom.Decrement(m_userSettings.m_calcGeometryValidTime);
+                validTo = CDateTime(result->m_averageStartTime);
+                validTo.Increment(m_userSettings.m_calcGeometryValidTime);
 
-            // insert the wind-direction into the wind database
-            m_windDataBase.InsertWindDirection(validFrom, validTo, result->m_windDirection, result->m_windDirectionError, result->m_calculationType, nullptr);
+                // insert the wind-direction into the wind database
+                m_windDataBase.InsertWindDirection(validFrom, validTo, result->m_windDirection, result->m_windDirectionError, result->m_calculationType, nullptr);
+            }
+            catch (PPPLib::NotFoundException& ex)
+            {
+                ShowMessage(ex.message);
+            }
         }
     }
 }
@@ -1489,39 +1517,46 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     auto logPosition = evalLogs.GetHeadPosition();
     while (logPosition != nullptr)
     {
-        const novac::CString& fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[m_userSettings.m_mainFitWindow];
-
-        // to know the start-time of the measurement, we need to 
-        // extract just the file-name, i.e. remove the path
-        fileName = novac::CString(fileNameAndPath);
-        Common::GetFileName(fileName);
-
-        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
-
-        if (meas_mode == MODE_WINDSPEED)
+        try
         {
-            ++nWindMeasFound;
-            // first check if this is a heidelberg instrument
-            if (m_setup.GetInstrumentLocation(serial, startTime, location))
-                continue;
+            const novac::CString& fileNameAndPath = evalLogs.GetNext(logPosition).m_evalLogFile[m_userSettings.m_mainFitWindow];
 
-            if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
+            // to know the start-time of the measurement, we need to 
+            // extract just the file-name, i.e. remove the path
+            fileName = novac::CString(fileNameAndPath);
+            Common::GetFileName(fileName);
+
+            novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
+
+            if (meas_mode == MODE_WINDSPEED)
             {
-                // this is a heidelberg instrument
-                heidelbergList.AddTail(novac::CString(fileNameAndPath));
-            }
-            else
-            {
-                // this is a gothenburg instrument
-                if (channel == 0)
+                ++nWindMeasFound;
+
+                // first check if this is a heidelberg instrument
+                location = m_setup.GetInstrumentLocation(serial.std_str(), startTime);
+
+                if (location.m_instrumentType == INSTRUMENT_TYPE::INSTR_HEIDELBERG)
                 {
-                    masterList.AddTail(novac::CString(fileNameAndPath));
+                    // this is a heidelberg instrument
+                    heidelbergList.AddTail(novac::CString(fileNameAndPath));
                 }
-                else if (channel == 1)
+                else
                 {
-                    slaveList.AddTail(novac::CString(fileNameAndPath));
+                    // this is a gothenburg instrument
+                    if (channel == 0)
+                    {
+                        masterList.AddTail(novac::CString(fileNameAndPath));
+                    }
+                    else if (channel == 1)
+                    {
+                        slaveList.AddTail(novac::CString(fileNameAndPath));
+                    }
                 }
             }
+        }
+        catch (PPPLib::NotFoundException& ex)
+        {
+            ShowMessage(ex.message);
         }
     }
     if (nWindMeasFound == 0)
@@ -1544,50 +1579,57 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
     auto instrPos = heidelbergList.GetHeadPosition();
     while (instrPos != nullptr)
     {
-        const novac::CString& fileNameAndPath = heidelbergList.GetNext(instrPos);
-
-        // to know the start-time of the measurement, we need to 
-        // extract just the file-name, i.e. remove the path
-        fileName = novac::CString(fileNameAndPath);
-        Common::GetFileName(fileName);
-        novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
-
-        // Get the plume height at the time of the measurement
-        m_plumeDataBase.GetPlumeHeight(startTime, plumeHeight);
-
-        // Get the location of the instrument at the time of the measurement
-        m_setup.GetInstrumentLocation(serial, startTime, location);
-
-        // calculate the speed of the wind at the time of the measurement
-        if (0 == calculator.CalculateWindSpeed(fileNameAndPath, nonsenseString, location, plumeHeight, windField))
+        try
         {
-            // append the results to file
-            calculator.AppendResultToFile(windLogFile, startTime, location, plumeHeight, windField);
+            const novac::CString& fileNameAndPath = heidelbergList.GetNext(instrPos);
 
-            // insert the newly calculated wind-speed into the database
-            if (windField.GetWindSpeedError() > m_userSettings.m_dualBeam_MaxWindSpeedError)
+            // to know the start-time of the measurement, we need to 
+            // extract just the file-name, i.e. remove the path
+            fileName = novac::CString(fileNameAndPath);
+            Common::GetFileName(fileName);
+            novac::CFileUtils::GetInfoFromFileName(fileName, startTime, serial, channel, meas_mode);
+
+            // Get the plume height at the time of the measurement
+            m_plumeDataBase.GetPlumeHeight(startTime, plumeHeight);
+
+            // Get the location of the instrument at the time of the measurement
+            location = m_setup.GetInstrumentLocation(serial.std_str(), startTime);
+
+            // calculate the speed of the wind at the time of the measurement
+            if (0 == calculator.CalculateWindSpeed(fileNameAndPath, nonsenseString, location, plumeHeight, windField))
             {
-                userMessage.Format("-Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
-                    startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
+                // append the results to file
+                calculator.AppendResultToFile(windLogFile, startTime, location, plumeHeight, windField);
+
+                // insert the newly calculated wind-speed into the database
+                if (windField.GetWindSpeedError() > m_userSettings.m_dualBeam_MaxWindSpeedError)
+                {
+                    userMessage.Format("-Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Error too large, measurement discarded.", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+                        startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
+                }
+                else
+                {
+                    // tell the user...
+                    userMessage.Format("+Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
+                        startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
+
+                    // get the time-interval that the measurement is valid for
+                    windField.GetValidTimeFrame(validFrom, validTo);
+
+                    // insert the new wind speed into the database
+                    m_windDataBase.InsertWindSpeed(validFrom, validTo, windField.GetWindSpeed(), windField.GetWindSpeedError(), Meteorology::MET_DUAL_BEAM_MEASUREMENT, nullptr);
+                }
+                ShowMessage(userMessage);
             }
             else
             {
-                // tell the user...
-                userMessage.Format("+Calculated a wind-speed of %.1lf +- %.1lf m/s on %04d.%02d.%02d at %02d:%02d. Measurement accepted", windField.GetWindSpeed(), windField.GetWindSpeedError(),
-                    startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute);
-
-                // get the time-interval that the measurement is valid for
-                windField.GetValidTimeFrame(validFrom, validTo);
-
-                // insert the new wind speed into the database
-                m_windDataBase.InsertWindSpeed(validFrom, validTo, windField.GetWindSpeed(), windField.GetWindSpeedError(), Meteorology::MET_DUAL_BEAM_MEASUREMENT, nullptr);
+                userMessage.Format("Failed to calculate wind speed from measurement: %s", (const char*)fileName);
+                ShowMessage(userMessage);
             }
-            ShowMessage(userMessage);
         }
-        else
+        catch (PPPLib::NotFoundException& ex)
         {
-            userMessage.Format("Failed to calculate wind speed from measurement: %s", (const char*)fileName);
-            ShowMessage(userMessage);
+            ShowMessage(ex.message);
         }
     }
 
@@ -1625,7 +1667,7 @@ void CPostProcessing::CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExt
                 m_plumeDataBase.GetPlumeHeight(startTime, plumeHeight);
 
                 // Get the location of the instrument at the time of the measurement
-                m_setup.GetInstrumentLocation(serial, startTime, location);
+                location = m_setup.GetInstrumentLocation(serial.std_str(), startTime);
 
                 // calculate the speed of the wind at the time of the measurement
                 if (0 == calculator.CalculateWindSpeed(fileNameAndPath, fileNameAndPath2, location, plumeHeight, windField))
