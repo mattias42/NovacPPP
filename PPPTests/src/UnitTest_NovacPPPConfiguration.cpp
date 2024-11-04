@@ -1,4 +1,5 @@
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
+#include <cstring>
 #include "catch.hpp"
 
 namespace novac
@@ -12,7 +13,7 @@ TEST_CASE("CNovacPPPConfiguration GetInstrumentLocation returns expected value",
     configuredLocation.m_altitude = 1633;
     configuredLocation.m_compass = 172.0;
     configuredLocation.m_coneangle = 60.0;
-    configuredLocation.m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
+    configuredLocation.m_instrumentType = NovacInstrumentType::Gothenburg;
     configuredLocation.m_latitude = -39.237137;
     configuredLocation.m_longitude = 175.556395;
     configuredLocation.m_locationName = "RUD02_Iwikau_Village";
@@ -34,7 +35,7 @@ TEST_CASE("CNovacPPPConfiguration GetInstrumentLocation returns expected value",
             sut.GetInstrumentLocation(instrumentSerial, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "Cannot find configuration for instrument with serial number ") != nullptr);
         }
@@ -79,7 +80,7 @@ TEST_CASE("CNovacPPPConfiguration GetInstrumentLocation returns expected value",
             sut.GetInstrumentLocation(instrumentSerial, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "does not have a configured location on 2022.05.05") != nullptr);
         }
@@ -109,7 +110,7 @@ TEST_CASE("CNovacPPPConfiguration GetFitWindow returns expected value", "[CNovac
             sut.GetFitWindow(instrumentSerial, 0, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "Cannot find configuration for instrument with serial number ") != nullptr);
         }
@@ -153,7 +154,7 @@ TEST_CASE("CNovacPPPConfiguration GetFitWindow returns expected value", "[CNovac
             sut.GetFitWindow(instrumentSerial, 0, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "does not have a configured fit-window on 2022.05.05") != nullptr);
         }
@@ -174,7 +175,7 @@ TEST_CASE("CNovacPPPConfiguration GetFitWindow returns expected value", "[CNovac
             sut.GetFitWindow(instrumentSerial, 1, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "does not have a configured fit-window on 2022.05.07") != nullptr);
         }
@@ -189,7 +190,7 @@ TEST_CASE("CNovacPPPConfiguration GetDarkCorrection returns expected value", "[C
     configuredLocation.m_altitude = 1633;
     configuredLocation.m_compass = 172.0;
     configuredLocation.m_coneangle = 60.0;
-    configuredLocation.m_instrumentType = INSTRUMENT_TYPE::INSTR_GOTHENBURG;
+    configuredLocation.m_instrumentType = NovacInstrumentType::Gothenburg;
     configuredLocation.m_latitude = -39.237137;
     configuredLocation.m_longitude = 175.556395;
     configuredLocation.m_locationName = "RUD02_Iwikau_Village";
@@ -211,13 +212,13 @@ TEST_CASE("CNovacPPPConfiguration GetDarkCorrection returns expected value", "[C
             sut.GetDarkCorrection(instrumentSerial, searchTime);
             REQUIRE(false); // failure
         }
-        catch (PPPLib::NotFoundException& ex)
+        catch (novac::NotFoundException& ex)
         {
             REQUIRE(strstr(ex.message.c_str(), "Cannot find configuration for instrument with serial number ") != nullptr);
         }
     }
 
-    SECTION("One instrument configured - Query done within instrument valid time - Returns instrument location")
+    SECTION("One instrument configured - No Dark settings explitly set - Query done within instrument valid time - Returns default instrument location")
     {
         Configuration::CLocationConfiguration configuredInstrumentLocation;
         configuredInstrumentLocation.InsertLocation(configuredLocation);
@@ -233,31 +234,7 @@ TEST_CASE("CNovacPPPConfiguration GetDarkCorrection returns expected value", "[C
         Configuration::CDarkSettings result = sut.GetDarkCorrection(instrumentSerial, searchTime);
 
         // Assert
-        REQUIRE(result.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::USER_SUPPLIED);
-    }
-
-    SECTION("One instrument configured - Query done outside of instrument valid time - Throws NotFoundException")
-    {
-        Configuration::CLocationConfiguration configuredInstrumentLocation;
-        configuredInstrumentLocation.InsertLocation(configuredLocation);
-        Configuration::CInstrumentConfiguration configuredInstrument;
-        configuredInstrument.m_serial = instrumentSerial;
-        configuredInstrument.m_location = configuredInstrumentLocation;
-        const CDateTime searchTime{ 2022, 05, 05, 15, 16, 17 }; // the day before the instrument was installed
-
-        Configuration::CNovacPPPConfiguration sut;
-        sut.m_instrument.push_back(configuredInstrument);
-
-        // Act & Assert
-        try
-        {
-            sut.GetDarkCorrection(instrumentSerial, searchTime);
-            REQUIRE(false); // failure
-        }
-        catch (PPPLib::NotFoundException& ex)
-        {
-            REQUIRE(strstr(ex.message.c_str(), "does not have a configured location on 2022.05.05") != nullptr);
-        }
+        REQUIRE(result.m_darkSpecOption == Configuration::DARK_SPEC_OPTION::MEASURED_IN_SCAN);
     }
 }
 }

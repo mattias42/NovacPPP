@@ -13,21 +13,26 @@
 #include <PPPLib/File/ProcessingFileReader.h>
 #include "PostProcessing.h"
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <thread>
 #include <Poco/Path.h>
 #include <Poco/Logger.h>
 #include <Poco/FileChannel.h>
 #include <Poco/SplitterChannel.h>
 #include <Poco/ConsoleChannel.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
 #include <Poco/Util/Application.h>
+#include "Common/Common.h"
 
-extern Configuration::CNovacPPPConfiguration        g_setup;	   // <-- The settings
 extern Configuration::CUserConfiguration            g_userSettings;// <-- The settings of the user
 
 novac::CVolcanoInfo g_volcanoes;   // <-- A list of all known volcanoes
 PocoLogger g_logger; // <-- global logger
+
+static Configuration::CNovacPPPConfiguration s_setup; // <-- The settings
 
 std::string s_exePath;
 std::string s_exeFileName;
@@ -50,12 +55,17 @@ void ReadProcessingXml(const novac::CString& workDir, Configuration::CUserConfig
 void ReadSetupXml(const novac::CString& workDir, Configuration::CNovacPPPConfiguration& configuration);
 
 void StartProcessing();
-void CalculateAllFluxes();
+void CalculateAllFluxes(CContinuationOfProcessing continuation);
 
 using namespace novac;
 
 class NovacPPPApplication : public Poco::Util::Application
 {
+public:
+    NovacPPPApplication() : Poco::Util::Application(){
+        this->setUnixOptions(false);
+    }
+
 protected:
     void initialize(Poco::Util::Application& application)
     {
@@ -71,14 +81,14 @@ protected:
     void defineOptions(Poco::Util::OptionSet& optionSet)
     {
         Poco::Util::Application::defineOptions(optionSet);
-
-        /* optionSet.addOption(
-                Poco::Util::Option("optionval", "", "Some value")
-                        .required(false)
-                        .repeatable(true)
-                        .argument("<the value>", true)
-                        .callback(Poco::Util::OptionCallback<OptionExample>(this, &OptionExample::handleMyOpt))
-        ); */
+        // 
+        // optionSet.addOption(
+        //         Poco::Util::Option("WorkDir", "W", "The working directory")
+        //                 .required(false)
+        //                 .repeatable(true)
+        //                 .argument("file")
+        //                 .callback(Poco::Util::OptionCallback<NovacPPPApplication>(this, &NovacPPPApplication::handleMyOpt))
+        // );
     }
 
     void handleMyOpt(const std::string& name, const std::string& value)
@@ -101,36 +111,53 @@ protected:
             s_exeFileName = executable.getFileName();
 
             // Setup the logging
+            Poco::AutoPtr<Poco::PatternFormatter> patternFormatter(new Poco::PatternFormatter);
+            patternFormatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S: %t");
+
             Poco::AutoPtr<Poco::SplitterChannel> splitterChannel(new Poco::SplitterChannel());
             splitterChannel->addChannel(new Poco::ConsoleChannel());
-            Poco::Logger::root().setChannel(new Poco::ConsoleChannel());
+
+            Poco::AutoPtr<Poco::FormattingChannel> formattingChannel(new Poco::FormattingChannel(patternFormatter, splitterChannel));
+
+            Poco::Logger::root().setChannel(formattingChannel);
             Poco::Logger& log = Poco::Logger::get("NovacPPP");
 
             // Get the options from the command line
-            std::cout << " Getting command line arguments" << std::endl;
+            ShowMessage("Getting command line arguments");
             Configuration::CommandLineParser::ParseCommandLineOptions(arguments, g_userSettings, g_volcanoes, s_exePath, g_logger);
             ShowMessage(novac::CString::FormatString(" Executing %s in '%s'", s_exeFileName.c_str(), s_exePath.c_str()));
 
             // Read the configuration files
-            std::cout << " Loading configuration" << std::endl;
-            Common common;
-            LoadConfigurations(common.m_exePath, g_setup, g_userSettings);
+            ShowMessage("Loading configuration");
+            LoadConfigurations(s_exePath, s_setup, g_userSettings);
+
+            // Read the command line options again, in order to make sure the command line arguments override the configuration files.
+            Configuration::CommandLineParser::ParseCommandLineOptions(arguments, g_userSettings, g_volcanoes, s_exePath, g_logger);
 
             splitterChannel->addChannel(new Poco::FileChannel(g_userSettings.m_outputDirectory.std_str() + "StatusLog.txt"));
-            log.setChannel(splitterChannel);
+            log.setChannel(formattingChannel);
 
             // Start calculating the fluxes, this is the old button handler
-            std::cout << " Setup done: starting calculations" << std::endl;
+            ShowMessage("Setup done: starting calculations");
             StartProcessing();
         }
         catch (Poco::FileNotFoundException& e)
         {
-            std::cout << e.displayText() << std::endl;
+            ShowMessage("FileNotFoundException: " + e.displayText());
+            return 1;
+        }
+        catch (std::invalid_argument& e)
+        {
+            std::stringstream msg;
+            msg << "Invalid argument exception caught: " << e.what();
+            ShowMessage(msg.str());
             return 1;
         }
         catch (std::exception& e)
         {
-            std::cout << e.what() << std::endl;
+            std::stringstream msg;
+            msg << "General exception caught: " << e.what();
+            ShowMessage(msg.str());
             return 1;
         }
 
@@ -152,7 +179,7 @@ void LoadConfigurations(
 
     // Check if there is a configuration file for every spectrometer serial number
     FileHandler::CEvaluationConfigurationParser eval_reader{ g_logger };
-    for (int k = 0; k < configuration.NumberOfInstruments(); ++k)
+    for (size_t k = 0; k < configuration.NumberOfInstruments(); ++k)
     {
         ReadEvaluationXmlFile(workDir, eval_reader, configuration.m_instrument[k]);
     }
@@ -185,10 +212,7 @@ void ReadProcessingXml(const novac::CString& workDir, Configuration::CUserConfig
     novac::CString processingPath;
     processingPath.Format("%sconfiguration%cprocessing.xml", (const char*)workDir, Poco::Path::separator());
     FileHandler::CProcessingFileReader processing_reader{ g_logger };
-    if (RETURN_CODE::SUCCESS != processing_reader.ReadProcessingFile(processingPath, userSettings))
-    {
-        throw std::logic_error("Could not read processing.xml. Setup not complete. Please fix and try again");
-    }
+    processing_reader.ReadProcessingFile(processingPath, userSettings);
 }
 
 void ReadSetupXml(const novac::CString& workDir, Configuration::CNovacPPPConfiguration& configuration)
@@ -197,10 +221,8 @@ void ReadSetupXml(const novac::CString& workDir, Configuration::CNovacPPPConfigu
     setupPath.Format("%sconfiguration%csetup.xml", (const char*)workDir, Poco::Path::separator());
 
     FileHandler::CSetupFileReader reader{ g_logger };
-    if (RETURN_CODE::SUCCESS != reader.ReadSetupFile(setupPath, configuration))
-    {
-        throw std::logic_error("Could not read setup.xml. Setup not complete. Please fix and try again");
-    }
+    reader.ReadSetupFile(setupPath, configuration);
+
     ShowMessage(novac::CString::FormatString(" Parsed %s, %d instruments found.", setupPath.c_str(), configuration.NumberOfInstruments()));
 }
 
@@ -215,12 +237,14 @@ void StartProcessing()
         }
     }
 
+    CContinuationOfProcessing continuation(g_userSettings);
+
     // Run
 #ifdef _MFC_VER 
     CWinThread* postProcessingthread = AfxBeginThread(CalculateAllFluxes, NULL, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
     Common::SetThreadName(postProcessingthread->m_nThreadID, "PostProcessing");
 #else
-    std::thread postProcessingThread(CalculateAllFluxes);
+    std::thread postProcessingThread(CalculateAllFluxes, continuation);
     postProcessingThread.join();
 #endif  // _MFC_VER 
 }
@@ -237,14 +261,14 @@ void ArchiveSettingsFiles(const Configuration::CUserConfiguration& userSettings)
     {
         novac::CString userMessage;
         userMessage.Format("Could not create output directory: %s", (const char*)userSettings.m_outputDirectory);
-        throw std::exception(userMessage.c_str());
+        throw novac::FileIoException(userMessage.c_str());
     }
 
     if (Filesystem::CreateDirectoryStructure(confCopyDir))
     {
         novac::CString userMessage;
         userMessage.Format("Could not create directory for copied configuration: %s", (const char*)confCopyDir);
-        throw std::exception(userMessage.c_str());
+        throw novac::FileIoException(userMessage.c_str());
     }
     // we want to copy the setup and processing files to the confCopyDir
     novac::CString processingOutputFile, setupOutputFile;
@@ -259,23 +283,23 @@ void ArchiveSettingsFiles(const Configuration::CUserConfiguration& userSettings)
 
     Common common;
     Common::CopyFile(common.m_exePath + "configuration/setup.xml", setupOutputFile);
-    for (int k = 0; k < g_setup.NumberOfInstruments(); ++k)
+    for (size_t k = 0; k < s_setup.NumberOfInstruments(); ++k)
     {
-        novac::CString serial(g_setup.m_instrument[k].m_serial);
+        novac::CString serial(s_setup.m_instrument[k].m_serial);
 
         Common::CopyFile(common.m_exePath + "configuration/" + serial + ".exml", confCopyDir + serial + ".exml");
     }
 }
 
 // This is the starting point for all the processing modes.
-void CalculateAllFluxes()
+void CalculateAllFluxes(CContinuationOfProcessing continuation)
 {
     try
     {
         Common common;
+        s_setup.m_executableDirectory = common.m_exePath.std_str();
 
-        CPostProcessing post{ g_logger, g_setup, g_userSettings };
-        post.m_exePath = std::string((const char*)common.m_exePath);
+        CPostProcessing post{ g_logger, s_setup, g_userSettings, continuation };
 
         // Copy the settings that we have read in from the 'configuration' directory
         //  to the output directory to make it easier for the user to remember 
@@ -306,15 +330,23 @@ void CalculateAllFluxes()
     }
     catch (Poco::FileNotFoundException& e)
     {
-        std::cout << e.displayText() << std::endl;
-
+        ShowMessage("File not found exception: " + e.displayText());
+        ShowMessage("-- Exit post processing --");
+        return;
+    }
+    catch (std::invalid_argument& e)
+    {
+        std::stringstream msg;
+        msg << "Invalid argument exception caught: " << e.what();
+        ShowMessage(msg.str());
         ShowMessage("-- Exit post processing --");
         return;
     }
     catch (std::exception& e)
     {
-        std::cout << e.what() << std::endl;
-
+        std::stringstream msg;
+        msg << "General exception caught: " << e.what();
+        ShowMessage(msg.str());
         ShowMessage("-- Exit post processing --");
         return;
     }

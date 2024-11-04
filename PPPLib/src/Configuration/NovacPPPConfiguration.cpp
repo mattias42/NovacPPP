@@ -1,9 +1,6 @@
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include <PPPLib/Logging.h>
 
-// The global configuration object. TODO: Remove as a global variable when no longer used by any other classes.
-Configuration::CNovacPPPConfiguration g_setup;
-
 using namespace novac;
 
 namespace Configuration
@@ -38,7 +35,7 @@ CInstrumentLocation CNovacPPPConfiguration::GetInstrumentLocation(const std::str
     {
         novac::CString errorMessage;
         errorMessage.Format("Cannot find configuration for instrument with serial number '%s'", serial.c_str());
-        throw PPPLib::NotFoundException(errorMessage.std_str());
+        throw novac::NotFoundException(errorMessage.std_str());
     }
 
     // Next find the instrument location that is valid for this date
@@ -55,7 +52,7 @@ CInstrumentLocation CNovacPPPConfiguration::GetInstrumentLocation(const std::str
 
     novac::CString errorMessage;
     errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured location on %04d.%02d.%02d. Cannot Evaluate!", serial.c_str(), day.year, day.month, day.day);
-    throw PPPLib::NotFoundException(errorMessage.std_str());
+    throw novac::NotFoundException(errorMessage.std_str());
 }
 
 novac::CFitWindow CNovacPPPConfiguration::GetFitWindow(
@@ -80,12 +77,12 @@ novac::CFitWindow CNovacPPPConfiguration::GetFitWindow(
     {
         novac::CString errorMessage;
         errorMessage.Format("Cannot find configuration for instrument with serial number '%s'", serial.c_str());
-        throw PPPLib::NotFoundException(errorMessage.std_str());
+        throw novac::NotFoundException(errorMessage.std_str());
     }
 
     // Then find the evaluation fit-window that is valid for this date
     const Configuration::CEvaluationConfiguration& evalConf = instrumentConf->m_eval;
-    for (int k = 0; k < evalConf.NumberOfFitWindows(); ++k)
+    for (size_t k = 0; k < evalConf.NumberOfFitWindows(); ++k)
     {
         novac::CFitWindow window;
         CDateTime evalValidFrom, evalValidTo;
@@ -120,7 +117,7 @@ novac::CFitWindow CNovacPPPConfiguration::GetFitWindow(
     {
         errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured fit-window on %04d.%02d.%02d. Cannot Evaluate!", serial.c_str(), dateAndTime.year, dateAndTime.month, dateAndTime.day);
     }
-    throw PPPLib::NotFoundException(errorMessage.std_str());
+    throw novac::NotFoundException(errorMessage.std_str());
 }
 
 CDarkSettings CNovacPPPConfiguration::GetDarkCorrection(const std::string& serial, const CDateTime& day) const
@@ -131,7 +128,7 @@ CDarkSettings CNovacPPPConfiguration::GetDarkCorrection(const std::string& seria
     {
         novac::CString errorMessage;
         errorMessage.Format("Cannot find configuration for instrument with serial number '%s'", serial.c_str());
-        throw PPPLib::NotFoundException(errorMessage.std_str());
+        throw novac::NotFoundException(errorMessage.std_str());
     }
 
     // Next find the CDarkCorrectionConfiguration that is valid for this date
@@ -144,7 +141,7 @@ CDarkSettings CNovacPPPConfiguration::GetDarkCorrection(const std::string& seria
 
     novac::CString errorMessage;
     errorMessage.Format("Recieved spectrum from instrument %s which is does not have a configured dark current configuration on %04d.%02d.%02d. Cannot Evaluate!", serial.c_str(), day.year, day.month, day.day);
-    throw PPPLib::NotFoundException(errorMessage.std_str());
+    throw novac::NotFoundException(errorMessage.std_str());
 }
 }
 

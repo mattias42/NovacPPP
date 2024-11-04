@@ -1,14 +1,11 @@
 #include <PPPLib/Meteorology/XMLWindFileReader.h>
-
-// This is the settings for how to do the procesing
 #include <PPPLib/Configuration/UserConfiguration.h>
-
-// we need to be able to download data from the FTP-server
 #include <PPPLib/Communication/FTPServerConnection.h>
 #include <PPPLib/File/Filesystem.h>
 #include <PPPLib/MFC/CFileUtils.h>
 #include <PPPLib/MFC/CList.h>
 #include <PPPLib/Logging.h>
+#include <SpectralEvaluation/Exceptions.h>
 #include <Poco/Glob.h>
 #include <Poco/Path.h>
 #include <string.h>
@@ -32,14 +29,14 @@ CXMLWindFileReader::~CXMLWindFileReader(void)
 {
 }
 
-void CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorology::CWindDataBase& dataBase)
+void CXMLWindFileReader::ReadWindFile(novac::LogContext context, const novac::CString& fileName, Meteorology::CWindDataBase& dataBase)
 {
     novac::CString localFileName, userMessage;
 
     // 0. If the file is on the server, then download it first
     if (Equals(fileName.Left(6), "ftp://"))
     {
-        Communication::CFTPServerConnection ftp;
+        Communication::CFTPServerConnection ftp(m_log, m_userSettings);
 
         novac::CString tmpFileName;
         tmpFileName.Format(fileName);
@@ -49,13 +46,13 @@ void CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorolog
         // make sure that the tmp-directory exists
         if (Filesystem::CreateDirectoryStructure(m_userSettings.m_tempDirectory))
         {
-            userMessage.Format("Could not create temp directory: %s", (const char*)m_userSettings.m_tempDirectory);
-            throw std::exception(userMessage.c_str());
+            userMessage.Format("Could not create temp directory: '%s' required for downloading wind field from ftp", (const char*)m_userSettings.m_tempDirectory);
+            throw novac::FileIoException(userMessage.c_str());
         }
 
-        if (ftp.DownloadFileFromFTP(fileName, localFileName, m_userSettings.m_FTPUsername, m_userSettings.m_FTPPassword))
+        if (ftp.DownloadFileFromFTP(context, fileName, localFileName, m_userSettings.m_FTPUsername, m_userSettings.m_FTPPassword))
         {
-            throw std::exception("Failed to download wind file from FTP server");
+            throw novac::FileIoException("Failed to download wind file from FTP server");
         }
     }
     else
@@ -67,7 +64,7 @@ void CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorolog
     if (!Open(localFileName))
     {
         std::string message{ std::string("Failed to open wind field file for reading: '") + localFileName.std_str() };
-        throw std::exception(message.c_str());
+        throw novac::FileIoException(message.c_str());
     }
 
     // parse the file
@@ -96,7 +93,7 @@ void CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorolog
             const char* volcanoName = GetAttributeValue("volcano");
             if (volcanoName != nullptr)
             {
-                dataBase.m_dataBaseName.Format("%s", volcanoName);
+                dataBase.m_dataBaseName = std::string(volcanoName);
             }
             continue;
         }
@@ -105,7 +102,7 @@ void CXMLWindFileReader::ReadWindFile(const novac::CString& fileName, Meteorolog
     Close();
 }
 
-void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Meteorology::CWindDataBase& dataBase, const CDateTime* dateFrom, const CDateTime* dateTo)
+void CXMLWindFileReader::ReadWindDirectory(novac::LogContext context, const novac::CString& directory, Meteorology::CWindDataBase& dataBase, const CDateTime* dateFrom, const CDateTime* dateTo)
 {
     novac::CStdioFile file;
     novac::CString localFileName, remoteFileName, userMessage, ftpDir;
@@ -116,7 +113,7 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
     {
         // If the directory is on the server, then this is how to check the files
         std::unique_ptr<Communication::CFTPServerConnection> ftp;
-        ftp.reset(new Communication::CFTPServerConnection());
+        ftp.reset(new Communication::CFTPServerConnection(m_log, m_userSettings));
 
         // Make sure that the directory does end with a trailing '/'
         ftpDir.Format(directory);
@@ -128,14 +125,14 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
         // Get the list of files on the server
         if (ftp->DownloadFileListFromFTP(ftpDir, remoteFileList, m_userSettings.m_FTPUsername, m_userSettings.m_FTPPassword))
         {
-            throw std::exception("Failed to download list of wind files from FTP server");
+            throw novac::FileIoException("Failed to download list of wind files from FTP server");
         }
 
         // make sure that the tmp-directory exists
         if (Filesystem::CreateDirectoryStructure(m_userSettings.m_tempDirectory))
         {
-            userMessage.Format("Could not create temp directory: %s", (const char*)m_userSettings.m_tempDirectory);
-            throw std::exception(userMessage.c_str());
+            userMessage.Format("Could not create temp directory: '%s' required to download wind fields from FTP server", (const char*)m_userSettings.m_tempDirectory);
+            throw novac::FileIoException(userMessage.c_str());
         }
 
         // Download the files, one at a time
@@ -170,15 +167,15 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
             if (Filesystem::IsExistingFile(localFileName))
             {
                 userMessage.Format("File %s is already downloaded", (const char*)localFileName);
-                ShowMessage(userMessage);
+                m_log.Information(userMessage.std_str());
             }
             else
             {
                 remoteFileName.Format("%s%s", (const char*)ftpDir, (const char*)name);
 
-                if (ftp->DownloadFileFromFTP(remoteFileName, localFileName, m_userSettings.m_FTPUsername, m_userSettings.m_FTPPassword))
+                if (ftp->DownloadFileFromFTP(context, remoteFileName, localFileName, m_userSettings.m_FTPUsername, m_userSettings.m_FTPPassword))
                 {
-                    throw std::exception("Failed to download wind file from FTP server");
+                    throw novac::FileIoException("Failed to download wind file from FTP server");
                 }
             }
 
@@ -190,7 +187,7 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
         // If the directory is on the local computer, then this is how to check the files
         char fileToFind[MAX_PATH];
         sprintf(fileToFind, "%s/*.wxml", (const char*)directory);
-        ShowMessage("Searching for wind files in: " + directory);
+        m_log.Information(context, "Searching for wind files in: " + directory.std_str());
 
         // Search for the files
         std::set<std::string> filesFound;
@@ -226,7 +223,7 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
 
         try
         {
-            ReadWindFile(localFileName, dataBase);
+            ReadWindFile(context, localFileName, dataBase);
         }
         catch (const std::exception& e)
         {
@@ -238,7 +235,7 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
     if (nFilesRead > 0)
     {
         userMessage.Format("Successfully read in %d wind field files", nFilesRead);
-        ShowMessage(userMessage);
+        m_log.Information(context, userMessage.std_str());
         return;
     }
 
@@ -248,14 +245,14 @@ void CXMLWindFileReader::ReadWindDirectory(const novac::CString& directory, Mete
 int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase& dataBase)
 {
     novac::CString sourceStr, userMessage;
-    Meteorology::CWindField w;
+    Meteorology::WindField w;
     CDateTime validFrom, validTo;
     double latitude = 0.0;
     double longitude = 0.0;
     double altitude = 0.0;
     double windspeed = 0.0, windspeederror = 0.0;
     double winddirection = 0.0, winddirectionerror = 0.0;
-    MET_SOURCE windSource = MET_DEFAULT;
+    MeteorologySource windSource = MeteorologySource::Default;
 
     // parse the file
     while (nullptr != (szToken = NextToken()))
@@ -373,7 +370,7 @@ int CXMLWindFileReader::Parse_WindField(Meteorology::CWindDataBase& dataBase)
             }
 
             // we have now enough information to make a wind-field and insert it into the database
-            w = CWindField(windspeed, windspeederror, windSource, winddirection, winddirectionerror, windSource, validFrom, validTo, latitude, longitude, altitude);
+            w = WindField(windspeed, windspeederror, windSource, winddirection, winddirectionerror, windSource, validFrom, validTo, latitude, longitude, altitude);
 
             dataBase.InsertWindField(w);
         }
@@ -386,5 +383,3 @@ int CXMLWindFileReader::WriteWindFile(const novac::CString& fileName, const Mete
 {
     return dataBase.WriteToFile(fileName);
 }
-
-

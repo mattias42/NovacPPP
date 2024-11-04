@@ -1,32 +1,25 @@
 #include <PPPLib/File/SetupFileReader.h>
-#include <PPPLib/MFC/CStdioFile.h>
+#include <SpectralEvaluation/Exceptions.h>
 #include <PPPLib/Logging.h>
 #include <cstring>
 
 using namespace FileHandler;
 using namespace novac;
 
-CSetupFileReader::CSetupFileReader(ILogger& logger)
-    : CXMLFileReader(logger)
-{
-}
+static char start = 's';
 
-CSetupFileReader::~CSetupFileReader(void)
+void CSetupFileReader::ReadSetupFile(const novac::CString& filename, Configuration::CNovacPPPConfiguration& setup)
 {
-}
-
-RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Configuration::CNovacPPPConfiguration& setup)
-{
-
     // 1. Open the file
     if (!Open(filename))
     {
-        m_log.Error(std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'"));
-        return RETURN_CODE::FAIL;
+        std::string message = std::string("Failed to open setup file for reading: '") + filename.std_str() + std::string("'");
+        m_log.Error(message);
+        throw novac::FileIoException(message);
     }
 
     // parse the file, one line at a time.
-    szToken = "start";
+    szToken = &start;
     while (szToken != nullptr)
     {
         szToken = NextToken();
@@ -48,15 +41,12 @@ RETURN_CODE CSetupFileReader::ReadSetupFile(const novac::CString& filename, Conf
     }//end while
 
     Close();
-
-    return RETURN_CODE::SUCCESS;
 }
 
 void CSetupFileReader::Parse_Instrument(Configuration::CInstrumentConfiguration& instr)
 {
-
     // parse the file, one line at a time.
-    szToken = "start";
+    szToken = &start;
     while (szToken != nullptr)
     {
         szToken = NextToken();
@@ -89,7 +79,7 @@ void CSetupFileReader::Parse_Location(Configuration::CLocationConfiguration& loc
     Configuration::CInstrumentLocation location;
 
     // parse the file, one line at a time.
-    szToken = "start";
+    szToken = &start;
     while (szToken != nullptr)
     {
         szToken = NextToken();
@@ -197,7 +187,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
     fprintf(f, "<NovacPPPConfiguration>\n");
 
     // loop through each instrument
-    for (int k = 0; k < setup.NumberOfInstruments(); ++k)
+    for (size_t k = 0; k < setup.NumberOfInstruments(); ++k)
     {
         const Configuration::CInstrumentConfiguration& instr = setup.m_instrument[k];
 
@@ -224,7 +214,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
             fprintf(f, "\t\t\t<compass>%.1lf</compass>\n", instrLocation.m_compass);
             fprintf(f, "\t\t\t<coneangle>%.0lf</coneangle>\n", instrLocation.m_coneangle);
             fprintf(f, "\t\t<tilt>%.0lf</tilt>\n", instrLocation.m_tilt);
-            fprintf(f, "\t\t<type>%d</type>\n", instrLocation.m_instrumentType);
+            fprintf(f, "\t\t<type>%d</type>\n", (int)instrLocation.m_instrumentType);
 
             const SpectrometerModel currentSpectrometer = CSpectrometerDatabase::GetInstance().GetModel(instrLocation.m_spectrometerModel);
             {
@@ -252,7 +242,7 @@ RETURN_CODE CSetupFileReader::WriteSetupFile(const novac::CString& fileName, con
 void CSetupFileReader::Parse_CustomSpectrometer(SpectrometerModel& model)
 {
     // parse the file, one line at a time.
-    szToken = "start";
+    szToken = &start;
     while (szToken != nullptr)
     {
         szToken = NextToken();

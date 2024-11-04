@@ -5,8 +5,14 @@
 #include <vector>
 #include <SpectralEvaluation/DateTime.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
+#include <SpectralEvaluation/Log.h>
 #include <PPPLib/SpectrometerId.h>
-#include <PPPLib/Logging.h>
+
+namespace Configuration
+{
+    class CNovacPPPConfiguration;
+    class CUserConfiguration;
+}
 
 namespace novac
 {
@@ -19,8 +25,12 @@ class CPostCalibration
 {
 public:
 
-    CPostCalibration(const novac::StandardCrossSectionSetup& standardCrossSections, ILogger& logger)
-        : m_log(logger), m_standardCrossSections(standardCrossSections)
+    CPostCalibration(
+        const novac::StandardCrossSectionSetup& standardCrossSections,
+        const Configuration::CNovacPPPConfiguration& setup,
+        const Configuration::CUserConfiguration& userSettings,
+        novac::ILogger& logger)
+        : m_standardCrossSections(standardCrossSections), m_setup(setup), m_userSettings(userSettings), m_log(logger)
     {
     }
 
@@ -34,6 +44,10 @@ public:
 private:
 
     const novac::StandardCrossSectionSetup m_standardCrossSections;
+
+    const Configuration::CNovacPPPConfiguration& m_setup;
+
+    const Configuration::CUserConfiguration& m_userSettings;
 
     ILogger& m_log;
 
@@ -53,7 +67,7 @@ private:
     };
 
     /** Arranges the provided list of scan files by the instrument which performed the measurement */
-    static std::map<SpectrometerId, std::vector<BasicScanInfo>> SortScanFilesByInstrument(const std::vector<std::string>& scanFileList);
+    static std::map<SpectrometerId, std::vector<BasicScanInfo>> SortScanFilesByInstrument(novac::ILogger& log, const std::vector<std::string>& scanFileList);
 
     void CreateEvaluationSettings(const SpectrometerId& spectrometer, const CPostCalibrationStatistics& statistics);
 

@@ -1,9 +1,11 @@
-#ifndef FTPSERVER_DATADOWNLOAD_H
-#define FTPSERVER_DATADOWNLOAD_H
+#pragma once
 
 #include <vector>
 #include <PPPLib/MFC/CList.h>
 #include <PPPLib/MFC/CString.h>
+#include <PPPLib/Configuration/UserConfiguration.h>
+
+#include <SpectralEvaluation/Log.h>
 
 namespace Communication
 {
@@ -11,6 +13,11 @@ namespace Communication
 class CFTPServerConnection
 {
 public:
+
+    CFTPServerConnection(novac::ILogger& log, const Configuration::CUserConfiguration& userSettings)
+        : m_log(log), m_userSettings(userSettings)
+    {
+    }
 
     // -----------------------------------------------------------
     // ---------------------- PUBLIC DATA ------------------------
@@ -24,14 +31,22 @@ public:
     /** Downloads .pak - files from the given FTP-server
         @return 0 on successful connection and completion of the list
     */
-    int DownloadDataFromFTP(const novac::CString& server, const novac::CString& username,
-        const novac::CString& password, std::vector<std::string>& pakFileList);
+    int DownloadDataFromFTP(
+        novac::LogContext context,
+        const novac::CString& server,
+        const novac::CString& username,
+        const novac::CString& password,
+        std::vector<std::string>& pakFileList);
 
     /** Downloads a single file from the given FTP-server
         @return 0 on successful connection and completion of the download
     */
-    int DownloadFileFromFTP(const novac::CString& remoteFileName, const novac::CString& localFileName,
-        const novac::CString& username, const novac::CString& password);
+    int DownloadFileFromFTP(
+        novac::LogContext context,
+        const novac::CString& remoteFileName,
+        const novac::CString& localFileName,
+        const novac::CString& username,
+        const novac::CString& password);
 
     /** Retrieves the list of files (but no directories) in a given directory on the FTP-server
         @return 0 on successful connection and completion of the download
@@ -42,14 +57,17 @@ public:
     /** Uploads result-files to the given FTP-server
         @return 0 on success otherwise non-zero
     */
-    int UploadResults(const novac::CString& server, const novac::CString& username,
-        const novac::CString& password, novac::CList <novac::CString, novac::CString&>& fileList);
+    int UploadResults(novac::LogContext context, const novac::CString& server, const novac::CString& username,
+        const novac::CString& password, const std::vector<std::string>& fileList);
 
 private:
     // -----------------------------------------------------------
     // ---------------------- PRIVATE DATA -----------------------
     // -----------------------------------------------------------
 
+    novac::ILogger& m_log;
+
+    const Configuration::CUserConfiguration& m_userSettings;
 
     // -----------------------------------------------------------
     // --------------------- PRIVATE METHODS ---------------------
@@ -57,5 +75,3 @@ private:
 
 };
 }
-
-#endif

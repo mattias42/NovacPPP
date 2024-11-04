@@ -6,16 +6,20 @@ set(PppTests_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include)
 
 # Add the different components
 add_executable(PPPTests
-    ${CMAKE_CURRENT_LIST_DIR}/include/StdOutLogger.h
-
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_CPostEvaluationController.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_EvaluationLogFileHandler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_EvaluationUtils.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_FluxCalculator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_PostProcessingUtils.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/IntegrationTest_ScanEvaluation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CommandLineParser.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CArray.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CFileUtils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CFtpUtils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CList.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CString.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_CStringTokenizer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_GeometryCalculator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_EvaluationConfiguration.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_EvaluationConfigurationParser.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/UnitTest_NovacPPPConfiguration.cpp

@@ -1,15 +1,17 @@
 #pragma once
 
 #include <SpectralEvaluation/DateTime.h>
-#include "Geometry/GeometryCalculator.h"
+#include <PPPLib/ContinuationOfProcessing.h>
+#include <PPPLib/Geometry/GeometryCalculator.h>
 #include <PPPLib/Meteorology/WindDataBase.h>
 #include <PPPLib/Configuration/NovacPPPConfiguration.h>
 #include <PPPLib/Configuration/UserConfiguration.h>
 #include <PPPLib/PostProcessingStatistics.h>
+#include <PPPLib/Logging.h>
 
-#include "Geometry/PlumeDataBase.h"
-#include "Flux/FluxResult.h"
-#include "Evaluation/ExtendedScanResult.h"
+#include <PPPLib/Geometry/PlumeDataBase.h>
+#include <PPPLib/Flux/FluxResult.h>
+#include <PPPLib/Evaluation/ExtendedScanResult.h>
 #include <PPPLib/MFC/CList.h>
 #include <PPPLib/MFC/CString.h>
 
@@ -27,15 +29,11 @@ class CReferenceFile;
 class CPostProcessing
 {
 public:
-    CPostProcessing(ILogger& logger, Configuration::CNovacPPPConfiguration setup, Configuration::CUserConfiguration userSettings);
-
-    // ----------------------------------------------------------------------
-    // ---------------------- PUBLIC DATA -----------------------------------
-    // ----------------------------------------------------------------------
-
-    /** This is the directory of the executable.
-        Defines the directory where the configuration is supposed to be found. */
-    std::string m_exePath;
+    CPostProcessing(
+        novac::ILogger& logger,
+        Configuration::CNovacPPPConfiguration setup,
+        Configuration::CUserConfiguration userSettings,
+        const CContinuationOfProcessing& continuation);
 
     // ----------------------------------------------------------------------
     // --------------------- PUBLIC METHODS ---------------------------------
@@ -54,7 +52,7 @@ public:
         good stratospheric data */
     void DoPostProcessing_Strat();
 
-protected:
+private:
 
     // ----------------------------------------------------------------------
     // ---------------------- PRIVATE DATA ----------------------------------
@@ -66,11 +64,13 @@ protected:
     /** The database of plume-heights to use for the flux calculations */
     Geometry::CPlumeDataBase m_plumeDataBase;
 
-    ILogger& m_log;
+    novac::ILogger& m_log;
 
     Configuration::CNovacPPPConfiguration m_setup;
 
     Configuration::CUserConfiguration m_userSettings;
+
+    CContinuationOfProcessing m_continuation;
 
     // The statistics of the processing itself (number of successfully processed scans, vs number of rejected etc)
     CPostProcessingStatistics m_processingStats;
@@ -90,31 +90,24 @@ protected:
         @return 0 if all settings are ok otherwise non-zero */
     int CheckInstrumentCalibrationSettings() const;
 
-    /** Prepares for the evaluation of the spectra
-        by reading in all the reference files that are
-        needed.
-        @throws std::invalid_argument if the references files could not be found or not be read. */
-    void PrepareEvaluation();
-
     /** Prepares for the flux calculations by reading in the relevant
         wind-field file.
         @throw std::invalid_argument if the wind field could not be read properly and the processing cannot continue */
-    void ReadWindField();
+    void ReadWindField(novac::LogContext context);
 
     /** Prepares for the flux calculation by setting up a reasonable
-        set of plume heights. This could also read in a set from file...?
-        @return 0 on success, otherwese non-zero */
-    int PreparePlumeHeights();
+        set of plume heights. This could also read in a set from file...? */
+    void PreparePlumeHeights(novac::LogContext context);
 
     /** Scans through the FTP-server (using the IP,username and password
-        found in g_userSettings) in search for .pak-files
+        found in userSettings) in search for .pak-files
         The files will be downloaded to the local computer (to the
         temporary directory) and the returned path's will be pointing
         there.
 
         @param fileList - will be appended with the path's and
         file-names of the found .pak-files (these will be in the TEMP directory) */
-    void CheckForSpectraOnFTPServer(std::vector<std::string>& fileList);
+    void CheckForSpectraOnFTPServer(novac::LogContext context, std::vector<std::string>& fileList);
 
     /** Runs through the supplied list of .pak-files and evaluates
         each one using the setups found in m_setup and m_userSettings.
@@ -122,38 +115,31 @@ protected:
         @param evalLogFiles - will on successful return be filled
             with the path's and filenames of each evaluation log
             file generated and the properties of each scan. */
-    void EvaluateScans(const std::vector<std::string>& pakFileList,
-        novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogFiles) const;
-
-    /** Runs through the supplied list of .pak files and performs an instrument calibration
-        on each one.
-        @param pakFileList The list of scan files to calibrate.
-        @param instrumentCalibrationFiles Will on successful return be filled with calibrations.
-        TODO: We need to be able to return updated fit-windows as well */
-    void CalibrateInstrumentFromScans(const std::vector<std::string>& pakFileList, std::vector<std::string>& calibrations);
+    void EvaluateScans(
+        const std::vector<std::string>& pakFileList,
+        std::vector<Evaluation::CExtendedScanResult>& evalLogFiles);
 
     /** Runs through the supplied list of evaluation - logs and performs
         geometry calculations on the ones which does match. The results
         are returned in the list geometryResults.
+        The evaluations are assumed to be sorted in increasing start time of the scan.
         @param evalLogs - list of CExtendedScanResult, each holding the full path and filename
             of an evaluation-log file that should be considered for geometrical
             calculations and the properties of the scan (plume centre position etc)
-        @param geometryResults - will on successfull return be filled with the
-            calculated plume heights and wind-directions.
-        */
-    void CalculateGeometries(novac::CList <Evaluation::CExtendedScanResult,
-        Evaluation::CExtendedScanResult&>& evalLogs, novac::CList <Geometry::CGeometryResult*,
-        Geometry::CGeometryResult*>& geometryResults);
+        @param geometryResults - will on successful return be filled with the
+            calculated plume heights and wind-directions. */
+    void CalculateGeometries(
+        novac::LogContext context,
+        std::vector<Evaluation::CExtendedScanResult>& evalLogs,
+        std::vector<Geometry::CGeometryResult>& geometryResults);
 
     /** Writes each of the calculated geometry results to the GeometryLog file */
-    void WriteCalculatedGeometriesToFile(
-        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults);
+    void WriteCalculatedGeometriesToFile(novac::LogContext context, const std::vector<Geometry::CGeometryResult>& geometryResults);
 
     /** Inserts the calculated geometry results into the databases.
         The wind directions will be inserted into m_windDataBase
         The plume altitudes will be inserted into m_plumeDataBase */
-    void InsertCalculatedGeometriesIntoDataBase(
-        novac::CList <Geometry::CGeometryResult*, Geometry::CGeometryResult*>& geometryResults);
+    void InsertCalculatedGeometriesIntoDatabase(novac::LogContext context, const std::vector<Geometry::CGeometryResult>& geometryResults);
 
     /** This calculates the wind speeds from the dual-beam measurements that has been made
         @param evalLogs - list of CExtendedScanResult, each holding the full path and filename
@@ -161,8 +147,7 @@ protected:
             dual-beam measurement will be considered.
         The plume heights are taken from the database 'm_plumeDataBase' and the
             results are written to the database 'm_windDataBase' */
-    void CalculateDualBeamWindSpeeds(novac::CList <Evaluation::CExtendedScanResult,
-        Evaluation::CExtendedScanResult&>& evalLogs);
+    void CalculateDualBeamWindSpeeds(novac::LogContext context, const std::vector<Evaluation::CExtendedScanResult>& evalLogs);
 
     /** Runs through the supplied list of evaluation-results and
         calculates the flux for each scan. The resulting fluxes are written
@@ -173,25 +158,22 @@ protected:
         The wind speeds and wind directions will be taken from 'm_windDataBase'
         The plume heigths will be taken from 'm_plumeDataBase'
         */
-    void CalculateFluxes(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs);
+    void CalculateFluxes(novac::LogContext context, const std::vector<Evaluation::CExtendedScanResult>& evalLogs);
 
 
     /** Sorts the evaluation logs in order of increasing time
         (this is mostly done since this speeds up the geometry calculations enormously) */
-    void SortEvaluationLogs(novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evalLogs);
+    void SortEvaluationLogs(std::vector<Evaluation::CExtendedScanResult>& evalLogs);
 
     /** Writes the calculated fluxes to the flux result file */
-    void WriteFluxResult_XML(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes);
-    void WriteFluxResult_Txt(novac::CList <Flux::CFluxResult, Flux::CFluxResult&>& calculatedFluxes);
+    void WriteFluxResult_XML(const std::list<Flux::FluxResult>& calculatedFluxes);
+    void WriteFluxResult_Txt(const std::list<Flux::FluxResult>& calculatedFluxes);
 
     /** Takes care of uploading the result files to the FTP server */
-    void UploadResultsToFTP();
+    void UploadResultsToFTP(novac::LogContext context);
 
     /** Locates evaluation log files in the output directory */
-    void LocateEvaluationLogFiles(const novac::CString& directory, novac::CList <Evaluation::CExtendedScanResult, Evaluation::CExtendedScanResult&>& evaluationLogFiles);
-
-    /** Creates a reference file by convolving a high-res cross section with a slit-function and resamples it
-        to a given wavelength calibration. The instrument serial is provided since the result is
-        saved to a local file, for reference. */
-    bool ConvolveReference(novac::CReferenceFile& ref, const novac::CString& instrumentSerial);
+    std::vector<Evaluation::CExtendedScanResult> LocateEvaluationLogFiles(novac::LogContext context, const std::string& directory) const;
 };
+
+
