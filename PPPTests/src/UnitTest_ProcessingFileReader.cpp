@@ -36,17 +36,17 @@ TEST_CASE("ReadProcessingFile gives expected configuration", "[ProcessingFileRea
         REQUIRE("~/Novac/Piton de la Fournaise/Temp/" == resultingConfiguration.m_tempDirectory.std_str());
 #endif // _MSC_VER
 
-        REQUIRE(PROCESSING_MODE::PROCESSING_MODE_FLUX == resultingConfiguration.m_processingMode);
+        REQUIRE(ProcessingMode::Flux == resultingConfiguration.m_processingMode);
         REQUIRE(StandardMolecule::SO2 == resultingConfiguration.m_molecule);
 
         REQUIRE(novac::CDateTime(2017, 1, 29, 12, 50, 51) == resultingConfiguration.m_fromDate);
         REQUIRE(novac::CDateTime(2017, 3, 01, 23, 50, 51) == resultingConfiguration.m_toDate);
 
-        REQUIRE("C:/Temp/" == resultingConfiguration.m_LocalDirectory.std_str());
-        REQUIRE(1 == resultingConfiguration.m_includeSubDirectories_Local);
+        REQUIRE("C:/Temp/" == resultingConfiguration.m_LocalDirectory);
+        REQUIRE(resultingConfiguration.m_includeSubDirectories_Local);
 
-        REQUIRE("ftp://129.16.35.206/piton_de_la_fournaise/" == resultingConfiguration.m_FTPDirectory.std_str());
-        REQUIRE(1 == resultingConfiguration.m_includeSubDirectories_FTP);
+        REQUIRE("ftp://129.16.35.206/piton_de_la_fournaise/" == resultingConfiguration.m_FTPDirectory);
+        REQUIRE(resultingConfiguration.m_includeSubDirectories_FTP);
 
         REQUIRE(0.5 == resultingConfiguration.m_calcGeometry_CompletenessLimit);
         REQUIRE(3600 == resultingConfiguration.m_calcGeometryValidTime);
@@ -57,6 +57,8 @@ TEST_CASE("ReadProcessingFile gives expected configuration", "[ProcessingFileRea
 
         REQUIRE(1 == resultingConfiguration.m_nFitWindowsToUse);
         REQUIRE(0 == resultingConfiguration.m_mainFitWindow);
+
+        REQUIRE(false == resultingConfiguration.m_uploadResults);
 
         REQUIRE(Configuration::SKY_OPTION::USER_SUPPLIED == resultingConfiguration.sky.skyOption);
         REQUIRE("C:/Temp/Some_sky_spectrum.std" == resultingConfiguration.sky.skySpectrumFile);

@@ -127,9 +127,22 @@ void CommandLineParser::ParseCommandLineOptions(
         // The options for the local directory
         if (novac::Equals(currentToken, FLAG(str_includeSubDirectories_Local), strlen(FLAG(str_includeSubDirectories_Local))))
         {
-            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &userSettings.m_includeSubDirectories_Local))
+            int parsedValue = 0;
+            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_Local)), "%d", &parsedValue))
             {
+                userSettings.m_includeSubDirectories_Local = (parsedValue != 0);
                 log.Information(context.With("cmd", str_includeSubDirectories_Local), "Updated includeSubDirectories_Local");
+            }
+            token = tokenizer.NextToken();
+            continue;
+        }
+        if (novac::Equals(currentToken, FLAG(str_filenamePatternMatching_Local), strlen(FLAG(str_filenamePatternMatching_Local))))
+        {
+            int parsedValue = 0;
+            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_filenamePatternMatching_Local)), "%d", &parsedValue))
+            {
+                userSettings.m_useFilenamePatternMatching_Local = (parsedValue != 0);
+                log.Information(context.With("cmd", str_filenamePatternMatching_Local), "Updated useFilenamePatternMatching_Local");
             }
             token = tokenizer.NextToken();
             continue;
@@ -138,10 +151,10 @@ void CommandLineParser::ParseCommandLineOptions(
         {
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_LocalDirectory)), "%s", buffer.data()))
             {
-                userSettings.m_LocalDirectory.Format("%s", buffer.data());
+                userSettings.m_LocalDirectory = std::string(buffer.data());
                 userSettings.m_LocalDirectory = Filesystem::AppendPathSeparator(userSettings.m_LocalDirectory);
 
-                log.Information(context.With("cmd", str_LocalDirectory), "Set local directory: " + userSettings.m_LocalDirectory.std_str());
+                log.Information(context.With("cmd", str_LocalDirectory), "Set local directory: " + userSettings.m_LocalDirectory);
             }
             else
             {
@@ -154,8 +167,10 @@ void CommandLineParser::ParseCommandLineOptions(
         // The options for the FTP directory
         if (novac::Equals(currentToken, FLAG(str_includeSubDirectories_FTP), strlen(FLAG(str_includeSubDirectories_FTP))))
         {
-            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &userSettings.m_includeSubDirectories_FTP))
+            int parsedValue = 0;
+            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_includeSubDirectories_FTP)), "%d", &parsedValue))
             {
+                userSettings.m_includeSubDirectories_FTP = (parsedValue != 0);
                 log.Information(context.With("cmd", str_includeSubDirectories_FTP), "Updated include FTP sub directories");
             }
             token = tokenizer.NextToken();
@@ -166,12 +181,12 @@ void CommandLineParser::ParseCommandLineOptions(
         {
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPDirectory)), "%s", buffer.data()))
             {
-                userSettings.m_FTPDirectory.Format("%s", buffer.data());
-                log.Information(context.With("cmd", str_FTPDirectory), "Updated FTP directory: " + userSettings.m_FTPDirectory.std_str());
+                userSettings.m_FTPDirectory = std::string(buffer.data());
+                log.Information(context.With("cmd", str_FTPDirectory), "Updated FTP directory: " + userSettings.m_FTPDirectory);
             }
             else
             {
-                userSettings.m_FTPDirectory.Format("");
+                userSettings.m_FTPDirectory = "";
             }
             token = tokenizer.NextToken();
             continue;
@@ -182,7 +197,7 @@ void CommandLineParser::ParseCommandLineOptions(
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPUsername)), "%s", buffer.data()))
             {
                 log.Information(context.With("cmd", str_FTPUsername), "Updated FTP username");
-                userSettings.m_FTPUsername.Format("%s", buffer.data());
+                userSettings.m_FTPUsername = std::string(buffer.data());
             }
             token = tokenizer.NextToken();
             continue;
@@ -192,7 +207,7 @@ void CommandLineParser::ParseCommandLineOptions(
             if (sscanf(currentToken.c_str() + strlen(FLAG(str_FTPPassword)), "%s", buffer.data()))
             {
                 log.Information(context.With("cmd", str_FTPPassword), "Updated FTP password");
-                userSettings.m_FTPPassword.Format("%s", buffer.data());
+                userSettings.m_FTPPassword = std::string(buffer.data());
             }
             token = tokenizer.NextToken();
             continue;
@@ -201,8 +216,10 @@ void CommandLineParser::ParseCommandLineOptions(
         // If we should upload the results to the NovacFTP server at the end...
         if (novac::Equals(currentToken, FLAG(str_uploadResults), strlen(FLAG(str_uploadResults))))
         {
-            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_uploadResults)), "%d", &userSettings.m_uploadResults))
+            int parsedValue = 0;
+            if (1 == sscanf(currentToken.c_str() + strlen(FLAG(str_uploadResults)), "%d", &parsedValue))
             {
+                userSettings.m_uploadResults = (parsedValue != 0);
                 log.Information(context.With("cmd", str_uploadResults), "Updated upload results");
             }
             token = tokenizer.NextToken();

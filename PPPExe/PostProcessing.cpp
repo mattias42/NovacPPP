@@ -64,9 +64,69 @@ void EvaluateScansThread(
     CPostProcessingStatistics& processingStats);
 
 CPostProcessing::CPostProcessing(ILogger& logger, Configuration::CNovacPPPConfiguration setup, Configuration::CUserConfiguration userSettings, const CContinuationOfProcessing& continuation)
-    : m_log(logger), m_setup(setup), m_userSettings(userSettings), m_continuation(continuation)
+    : m_plumeDataBase(userSettings), m_log(logger), m_setup(setup), m_userSettings(userSettings), m_continuation(continuation)
 {
     assert(m_setup.m_executableDirectory.size() > 3); // This should be set
+}
+
+static void CheckForSpectraOnFTPServer(novac::ILogger& log, novac::LogContext context, const Configuration::CUserConfiguration& userSettings, std::vector<std::string>& fileList)
+{
+    Communication::CFTPServerConnection serverDownload(log, userSettings);
+
+    int ret = serverDownload.DownloadDataFromFTP(
+        context,
+        userSettings.m_FTPDirectory,
+        userSettings.m_FTPUsername,
+        userSettings.m_FTPPassword,
+        fileList);
+
+    if (ret == 0)
+    {
+        log.Information(context, "Successfully downloaded all data files.");
+    }
+    else
+    {
+        log.Information(context, "Error happened when downloading data from FTP.");
+    }
+}
+
+static std::vector<std::string> LocatePakFiles(novac::ILogger& log, novac::LogContext context, const Configuration::CUserConfiguration& userSettings)
+{
+    std::vector<std::string> pakFileList;
+
+    if (userSettings.m_LocalDirectory.size() > 3)
+    {
+        novac::LogContext localContext = context.With(novac::LogContext::Directory, userSettings.m_LocalDirectory);
+        log.Information(localContext, "Searching for .pak files");
+
+        Filesystem::FileSearchCriterion limits;
+        limits.fileExtension = ".pak";
+        if (userSettings.m_useFilenamePatternMatching_Local)
+        {
+            limits.startTime = userSettings.m_fromDate;
+            limits.endTime = userSettings.m_toDate;
+        }
+        else
+        {
+            limits.startTime = CDateTime::MinValue();
+            limits.endTime = CDateTime::MinValue();
+        }
+        Filesystem::SearchDirectoryForFiles(userSettings.m_LocalDirectory, userSettings.m_includeSubDirectories_Local, pakFileList, &limits);
+
+        std::stringstream msg;
+        msg << pakFileList.size() << " .pak files found";
+        log.Information(localContext, msg.str());
+    }
+
+    if (userSettings.m_FTPDirectory.size() > 9)
+    {
+        novac::LogContext localContext = context.With("ftpDirectory", userSettings.m_FTPDirectory);
+        log.Information(localContext, "Searching for .pak files on Ftp server");
+
+        CheckForSpectraOnFTPServer(log, localContext, userSettings, pakFileList);
+    }
+
+    return pakFileList;
 }
 
 void CPostProcessing::DoPostProcessing_Flux()
@@ -97,31 +157,8 @@ void CPostProcessing::DoPostProcessing_Flux()
 
         // 1. Find all .pak files in the directory.
         m_log.Information(context, "--- Locating Pak Files --- ");
-        std::vector<std::string> pakFileList;
-        if (m_userSettings.m_LocalDirectory.GetLength() > 3)
-        {
-            novac::LogContext localContext = context.With(novac::LogContext::Directory, m_userSettings.m_LocalDirectory.std_str());
-            m_log.Information(localContext, "Searching for .pak files");
 
-            const bool includeSubDirs = (m_userSettings.m_includeSubDirectories_Local > 0);
-            Filesystem::FileSearchCriterion limits;
-            limits.startTime = m_userSettings.m_fromDate;
-            limits.endTime = m_userSettings.m_toDate;
-            limits.fileExtension = ".pak";
-            Filesystem::SearchDirectoryForFiles(m_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
-
-            std::stringstream msg;
-            msg << pakFileList.size() << " .pak files found";
-            m_log.Information(localContext, msg.str());
-        }
-
-        if (m_userSettings.m_FTPDirectory.GetLength() > 9)
-        {
-            novac::LogContext localContext = context.With("ftpDirectory", m_userSettings.m_FTPDirectory.std_str());
-            m_log.Information(localContext, "Searching for .pak files on Ftp server");
-
-            CheckForSpectraOnFTPServer(localContext, pakFileList);
-        }
+        const std::vector<std::string> pakFileList = LocatePakFiles(m_log, context, m_userSettings);
         if (pakFileList.size() == 0)
         {
             m_log.Information(context, "No spectrum files found. Exiting");
@@ -206,34 +243,9 @@ void CPostProcessing::DoPostProcessing_InstrumentCalibration()
         m_log.Information(context, "Cannot locate the Fraunhofer reference in the StandardReferences folder. The file is either missing or path is invalid. No Fraunhofer reference can be created.");
     }
 
-
     // 1. Find all .pak files in the directory.
     m_log.Information(context, "--- Locating Pak Files --- ");
-    std::vector<std::string> pakFileList;
-    if (m_userSettings.m_LocalDirectory.GetLength() > 3)
-    {
-        novac::LogContext localContext = context.With(novac::LogContext::Directory, m_userSettings.m_LocalDirectory.std_str());
-        m_log.Information(localContext, "Searching for .pak files");
-
-        const bool includeSubDirs = (m_userSettings.m_includeSubDirectories_Local > 0);
-        Filesystem::FileSearchCriterion limits;
-        limits.startTime = m_userSettings.m_fromDate;
-        limits.endTime = m_userSettings.m_toDate;
-        limits.fileExtension = ".pak";
-        Filesystem::SearchDirectoryForFiles(m_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
-
-        std::stringstream msg;
-        msg << pakFileList.size() << " .pak files found";
-        m_log.Information(localContext, msg.str());
-    }
-
-    if (m_userSettings.m_FTPDirectory.GetLength() > 9)
-    {
-        novac::LogContext localContext = context.With("ftpDirectory", m_userSettings.m_FTPDirectory.std_str());
-        m_log.Information(localContext, "Searching for .pak files on Ftp server");
-
-        CheckForSpectraOnFTPServer(localContext, pakFileList);
-    }
+    const std::vector<std::string> pakFileList = LocatePakFiles(m_log, context, m_userSettings);
     if (pakFileList.size() == 0)
     {
         m_log.Information(context, "No spectrum files found. Exiting");
@@ -275,30 +287,7 @@ void CPostProcessing::DoPostProcessing_Strat()
     // --------------- DOING THE PROCESSING -----------
 
     // 1. Find all .pak files in the directory.
-    std::vector<std::string> pakFileList;
-    if (m_userSettings.m_LocalDirectory.GetLength() > 3)
-    {
-        novac::LogContext localContext = context.With(novac::LogContext::Directory, m_userSettings.m_LocalDirectory.std_str());
-        m_log.Information(localContext, "Searching for .pak files");
-
-        const bool includeSubDirs = (m_userSettings.m_includeSubDirectories_Local > 0);
-        Filesystem::FileSearchCriterion limits;
-        limits.startTime = m_userSettings.m_fromDate;
-        limits.endTime = m_userSettings.m_toDate;
-        limits.fileExtension = ".pak";
-        Filesystem::SearchDirectoryForFiles(m_userSettings.m_LocalDirectory, includeSubDirs, pakFileList, &limits);
-
-        std::stringstream msg;
-        msg << pakFileList.size() << " .pak files found";
-        m_log.Information(localContext, msg.str());
-    }
-    if (m_userSettings.m_FTPDirectory.GetLength() > 9)
-    {
-        novac::LogContext localContext = context.With("ftpDirectory", m_userSettings.m_FTPDirectory.std_str());
-        m_log.Information(localContext, "Searching for .pak files on Ftp server");
-
-        CheckForSpectraOnFTPServer(localContext, pakFileList);
-    }
+    const std::vector<std::string> pakFileList = LocatePakFiles(m_log, context, m_userSettings);
     if (pakFileList.size() == 0)
     {
         m_log.Information(context, "No spectrum files found. Exiting");
@@ -325,27 +314,6 @@ void CPostProcessing::DoPostProcessing_Strat()
     statFileName.Format("%s%cProcessingStatistics.txt", (const char*)m_userSettings.m_outputDirectory, Poco::Path::separator());
     Common::ArchiveFile(statFileName);
     m_processingStats.WriteStatToFile(statFileName);
-}
-
-void CPostProcessing::CheckForSpectraOnFTPServer(novac::LogContext context, std::vector<std::string>& fileList)
-{
-    Communication::CFTPServerConnection serverDownload(m_log, m_userSettings);
-
-    int ret = serverDownload.DownloadDataFromFTP(
-        context,
-        m_userSettings.m_FTPDirectory,
-        m_userSettings.m_FTPUsername,
-        m_userSettings.m_FTPPassword,
-        fileList);
-
-    if (ret == 0)
-    {
-        m_log.Information(context, "Successfully downloaded all data files.");
-    }
-    else
-    {
-        m_log.Information(context, "Error happened when downloading data from FTP.");
-    }
 }
 
 novac::GuardedList<std::string> s_pakFilesRemaining;
@@ -398,15 +366,37 @@ void EvaluateScansThread(
     const CContinuationOfProcessing& continuation,
     CPostProcessingStatistics& processingStats)
 {
-    std::string fileName;
+    std::string pakFileName;
 
     // create a new CPostEvaluationController
     Evaluation::CPostEvaluationController eval{ log, setup, userSettings, continuation, processingStats };
 
     // while there are more .pak-files
-    while (s_pakFilesRemaining.PopFront(fileName))
+    while (s_pakFilesRemaining.PopFront(pakFileName))
     {
-        novac::LogContext context(novac::LogContext::FileName, novac::GetFileName(fileName));
+        novac::LogContext context(novac::LogContext::FileName, novac::GetFileName(pakFileName));
+
+        // Verify that the scan file is readable and that the scan started in the time interval set.
+        CScanFileHandler scan(log);
+        if (!scan.CheckScanFile(context, pakFileName))
+        {
+            std::stringstream message;
+            message << "Could not read received pak file. ";
+            if (scan.m_lastErrorMessage.size() > 0)
+            {
+                message << " (" << scan.m_lastErrorMessage << ")";
+            }
+            log.Error(context, message.str());
+            continue;
+        }
+        if (scan.GetScanStartTime() < userSettings.m_fromDate || scan.GetScanStartTime() > userSettings.m_toDate)
+        {
+            std::stringstream message;
+            message << "Ignoring scan with start time: " << scan.GetScanStartTime() << " which is outside of the set time interval [";
+            message << userSettings.m_fromDate << " to " << userSettings.m_toDate << "].";
+            log.Information(context, message.str());
+            continue;
+        }
 
         // evaluate the .pak-file in all the specified fit-windows and retrieve the name of the 
         // eval-logs. If any of the fit-windows fails then the scan is not inserted.
@@ -416,7 +406,7 @@ void EvaluateScansThread(
         {
             for (size_t fitWindowIndex = 0; fitWindowIndex < userSettings.m_nFitWindowsToUse; ++fitWindowIndex)
             {
-                auto result = eval.EvaluateScan(fileName, userSettings.m_fitWindowsToUse[fitWindowIndex]);
+                auto result = eval.EvaluateScan(pakFileName, userSettings.m_fitWindowsToUse[fitWindowIndex]);
 
                 if (result == nullptr)
                 {
@@ -1687,12 +1677,11 @@ std::vector<Evaluation::CExtendedScanResult> CPostProcessing::LocateEvaluationLo
     context = context.With(novac::LogContext::Directory, directory);
     m_log.Information(context, "Searching for evaluation log files in directory.");
 
-    const bool includeSubDirs = (m_userSettings.m_includeSubDirectories_Local > 0);
     Filesystem::FileSearchCriterion limits;
     limits.startTime = m_userSettings.m_fromDate;
     limits.endTime = m_userSettings.m_toDate;
     limits.fileExtension = "_flux.txt";
-    Filesystem::SearchDirectoryForFiles(directory, includeSubDirs, filenames, &limits);
+    Filesystem::SearchDirectoryForFiles(directory, m_userSettings.m_includeSubDirectories_Local, filenames, &limits);
 
 
     novac::CString messageToUser;

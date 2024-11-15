@@ -71,7 +71,11 @@ void CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, C
         // If we've found the end date
         if (Equals(szToken, str_toDate, strlen(str_toDate)))
         {
-            Parse_Date(ENDTAG(str_toDate), settings.m_toDate);
+            novac::CDateTime parsedDate = novac::CDateTime::MaxValue(); // sets hour/minute/second component to 23:59:59
+            if (Parse_Date(ENDTAG(str_toDate), parsedDate))
+            {
+                settings.m_toDate = parsedDate;
+            }
             continue;
         }
 
@@ -104,19 +108,19 @@ void CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, C
             Parse_StringItem(ENDTAG(str_processingMode), modeStr);
             if (Equals(modeStr, "composition"))
             {
-                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_COMPOSITION;
+                settings.m_processingMode = ProcessingMode::Composition;
             }
             else if (Equals(modeStr, "stratosphere"))
             {
-                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE;
+                settings.m_processingMode = ProcessingMode::Stratosphere;
             }
             else if (Equals(modeStr, "calibration"))
             {
-                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION;
+                settings.m_processingMode = ProcessingMode::InstrumentCalibration;
             }
             else
             {
-                settings.m_processingMode = PROCESSING_MODE::PROCESSING_MODE_FLUX;
+                settings.m_processingMode = ProcessingMode::Flux;
             }
             continue;
         }
@@ -171,10 +175,15 @@ void CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, C
             continue;
         }
 
-        // If we've found the local directory where to search for data
         if (Equals(szToken, str_includeSubDirectories_Local, strlen(str_includeSubDirectories_Local)))
         {
-            Parse_IntItem(ENDTAG(str_includeSubDirectories_Local), settings.m_includeSubDirectories_Local);
+            Parse_BoolItem(ENDTAG(str_includeSubDirectories_Local), settings.m_includeSubDirectories_Local);
+            continue;
+        }
+
+        if (Equals(szToken, str_filenamePatternMatching_Local, strlen(str_filenamePatternMatching_Local)))
+        {
+            Parse_BoolItem(ENDTAG(str_filenamePatternMatching_Local), settings.m_useFilenamePatternMatching_Local);
             continue;
         }
 
@@ -202,14 +211,14 @@ void CProcessingFileReader::ReadProcessingFile(const novac::CString& filename, C
         // If we've found the FTP password
         if (Equals(szToken, str_includeSubDirectories_FTP, strlen(str_includeSubDirectories_FTP)))
         {
-            Parse_IntItem(ENDTAG(str_includeSubDirectories_FTP), settings.m_includeSubDirectories_FTP);
+            Parse_BoolItem(ENDTAG(str_includeSubDirectories_FTP), settings.m_includeSubDirectories_FTP);
             continue;
         }
 
         // If we should upload the results to the NovacFTP server at the end...
         if (Equals(szToken, str_uploadResults, strlen(str_uploadResults)))
         {
-            Parse_IntItem(ENDTAG(str_uploadResults), settings.m_uploadResults);
+            Parse_BoolItem(ENDTAG(str_uploadResults), settings.m_uploadResults);
             continue;
         }
 
@@ -629,10 +638,10 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString& fil
     // the mode
     switch (settings.m_processingMode)
     {
-    case PROCESSING_MODE::PROCESSING_MODE_FLUX:			PrintParameter(f, 1, str_processingMode, "Flux"); break;
-    case PROCESSING_MODE::PROCESSING_MODE_COMPOSITION:	PrintParameter(f, 1, str_processingMode, "Composition"); break;
-    case PROCESSING_MODE::PROCESSING_MODE_STRATOSPHERE:	PrintParameter(f, 1, str_processingMode, "Stratosphere"); break;
-    case PROCESSING_MODE::PROCESSING_MODE_INSTRUMENT_CALIBRATION:	PrintParameter(f, 1, str_processingMode, "Calibration"); break;
+    case ProcessingMode::Flux:			PrintParameter(f, 1, str_processingMode, "Flux"); break;
+    case ProcessingMode::Composition:	PrintParameter(f, 1, str_processingMode, "Composition"); break;
+    case ProcessingMode::Stratosphere:	PrintParameter(f, 1, str_processingMode, "Stratosphere"); break;
+    case ProcessingMode::InstrumentCalibration:	PrintParameter(f, 1, str_processingMode, "Calibration"); break;
     default:							PrintParameter(f, 1, str_processingMode, "Unknown"); break;
     }
 
@@ -648,14 +657,15 @@ RETURN_CODE CProcessingFileReader::WriteProcessingFile(const novac::CString& fil
 
     // the location of the .pak-files to use
     PrintParameter(f, 1, str_LocalDirectory, settings.m_LocalDirectory);
-    PrintParameter(f, 1, str_includeSubDirectories_Local, settings.m_includeSubDirectories_Local);
+    PrintParameter(f, 1, str_includeSubDirectories_Local, settings.m_includeSubDirectories_Local ? 1 : 0);
+    PrintParameter(f, 1, str_filenamePatternMatching_Local, settings.m_useFilenamePatternMatching_Local ? 1 : 0);
     PrintParameter(f, 1, str_FTPDirectory, settings.m_FTPDirectory);
-    PrintParameter(f, 1, str_includeSubDirectories_FTP, settings.m_includeSubDirectories_FTP);
+    PrintParameter(f, 1, str_includeSubDirectories_FTP, settings.m_includeSubDirectories_FTP ? 1 : 0);
     PrintParameter(f, 1, str_FTPUsername, settings.m_FTPUsername);
     PrintParameter(f, 1, str_FTPPassword, settings.m_FTPPassword);
 
     // Uploading of the results?
-    PrintParameter(f, 1, str_uploadResults, settings.m_uploadResults);
+    PrintParameter(f, 1, str_uploadResults, settings.m_uploadResults ? 1 : 0);
 
     // the wind-field file
     PrintParameter(f, 1, str_windFieldFile, settings.m_windFieldFile);

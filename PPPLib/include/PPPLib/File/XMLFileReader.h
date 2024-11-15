@@ -22,8 +22,7 @@ public:
     char* NextToken();
 
     /** Retrieves the value of the given attribute from the current token
-        @return NULL if this attribute does not exist or the current token is not
-            a valid element */
+        @return nullptr if this attribute does not exist or the current token is not a valid element */
     const char* GetAttributeValue(const novac::CString& label);
 
     /** General parsing of a single, simple string item */
@@ -38,8 +37,13 @@ public:
     /** General parsing of a single, simple float item */
     int Parse_FloatItem(const novac::CString& label, double& number);
 
-    /** General parsing of a single, simple integer item */
     int Parse_IntItem(const novac::CString& label, int& number);
+    int Parse_IntItem(const novac::CString& label, int& number, std::string& valueParsed);
+
+    /* Parses a boolean item. The string parsed can be either 'true'/'false' or '1'/'0' */
+    int Parse_BoolItem(const novac::CString& label, bool& value);
+
+    int Parse_SizeItem(const novac::CString& label, size_t& number);
 
     /** General parsing of a single, simple long integer item */
     int Parse_LongItem(const novac::CString& label, long& number);
@@ -57,7 +61,7 @@ protected:
     char* szToken = nullptr;
 
     /** The name of the currently opened file. For debugging reasons */
-    novac::CString m_filename = "";
+    std::string m_filename = "";
 
     /** Opens the provided file for reading.
         @return true if successful */
